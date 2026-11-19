@@ -1,0 +1,27 @@
+# Large data/model files
+spartqa/
+v4-model/
+*.pt
+*.safetensors
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+
+# OS
+.DS_Store
+
+# Logs
+firebase-debug.log
+
+# Build output
+dist/
+data/
+
+# public release: secrets + third-party media stay local
+.env
+*.bak
+*.pdf
+test-videos/
+.superpowers/

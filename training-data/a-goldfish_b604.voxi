@@ -1,0 +1,40 @@
+V 32 32 32
+
+-- body
+E 16 12 16 7 5 9 7
+
+-- belly accent
+E 16 9 16 5 3 8 6
+
+-- head
+E 16 12 23 4 4 3 7
+
+-- mouth
+B 14 9 25 4 2 1 1
+
+-- left eye
+S 11 14 23 1 0
+
+-- right eye
+S 21 14 23 1 0
+
+-- dorsal fin
+B 13 17 13 6 7 3 7
+
+-- left pectoral fin
+B 8 9 15 3 2 5 6
+
+-- right pectoral fin
+B 21 9 15 3 2 5 6
+
+-- tail base
+B 13 8 6 6 8 3 7
+
+-- tail fin upper
+B 11 16 3 10 5 2 6
+
+-- tail fin lower
+B 11 5 3 10 5 2 6
+
+-- tail fin mid spread
+B 12 10 2 8 4 2 7

@@ -1,0 +1,88 @@
+--- ROUND 1: GENERATE ---
+--- ROUND 1: RENDER ---
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+--- ROUND 2: REFINE ---
+--- ROUND 2: RENDER ---
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+--- ROUND 3: REFINE ---
+--- ROUND 3: RENDER ---
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+--- ROUND 4: REFINE ---
+--- ROUND 4: RENDER ---
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/render3d.js:30:14 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1

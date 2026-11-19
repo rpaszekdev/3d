@@ -1,0 +1,63 @@
+V 24 48 24
+
+-- skull
+S 12 43 12 3 8
+
+-- eye sockets
+B 10 43 9 2 2 1 0
+B 13 43 9 2 2 1 0
+
+-- jaw
+B 9 39 10 6 2 4 8
+
+-- neck
+C 12 38 12 1 2 8
+
+-- spine
+C 12 30 12 1 14 8
+
+-- ribcage sides
+B 7 33 11 2 7 2 8
+B 15 33 11 2 7 2 8
+
+-- ribs
+B 9 35 11 6 1 2 8
+B 9 32 11 6 1 2 8
+B 9 29 11 6 1 2 8
+
+-- pelvis
+B 7 24 10 10 3 4 8
+
+-- left upper arm
+C 7 32 12 1 8 8
+
+-- left lower arm
+C 6 24 12 1 8 8
+
+-- right upper arm
+C 17 32 12 1 8 8
+
+-- right lower arm
+C 18 24 12 1 8 8
+
+-- hands
+S 6 19 12 2 9
+S 18 19 12 2 9
+
+-- left upper leg
+C 9 16 12 2 9 8
+
+-- right upper leg
+C 15 16 12 2 9 8
+
+-- left lower leg
+C 9 6 12 1 10 8
+
+-- right lower leg
+C 15 6 12 1 10 8
+
+-- left foot
+B 5 0 8 5 2 7 8
+
+-- right foot
+B 13 0 8 5 2 7 8

@@ -1,0 +1,10 @@
+SCORE: 8
+STRENGTHS: Immediately recognizable as a classic street/hanging lantern. Excellent structural hierarchy — circular base with stepped rings, open frame body with visible interior, tiered conical roof with stacked disc details, and a finial cap with torus handle on top. The subtract operation for window panels is well-executed, creating clean open frames. The candle/flame stub inside the body adds charming interior detail. Symmetry is solid from all four cardinal views.
+
+ISSUES:
+- **Roof reads as a stack of flat discs rather than a smooth cone** — replace the stacked cylinder rings with a proper cone shape, e.g. use a sequence of `cylinder 0 Y 0 r 0.05` with decreasing radii, or better, use a subtracted `box` trick to carve a cone profile from a solid cylinder. A tighter taper would read as a pagoda/lantern roof much more clearly.
+- **The body frame only shows window openings on ~2 faces** — from the iso view the frame looks like an open cage (good), but the side panels appear solid on some angles. Consider ensuring all 4 sides have matching subtract panels: `subtract box 0 midY frontZ 0.05 panelH panelW` mirrored consistently.
+- **Interior candle/flame is too small and sits low** — the sphere+cylinder candle element is barely visible and placed near the floor of the body. Raise it to vertical center and slightly enlarge: `sphere 0 0.6 0 0.06` + `cylinder 0 0.5 0 0.03 0.15` for better presence through the glass panels.
+- **Base is a single flat disc** — a real lantern base has a stepped foot. Add a second narrower disc underneath: `cylinder 0 0.03 0 0.28 0.04` atop a wider `cylinder 0 0.01 0 0.38 0.02` for a more grounded, finished look.
+
+PRIORITY_FIX: Replace the stacked disc roof with a proper tapered cone shape — it's the single element most at odds with a classic lantern silhouette and would elevate the read from "decorative tower" to "lantern" instantly.

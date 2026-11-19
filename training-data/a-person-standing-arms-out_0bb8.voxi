@@ -1,0 +1,40 @@
+V 32 32 32
+
+-- head
+S 16 27 16 3 d
+
+-- hair
+E 16 30 16 3 1 3 a
+
+-- neck
+C 16 24 16 1 2 d
+
+-- torso
+B 12 14 14 8 10 4 2
+
+-- left arm outstretched
+B 4 22 14 8 3 4 d
+
+-- right arm outstretched
+B 20 22 14 8 3 4 d
+
+-- left hand
+S 4 22 16 2 d
+
+-- right hand
+S 28 22 16 2 d
+
+-- hips
+B 12 10 14 8 4 4 3
+
+-- left leg
+B 12 2 14 3 8 4 5
+
+-- right leg
+B 17 2 14 3 8 4 5
+
+-- left shoe
+B 11 0 12 4 2 6 0
+
+-- right shoe
+B 16 0 12 4 2 6 0

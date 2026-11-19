@@ -1,0 +1,20 @@
+`★ Insight ─────────────────────────────────────`
+In VOXI, achieving a **hollow handle** requires building it as a frame (top bar + bottom bar + outer vertical bar) rather than subtracting from a solid — the language has no boolean subtraction, so "holes" must be sculpted by placement alone. The front view is the most revealing angle for confirming handle topology.
+`─────────────────────────────────────────────────`
+
+---
+
+Here is my full evaluation after reviewing all 6 angles:
+
+---
+
+SCORE: 6
+
+STRENGTHS: The cylindrical mug body is convincing and well-proportioned — good use of a cylinder primitive that reads unmistakably as a mug. Most critically, **the handle hole requirement is met**: the front view clearly shows a rectangular aperture through the handle forming a proper D-shape loop. The white color is an excellent choice against the dark renderer background, ensuring full visibility across all angles.
+
+ISSUES:
+- **Handle is floating / disconnected from the mug body.** From the front-iso and right views, the bottom section of the handle hangs below the mug floor and the connection point at the top appears thin or gapped. The handle should attach flush to the mug wall at both top and bottom — e.g. use `B 22 14 15 2 2 2 8` and `B 22 6 15 2 2 2 8` as sturdy top/bottom attachment blocks that merge into the mug wall.
+- **Mug top is fully solid — no open hollow interior.** From the top view, the cylinder cap is completely filled. A real mug has an open top; carving a hollow interior (leaving only a thin wall ring) would add realism. Use an inner `C` cylinder one radius smaller with a background-matching or dark color to simulate the void: `C 16 20 16 6 1 0` (or skip voxels there entirely by relying on the cylinder shell approach).
+- **Handle is too small relative to the mug body.** From the front-iso, the handle looks like a tiny bracket — barely 3–4 voxels wide and 6 tall — on a mug body ~14 voxels in radius. A realistic handle should be at least 5 voxels wide and span ~60–70% of the mug height. Try `B 23 5 15 3 14 2 8` (outer bar) + top/bottom connectors to give it proper presence.
+
+PRIORITY_FIX: **Reattach and scale up the handle** so it connects cleanly to the mug wall at two solid anchor points (top and bottom) and is wide enough to be finger-grippable — the current floating/undersized handle undermines the entire silhouette from the isometric view.

@@ -1,0 +1,86 @@
+P1
+# === FEET (orange, webbed) ===
+# Left foot
+0 185 2 215 16 4 20 7
+# Left toes
+0 181 2 207 4 4 12 7
+0 189 2 207 4 4 12 7
+# Right foot
+0 215 2 215 16 4 20 7
+# Right toes
+0 211 2 207 4 4 12 7
+0 219 2 207 4 4 12 7
+# Toenails
+1 181 3 202 2 2 2 0
+1 189 3 202 2 2 2 0
+1 211 3 202 2 2 2 0
+1 219 3 202 2 2 2 0
+# === LEGS (black, short stubby) ===
+0 185 10 212 10 14 10 0
+0 215 10 212 10 14 10 0
+# === BODY - WHITE BELLY (front-facing, large) ===
+12 200 60 214 38 64 28 8
+# Lower belly pouch
+12 200 30 216 32 18 24 8
+# === BODY - BLACK BACK (behind belly) ===
+12 200 62 190 42 70 32 0
+# Black top shoulder
+12 200 100 196 38 14 28 0
+# === BLACK SIDE WRAPPING ===
+# Left side
+12 170 62 200 10 64 22 0
+# Right side
+12 230 62 200 10 64 22 0
+# === FLIPPERS (black, tapered, extending outward) ===
+# Left flipper - wide at shoulder, tapers down
+10 158 88 200 10 52 18 6 0
+10 154 54 202 8 36 14 4 0
+10 152 38 204 5 18 10 2 9
+# Right flipper
+10 242 88 200 10 52 18 6 0
+10 246 54 202 8 36 14 4 0
+10 248 38 204 5 18 10 2 9
+# === NECK (black, distinct) ===
+2 200 112 204 22 16 22 0
+# White throat patch
+12 200 112 218 16 12 6 8
+# === HEAD (black, smaller, forward) ===
+1 200 134 210 26 24 24 0
+# Head top
+1 200 148 206 20 10 18 0
+# === WHITE FACE PATCHES ===
+# Left cheek
+12 191 132 222 10 10 6 8
+# Right cheek
+12 209 132 222 10 10 6 8
+# Chin white
+12 200 126 222 14 8 6 8
+# === EYES (visible from front) ===
+# Eye whites
+1 191 138 224 6 6 4 8
+1 209 138 224 6 6 4 8
+# Pupils (dark, forward)
+1 191 138 228 3 3 2 0
+1 209 138 228 3 3 2 0
+# Eye highlights
+1 192 139 229 1 1 1 8
+1 210 139 229 1 1 1 8
+# === BEAK (orange, very prominent, protruding forward) ===
+# Main beak - cone pointing forward
+3 200 131 242 12 8 24 7
+# Beak upper ridge
+0 200 134 236 6 2 14 7
+# Beak lower
+0 200 129 236 8 3 10 7
+# Nostrils
+1 197 132 248 1 1 1 0
+1 203 132 248 1 1 1 0
+# === TAIL (small, pointing back) ===
+3 200 26 174 12 20 10 0
+0 200 20 170 6 10 4 0
+# === TOP-VIEW HELPERS ===
+# White belly stripe visible from top
+0 200 98 220 28 4 10 8
+# Flipper top surfaces (visible from above)
+0 158 90 200 12 3 18 0
+0 242 90 200 12 3 18 0

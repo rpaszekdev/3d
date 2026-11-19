@@ -1,0 +1,18 @@
+V 16 22 16
+
+-- holder base disc
+C 8 1 8 5 2 a
+-- holder cup ring
+C 8 4 8 3 4 a
+
+-- candle wax body
+C 8 11 8 2 10 d
+
+-- wick
+C 8 17 8 1 2 0
+
+-- outer flame
+E 8 20 8 1 2 1 6
+
+-- inner flame core
+E 8 19 8 1 1 1 7

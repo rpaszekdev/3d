@@ -1,0 +1,22 @@
+V 24 36 8
+
+-- ring (top loop)
+S 12 33 4 2 9
+
+-- shaft (main vertical bar)
+B 11 6 3 2 26 2 9
+
+-- stock (horizontal crossbar near top)
+B 2 29 3 20 2 2 3
+
+-- crown (junction at base)
+S 12 6 4 2 9
+
+-- arms (horizontal bar at bottom)
+B 2 5 3 20 2 2 9
+
+-- left fluke (tip pointing down)
+B 2 1 3 2 5 2 9
+
+-- right fluke (tip pointing down)
+B 20 1 3 2 5 2 9

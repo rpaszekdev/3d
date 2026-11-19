@@ -1,0 +1,37 @@
+V 24 20 24
+
+-- body
+E 12 8 13 5 4 8 7
+
+-- head
+S 12 8 5 4 7
+
+-- eye left
+S 10 9 4 1 0
+
+-- eye right
+S 14 9 4 1 0
+
+-- mouth
+B 11 6 2 2 2 1 1
+
+-- dorsal fin
+B 10 12 10 4 2 6 6
+
+-- tail fin upper
+B 8 9 21 8 4 1 6
+
+-- tail fin lower
+B 8 5 21 8 4 1 6
+
+-- tail fin mid connector
+B 11 7 19 2 2 2 7
+
+-- pectoral fin left
+B 7 6 11 1 3 5 6
+
+-- pectoral fin right
+B 16 6 11 1 3 5 6
+
+-- belly fin
+B 10 4 12 4 1 4 6

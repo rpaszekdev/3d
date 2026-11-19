@@ -1,0 +1,25 @@
+V 24 32 24
+
+-- trunk
+C 12 3 12 1 6 a
+
+-- bottom foliage layer (widest)
+C 12 8 12 5 3 c
+
+-- second foliage layer
+C 12 11 12 4 3 2
+
+-- third foliage layer
+C 12 14 12 3 3 2
+
+-- fourth foliage layer
+C 12 17 12 2 3 c
+
+-- fifth foliage layer
+C 12 20 12 2 2 c
+
+-- upper foliage layer
+C 12 23 12 1 2 2
+
+-- tip
+S 12 25 12 1 2

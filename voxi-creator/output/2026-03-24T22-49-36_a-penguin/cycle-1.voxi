@@ -1,0 +1,41 @@
+V 32 32 32
+
+-- Feet (orange)
+B 12 0 13 4 2 6 7
+B 18 0 13 4 2 6 7
+
+-- Legs (navy)
+B 13 2 15 3 3 2 f
+B 18 2 15 3 3 2 f
+
+-- Main body (navy/dark)
+B 11 5 13 10 13 6 f
+
+-- White belly patch
+B 13 6 12 6 10 2 8
+
+-- Neck (navy)
+B 13 18 14 6 3 4 f
+
+-- Head (navy)
+B 12 21 13 8 7 6 f
+
+-- White face patch
+B 13 22 12 6 4 2 8
+
+-- Beak (orange)
+B 15 22 11 2 2 2 7
+
+-- Eyes (white)
+P 14 25 12 8
+P 19 25 12 8
+
+-- Left wing (navy)
+B 9 6 13 3 12 5 f
+
+-- Right wing (navy)
+B 22 6 13 3 12 5 f
+
+-- Wing tips taper
+B 10 17 13 2 2 5 f
+B 22 17 13 2 2 5 f

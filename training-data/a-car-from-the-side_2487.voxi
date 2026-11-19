@@ -1,0 +1,55 @@
+V 32 16 8
+
+-- main car body
+B 3 3 0 26 4 8 7
+
+-- cabin roof section
+B 9 7 0 14 4 8 7
+
+-- windshield
+B 9 7 0 4 4 2 3
+
+-- rear window
+B 19 7 0 4 4 2 3
+
+-- middle side window
+B 13 7 0 6 3 2 3
+
+-- hood top
+B 3 6 0 6 1 8 9
+
+-- trunk top
+B 23 6 0 6 1 8 9
+
+-- headlight
+B 3 4 2 1 2 4 6
+
+-- taillight
+B 28 4 2 1 2 4 1
+
+-- front bumper
+B 2 3 2 2 2 4 9
+
+-- rear bumper
+B 28 3 2 2 2 4 9
+
+-- front wheel
+S 8 2 4 2 0
+
+-- front wheel rim
+S 8 2 4 1 8
+
+-- rear wheel
+S 24 2 4 2 0
+
+-- rear wheel rim
+S 24 2 4 1 8
+
+-- front pillar
+B 9 7 0 1 4 8 9
+
+-- rear pillar
+B 22 7 0 1 4 8 9
+
+-- door handle
+B 16 5 0 3 1 1 9

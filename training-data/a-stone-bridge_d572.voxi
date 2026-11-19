@@ -1,0 +1,39 @@
+V 32 18 20
+
+-- left abutment
+B 0 0 0 7 12 20 9
+
+-- right abutment
+B 25 0 0 7 12 20 9
+
+-- arch left springer
+B 7 0 0 2 7 20 9
+-- arch left lower voussoir
+B 9 4 0 2 5 20 9
+-- arch left mid voussoir
+B 11 7 0 2 4 20 9
+-- arch left upper voussoir
+B 13 9 0 2 3 20 9
+
+-- arch right springer
+B 23 0 0 2 7 20 9
+-- arch right lower voussoir
+B 21 4 0 2 5 20 9
+-- arch right mid voussoir
+B 19 7 0 2 4 20 9
+-- arch right upper voussoir
+B 17 9 0 2 3 20 9
+
+-- keystone
+B 15 10 0 2 2 20 9
+
+-- bridge deck
+B 0 12 0 32 2 20 8
+
+-- front parapet
+B 0 14 0 32 2 3 9
+-- back parapet
+B 0 14 17 32 2 3 9
+
+-- road surface gravel
+B 7 12 3 18 1 14 d

@@ -1,0 +1,33 @@
+V 32 32 32
+-- Feet (orange)
+B 11 0 13 5 2 4 7
+B 17 0 13 5 2 4 7
+-- Legs (black)
+B 12 2 14 4 3 3 0
+B 17 2 14 4 3 3 0
+-- Body (black outer egg shape)
+E 16 12 15 8 10 7 0
+-- White belly patch
+E 16 11 13 5 8 5 8
+-- Left wing
+B 7 5 13 3 9 4 0
+-- Right wing
+B 22 5 13 3 9 4 0
+-- Neck (black)
+B 13 21 13 6 3 4 0
+-- Head (black sphere)
+S 16 26 14 5 0
+-- White face patch
+E 16 25 12 3 4 3 8
+-- Beak upper (orange)
+B 14 25 10 4 2 2 7
+-- Beak lower (orange)
+B 14 23 10 4 1 2 7
+-- Eyes (white base)
+P 13 27 11 8
+P 19 27 11 8
+-- Eyes (black pupils)
+P 13 27 10 0
+P 19 27 10 0
+-- Scarf accent (red)
+B 13 21 12 6 2 5 1

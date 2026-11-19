@@ -1,0 +1,53 @@
+V 32 42 32
+
+-- sandals
+B 12 0 14 4 2 4 a
+B 18 0 14 4 2 4 a
+
+-- lower legs
+B 13 2 15 3 6 3 9
+B 18 2 15 3 6 3 9
+
+-- kusazuri (skirt armor)
+B 11 8 13 11 7 5 e
+
+-- do (chest armor)
+B 12 14 14 8 9 4 e
+
+-- osode (shoulder guards)
+B 9 18 15 3 5 3 e
+B 20 18 15 3 5 3 e
+
+-- kote (arm armor)
+B 10 13 15 2 5 2 9
+B 21 13 15 2 5 2 9
+
+-- tekko (gauntlets)
+B 10 9 15 2 4 2 d
+B 21 9 15 2 4 2 d
+
+-- neck
+B 14 23 15 4 2 3 9
+
+-- men (face / menpo mask)
+B 13 24 14 6 5 4 d
+B 14 25 13 2 1 1 0
+B 18 25 13 2 1 1 0
+
+-- kabuto (helmet bowl)
+B 12 29 13 8 5 5 e
+
+-- shikoro (neck guard)
+B 11 28 13 10 2 2 e
+
+-- maedate (front crest horn)
+B 15 34 14 2 5 3 1
+
+-- tsuka (katana handle)
+B 7 11 16 1 6 1 a
+
+-- tsuba (sword guard)
+B 6 17 16 3 1 2 9
+
+-- blade
+B 7 18 16 1 16 1 8

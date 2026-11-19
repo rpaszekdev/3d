@@ -1,0 +1,13 @@
+[
+  {
+    "action": "MOVE",
+    "object": "deer",
+    "dx": -13,
+    "dy": 0,
+    "dz": -29
+  },
+  {
+    "action": "ROTATE_Y90",
+    "object": "knight"
+  }
+]

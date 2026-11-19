@@ -1,0 +1,28 @@
+V 20 28 16
+
+-- base frame
+B 2 0 5 16 2 6 9
+
+-- left support pillar
+B 2 0 7 2 26 2 a
+
+-- right support pillar
+B 16 0 7 2 26 2 a
+
+-- bottom glass bulb
+S 10 8 8 5 4
+
+-- sand settled at bottom
+E 10 5 8 3 4 3 6
+
+-- neck
+C 10 13 8 1 4 9
+
+-- top glass bulb
+S 10 20 8 5 4
+
+-- remaining sand in top
+E 10 22 8 3 3 3 d
+
+-- top frame
+B 2 25 5 16 2 6 9

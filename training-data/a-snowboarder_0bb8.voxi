@@ -1,0 +1,44 @@
+V 24 32 20
+
+-- snowboard
+B 2 0 9 20 1 3 9
+
+-- bindings
+B 5 1 9 4 1 3 0
+B 14 1 9 4 1 3 0
+
+-- back boot
+B 4 2 8 4 3 4 e
+-- front boot
+B 14 2 8 4 3 4 e
+
+-- back leg
+B 5 5 10 3 4 2 d
+-- front leg
+B 15 5 10 3 4 2 d
+
+-- torso (crouched)
+B 5 8 10 13 5 3 3
+
+-- left arm extended for balance
+B 0 10 11 6 2 2 3
+-- right arm extended for balance
+B 18 10 11 6 2 2 3
+
+-- left glove
+B 0 10 11 2 2 2 1
+-- right glove
+B 22 10 11 2 2 2 1
+
+-- neck
+B 11 13 11 2 2 2 b
+
+-- helmet
+S 12 16 11 3 1
+
+-- goggles
+B 9 15 8 6 2 1 4
+
+-- snow spray
+B 1 0 8 4 1 3 8
+B 18 0 7 5 1 3 8

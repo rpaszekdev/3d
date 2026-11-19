@@ -1,0 +1,43 @@
+V 24 24 24
+
+-- water
+B 0 0 0 24 1 24 3
+
+-- keel
+B 9 0 10 6 1 4 e
+
+-- hull lower
+B 4 1 9 16 2 6 a
+
+-- hull upper
+B 5 3 9 14 2 6 d
+
+-- deck
+B 5 5 9 14 1 6 8
+
+-- cabin
+B 9 6 10 6 3 4 7
+
+-- mast
+C 12 5 12 1 14 6
+
+-- boom
+B 7 6 11 8 1 1 6
+
+-- mainsail lower
+B 9 7 11 6 3 1 8
+
+-- mainsail mid
+B 10 10 11 4 3 1 8
+
+-- mainsail upper
+B 11 13 11 3 2 1 8
+
+-- mainsail top
+B 12 15 11 2 2 1 8
+
+-- jib lower
+B 12 7 10 3 3 1 8
+
+-- jib upper
+B 13 10 10 2 3 1 8

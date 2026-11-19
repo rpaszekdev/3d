@@ -1,0 +1,26 @@
+V 32 32 32
+
+-- bottom bun
+C 16 2 16 10 3 d
+
+-- beef patty
+E 16 6 16 9 1 9 a
+
+-- cheese slice
+B 5 7 5 22 1 22 6
+
+-- lettuce
+E 16 9 16 11 1 11 c
+
+-- tomato
+E 16 11 16 9 1 9 1
+
+-- top bun dome
+E 16 15 16 10 5 10 d
+
+-- sesame seeds on top bun
+S 13 19 13 1 8
+S 19 19 13 1 8
+S 16 19 11 1 8
+S 13 19 19 1 8
+S 19 19 19 1 8

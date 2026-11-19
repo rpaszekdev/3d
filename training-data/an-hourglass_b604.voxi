@@ -1,0 +1,22 @@
+V 24 40 24
+
+-- bottom frame
+B 6 0 6 12 2 12 9
+
+-- lower glass bulb
+E 12 11 12 7 9 7 4
+
+-- sand pile in lower bulb
+S 12 6 12 5 6
+
+-- narrow neck
+C 12 20 12 2 2 9
+
+-- sand trickle at neck
+S 12 20 12 1 7
+
+-- upper glass bulb
+E 12 31 12 7 9 7 4
+
+-- top frame
+B 6 38 6 12 2 12 9

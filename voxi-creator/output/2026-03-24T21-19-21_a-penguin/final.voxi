@@ -1,0 +1,31 @@
+V 32 32 32
+-- Feet (orange)
+B 11 0 10 4 2 5 7
+B 17 0 10 4 2 5 7
+-- Legs (black)
+B 12 2 12 3 4 3 0
+B 17 2 12 3 4 3 0
+-- Body (black)
+B 10 6 11 12 14 8 0
+-- White belly patch
+B 12 7 10 8 11 3 8
+-- Left wing (black)
+B 7 6 12 3 12 4 0
+-- Right wing (black)
+B 22 6 12 3 12 4 0
+-- Tail (black)
+B 13 2 8 6 5 3 0
+-- Neck (black)
+B 13 20 12 6 3 5 0
+-- Head (black)
+B 11 22 11 10 8 8 0
+-- White face patch
+B 13 22 10 6 6 3 8
+-- Eyes (white)
+P 14 27 11 8
+P 18 27 11 8
+-- Eye pupils (black)
+P 14 27 10 0
+P 18 27 10 0
+-- Beak (orange)
+B 14 24 9 4 3 3 7

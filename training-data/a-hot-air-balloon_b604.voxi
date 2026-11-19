@@ -1,0 +1,37 @@
+V 32 48 32
+
+-- balloon envelope base color
+E 16 34 16 11 14 11 1
+
+-- vertical yellow stripe
+E 16 34 16 4 14 4 6
+
+-- horizontal magenta band
+E 16 34 16 11 5 11 5
+
+-- blue accent top cap
+S 16 47 16 3 3
+
+-- burner flame
+S 16 22 16 2 6
+
+-- burner ring
+C 16 20 16 5 3 a
+
+-- suspension ropes front-left
+B 11 14 11 1 8 1 9
+
+-- suspension ropes front-right
+B 20 14 11 1 8 1 9
+
+-- suspension ropes back-left
+B 11 14 20 1 8 1 9
+
+-- suspension ropes back-right
+B 20 14 20 1 8 1 9
+
+-- wicker basket walls
+B 10 6 10 12 8 12 7
+
+-- basket interior
+B 11 7 11 10 7 10 a

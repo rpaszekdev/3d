@@ -1,0 +1,45 @@
+V 48 24 48
+
+-- fuselage
+E 24 11 24 4 4 22 8
+
+-- wings
+B 4 9 20 40 2 8 8
+
+-- left engine
+B 8 7 21 4 3 6 9
+
+-- right engine
+B 36 7 21 4 3 6 9
+
+-- vertical stabilizer
+B 22 12 40 4 9 5 8
+
+-- horizontal stabilizer
+B 13 10 42 22 2 4 8
+
+-- cockpit
+B 21 13 4 6 3 5 3
+
+-- airline stripe
+B 20 9 6 8 2 26 1
+
+-- port windows
+B 19 13 12 1 1 2 4
+B 19 13 17 1 1 2 4
+B 19 13 22 1 1 2 4
+B 19 13 27 1 1 2 4
+B 19 13 32 1 1 2 4
+
+-- starboard windows
+B 28 13 12 1 1 2 4
+B 28 13 17 1 1 2 4
+B 28 13 22 1 1 2 4
+B 28 13 27 1 1 2 4
+B 28 13 32 1 1 2 4
+
+-- nose gear
+B 22 0 6 4 5 3 9
+
+-- main gear
+B 22 0 24 4 4 4 9

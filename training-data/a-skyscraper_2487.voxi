@@ -1,0 +1,48 @@
+V 32 48 32
+
+-- foundation
+B 10 0 10 12 2 12 9
+
+-- main tower base
+B 11 2 11 10 20 10 3
+
+-- mid tower
+B 12 22 12 8 14 8 7
+
+-- upper tower
+B 13 36 13 6 8 6 3
+
+-- spire
+C 15 44 15 1 6 8
+
+-- windows lower floors (front face)
+B 12 4 10 2 2 1 6
+B 15 4 10 2 2 1 6
+B 18 4 10 2 2 1 6
+B 12 8 10 2 2 1 6
+B 15 8 10 2 2 1 6
+B 18 8 10 2 2 1 6
+B 12 12 10 2 2 1 6
+B 15 12 10 2 2 1 6
+B 18 12 10 2 2 1 6
+B 12 16 10 2 2 1 6
+B 15 16 10 2 2 1 6
+B 18 16 10 2 2 1 6
+
+-- windows mid section
+B 13 24 11 2 2 1 6
+B 16 24 11 2 2 1 6
+B 13 28 11 2 2 1 6
+B 16 28 11 2 2 1 6
+B 13 32 11 2 2 1 6
+B 16 32 11 2 2 1 6
+
+-- windows upper section
+B 14 38 12 2 2 1 4
+B 14 42 12 2 2 1 4
+
+-- entrance
+B 14 2 10 4 3 1 0
+
+-- lobby glass
+B 14 2 9 4 2 1 4

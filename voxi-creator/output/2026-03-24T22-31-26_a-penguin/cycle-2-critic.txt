@@ -1,0 +1,15 @@
+`★ Insight ─────────────────────────────────────`
+All 6 screenshots are **completely black** — the renderer's very dark background (`#13151f`) is swallowing the model entirely. This is the classic VOXI color-visibility trap: navy (`f`) blends into the background, and even orange (`7`) feet appear lost, likely because the voxels are too few and small to catch any light at this scale. The geometry may be structurally valid, but it's effectively invisible.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+STRENGTHS: The code shows structural thinking — feet at Y=0, legs above, and a body ellipsoid are the right anatomical layering for a penguin. The orange feet color (`7`) is a correct and vivid choice in isolation.
+
+ISSUES:
+- **Critical — Body is invisible:** The main body ellipsoid uses navy (`f`) which blends completely into the dark `#13151f` renderer background. Replace the body outer shell with `8` (white) for the belly patch and `f` for the back — but critically, even `f` needs contrast against lighter elements to read. Switch the back/outer body to `9` (gray) or `3` (blue) so it separates visually: `E 16 11 15 6 6 5 3` (blue body).
+- **Feet too small/lost:** The two orange foot boxes (`B 12 0 14 4 2 4 7` and `B 18 0 14 4 2 4 7`) are only 2 units tall — at this grid scale they virtually disappear. Increase foot height to at least 3 and width to 5: `B 11 0 13 5 3 4 7` and `B 17 0 13 5 3 4 7`.
+- **No visible head, beak, eyes, or white belly patch:** The penguin has no head sphere, no beak (an orange/yellow box protruding forward), no white chest (`8`), and no black eye dots — all the features that make a penguin *recognizable*. Add a head: `S 16 22 15 4 f`, white belly: `E 16 11 14 3 7 2 8`, beak: `B 15 21 11 2 2 3 7`, eyes: `P 14 24 12 0` and `P 18 24 12 0`.
+
+PRIORITY_FIX: **Replace all dark colors with visible ones** — specifically change the body from navy/black to blue (`3`) for the back and white (`8`) for the belly. Nothing else matters until the model is actually visible. Start with: `E 16 11 15 6 8 5 3` (blue outer body) and overlay `E 16 10 14 4 7 4 8` (white front belly).

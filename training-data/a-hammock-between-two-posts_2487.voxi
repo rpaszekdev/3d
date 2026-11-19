@@ -1,0 +1,22 @@
+V 32 20 16
+
+-- left post
+C 5 7 8 1 15 a
+-- right post
+C 27 7 8 1 15 a
+
+-- suspension ropes (gray)
+B 5 12 8 1 2 1 9
+B 27 12 8 1 2 1 9
+
+-- hammock fabric (tan, sagging curve)
+B 4 12 6 3 1 4 d
+B 7 11 6 3 1 4 d
+B 10 9 6 4 1 4 d
+B 14 7 6 5 1 4 d
+B 19 9 6 4 1 4 d
+B 23 11 6 3 1 4 d
+B 26 12 6 3 1 4 d
+
+-- ground
+B 0 0 0 32 1 16 2

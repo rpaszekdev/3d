@@ -1,0 +1,19 @@
+V 24 32 24
+
+-- trunk
+C 12 0 12 2 6 a
+
+-- bottom layer of branches (widest)
+C 12 5 12 8 4 c
+
+-- middle layer of branches
+C 12 8 12 6 4 c
+
+-- upper layer of branches
+C 12 11 12 4 4 c
+
+-- top layer of branches
+C 12 14 12 3 3 c
+
+-- tip / crown
+S 12 18 12 2 2

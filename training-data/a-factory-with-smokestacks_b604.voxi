@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- ground
+B 0 0 0 32 1 32 c
+
+-- main factory building
+B 4 1 8 24 10 16 9
+
+-- factory roof
+B 4 11 8 24 2 16 e
+
+-- side annex
+B 0 1 10 5 7 12 9
+
+-- annex roof
+B 0 8 10 5 1 12 e
+
+-- loading dock
+B 22 1 4 8 4 8 e
+
+-- smokestack 1 tall
+C 10 13 14 2 14 0
+
+-- smokestack 2 medium
+C 20 13 14 2 11 0
+
+-- smokestack 3 annex
+C 2 9 16 1 9 0
+
+-- smoke puffs
+S 10 28 14 2 9
+S 20 25 14 2 9
+S 2 19 16 1 9
+
+-- front windows row 1
+B 6 4 7 3 3 1 4
+B 12 4 7 3 3 1 4
+B 18 4 7 3 3 1 4
+
+-- front windows row 2
+B 6 8 7 3 2 1 4
+B 12 8 7 3 2 1 4
+B 18 8 7 3 2 1 4
+
+-- main door
+B 15 1 7 4 5 1 a
+
+-- factory sign band
+B 4 11 7 24 1 1 7

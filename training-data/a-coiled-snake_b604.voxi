@@ -1,0 +1,28 @@
+V 24 24 24
+
+-- outer coil base ring
+B 3 1 4 17 2 2 2
+B 20 1 4 2 2 16 2
+B 4 1 20 16 2 2 2
+B 3 1 5 2 2 15 2
+
+-- inner coil mid ring
+B 7 4 7 10 2 2 c
+B 17 4 7 2 2 10 c
+B 7 4 17 8 2 2 c
+
+-- body column rising from coil center
+B 9 6 12 4 4 4 2
+
+-- neck
+B 10 10 11 3 2 3 2
+
+-- head
+S 11 13 10 3 2
+
+-- eyes
+S 9 14 8 1 8
+S 13 14 8 1 8
+
+-- tongue
+B 9 13 6 5 1 1 1

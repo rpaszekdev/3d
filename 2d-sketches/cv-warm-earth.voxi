@@ -1,0 +1,126 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 5: Warm Earth — Earthy tones, organic feel
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #faf8f5
+
+-- ── Top accent stripe ────────────────────────────────────
+RECT 0 0 840 6 0 #b45309
+RECT 0 6 840 3 0 #d97706
+
+-- ── Header ───────────────────────────────────────────────
+RECT 0 9 840 140 0 #292524
+
+ELLIPSE 100 80 38 38 1 #44403c
+TEXT 86 78 "RP" 22 2 #d6d3d1 bold
+
+TEXT 170 48 "Robert Paszek" 26 1 #fafaf9 bold
+TEXT 170 82 "Software Engineer" 14 1 #a8a29e
+TEXT 170 110 "Spatial Computing  ·  DSL Design  ·  Creative Tools" 10 1 #78716c
+
+TEXT 580 58 "robert@example.com" 10 1 #d6d3d1
+TEXT 580 78 "github.com/robertpaszek" 10 1 #d6d3d1
+TEXT 580 98 "London, UK" 10 1 #d6d3d1
+
+-- ── Profile ──────────────────────────────────────────────
+RECT 50 172 740 60 0 #f5f0eb 8
+RECT 50 172 6 60 1 #b45309
+TEXT 72 182 "Software engineer focused on spatial computing, domain-specific languages," 10 1 #57534e
+TEXT 72 200 "and creative tooling. Building bridges between human intuition and machines." 10 1 #57534e
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 50 260 "Experience" 13 1 #292524 bold
+RECT 50 278 80 3 1 #b45309
+
+-- Job 1
+RECT 50 300 740 90 0 #ffffff 8
+TEXT 70 312 "Senior Software Engineer" 13 1 #292524 bold
+TEXT 70 332 "Spatial Labs — London" 10 1 #a8a29e
+TEXT 620 312 "2023 — Present" 10 1 #b45309 bold
+TEXT 70 356 "Designed VOXI DSL for 3D voxel scenes. Built real-time renderer" 10 1 #57534e
+TEXT 70 372 "with depth/shading modes. Reduced LLM scene-generation tokens by 85%." 10 1 #57534e
+
+-- Job 2
+RECT 50 400 740 72 0 #ffffff 8
+TEXT 70 412 "Full Stack Developer" 13 1 #292524 bold
+TEXT 70 432 "TechFlow — Remote" 10 1 #a8a29e
+TEXT 620 412 "2021 — 2023" 10 1 #b45309 bold
+TEXT 70 456 "Microservice arch, 2M req/day. Event-driven migration. Next.js rebuild." 10 1 #57534e
+
+-- Job 3
+RECT 50 482 740 56 0 #ffffff 8
+TEXT 70 494 "Junior Developer" 13 1 #292524 bold
+TEXT 70 514 "DataPulse — Warsaw" 10 1 #a8a29e
+TEXT 620 494 "2020 — 2021" 10 1 #b45309 bold
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 50 566 "Projects" 13 1 #292524 bold
+RECT 50 584 80 3 1 #b45309
+
+-- Row 1
+RECT 50 604 360 110 0 #ffffff 8
+RECT 50 604 360 4 1 #b45309
+TEXT 66 620 "VOXI — Spatial Reasoning DSL" 11 1 #292524 bold
+TEXT 66 644 "Voxel-based DSL for describing" 9 1 #57534e
+TEXT 66 660 "3D scenes in ~100 tokens. LLM" 9 1 #57534e
+TEXT 66 676 "spatial reasoning & generation." 9 1 #57534e
+RECT 66 696 50 14 1 #fef3c7 6
+TEXT 72 698 "Python" 8 2 #92400e
+RECT 122 696 30 14 1 #fef3c7 6
+TEXT 128 698 "JS" 8 2 #92400e
+
+RECT 430 604 360 110 0 #ffffff 8
+RECT 430 604 360 4 1 #b45309
+TEXT 446 620 "Brain Converter" 11 1 #292524 bold
+TEXT 446 644 "Natural language to structured" 9 1 #57534e
+TEXT 446 660 "3D voxel scenes via LLM" 9 1 #57534e
+TEXT 446 676 "reasoning + DSL pipeline." 9 1 #57534e
+RECT 446 696 58 14 1 #fef3c7 6
+TEXT 452 698 "FastAPI" 8 2 #92400e
+RECT 510 696 54 14 1 #fef3c7 6
+TEXT 516 698 "Claude" 8 2 #92400e
+
+-- Row 2
+RECT 50 728 360 110 0 #ffffff 8
+RECT 50 728 360 4 1 #b45309
+TEXT 66 744 "Video Depth Reasoning" 11 1 #292524 bold
+TEXT 66 768 "Spatial structure from video" 9 1 #57534e
+TEXT 66 784 "via monocular depth + LLM" 9 1 #57534e
+TEXT 66 800 "temporal reasoning." 9 1 #57534e
+RECT 66 820 56 14 1 #fef3c7 6
+TEXT 72 822 "PyTorch" 8 2 #92400e
+
+RECT 430 728 360 110 0 #ffffff 8
+RECT 430 728 360 4 1 #b45309
+TEXT 446 744 "Sketch-Lang" 11 1 #292524 bold
+TEXT 446 768 "Minimal 2D vector drawing" 9 1 #57534e
+TEXT 446 784 "language. Vision matrix output" 9 1 #57534e
+TEXT 446 800 "for LLM visual reasoning." 9 1 #57534e
+RECT 446 820 68 14 1 #fef3c7 6
+TEXT 452 822 "JavaScript" 8 2 #92400e
+
+-- ── Skills ───────────────────────────────────────────────
+TEXT 50 866 "Skills" 13 1 #292524 bold
+RECT 50 884 80 3 1 #b45309
+
+RECT 50 904 740 56 0 #ffffff 8
+TEXT 66 914 "Languages" 9 1 #a8a29e bold
+TEXT 150 914 "Python · JavaScript · TypeScript · Go · SQL · Rust" 10 1 #57534e
+TEXT 66 936 "Stack" 9 1 #a8a29e bold
+TEXT 150 936 "React · Next.js · FastAPI · Docker · K8s · AWS · PostgreSQL · Redis" 10 1 #57534e
+
+-- ── Education ────────────────────────────────────────────
+TEXT 50 988 "Education" 13 1 #292524 bold
+RECT 50 1006 80 3 1 #b45309
+
+RECT 50 1024 360 56 0 #ffffff 8
+TEXT 66 1034 "MSc Computer Science" 11 1 #292524 bold
+TEXT 66 1054 "UCL — 2018–2020" 10 1 #a8a29e
+
+RECT 430 1024 360 56 0 #ffffff 8
+TEXT 446 1034 "BSc Mathematics" 11 1 #292524 bold
+TEXT 446 1054 "Univ. of Warsaw — 2014–2018" 10 1 #a8a29e
+
+-- ── Footer accent ────────────────────────────────────────
+RECT 0 1111 840 3 0 #d97706
+RECT 0 1114 840 6 0 #b45309

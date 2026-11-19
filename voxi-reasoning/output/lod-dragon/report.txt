@@ -1,0 +1,126 @@
+=== Dragon Fire-Breathing Report ===
+
+--- ANALYSIS ---
+## Dragon Pose Analysis
+
+`★ Insight ─────────────────────────────────────`
+The six orthographic projections (top/front/back/left/right/bottom) together form a complete 3D picture — depth values (0-9) encode surface distance from camera, letting you distinguish near vs far surfaces even in 2D text. The BACK view X-axis is mirrored relative to FRONT, so BACK X=7 ≈ world X=13 (grid_width - x).
+`─────────────────────────────────────────────────`
+
+---
+
+### Head & Snout
+
+The most isolated high-elevation cluster in FRONT view is at **Y=9–11, X=13–19** (rows 3–4 of the front grid). BACK view confirms this: its high-Y activity at X=1–7 maps to world X=13–19 after mirroring. The head sits in the **upper-right** of the model — approximately low-res **(16, 10, 8)**.
+
+The snout reaches the maximum X extent of the bounding box (X=20, high-res ≈165). In TOP view, the X=15–19 columns show a narrowing cluster at Z=6–8, tapering toward the +X edge — classic elongated skull shape. **The mouth opens pointing in the +X direction**, slightly elevated. **Fire would project from ~(20, 10, 7) low-res, aimed in the +X direction.**
+
+---
+
+### Neck & Body
+
+Moving inward along the diagonal (X=8–15, Y=4–8): FRONT view shows dense mid-body voxels here. The depth values (2–4) indicate a thick, close surface — this is the **torso mass**. The LEFT view shows Z=5–9 fully occupied at Y=5–8, confirming the body has depth.
+
+---
+
+### Tail
+
+Low X (X=5–10), low Y (Y=0–4), sweeping toward the ground. BACK view rows Y=9–13 at mirrored X=12–18 show the tail extending **down and toward −X**. The BOTTOM view's cluster at X=9–11 shows the tail contacting or near the ground plane.
+
+---
+
+### Wings
+
+TOP view at Z=4–8, X=5–8 (rows 7–8) shows a parallel band of voxels separate from the body spine. LEFT view at Y=0–2 has activity at **both Z=4 and Z=8–9** simultaneously — two surfaces far apart in Z = lateral wing membranes spread wide. The wings appear **folded back and downward**, not fully extended.
+
+---
+
+### Legs
+
+BOTTOM view is clearest here: paired blobs at X=9–10 and X=14–15 (rows 4–7) — **two visible feet/claws planted beneath the torso**. Depth values near 0 confirm these are the lowest surfaces.
+
+---
+
+### Overall Pose Summary
+
+```
+         HEAD (X=16,Y=10,Z=8)
+          /
+  NECK ──/
+        BODY (X=11,Y=6,Z=6)
+        \
+    TAIL ──── (X=6,Y=2,Z=5)
+```
+
+**Rearing/lunging pose**: the spine arcs diagonally from the lower-left (tail near ground, X≈5) up to the upper-right (head raised at Y≈10, X≈19). The dragon's head is elevated and angled forward, mouth at the +X boundary. **Fire direction: +X, slightly upward (~+Y 1–2 units).**
+
+--- FIRE PROPOSAL ---
+Looking at the analysis: mouth is at low-res **(20, 10, 7)** → high-res **(160, 80, 56)**, shooting in **+X direction**.
+
+STAMP origin: `[160, 70, 46]` so local **(0, 10, 10)** aligns with the mouth center in world space.
+
+`★ Insight ─────────────────────────────────────`
+**Color layering order is critical**: red first, orange over it, yellow last. Since each VOXI command overwrites voxels it occupies, writing yellow *last* makes it the visible core — even though the red boxes are larger. This is painter's algorithm in reverse: you define the largest shape first, then "carve" inward with brighter colors.
+`─────────────────────────────────────────────────`
+
+```json
+[
+  {
+    "action": "STAMP",
+    "name": "dragon_fire_breath",
+    "origin": [160, 70, 46],
+    "colorHint": "dragon fire breath — red base, orange middle, yellow core shooting in +X",
+    "voxi": "V 40 20 20\n-- Red outer layer (widest, drawn first)\nB 0 9 9 4 2 2 1\nB 4 7 7 8 6 6 1\nB 12 5 5 14 10 10 1\nB 26 4 4 12 12 12 1\n-- Orange middle (overwrites red center)\nB 0 9 9 4 2 2 7\nB 4 8 8 8 4 4 7\nB 12 6 6 14 8 8 7\nB 26 5 5 12 10 10 7\n-- Yellow core (drawn last, overwrites orange center)\nB 1 9 9 3 2 2 6\nB 4 9 9 7 2 2 6\nB 11 8 8 12 4 4 6\nB 23 7 7 10 6 6 6\n-- Scattered sparks at edges\nP 10 6 7 1\nP 16 13 9 7\nP 20 6 13 6\nP 26 4 8 1\nP 31 14 6 7\nP 36 5 14 1\nP 24 15 13 6\nP 18 14 5 7\nP 33 4 15 6\nP 15 4 5 1"
+  }
+]
+```
+
+The fire:
+- **Starts** 2×2 voxels wide at local X=0 (mouth, world ~160)
+- **Expands** to 6×6 by X=4–11, then 10×10 at X=12–25, then 12×12 at X=26–37
+- **Color core**: yellow overwrites orange overwrites red, giving a bright center fading to red edges
+- **10 sparks** scattered at irregular positions around the flame boundary
+- Extends ~40 voxels in +X (320 high-res units), proportional to the 126-unit long dragon body
+
+--- EDITS ---
+[
+  {
+    "action": "STAMP",
+    "name": "dragon_fire_breath",
+    "origin": [
+      160,
+      70,
+      46
+    ],
+    "colorHint": "dragon fire breath — red base, orange middle, yellow core shooting in +X",
+    "voxi": "V 40 20 20\n-- Red outer layer (widest, drawn first)\nB 0 9 9 4 2 2 1\nB 4 7 7 8 6 6 1\nB 12 5 5 14 10 10 1\nB 26 4 4 12 12 12 1\n-- Orange middle (overwrites red center)\nB 0 9 9 4 2 2 7\nB 4 8 8 8 4 4 7\nB 12 6 6 14 8 8 7\nB 26 5 5 12 10 10 7\n-- Yellow core (drawn last, overwrites orange center)\nB 1 9 9 3 2 2 6\nB 4 9 9 7 2 2 6\nB 11 8 8 12 4 4 6\nB 23 7 7 10 6 6 6\n-- Scattered sparks at edges\nP 10 6 7 1\nP 16 13 9 7\nP 20 6 13 6\nP 26 4 8 1\nP 31 14 6 7\nP 36 5 14 1\nP 24 15 13 6\nP 18 14 5 7\nP 33 4 15 6\nP 15 4 5 1"
+  }
+]
+
+--- BEFORE ---
+Scene: 166x109x97 grid, 40265 total voxels, 1 objects
+
+  dragon:
+    Position: (40, 0, 20)
+    Bounds: 126x89x57
+    Voxels: 40265
+    Colors: 6(40265) — green/gray scanned dragon
+    Occupies: X[40..165] Y[0..88] Z[20..76]
+
+
+--- AFTER ---
+Scene: 166x109x97 grid, 40353 total voxels, 2 objects
+
+  dragon:
+    Position: (40, 0, 20)
+    Bounds: 126x89x57
+    Voxels: 40265
+    Colors: 6(40265) — green/gray scanned dragon
+    Occupies: X[40..165] Y[0..88] Z[20..76]
+
+  dragon_fire_breath:
+    Position: (160, 70, 46)
+    Bounds: 40x20x20
+    Voxels: 3435
+    Colors: 7(1647), 1(1193), 6(595) — dragon fire breath — red base, orange middle, yellow core shooting in +X
+    Occupies: X[160..199] Y[70..89] Z[46..65]

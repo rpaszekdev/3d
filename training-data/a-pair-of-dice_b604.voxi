@@ -1,0 +1,29 @@
+V 32 16 32
+
+-- die 1 body
+B 3 1 11 10 10 10 8
+
+-- die 1 top face (showing 2)
+S 6 11 13 1 0
+S 10 11 19 1 0
+
+-- die 1 front face (showing 5)
+S 5 3 10 1 0
+S 5 9 10 1 0
+S 8 6 10 1 0
+S 11 3 10 1 0
+S 11 9 10 1 0
+
+-- die 2 body
+B 19 1 11 10 10 10 8
+
+-- die 2 top face (showing 4)
+S 22 11 13 1 0
+S 26 11 13 1 0
+S 22 11 19 1 0
+S 26 11 19 1 0
+
+-- die 2 front face (showing 3)
+S 21 9 10 1 0
+S 24 6 10 1 0
+S 27 3 10 1 0

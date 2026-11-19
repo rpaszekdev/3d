@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- hanging bar
+B 6 28 14 20 2 2 7
+
+-- left arm (reaching up)
+C 10 24 15 1 6 a
+-- right arm (reaching up)
+C 22 24 15 1 6 a
+
+-- body
+E 16 18 15 3 5 3 a
+
+-- head
+S 16 25 15 3 a
+
+-- face
+S 16 24 13 2 d
+
+-- eyes
+S 15 26 13 1 0
+S 17 26 13 1 0
+
+-- ears
+S 13 25 14 1 a
+S 19 25 14 1 a
+
+-- nose
+S 16 24 12 1 5
+
+-- belly
+E 16 18 14 2 3 2 d
+
+-- left leg (dangling)
+C 14 11 15 1 7 a
+-- right leg (dangling)
+C 18 11 15 1 7 a
+
+-- left foot
+S 14 7 15 2 a
+-- right foot
+S 18 7 15 2 a
+
+-- left hand gripping bar
+S 10 28 15 2 a
+-- right hand gripping bar
+S 22 28 15 2 a
+
+-- tail (curling behind)
+C 16 14 16 1 5 a
+C 17 10 17 1 4 a
+S 18 7 18 1 a

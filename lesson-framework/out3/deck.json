@@ -1,0 +1,369 @@
+{
+  "source": "/Users/robertpaszek/Desktop/Tilburg University/Deep Learning/Lecture Presentations/3. Optimizers.pptx",
+  "slide_count": 43,
+  "slides": [
+    {
+      "index": 1,
+      "title": "Optimizers",
+      "body": "Dr. Juan Sebastián OlierIntroduction to Deep Learning\nDepartment of Cognitive Sciences and Artificial Intelligence\nTilburg University",
+      "notes": "",
+      "images": [
+        "slide1_img1.png"
+      ]
+    },
+    {
+      "index": 2,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide2_img1.png"
+      ]
+    },
+    {
+      "index": 3,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide3_img1.png",
+        "slide3_img2.png"
+      ]
+    },
+    {
+      "index": 4,
+      "title": "Backpropagation: Updating Parameters",
+      "body": "General algorithm:\nUpdate:\nWith:",
+      "notes": "",
+      "images": [
+        "slide4_img1.gif",
+        "slide4_img2.gif",
+        "slide4_img3.gif",
+        "slide4_img4.png"
+      ]
+    },
+    {
+      "index": 5,
+      "title": "Stochastic Gradient Descent (SGD)",
+      "body": "Updates the parameters 𝚹 by calculating the gradients using every single sample.\nAdvantages\nMore noisy => improves generalization\nLimitations\nIncreases runtime\nVariance might becomes large",
+      "notes": "",
+      "images": [
+        "slide5_img1.png"
+      ]
+    },
+    {
+      "index": 6,
+      "title": "Batch Gradient Descent",
+      "body": "Updates the parameters 𝚹 by calculating the gradients using the whole dataset. \nAdvantages\nStraight trajectory towards a minimum\nUnbiased estimate of the gradients \nLimitations\nMay be slow/unfeasible to go over all samples \nSome samples might be redundant",
+      "notes": "",
+      "images": [
+        "slide6_img1.png"
+      ]
+    },
+    {
+      "index": 7,
+      "title": "Mini-batch Gradient descent",
+      "body": "...\n\n...\n\nMini-Batch\n\nBatch\n\nMini-Batch",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 8,
+      "title": "Mini-Batch Gradient Descent",
+      "body": "Updates the parameters 𝚹 by calculating the gradients using randomly selected samples (the minibatch)\nAdvantages\nFaster\nAdds noise (improves generalization)\nLimitations\nLearning steps have oscillations.\nDoesn’t converge (wanders around the minimum)",
+      "notes": "",
+      "images": [
+        "slide8_img1.png"
+      ]
+    },
+    {
+      "index": 9,
+      "title": "Optimizers",
+      "body": "Different optimizers address the limitations of gradient descent.",
+      "notes": "",
+      "images": [
+        "slide9_img1.gif"
+      ]
+    },
+    {
+      "index": 10,
+      "title": "Momentum",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 11,
+      "title": "Limitations of Gradient Descent",
+      "body": "It might get stuck in local minima.\nChoosing a proper learning rate can be difficult.\nThe same learning rate applies to all parameter updates.",
+      "notes": "",
+      "images": [
+        "slide11_img1.gif",
+        "slide11_img2.png"
+      ]
+    },
+    {
+      "index": 12,
+      "title": "Momentum",
+      "body": "Updates are calculated using an exponentially weighted average \n\nhttps://machinelearningcoban.com/assets/GD/nomomentum1d.gif\n\nhttps://machinelearningcoban.com/assets/GD/momentum1d.gif",
+      "notes": "With Momentum\nspeeds up the movement along the direction of a strong improvement (which is a loss decrease) and helps to avoid local minima",
+      "images": [
+        "slide12_img1.gif",
+        "slide12_img2.gif"
+      ]
+    },
+    {
+      "index": 13,
+      "title": "Exponentially weighted averages",
+      "body": "filtered version of gradients x(t)\n\ngradients at time t \n\nfiltering parameter Beta",
+      "notes": "https://www.coursera.org/lecture/deep-neural-network/exponentially-weighted-averages-duStO  (good video that explains this)\n\n\nIF Beta = 0.9\ncurrent weighted average = 0.9 previous weight average + 0.1 current temp\n\nAs a general rule, you could say that the value for a specific day = an average over (1/1-Beta) days’ temperature\nSo, if it’s 0.1 (beta 0.9) it is as if you are averaging over 10 days, if it’s 0.02 (beta = 0.98), it is as if you are averaging over 50 days), 0.5 => averaging over 2 days (not very smooth)\nThe more days, the smoother the curve (i.e. the higher beta, the smoother the curve)\n\nWhy shifted to right => current temperature affects the curve les (depending on the value of Beta).",
+      "images": [
+        "slide13_img1.png"
+      ]
+    },
+    {
+      "index": 14,
+      "title": "Gradient Descent with Momentum",
+      "body": "Exponentially weighted average of gradients over time \n\nMomentum:\n\nsource\n\nTwo hyperparameters\nα: Learning rate\nβ: Controls the exponentially weighted average",
+      "notes": "On the vertical axis you want it slower, but on the horizontal axis you want it faster!\nSimilar to previous formula (temperature)\nNow you compute the derivatives (dw, db) on the batch\n=> Vdw = Beta(Vdw) + (1-beta)dw\n\nThis will smooth out the steps of gradient descent. => on the vertical axis this means it will be close to zero (because it goes up and down… on the x-axis is will average the step on the horizontal axis => more straightforward steps.\n\nThe second formula is is the same as the first one, except for the fact that you need to scale your learning rate alfa by a factor (1-beta)\n\nA more intuitive explanation:\n=> try and imagine the graph as a being a 3d bowl. and you have a ball that is rolling down the hill of the bowl.  The derivative terms are providing acceleration.\nYour beta is the friction (it prevents the ball from speeding up without limit because it’s a number smaller than 1) , Vt-1 - velocity,  your derivatives represent the acceleration. Your ball can now gain momentum and accelerate. \n\nNow we have two hyperparamters:\nBeta and Alfa \n=> Beta usually equal 0.9  => control your exponentially weighted average\n=> alfa: learning rate",
+      "images": [
+        "slide14_img1.png",
+        "slide14_img2.png"
+      ]
+    },
+    {
+      "index": 15,
+      "title": "Nesterov Accelerated Momentum",
+      "body": "What if we calculate the gradients considering the momentum?\nCan that minimize overshooting and oscillation?",
+      "notes": "Nesterov momentum is a simple change to normal momentum. Here the gradient term is not computed from the current position θ in parameter space but instead from a position θ+μv. This helps because while the gradient term always points in the right direction (the direction where the loss is minimized), the momentum term may not. If the momentum term points in the wrong direction or overshoots, the gradient can still “go back” and correct it in the same update step.\n\nIf we continue the rolling ball analogy:\nA ball that rolls down a hill accelerating, blindly following the slope, is highly unsatisfactory. We'd like to have a smarter ball, a ball that has a notion of where it is going so that it knows to slow down before the hill slopes up again.\n\nNesterov momentum is a simple change to normal momentum. Here the gradient term is not computed from the current position θ in parameter space but instead from a position θ+μv. This helps because while the gradient term always points in the right direction (the direction where the loss is minimized), the momentum term may not. If the momentum term points in the wrong direction or overshoots, the gradient can still “go back” and correct it in the same update step.",
+      "images": []
+    },
+    {
+      "index": 16,
+      "title": "Nesterov Accelerated Momentum",
+      "body": "Apply momentum correction before taking the step.\n\nsource",
+      "notes": "Nesterov momentum is a simple change to normal momentum. Here the gradient term is not computed from the current position θ in parameter space but instead from a position θ+μv. This helps because while the gradient term always points in the right direction (the direction where the loss is minimized), the momentum term may not. If the momentum term points in the wrong direction or overshoots, the gradient can still “go back” and correct it in the same update step.\n\nIf we continue the rolling ball analogy:\nA ball that rolls down a hill accelerating, blindly following the slope, is highly unsatisfactory. We'd like to have a smarter ball, a ball that has a notion of where it is going so that it knows to slow down before the hill slopes up again.\n\nNesterov momentum is a simple change to normal momentum. Here the gradient term is not computed from the current position θ in parameter space but instead from a position θ+μv. This helps because while the gradient term always points in the right direction (the direction where the loss is minimized), the momentum term may not. If the momentum term points in the wrong direction or overshoots, the gradient can still “go back” and correct it in the same update step.",
+      "images": [
+        "slide16_img1.png",
+        "slide16_img2.png"
+      ]
+    },
+    {
+      "index": 17,
+      "title": "Momentum",
+      "body": "Pros\t\nFaster convergence than traditional SGD. It moves faster because of the momentum it accumulates\nCons\nWhen too much momentum:\nSwing back and forth between local minima \nMissing minima",
+      "notes": "As the ball accelerates down the hill, how do we know that we don't miss the local minima? If the momentum is too much, we will most likely miss the local minima, rolling past it, but then rolling backwards, missing it again. If the momentum is too much, we could just swing back and forward between the local minima.",
+      "images": []
+    },
+    {
+      "index": 18,
+      "title": "What else can we improve?",
+      "body": "We could adapt the updates (learning rate) to individual parameters independently.\n\nAlgorithms with Adaptive Learning Rates",
+      "notes": "Nesterov momentum is a simple change to normal momentum. Here the gradient term is not computed from the current position θt in parameter space but instead from a position θintermediate=θt+μvt. This helps because while the gradient term always points in\nthe right direction\n, the momentum term may not. If the momentum term points in the wrong direction or overshoots, the gradient can still \"go back\" and correct it in the same update step. \n\nIf we continue the rolling ball analogy:\nA ball that rolls down a hill accelerating, blindly following the slope, is highly unsatisfactory. We'd like to have a smarter ball, a ball that has a notion of where it is going so that it knows to slow down before the hill slopes up again.",
+      "images": []
+    },
+    {
+      "index": 19,
+      "title": "AdaGrad",
+      "body": "Adaptive Gradient Algorithm",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 20,
+      "title": "AdaGrad",
+      "body": "Adagrad uses a different learning rate for each parameter 𝛉i\nSmaller rates for parameters associated with frequent features\nLarger rate for parameters associated with infrequent features.",
+      "notes": "Ιnstead of keeping track of the sum of gradient like momentum, the Adaptive Gradient algorithm, or AdaGrad for short, keeps track of the sum of gradient squared and uses that to adapt the gradient in different directions. \n\nAdaGrad individually adapts the learning rates of all model parameters by scaling them inversely proportional to the square root of the sum of all the historical squared values of the gradient.\n\nWhen you have features that occur a lot => you can do small updates,\nbut for features/word appearing rarely => You need to do bigger updates\nWhy GloVe embeddings: pretrained embeddings => infrequent words require much larger updates than frequent ones",
+      "images": []
+    },
+    {
+      "index": 21,
+      "title": "AdaGrad",
+      "body": "Adagrad uses a different learning rate for each parameter 𝚹i \n\n𝛉:parameters of the network. 𝝰: Learning rate. \nrt,i: weighted average of the squared gradients for parameter i.\ngt,i: gradients with respect to the to parameter i.",
+      "notes": "",
+      "images": [
+        "slide21_img1.png"
+      ]
+    },
+    {
+      "index": 22,
+      "title": "AdaGrad",
+      "body": "Adagrad uses a different learning rate for each parameter 𝚹i \nAdvantage:\nAvoids the need for tuning the learning rate.\nLimitation: \nThe sum of squared gradients for some parameters may cause a fast decrease in the learning rate and difficult learning.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 23,
+      "title": "RMSprop",
+      "body": "Root Mean Squared Propagation",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 24,
+      "title": "RMSprop",
+      "body": "Overcomes the issue of the continuously decreasing learning rate\nRMSProp uses a moving average instead of accumulating gradient squares.",
+      "notes": "The problem of AdaGrad, however, is that it is incredibly slow. This is because the sum of gradient squared only grows and never shrinks. RMSProp (for Root Mean Square Propagation) fixes this issue by adding a decay factor.\n\nRMSprop\ndecaying average over past squared gradients E[g2]t in order to discard extreme past history:\n\nThe only difference RMSProp has with Adagrad is that the gt term is calculated by exponentially decaying average and not the sum of gradients. More precisely, the sum of gradient squared is actually the decayed sum of gradient squared. The decay rate is saying only recent gradient² matters, and the ones from long ago are basically forgotten. \n\n\nRMSprop => Geoff Hinton => Hinton suggests γ to be set to 0.9, while a good default value for the learning rate (η) is 0.001",
+      "images": []
+    },
+    {
+      "index": 25,
+      "title": "RMSprop",
+      "body": "𝝰: Learning rate. \n𝞫: Exponentially weighted average factor\nvt,i: weighted average of the squared gradients for parameter i.",
+      "notes": "The problem of AdaGrad, however, is that it is incredibly slow. This is because the sum of gradient squared only grows and never shrinks. RMSProp (for Root Mean Square Propagation) fixes this issue by adding a decay factor.\n\nRMSprop\ndecaying average over past squared gradients E[g2]t in order to discard extreme past history:\n\nThe only difference RMSProp has with Adagrad is that the gt term is calculated by exponentially decaying average and not the sum of gradients. More precisely, the sum of gradient squared is actually the decayed sum of gradient squared. The decay rate is saying only recent gradient² matters, and the ones from long ago are basically forgotten. \n\n\nRMSprop => Geoff Hinton => Hinton suggests γ to be set to 0.9, while a good default value for the learning rate (η) is 0.001",
+      "images": [
+        "slide25_img1.png"
+      ]
+    },
+    {
+      "index": 26,
+      "title": "RMSprop",
+      "body": "Limitations\nlacks momentum, which can help the learning process.\nInitial values for exponential values can be biased",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 27,
+      "title": "Adam",
+      "body": "Adaptive Moment Estimation",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 28,
+      "title": "Adam",
+      "body": "Combines adapting learning rate and momentum\nAddresses the issue of biased initial values of moving averages",
+      "notes": "The problem of AdaGrad, however, is that it is incredibly slow. This is because the sum of gradient squared only grows and never shrinks. RMSProp (for Root Mean Square Propagation) fixes this issue by adding a decay factor.\n\nRMSprop\ndecaying average over past squared gradients E[g2]t in order to discard extreme past history:\n\nThe only difference RMSProp has with Adagrad is that the gt term is calculated by exponentially decaying average and not the sum of gradients. More precisely, the sum of gradient squared is actually the decayed sum of gradient squared. The decay rate is saying only recent gradient² matters, and the ones from long ago are basically forgotten. \n\n\nRMSprop => Geoff Hinton => Hinton suggests γ to be set to 0.9, while a good default value for the learning rate (η) is 0.001",
+      "images": []
+    },
+    {
+      "index": 29,
+      "title": "Adam",
+      "body": "The update rule:\n\n𝝰: Learning rate. \nvt,i: weighted average of the squared gradients for parameter. \nmt,i: weighted average of the gradients for parameter i.",
+      "notes": "",
+      "images": [
+        "slide29_img1.png"
+      ]
+    },
+    {
+      "index": 30,
+      "title": "Adam",
+      "body": "Moving average of gradients and of squared gradients\n\n𝞫k: Exponentially weighted average factors for v and m\nvt,i: weighted average of the squared gradients for parameter i.",
+      "notes": "Takes the best of both worlds (of Momentum and RMSProp)\n=> the go to choice because it empirically works well\n\nIn addition to storing an exponentially decaying average of past squared gradients vt like Adadelta and RMSprop, Adam also keeps an exponentially decaying average of past gradients mt, similar to momentum. \nWhereas momentum can be seen as a ball running down a slope, Adam behaves like a heavy ball with friction, which thus prefers flat minima in the error surface [15].",
+      "images": [
+        "slide30_img1.png",
+        "slide30_img2.png"
+      ]
+    },
+    {
+      "index": 31,
+      "title": "Adam",
+      "body": "To avoid a bias towards zero at the beginning of training, a correction is introduced:",
+      "notes": "",
+      "images": [
+        "slide31_img1.gif",
+        "slide31_img2.gif",
+        "slide31_img3.jpg"
+      ]
+    },
+    {
+      "index": 32,
+      "title": "Adam",
+      "body": "The update rule:\nDefault values:",
+      "notes": "",
+      "images": [
+        "slide32_img1.gif",
+        "slide32_img2.png"
+      ]
+    },
+    {
+      "index": 33,
+      "title": "AdamW",
+      "body": "Adam with Weight Decay",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 34,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide34_img1.png"
+      ]
+    },
+    {
+      "index": 35,
+      "title": "Lion",
+      "body": "EvoLved Sign Momentum",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 36,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide36_img1.png"
+      ]
+    },
+    {
+      "index": 37,
+      "title": "Lion works when:",
+      "body": "Lion works when:\nYou have lots of data (so gradient direction is reliable)\nYou’re using large batches (less noise in gradients)\nMemory is tight (you can’t afford AdamW’s state)",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 38,
+      "title": "RLion",
+      "body": "Refined Lion Optimizer\nA refined lion optimizer for deep learning | Scientific Reports",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 39,
+      "title": "RLion",
+      "body": "Leverage a non-linear continuous bounded function that maps the product of momentum and a scaling factor. \nOptimization parameters adaptively adjust according to both the magnitude of momentum and the scaling factor",
+      "notes": "",
+      "images": [
+        "slide39_img1.png"
+      ]
+    },
+    {
+      "index": 40,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide40_img1.png"
+      ]
+    },
+    {
+      "index": 41,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide41_img1.png"
+      ]
+    },
+    {
+      "index": 42,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide42_img1.png"
+      ]
+    },
+    {
+      "index": 43,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": []
+    }
+  ]
+}

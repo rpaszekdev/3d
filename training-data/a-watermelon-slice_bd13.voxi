@@ -1,0 +1,25 @@
+V 24 20 6
+
+-- red flesh (triangular stepped body)
+B 3 3 1 18 2 4 1
+B 5 5 1 14 2 4 1
+B 7 7 1 10 2 4 1
+B 9 9 1 6 2 4 1
+B 10 11 1 4 2 4 1
+B 11 13 1 2 2 4 1
+
+-- white inner rind strip
+B 3 2 1 18 1 4 8
+
+-- green outer rind
+B 2 0 1 20 2 4 2
+B 3 2 1 1 12 4 2
+B 20 2 1 1 12 4 2
+
+-- black seeds
+B 7 4 2 1 1 2 0
+B 11 4 2 1 1 2 0
+B 15 4 2 1 1 2 0
+B 8 7 2 1 1 2 0
+B 13 7 2 1 1 2 0
+B 10 10 2 1 1 2 0

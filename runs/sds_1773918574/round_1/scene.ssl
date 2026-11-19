@@ -1,0 +1,70 @@
+P1
+# Ground shadow
+12 200 1 200 60 1 30 9
+# === LEFT FOOT ===
+0 182 2 215 14 4 18 7
+# Left foot toes
+0 178 2 228 4 3 8 7
+0 184 2 228 4 3 8 7
+0 190 2 228 4 3 8 7
+# === RIGHT FOOT ===
+0 218 2 215 14 4 18 7
+# Right foot toes
+0 212 2 228 4 3 8 7
+0 218 2 228 4 3 8 7
+0 224 2 228 4 3 8 7
+# === LEGS (short black) ===
+2 185 12 215 6 16 6 0
+2 215 12 215 6 16 6 0
+# === LOWER BODY (wide oval - white belly) ===
+12 200 55 200 38 50 28 8
+# === UPPER BODY (black back shell) ===
+12 200 58 196 40 55 30 0
+# === WHITE BELLY FRONT ===
+12 200 55 206 30 44 10 8
+# === WHITE UPPER CHEST ===
+12 200 82 206 24 20 8 8
+# === NECK ===
+2 200 100 200 16 14 16 0
+# === HEAD ===
+1 200 118 200 24 22 22 0
+# === WHITE FACE PATCHES ===
+12 200 116 206 14 10 6 8
+# === EYES ===
+1 193 122 210 3 3 3 0
+1 207 122 210 3 3 3 0
+# Eye highlights
+1 194 123 212 1 1 1 8
+1 208 123 212 1 1 1 8
+# === BEAK (orange, pointed) ===
+3 200 115 218 8 5 10 7
+# === BLACK CAP on head ===
+12 200 126 198 16 8 14 0
+# === LEFT FLIPPER ===
+# Upper flipper
+0 163 88 200 6 30 12 0 0 0 -8
+# Mid flipper
+0 160 65 200 5 24 10 0 0 0 -5
+# Lower flipper tip
+0 158 48 200 4 16 8 0 0 0 -2
+# === RIGHT FLIPPER ===
+# Upper flipper
+0 237 88 200 6 30 12 0 0 0 8
+# Mid flipper
+0 240 65 200 5 24 10 0 0 0 5
+# Lower flipper tip
+0 242 48 200 4 16 8 0 0 0 2
+# === TAIL (small black triangle at back) ===
+3 200 30 185 8 12 6 0
+# === BODY DETAIL - side black patches ===
+12 170 60 198 10 35 18 0
+12 230 60 198 10 35 18 0
+# === CHIN/THROAT white ===
+12 200 105 208 12 8 5 8
+# === BELLY BOTTOM CURVE ===
+12 200 28 205 28 10 12 8
+# === BACK DETAIL ===
+12 200 70 188 32 40 8 0
+# === FLIPPER INNER (dark gray) ===
+0 164 75 204 4 20 6 9
+0 236 75 204 4 20 6 9

@@ -1,0 +1,49 @@
+V 24 26 22
+
+-- four corner posts
+B 3 0 5 2 24 2 a
+B 17 0 5 2 24 2 a
+B 3 0 15 2 24 2 a
+B 17 0 15 2 24 2 a
+
+-- headboard
+B 3 0 15 16 10 2 a
+
+-- footboard lower
+B 3 0 5 16 6 2 a
+
+-- bottom bed frame
+B 3 4 5 16 1 12 a
+
+-- bottom mattress
+B 4 5 6 13 2 9 8
+
+-- bottom pillow
+B 4 7 6 4 1 4 5
+
+-- top bed frame
+B 3 12 5 16 1 12 a
+
+-- top mattress
+B 4 13 6 13 2 9 8
+
+-- top pillow
+B 4 15 6 4 1 4 5
+
+-- top safety rail front
+B 3 15 5 16 3 2 6
+
+-- top safety rail sides partial
+B 3 15 5 2 3 10 6
+B 17 15 5 2 3 10 6
+
+-- ladder rungs right side
+B 17 5 7 3 1 6 a
+B 17 8 7 3 1 6 a
+B 17 11 7 3 1 6 a
+
+-- blanket bottom bunk
+B 4 6 6 13 1 9 3
+
+-- blanket top bunk
+B 4 14 6 13 1 9 3

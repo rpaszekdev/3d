@@ -1,0 +1,64 @@
+V 48 32 32
+
+-- cowcatcher
+B 2 2 12 4 5 8 9
+
+-- chassis
+B 5 5 11 34 2 10 0
+
+-- smokebox
+B 5 8 12 5 8 8 e
+
+-- boiler
+B 10 8 12 20 8 8 1
+
+-- headlight
+S 4 13 16 2 8
+
+-- smokestack
+C 9 16 16 2 8 0
+
+-- smokestack cap
+B 7 23 14 5 1 5 0
+
+-- steam dome
+S 21 17 16 3 1
+
+-- sand dome
+S 27 16 16 2 6
+
+-- cab body
+B 30 7 10 12 15 12 1
+
+-- cab windows
+B 32 14 10 4 5 1 8
+B 32 14 21 4 5 1 8
+
+-- cab roof
+B 29 21 9 14 2 14 e
+
+-- front pony wheels
+S 8 3 11 3 0
+S 8 3 21 3 0
+
+-- large drive wheels
+S 15 4 11 4 0
+S 15 4 21 4 0
+S 22 4 11 4 0
+S 22 4 21 4 0
+
+-- rear wheels
+S 30 4 11 4 0
+S 30 4 21 4 0
+
+-- piston cylinder
+B 5 9 14 6 3 4 9
+
+-- connecting rods
+B 12 6 11 18 1 1 9
+B 12 6 21 18 1 1 9
+
+-- boiler bands
+B 13 8 11 1 8 10 9
+B 19 8 11 1 8 10 9
+B 25 8 11 1 8 10 9

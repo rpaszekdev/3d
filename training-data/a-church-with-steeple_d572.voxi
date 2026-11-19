@@ -1,0 +1,36 @@
+V 32 48 32
+
+-- nave body
+B 2 0 6 28 14 20 9
+
+-- nave peaked roof
+B 2 14 6 28 2 20 8
+B 4 16 8 24 2 16 8
+B 6 18 10 20 2 12 8
+B 8 20 12 16 2 8 8
+B 10 22 14 12 2 4 8
+
+-- front bell tower
+B 10 0 2 12 24 6 9
+
+-- steeple spire
+B 11 24 2 10 3 6 9
+B 12 27 2 8 3 6 9
+B 13 30 3 6 3 4 9
+B 14 33 3 4 4 2 9
+B 15 37 4 2 5 2 6
+
+-- steeple cross vertical
+B 15 42 4 2 4 2 8
+-- steeple cross horizontal
+B 14 43 4 4 2 2 8
+
+-- front door
+B 13 0 1 6 10 2 0
+
+-- nave side windows
+B 5 5 5 3 5 2 3
+B 24 5 5 3 5 2 3
+
+-- tower window
+B 13 14 1 6 5 2 3

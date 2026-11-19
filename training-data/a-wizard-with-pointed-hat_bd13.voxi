@@ -1,0 +1,52 @@
+V 24 32 16
+
+-- feet
+B 8 0 7 3 2 2 9
+B 13 0 7 3 2 2 9
+
+-- robe lower
+B 7 2 6 10 10 4 5
+
+-- robe upper
+B 8 12 6 8 6 4 5
+
+-- left arm
+B 5 12 7 3 6 2 5
+-- right arm
+B 16 12 7 3 6 2 5
+
+-- hands
+S 6 17 8 1 d
+S 18 17 8 1 d
+
+-- neck
+C 12 18 8 1 2 d
+
+-- head
+S 12 21 8 3 d
+
+-- beard
+B 10 16 7 4 4 2 8
+
+-- hat brim
+B 6 24 6 12 1 4 f
+
+-- hat body lower
+B 9 25 7 6 3 2 f
+
+-- hat body mid
+B 10 28 7 4 2 2 f
+
+-- hat tip
+B 11 30 7 2 2 2 f
+
+-- staff
+C 20 0 8 1 18 7
+
+-- magic orb
+S 20 19 8 2 6
+
+-- stars on robe
+B 9 14 5 1 1 1 6
+B 13 10 5 1 1 1 6
+B 11 7 5 1 1 1 4

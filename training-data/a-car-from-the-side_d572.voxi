@@ -1,0 +1,36 @@
+V 32 16 16
+
+-- lower body
+B 3 3 5 26 4 6 3
+-- cabin section
+B 9 7 5 14 5 6 3
+-- hood
+B 3 3 4 6 2 8 d
+-- trunk
+B 23 3 4 6 2 8 d
+-- front windshield
+B 9 7 4 3 5 2 4
+-- side window
+B 13 7 4 6 5 2 4
+-- rear window
+B 20 7 4 3 5 2 4
+-- front wheel
+S 7 3 8 3 9
+-- front hub
+S 7 3 8 1 8
+-- rear wheel
+S 25 3 8 3 9
+-- rear hub
+S 25 3 8 1 8
+-- headlight
+B 2 5 4 2 2 2 6
+-- taillight
+B 28 5 4 2 2 2 1
+-- front bumper
+B 2 3 5 2 2 6 9
+-- rear bumper
+B 28 3 5 2 2 6 9
+-- grille
+B 2 4 5 2 1 6 0
+-- roof accent
+B 9 12 5 14 1 6 9

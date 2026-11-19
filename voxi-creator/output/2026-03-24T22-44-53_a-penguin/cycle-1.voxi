@@ -1,0 +1,1 @@
+VOXI uses a Y-up coordinate system, so layering boxes vertically (increasing Y) builds the penguin's body from feet to head. The key to a recognizable penguin is strong color contrast — black body with white belly — but since black (0) is invisible on dark backgrounds, we use navy (f) for the dark areas instead.

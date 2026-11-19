@@ -1,0 +1,24 @@
+V 32 32 32
+-- ceiling canopy
+B 13 29 13 6 2 6 9
+-- hanging rod
+C 16 22 16 1 14 9
+-- central decorative hub
+S 16 16 16 3 6
+-- arms extending in 4 directions
+B 17 15 15 7 2 2 6
+B 8 15 15 7 2 2 6
+B 15 15 17 2 2 7 6
+B 15 15 8 2 2 7 6
+-- candle cups at arm ends
+C 24 16 16 2 4 7
+C 8 16 16 2 4 7
+C 16 16 24 2 4 7
+C 16 16 8 2 4 7
+-- candle flames
+S 24 20 16 1 6
+S 8 20 16 1 6
+S 16 20 24 1 6
+S 16 20 8 1 6
+-- crystal drop
+E 16 10 16 2 5 2 4

@@ -1,0 +1,50 @@
+## Debug Strategy: Minimal Sketch First
+
+The all-black failure is likely caused by **the sphere at grid boundary** `S 0 8 0 1 6` — position (0,8,0) means the sphere extends to X=-1, which is outside the 16x16x16 grid and may abort parsing. Let me start with a minimal diagnostic then rebuild.
+
+**Step 1: Minimal scene — just floor + cube**
+
+```voxi
+V 16 16 16
+
+-- FLOOR: gray base
+B 0 0 0 16 1 16 9
+
+-- ORANGE CUBE 4x4x4 at (6,1,6), spans X:[6,10] Y:[1,5] Z:[6,10]
+B 6 1 6 4 4 4 7
+```
+
+CHECK
+
+---
+
+If that renders, **Step 2 adds camera marker + line of sight**, replacing the boundary sphere with a safe 2x2 box:
+
+```voxi
+V 16 16 16
+
+-- FLOOR
+B 0 0 0 16 1 16 9
+
+-- ORANGE CUBE
+B 6 1 6 4 4 4 7
+
+-- CAMERA MARKER: yellow box at (1,7,1) — shifted inward from boundary (0,8,0)
+B 1 7 1 2 2 2 6
+
+-- LINE OF SIGHT: cyan voxels along ray (8t, 8-4t, 8t)
+-- t=0.25 → (2,7,2), t=0.5 → (4,6,4), t=0.625 → (5,5.5,5)≈(5,6,5)
+P 2 7 2 4
+P 4 6 4 4
+P 5 6 5 4
+-- t=0.75 hits (6,5,6) = top-left-front corner of cube — cyan marker
+P 6 5 6 4
+```
+
+CHECK
+
+---
+
+`★ Insight ─────────────────────────────────────`
+Grid-edge boundary violations (X<0, Y<0, Z<0) from shapes centered at the grid origin are a common silent failure mode in voxel renderers — the sphere at `(0,8,0)` with radius 1 clips to X=-1 which is illegal. The safe rule: keep primitive centers at least `radius` away from all grid walls.
+`─────────────────────────────────────────────────`

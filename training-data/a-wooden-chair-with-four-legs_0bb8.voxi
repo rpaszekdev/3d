@@ -1,0 +1,26 @@
+V 16 16 16
+
+-- front-left leg
+B 5 0 5 1 5 1 a
+-- front-right leg
+B 10 0 5 1 5 1 a
+-- back-left post (extends into chair back)
+B 5 0 10 1 12 1 a
+-- back-right post (extends into chair back)
+B 10 0 10 1 12 1 a
+
+-- seat
+B 4 5 4 8 1 7 6
+
+-- seat edge trim
+B 4 5 4 8 1 1 a
+B 4 5 10 8 1 1 a
+B 4 5 4 1 1 7 a
+B 11 5 4 1 1 7 a
+
+-- back rest lower rail
+B 5 7 10 6 1 1 a
+-- back rest upper rail
+B 5 10 10 6 1 1 a
+-- back rest middle slat
+B 7 7 10 2 4 1 a

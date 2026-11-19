@@ -1,0 +1,58 @@
+V 28 20 22
+
+-- corner posts
+B 3 0 5 2 14 2 a
+B 19 0 5 2 14 2 a
+B 3 0 15 2 14 2 a
+B 19 0 15 2 14 2 a
+
+-- post finials
+S 4 14 6 1 d
+S 20 14 6 1 d
+S 4 14 16 1 d
+S 20 14 16 1 d
+
+-- top rails
+B 3 12 5 18 2 1 a
+B 3 12 16 18 2 1 a
+B 3 12 5 1 2 12 a
+B 20 12 5 1 2 12 a
+
+-- bottom rails
+B 3 2 5 18 1 1 a
+B 3 2 16 18 1 1 a
+B 3 2 5 1 1 12 a
+B 20 2 5 1 1 12 a
+
+-- front slats
+B 5 3 5 1 9 1 a
+B 7 3 5 1 9 1 a
+B 9 3 5 1 9 1 a
+B 11 3 5 1 9 1 a
+B 13 3 5 1 9 1 a
+B 15 3 5 1 9 1 a
+B 17 3 5 1 9 1 a
+
+-- back slats
+B 5 3 16 1 9 1 a
+B 7 3 16 1 9 1 a
+B 9 3 16 1 9 1 a
+B 11 3 16 1 9 1 a
+B 13 3 16 1 9 1 a
+B 15 3 16 1 9 1 a
+B 17 3 16 1 9 1 a
+
+-- left side slats
+B 3 3 7 1 9 1 a
+B 3 3 9 1 9 1 a
+B 3 3 11 1 9 1 a
+B 3 3 13 1 9 1 a
+
+-- right side slats
+B 20 3 7 1 9 1 a
+B 20 3 9 1 9 1 a
+B 20 3 11 1 9 1 a
+B 20 3 13 1 9 1 a
+
+-- mattress
+B 4 3 6 16 1 10 8

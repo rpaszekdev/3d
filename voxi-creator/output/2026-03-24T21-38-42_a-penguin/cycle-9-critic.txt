@@ -1,0 +1,33 @@
+`★ Insight ─────────────────────────────────────`
+**The #1 VOXI rendering trap:** The renderer background is `#13151f` — an almost-black dark navy. Any voxels using color `0` (black) or very dark colors like `f` (navy) will be nearly or completely invisible. This is a color-contrast issue, not a geometry issue — the model structure may actually be correct, just invisible!
+`─────────────────────────────────────────────────`
+
+All 6 renders are completely black — nothing is visible at all. Based on the VOXI code from the previous session, here's my diagnosis:
+
+```
+V 32 32 32
+B 8 0 9 6 2 9 7   -- feet (orange ✓ visible)
+B 18 0 9 6 2 9 7  -- feet (orange ✓ visible)
+B 10 2 13 4 5 5 f -- legs (navy f = nearly invisible!)
+B 18 2 13 4 5 5 f -- legs (navy f = nearly invisible!)
+-- main           ← code appears TRUNCATED — body/head never defined!
+```
+
+---
+
+SCORE: 1
+STRENGTHS: The foundational structure is sound — orange feet (`7`) are positioned correctly at Y=0 on the ground, and the intent to use navy (`f`) for the dark body shows correct penguin color thinking. The spatial layout with two separate leg boxes suggests good bilateral symmetry awareness.
+
+ISSUES:
+- **The body is missing entirely** — the code is truncated at `-- main` with no body or head voxels defined at all. A penguin needs a tall rounded body: add `B 9 7 11 14 16 10 f` for a navy torso (and fix the color — see below).
+- **Navy (`f`) body/legs are invisible against the dark background** — replace all `f` (navy) with `3` (blue) or use navy for the back only and `8` (white) for the belly front: `B 11 7 12 10 14 8 8` for a white belly patch on the front face.
+- **No head or face features** — a penguin without a head is just floating feet. Add a head sphere: `S 16 26 14 5 f` for the head, plus `B 14 25 10 4 2 2 6` for a yellow beak, and `P 14 27 10 0` + `P 17 27 10 0` for eyes (use `9` gray if `0` is invisible).
+- **Feet/legs are not centered on the grid** — the two leg boxes start at X=10 and X=18, but the grid is 32 wide so center should be X=16. Fix by using `B 10 2 12 5 5 6 f` and `B 17 2 12 5 5 6 f` to symmetrically straddle X=16.
+
+PRIORITY_FIX: **Add the missing body and head!** The model is effectively empty. At minimum, add these three lines to make a recognizable penguin appear:
+```
+B 9 7 10 14 18 12 3    -- blue body (use 3 not f for visibility)
+B 11 7 11 10 16 10 8   -- white belly overlay on front
+S 16 27 13 5 3         -- blue head
+B 14 25 9 4 2 3 6      -- yellow beak
+```

@@ -1,0 +1,40 @@
+V 24 24 24
+
+-- white body
+E 12 8 12 5 7 5 8
+
+-- white belly
+E 12 7 10 3 5 2 8
+
+-- black arms
+E 7 9 12 2 4 2 0
+E 17 9 12 2 4 2 0
+
+-- black legs (sitting folded)
+B 7 1 10 4 5 4 0
+B 13 1 10 4 5 4 0
+
+-- white head
+S 12 18 12 5 8
+
+-- black ears
+S 9 23 12 2 0
+S 15 23 12 2 0
+
+-- black eye patches
+E 10 19 9 2 2 1 0
+E 14 19 9 2 2 1 0
+
+-- white eye highlights
+S 10 19 8 1 8
+S 14 19 8 1 8
+
+-- black pupils
+S 10 19 7 0 0
+S 14 19 7 0 0
+
+-- black nose
+S 12 17 9 1 0
+
+-- black snout outline
+E 12 17 9 2 1 1 0

@@ -1,0 +1,131 @@
+CANVAS 595 842 #ffffff
+
+-- ── Name + Photo ─────────────────────────────────
+TEXT 40 40 "ROBERT" 42 1 #1a3a5c bold
+TEXT 40 90 "PASZEK" 42 1 #1a3a5c bold
+
+TEXT 42 140 "Software Developer  ·  CSAI" 9 1 #4a9ad4 bold
+
+PHOTO 460 30 110 1 #4a9ad4 3
+
+-- ── Contact (compact) ────────────────────────────
+TEXT 40 160 "+48 725 850 750  ·  r.f.paszek@gmail.com  ·  Tilburg, Netherlands" 8 1 #6a8a9e
+
+-- ── Hero ─────────────────────────────────────────
+TEXT 40 186 "I find repetitive processes" 18 1 #1a3a5c bold
+TEXT 40 210 "and engineer them away." 18 1 #4a9ad4 bold
+DIVIDER 40 236 555 236 1 #4a9ad4
+TEXT 40 252 "My friends got tired of making CVs — so I built a language that generates them." 9 1 #3a4a5a italic
+TEXT 40 270 "This CV was made with it." 9 1 #4a9ad4 bold
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN — Projects
+-- ═══════════════════════════════════════════════════
+
+RECT 40 300 340 2 1 #4a9ad4
+TEXT 40 308 "PROJECTS & ACHIEVEMENTS" 8 1 #4a9ad4 bold
+
+-- Hackathon Winner
+TEXT 40 326 "BR41N.IO Hackathon — 1st Place (of 93 Teams)" 11 1 #1a3a5c bold
+TEXT 330 326 "Spring 2025" 8 1 #8aaabe
+TEXT 40 342 "g.tec Medical Engineering  ·  International BCI Hackathon" 8.5 1 #5a7a8e
+TEXT 40 358 "Won against teams from Columbia, Queen's, UAE University and" 8.5 1 #3a4a5a
+TEXT 40 372 "15+ institutions. Built an EEG brain-computer interface that" 8.5 1 #3a4a5a
+TEXT 40 386 "translated brain activity into music in real time." 8.5 1 #3a4a5a
+
+DIVIDER 40 404 380 404 1 #d8e4ee
+
+-- Bed&Market
+TEXT 40 416 "Bed&Market — Autonomous Marketing Agent" 11 1 #1a3a5c bold
+TEXT 330 416 "2026" 8 1 #8aaabe
+TEXT 40 432 "Playwright  ·  Perplexity API  ·  Claude API" 8.5 1 #5a7a8e
+TEXT 40 448 "End-to-end automation pipeline: scrapes hundreds of B&B websites," 8.5 1 #3a4a5a
+TEXT 40 462 "extracts business contacts, generates personalized outreach —" 8.5 1 #3a4a5a
+TEXT 40 476 "runs overnight with zero human intervention. Replaced a full" 8.5 1 #3a4a5a
+TEXT 40 490 "day of manual research per batch." 8.5 1 #3a4a5a
+
+DIVIDER 40 508 380 508 1 #d8e4ee
+
+-- ChatResume
+TEXT 40 520 "Batchresume — AI CV Generator" 11 1 #1a3a5c bold
+TEXT 330 520 "2026" 8 1 #8aaabe
+TEXT 40 536 "TypeScript  ·  Canvas 2D  ·  Custom DSL" 8.5 1 #5a7a8e
+TEXT 40 552 "Paste your resume + a job description — AI generates a fully" 8.5 1 #3a4a5a
+TEXT 40 566 "tailored CV from scratch, with professional layout and ATS" 8.5 1 #3a4a5a
+TEXT 40 580 "optimization, rendered as a PDF in seconds." 8.5 1 #3a4a5a
+
+DIVIDER 40 598 380 598 1 #d8e4ee
+
+-- AI-Native IDE
+TEXT 40 610 "AI-Native IDE" 11 1 #1a3a5c bold
+TEXT 330 610 "2026" 8 1 #8aaabe
+TEXT 40 626 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite" 8.5 1 #5a7a8e
+TEXT 40 642 "Developer productivity tool: one-click workspace indexing via RAG" 8.5 1 #3a4a5a
+TEXT 40 656 "embeddings, natural-language code search, parallel AI session" 8.5 1 #3a4a5a
+TEXT 40 670 "orchestration." 8.5 1 #3a4a5a
+
+-- ── Education ────────────────────────────────────
+RECT 40 684 340 2 1 #4a9ad4
+TEXT 40 692 "EDUCATION" 8 1 #4a9ad4 bold
+
+TEXT 40 712 "BSc Cognitive Science & AI — 2nd year" 11 1 #1a3a5c bold
+TEXT 290 712 "Sept 2024 — Current" 8 1 #8aaabe
+TEXT 40 728 "Tilburg University, Tilburg, Netherlands" 8.5 1 #5a7a8e
+
+-- ── Work Experience ──────────────────────────────
+RECT 40 752 340 2 1 #4a9ad4
+TEXT 40 760 "WORK EXPERIENCE" 8 1 #4a9ad4 bold
+
+TEXT 40 780 "Vice-Chair — CSAI Programme Committee" 11 1 #1a3a5c bold
+TEXT 40 796 "Tilburg University" 8.5 1 #5a7a8e
+TEXT 290 796 "Sept 2025 — Current" 8 1 #8aaabe
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN
+-- ═══════════════════════════════════════════════════
+
+RECT 400 286 155 2 1 #4a9ad4
+TEXT 400 294 "SKILLS" 8 1 #4a9ad4 bold
+
+TEXT 400 316 "AI-Assisted Development" 8.5 1 #1a3a5c bold
+TEXT 400 330 "2,400+ hrs with Claude Code" 8 1 #3a4a5a
+TEXT 400 344 "3,000+ sessions, 15+ projects" 8 1 #3a4a5a
+TEXT 400 358 "since Nov 2025" 8 1 #3a4a5a
+
+TEXT 400 380 "RAG & Embeddings" 8.5 1 #1a3a5c bold
+TEXT 400 394 "Web Scraping (Playwright)" 8.5 1 #3a4a5a
+TEXT 400 408 "API Integration & MCP" 8.5 1 #3a4a5a
+TEXT 400 422 "DSL Design & Compilers" 8.5 1 #3a4a5a
+TEXT 400 436 "Full-Stack (React, Node, Rust)" 8.5 1 #3a4a5a
+
+TEXT 400 458 "Public Speaking" 8.5 1 #1a3a5c bold
+TEXT 400 472 "Art of Presenting course" 8 1 #3a4a5a
+TEXT 400 486 "University Theatre (active)" 8 1 #3a4a5a
+
+-- Live Projects
+RECT 400 512 155 2 1 #4a9ad4
+TEXT 400 520 "LIVE PROJECTS" 8 1 #4a9ad4 bold
+TEXT 400 540 "stayinbocas.com" 9 1 #1a3a5c
+TEXT 400 556 "bedandmarket.com" 9 1 #1a3a5c
+TEXT 400 572 "brainquiz.study" 9 1 #1a3a5c
+TEXT 400 588 "batchresume.com" 9 1 #1a3a5c
+TEXT 400 604 "csai.live" 9 1 #1a3a5c
+
+-- Languages
+RECT 400 630 155 2 1 #4a9ad4
+TEXT 400 638 "LANGUAGES" 8 1 #4a9ad4 bold
+TEXT 400 658 "Polish" 9 1 #3a4a5a
+TEXT 470 658 "native" 7.5 1 #8aaabe
+TEXT 400 674 "English" 9 1 #3a4a5a
+TEXT 470 674 "fluent" 7.5 1 #8aaabe
+TEXT 400 690 "Spanish" 9 1 #3a4a5a
+TEXT 470 690 "communicative" 7.5 1 #8aaabe
+
+-- Interests
+RECT 400 716 155 2 1 #4a9ad4
+TEXT 400 724 "INTERESTS" 8 1 #4a9ad4 bold
+TEXT 400 744 "Sailing, Chess, Skiing" 8.5 1 #3a4a5a
+TEXT 400 760 "Traveling (4 continents)" 8.5 1 #3a4a5a
+TEXT 400 776 "Brain-Computer Interfaces" 8.5 1 #3a4a5a
+

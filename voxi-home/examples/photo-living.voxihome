@@ -1,0 +1,38 @@
+-- Photo Living Room — final iteration 5
+-- Square room, symmetrical seating group, sofa near north wall
+-- Matches reference photo: sofa + 2 side armchairs + 1 south armchair
+-- Coffee table center, large rug, lamps flanking sofa, console south
+
+ROOM 5.0 5.0 2.7
+
+-- Two large windows on north wall
+WINDOW north @1.2 w:1.4 h:1.6
+WINDOW north @3.8 w:1.4 h:1.6
+
+-- 3-seat sofa centered, near north wall, facing south
+SOFA 3seat @1.36 3.5 facing:south
+
+-- West armchair facing east (toward center)
+SOFA armchair @0.5 2.1 facing:east
+
+-- East armchair facing west (toward center)
+SOFA armchair @3.7 2.1 facing:west
+
+-- South armchair facing north (toward sofa)
+SOFA armchair @2.1 1.2 facing:north
+
+-- Large coffee table dead center of the seating group
+TABLE dining-4 @1.9 2.1
+
+-- Large rug under the whole seating group
+RUG medium @1.5 1.3
+
+-- Floor lamps flanking sofa at each end
+LAMP floor @1.0 3.6
+LAMP floor @3.7 3.6
+
+-- Low console/table centered against south wall
+TABLE side @2.3 0.05 facing:north
+
+-- TV or mirror on east wall
+TV 43 @4.55 2.2 facing:west

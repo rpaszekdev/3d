@@ -1,0 +1,141 @@
+CANVAS 595 842 #ffffff
+
+-- ── Name + Photo ─────────────────────────────────
+TEXT 40 40 "ROBERT" 42 1 #1a3a5c bold
+TEXT 40 90 "PASZEK" 42 1 #1a3a5c bold
+
+TEXT 42 140 "Process Automation  ·  AI-Driven Tooling  ·  CSAI" 9 1 #4a9ad4 bold
+
+PHOTO 460 30 110 1 #4a9ad4 3
+
+-- ── Contact ──────────────────────────────────────
+DIVIDER 40 170 555 170 1 #4a9ad4
+CONTACT 100 180 1 #3a6a8a phone "+48 725 850 750"
+CONTACT 245 180 1 #3a6a8a email "r.f.paszek@gmail.com"
+CONTACT 420 180 1 #3a6a8a location "Tilburg, Netherlands"
+DIVIDER 40 202 555 202 1 #4a9ad4
+
+-- ── Profile ──────────────────────────────────────
+TEXT 40 218 "I build systems that eliminate manual work. From autonomous agents that" 9 1 #3a4a5a italic
+TEXT 40 234 "replace entire workflows to custom DSLs that turn hours of formatting into" 9 1 #3a4a5a italic
+TEXT 40 250 "seconds — I look for repetitive processes and engineer them away." 9 1 #3a4a5a italic
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN — Projects
+-- ═══════════════════════════════════════════════════
+
+RECT 40 278 340 2 1 #4a9ad4
+TEXT 40 286 "AUTOMATION PROJECTS" 8 1 #4a9ad4 bold
+
+-- Bed&Market — lead with the strongest automation story
+TEXT 40 308 "Bed&Market — Autonomous Marketing Agent" 11 1 #1a3a5c bold
+TEXT 330 308 "2026" 8 1 #8aaabe
+TEXT 40 324 "Playwright  ·  Perplexity API  ·  Claude API" 8.5 1 #5a7a8e
+TEXT 40 340 "End-to-end automation pipeline: scrapes hundreds of B&B websites," 8.5 1 #3a4a5a
+TEXT 40 354 "extracts business contacts, generates personalized outreach —" 8.5 1 #3a4a5a
+TEXT 40 368 "runs overnight with zero human intervention. Replaced a full" 8.5 1 #3a4a5a
+TEXT 40 382 "day of manual research per batch." 8.5 1 #3a4a5a
+
+DIVIDER 40 398 380 398 1 #d8e4ee
+
+-- ChatResume — DSL & compiler work maps to tooling/automation
+TEXT 40 410 "ChatResume — AI-Powered Document Generator" 11 1 #1a3a5c bold
+TEXT 330 410 "2026" 8 1 #8aaabe
+TEXT 40 426 "TypeScript  ·  Canvas 2D  ·  Custom DSL  ·  Compiler" 8.5 1 #5a7a8e
+TEXT 40 442 "Designed a domain-specific language and built its compiler to" 8.5 1 #3a4a5a
+TEXT 40 456 "automate document generation. Users provide raw data; the system" 8.5 1 #3a4a5a
+TEXT 40 470 "parses, lays out, and renders a polished PDF — no manual" 8.5 1 #3a4a5a
+TEXT 40 484 "formatting. This CV was generated with it." 8.5 1 #3a4a5a
+
+DIVIDER 40 500 380 500 1 #d8e4ee
+
+-- AI-Native IDE — internal tooling & developer productivity
+TEXT 40 512 "AI-Native IDE — Workspace Intelligence" 11 1 #1a3a5c bold
+TEXT 330 512 "2026" 8 1 #8aaabe
+TEXT 40 528 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite  ·  RAG" 8.5 1 #5a7a8e
+TEXT 40 544 "Developer productivity tool: one-click workspace indexing via" 8.5 1 #3a4a5a
+TEXT 40 558 "RAG embeddings, natural-language code search, parallel AI" 8.5 1 #3a4a5a
+TEXT 40 572 "session orchestration. Automates context-gathering that" 8.5 1 #3a4a5a
+TEXT 40 586 "normally takes engineers 30+ minutes." 8.5 1 #3a4a5a
+
+DIVIDER 40 602 380 602 1 #d8e4ee
+
+-- Hackathon — signal detection & real-time systems
+TEXT 40 614 "BCI System — 1st Place, International Hackathon" 11 1 #1a3a5c bold
+TEXT 330 614 "Spring 2025" 8 1 #8aaabe
+TEXT 40 630 "G-tec Medical Engineering  ·  93 teams" 8.5 1 #5a7a8e
+TEXT 40 646 "Built a real-time signal processing pipeline: EEG brain signals" 8.5 1 #3a4a5a
+TEXT 40 660 "captured, filtered, classified, and mapped to MIDI output — all" 8.5 1 #3a4a5a
+TEXT 40 674 "automated with sub-second latency." 8.5 1 #3a4a5a
+
+-- ── Education ────────────────────────────────────
+RECT 40 704 340 2 1 #4a9ad4
+TEXT 40 712 "EDUCATION" 8 1 #4a9ad4 bold
+
+TEXT 40 732 "BSc Cognitive Science & AI — 2nd year" 11 1 #1a3a5c bold
+TEXT 290 732 "Sept 2024 — Current" 8 1 #8aaabe
+TEXT 40 748 "Tilburg University, Tilburg, Netherlands" 8.5 1 #5a7a8e
+
+-- ── Work Experience ──────────────────────────────
+RECT 40 772 340 2 1 #4a9ad4
+TEXT 40 780 "WORK EXPERIENCE" 8 1 #4a9ad4 bold
+
+TEXT 40 800 "Vice-Chair — CSAI Programme Committee" 11 1 #1a3a5c bold
+TEXT 40 816 "Tilburg University" 8.5 1 #5a7a8e
+TEXT 290 816 "Sept 2025 — Current" 8 1 #8aaabe
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN
+-- ═══════════════════════════════════════════════════
+
+RECT 400 278 155 2 1 #4a9ad4
+TEXT 400 286 "SKILLS" 8 1 #4a9ad4 bold
+
+TEXT 400 306 "Automation & Tooling" 8.5 1 #1a3a5c bold
+TEXT 400 320 "Workflow automation (end-to-end)" 8 1 #3a4a5a
+TEXT 400 334 "Web scraping (Playwright)" 8 1 #3a4a5a
+TEXT 400 348 "DSL design & compilers" 8 1 #3a4a5a
+TEXT 400 362 "API integration & orchestration" 8 1 #3a4a5a
+TEXT 400 376 "Data pipelines & ETL" 8 1 #3a4a5a
+
+TEXT 400 398 "AI & Development" 8.5 1 #1a3a5c bold
+TEXT 400 412 "2,400+ hrs with AI-assisted dev" 8 1 #3a4a5a
+TEXT 400 426 "RAG systems & embeddings" 8 1 #3a4a5a
+TEXT 400 440 "Full-stack (React, Node, Rust)" 8 1 #3a4a5a
+TEXT 400 454 "MCP server integration" 8 1 #3a4a5a
+
+TEXT 400 476 "Engineering Practices" 8.5 1 #1a3a5c bold
+TEXT 400 490 "CI/CD & build automation" 8 1 #3a4a5a
+TEXT 400 504 "Test-driven development" 8 1 #3a4a5a
+TEXT 400 518 "Git workflows & code review" 8 1 #3a4a5a
+
+TEXT 400 540 "Communication" 8.5 1 #1a3a5c bold
+TEXT 400 554 "Art of Presenting course" 8 1 #3a4a5a
+TEXT 400 568 "University Theatre (active)" 8 1 #3a4a5a
+
+-- Live Projects
+RECT 400 594 155 2 1 #4a9ad4
+TEXT 400 602 "LIVE PROJECTS" 8 1 #4a9ad4 bold
+TEXT 400 622 "bedandmarket.com" 9 1 #1a3a5c
+TEXT 400 638 "batchresume.com" 9 1 #1a3a5c
+TEXT 400 654 "stayinbocas.com" 9 1 #1a3a5c
+TEXT 400 670 "brainquiz.study" 9 1 #1a3a5c
+
+-- Languages
+RECT 400 696 155 2 1 #4a9ad4
+TEXT 400 704 "LANGUAGES" 8 1 #4a9ad4 bold
+TEXT 400 724 "Polish" 9 1 #3a4a5a
+TEXT 520 724 "native" 7.5 1 #8aaabe
+TEXT 400 740 "English" 9 1 #3a4a5a
+TEXT 520 740 "fluent" 7.5 1 #8aaabe
+TEXT 400 756 "Dutch" 9 1 #3a4a5a
+TEXT 520 756 "learning" 7.5 1 #8aaabe
+TEXT 400 772 "Spanish" 9 1 #3a4a5a
+TEXT 520 772 "communicative" 7.5 1 #8aaabe
+
+-- Interests
+RECT 400 798 155 2 1 #4a9ad4
+TEXT 400 806 "INTERESTS" 8 1 #4a9ad4 bold
+TEXT 400 824 "Process optimization" 8.5 1 #3a4a5a
+TEXT 400 838 "Brain-Computer Interfaces" 8.5 1 #3a4a5a

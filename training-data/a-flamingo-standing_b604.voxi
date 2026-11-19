@@ -1,0 +1,39 @@
+V 24 36 24
+
+-- standing leg
+C 12 5 12 1 10 b
+
+-- foot
+B 10 0 11 5 1 3 b
+
+-- tucked leg (folded at body)
+C 14 10 13 1 5 b
+S 14 9 13 2 b
+
+-- body
+E 12 14 12 5 4 3 b
+
+-- wing accent
+B 9 13 12 2 3 1 5
+B 15 13 12 2 3 1 5
+
+-- lower neck
+C 12 18 12 1 3 b
+
+-- mid neck curves forward
+C 11 21 11 1 3 b
+
+-- upper neck
+C 10 23 10 1 2 b
+
+-- head
+S 10 25 10 2 b
+
+-- upper beak
+B 6 25 9 5 1 1 7
+
+-- lower beak (bent downward)
+B 6 24 9 4 1 1 0
+
+-- eye
+S 9 26 9 1 0

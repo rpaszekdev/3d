@@ -1,0 +1,16 @@
+`★ Insight ─────────────────────────────────────`
+All 6 screenshots render as pure black — this is the classic **color collision** problem in VOXI: the main body uses color `f` (navy), which is nearly indistinguishable from the renderer's `#13151f` dark background. Even though orange feet (`7`) are technically present, they're buried at Y=0 beneath the body sphere and not visible from most angles. Color choice against the background is *the* most impactful single decision in VOXI modeling.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+STRENGTHS: The structural intent is sound — legs, feet, and a spherical body are the right anatomical starting points for a penguin. The use of `S` (sphere) for the body and separate leg/feet boxes shows good model thinking.
+
+ISSUES:
+- **The body is completely invisible**: `S 16 10 15 7 f` uses navy (`f`) which blends entirely into the `#13151f` renderer background. Replace with `9` (gray) for the dark back, and layer a white (`8`) belly ellipsoid: `E 16 10 14 4 6 3 8` for a white chest patch.
+- **No head**: The code is truncated — no head sphere exists. Add `S 16 19 15 4 f` for a navy head (but switch navy → `9` gray), then `S 16 19 15 4 9` for a gray head.
+- **No beak, eyes, or wings**: A penguin needs `B 14 20 11 4 2 2 6` for an orange/yellow beak (`6`), `P 14 20 14 0` (avoid black — use `3` blue) for eyes, and flat wing boxes on the sides: `B 8 8 14 3 8 2 9` left wing, `B 21 8 14 3 8 2 9` right wing.
+- **Legs use navy (`f`) too**: `B 12 2 14 4 3 4 f` and `B 18 2 14 4 3 4 f` are also invisible. Change legs to `9` (gray) and keep feet as `7` (orange) — the feet are the one correctly colored element, but they're hidden beneath the body.
+
+PRIORITY_FIX: Replace ALL navy (`f`) colors with gray (`9`) immediately — this single change will make the entire model visible and bring the score from 1 to at least a 5. The body alone: change `S 16 10 15 7 f` → `S 16 10 15 7 9`, and add a white belly `E 16 9 13 4 5 3 8`.

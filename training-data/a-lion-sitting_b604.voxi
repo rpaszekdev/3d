@@ -1,0 +1,50 @@
+V 32 32 32
+
+-- rear haunches
+B 9 0 15 14 5 9 d
+
+-- body torso
+B 11 4 13 10 8 7 d
+
+-- belly
+B 12 1 12 8 4 5 8
+
+-- front left leg
+B 11 0 10 3 5 3 d
+
+-- front right leg
+B 18 0 10 3 5 3 d
+
+-- front paws
+B 10 0 9 5 2 4 8
+B 17 0 9 5 2 4 8
+
+-- neck
+B 14 11 11 4 4 3 d
+
+-- mane
+S 16 17 12 6 7
+
+-- head
+S 16 17 10 4 d
+
+-- ears
+B 13 22 10 2 2 2 d
+B 18 22 10 2 2 2 d
+
+-- inner ears
+B 13 22 9 2 2 1 5
+
+-- muzzle
+E 16 15 8 3 2 2 8
+
+-- nose
+S 16 15 7 1 5
+
+-- eyes
+S 14 18 8 1 0
+S 18 18 8 1 0
+
+-- tail
+B 23 1 17 2 8 2 a
+S 25 9 17 2 a

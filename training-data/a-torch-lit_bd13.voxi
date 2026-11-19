@@ -1,0 +1,19 @@
+V 16 16 16
+
+-- handle/stick
+C 8 2 8 1 8 a
+
+-- torch wrap/binding
+B 7 5 8 2 1 2 6
+
+-- flame base
+S 8 9 8 2 6
+
+-- flame middle
+S 8 11 8 1 5
+
+-- flame tip
+S 8 13 8 1 1
+
+-- ember glow
+S 8 8 8 1 7

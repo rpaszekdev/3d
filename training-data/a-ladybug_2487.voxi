@@ -1,0 +1,38 @@
+V 24 24 24
+
+-- body (red ellipsoid)
+E 12 6 12 7 4 5 1
+
+-- head (black sphere)
+S 12 6 7 3 0
+
+-- left eye
+S 10 8 6 1 8
+
+-- right eye
+S 14 8 6 1 8
+
+-- spots on back
+S 9 10 10 2 0
+S 15 10 10 2 0
+S 9 10 14 2 0
+S 15 10 14 2 0
+S 12 10 12 2 0
+
+-- center line
+B 11 6 7 2 4 5 0
+
+-- left antenna
+C 10 11 7 0 4 0
+-- right antenna
+C 14 11 7 0 4 0
+
+-- underside / legs left
+B 5 2 9 3 1 2 0
+B 5 2 12 3 1 2 0
+B 5 2 15 3 1 2 0
+
+-- underside / legs right
+B 16 2 9 3 1 2 0
+B 16 2 12 3 1 2 0
+B 16 2 15 3 1 2 0

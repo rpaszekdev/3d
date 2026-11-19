@@ -1,0 +1,45 @@
+V 32 32 32
+
+-- trunk
+C 16 0 16 2 26 a
+
+-- platform
+B 9 12 9 14 2 14 a
+
+-- front walls with door gap
+B 9 14 9 4 6 1 d
+B 17 14 9 6 6 1 d
+
+-- back and side walls
+B 9 14 22 14 6 1 d
+B 9 14 9 1 6 14 d
+B 22 14 9 1 6 14 d
+
+-- window
+B 9 16 14 1 2 4 3
+
+-- roof base
+B 8 20 8 16 1 16 7
+
+-- roof layers
+B 9 21 9 14 1 14 e
+B 10 22 10 12 1 12 e
+B 11 23 11 10 1 10 e
+B 12 24 12 8 1 8 e
+B 13 25 13 6 1 6 e
+
+-- foliage
+S 16 27 16 5 2
+S 10 24 10 3 c
+S 22 24 10 3 c
+S 10 24 22 3 c
+S 22 24 22 3 c
+
+-- ladder rails
+B 14 0 8 1 12 1 a
+B 15 0 8 1 12 1 a
+
+-- ladder rungs
+B 14 3 8 2 1 1 6
+B 14 6 8 2 1 1 6
+B 14 9 8 2 1 1 6

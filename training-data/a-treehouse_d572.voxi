@@ -1,0 +1,45 @@
+V 32 40 32
+
+-- tree trunk
+C 16 0 16 2 16 a
+
+-- lower foliage
+S 16 11 16 6 c
+
+-- platform floor
+B 9 16 9 14 1 14 d
+
+-- house walls
+B 9 17 9 14 5 1 d
+B 9 17 23 14 5 1 d
+B 9 17 10 1 5 12 d
+B 23 17 10 1 5 12 d
+
+-- door opening
+B 13 17 9 4 4 1 0
+
+-- window
+B 18 19 9 4 3 1 8
+
+-- roof pyramid
+B 8 22 8 16 1 16 1
+B 10 23 10 12 1 12 1
+B 12 24 12 8 1 8 1
+B 14 25 14 4 1 4 1
+B 15 26 15 2 1 2 1
+
+-- upper foliage
+S 16 30 16 5 2
+S 11 28 16 4 2
+S 21 28 16 4 2
+S 16 28 11 3 2
+S 16 28 21 3 2
+
+-- ladder sides
+B 20 9 10 1 7 1 a
+B 21 9 10 1 7 1 a
+
+-- ladder rungs
+B 20 10 10 2 1 1 d
+B 20 12 10 2 1 1 d
+B 20 14 10 2 1 1 d

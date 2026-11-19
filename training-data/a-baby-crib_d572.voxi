@@ -1,0 +1,45 @@
+V 32 24 32
+
+-- four corner posts (tan wood)
+B 5 0 12 2 14 2 d
+B 25 0 12 2 14 2 d
+B 5 0 18 2 14 2 d
+B 25 0 18 2 14 2 d
+
+-- headboard panel
+B 5 3 14 2 8 4 d
+
+-- footboard panel
+B 25 3 14 2 8 4 d
+
+-- top side rails
+B 5 12 12 22 1 1 d
+B 5 12 19 22 1 1 d
+
+-- crib floor platform
+B 7 3 13 18 1 6 d
+
+-- front slats
+B 8 3 12 1 9 1 d
+B 11 3 12 1 9 1 d
+B 14 3 12 1 9 1 d
+B 17 3 12 1 9 1 d
+B 20 3 12 1 9 1 d
+B 23 3 12 1 9 1 d
+
+-- back slats
+B 8 3 19 1 9 1 d
+B 11 3 19 1 9 1 d
+B 14 3 19 1 9 1 d
+B 17 3 19 1 9 1 d
+B 20 3 19 1 9 1 d
+B 23 3 19 1 9 1 d
+
+-- mattress (white)
+B 7 4 13 18 2 6 8
+
+-- pillow (pink)
+B 8 6 14 5 1 3 b
+
+-- blanket (cyan)
+B 7 6 13 13 1 5 4

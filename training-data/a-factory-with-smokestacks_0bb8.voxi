@@ -1,0 +1,61 @@
+V 48 48 48
+
+-- main factory building
+B 8 0 14 32 13 20 9
+
+-- factory roof
+B 8 13 14 32 2 20 8
+
+-- left annex
+B 3 0 15 6 10 18 9
+
+-- right annex
+B 39 0 15 6 10 18 9
+
+-- smokestack 1
+C 15 15 24 2 16 8
+
+-- smokestack 2
+C 24 15 24 2 16 8
+
+-- smokestack 3
+C 33 15 24 2 12 8
+
+-- smoke puffs
+S 15 33 24 3 7
+S 15 36 23 2 7
+S 24 33 24 3 7
+S 24 36 25 2 7
+S 33 29 24 2 7
+S 33 31 23 2 7
+
+-- front windows
+B 11 5 13 5 4 1 3
+B 20 5 13 5 4 1 3
+B 29 5 13 5 4 1 3
+
+-- high windows
+B 11 10 13 5 2 1 3
+B 20 10 13 5 2 1 3
+B 29 10 13 5 2 1 3
+
+-- entrance door
+B 21 0 13 6 7 1 0
+
+-- loading dock platform
+B 8 0 34 12 3 5 6
+
+-- dock door
+B 10 3 34 8 5 1 0
+
+-- water tower cylinder
+C 42 18 20 3 7 9
+
+-- water tower roof
+S 42 26 20 4 9
+
+-- fence posts
+B 4 0 12 1 3 1 9
+B 43 0 12 1 3 1 9
+B 4 0 36 1 3 1 9
+B 43 0 36 1 3 1 9

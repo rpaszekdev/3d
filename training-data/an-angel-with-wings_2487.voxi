@@ -1,0 +1,43 @@
+V 32 32 32
+
+-- halo
+C 16 25 16 5 1 6
+
+-- head
+S 16 21 16 3 d
+
+-- hair
+E 16 23 16 4 2 3 3
+
+-- body robe
+B 11 9 13 10 11 6 8
+
+-- left arm
+B 8 13 14 3 7 3 d
+
+-- right arm
+B 21 13 14 3 7 3 d
+
+-- left hand
+S 9 11 15 2 d
+
+-- right hand
+S 23 11 15 2 d
+
+-- left leg
+B 13 0 14 3 10 3 d
+
+-- right leg
+B 18 0 14 3 10 3 d
+
+-- left wing upper
+E 4 17 15 10 6 2 8
+
+-- left wing lower
+E 5 11 15 8 5 2 8
+
+-- right wing upper
+E 28 17 15 10 6 2 8
+
+-- right wing lower
+E 27 11 15 8 5 2 8

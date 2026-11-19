@@ -1,0 +1,16 @@
+`★ Insight ─────────────────────────────────────`
+**The renderer's dark background (#13151f) is the core challenge here.** Color `f` (navy = #000080) and color `0` (black = #000000) are both so dark they become nearly indistinguishable from the background — this is the single most common pitfall in VOXI penguin models, since penguins are *naturally* dark-colored birds.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+
+STRENGTHS: The model has a structurally sound foundation based on the session history — it correctly uses orange (7) for feet, navy (f) for the body/legs, and attempts a layered body+head construction. The conceptual layout (feet at Y=0, legs above, torso above that) is anatomically correct for a standing penguin.
+
+ISSUES:
+- **Complete invisibility — entire model is black on black.** The body uses navy (`f` = #000080) which is nearly identical to the dark background (#13151f). Replace ALL navy body/head voxels with `3` (blue) or `9` (gray) as a base, then accent with darker detail. For example, change `B 8 6 12 16 14 8 f` → `B 8 6 12 16 14 8 3` to make the body visible.
+- **White belly is missing or invisible.** A penguin's most recognizable feature is its white front. Add `B 12 6 14 8 12 3 8` (white belly patch on the front face, color `8`) — this alone would make the model instantly recognizable even at low resolution.
+- **Eyes and beak are absent or swallowed by darkness.** Add `B 16 22 8 2 2 1 6` for a yellow beak (color `6`) and `P 14 24 8 8` + `P 18 24 8 8` for two white eye dots — these high-contrast facial features are critical for readability at voxel scale.
+
+PRIORITY_FIX: **Replace the navy body color `f` with blue `3` throughout the entire model.** This single change will make the penguin shape visible immediately. A dark blue body on a dark background renders as nothing — switch to `3` for the outer body and `8` for the belly, and the penguin silhouette will appear from the void.

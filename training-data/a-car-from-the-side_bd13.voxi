@@ -1,0 +1,36 @@
+V 32 16 6
+
+-- front wheel
+S 7 3 3 3 9
+S 7 3 3 1 7
+
+-- rear wheel
+S 25 3 3 3 9
+S 25 3 3 1 7
+
+-- lower body chassis
+B 3 3 1 26 4 4 1
+
+-- cabin roof
+B 10 7 1 12 4 4 1
+
+-- front windshield
+B 10 7 2 4 4 2 4
+
+-- side window
+B 14 8 2 4 3 2 4
+
+-- rear window
+B 18 7 2 4 4 2 4
+
+-- headlight
+B 2 4 2 2 2 2 6
+
+-- taillight
+B 28 4 2 2 2 2 1
+
+-- front bumper
+B 1 3 1 2 2 4 9
+
+-- rear bumper
+B 29 3 1 2 2 4 9

@@ -1,0 +1,19 @@
+V 24 24 24
+
+-- main body (large squashed ellipsoid)
+E 12 8 12 9 8 9 5
+
+-- lower bulk (wider base sitting on floor)
+E 12 4 12 10 4 10 4
+
+-- gathered fabric top
+E 12 14 12 5 4 5 4
+
+-- top knot / tie
+S 12 18 12 2 8
+
+-- seam line front
+B 11 6 3 2 10 1 8
+
+-- seam line side
+B 3 6 11 1 10 2 8

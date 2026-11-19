@@ -1,0 +1,45 @@
+V 24 32 20
+
+-- flippers
+B 5 0 5 4 1 8 0
+B 15 0 5 4 1 8 0
+
+-- lower legs
+B 8 1 9 3 5 3 3
+B 13 1 9 3 5 3 3
+
+-- hips
+B 7 6 9 10 3 3 3
+
+-- torso wetsuit
+B 7 9 9 10 8 3 3
+
+-- left arm
+B 4 10 9 3 6 3 3
+
+-- right arm
+B 17 10 9 3 6 3 3
+
+-- oxygen tank on back
+C 12 11 14 2 7 9
+
+-- neck
+C 12 18 9 1 2 d
+
+-- head
+S 12 21 9 3 8
+
+-- diving mask visor
+B 10 19 7 4 3 2 4
+
+-- regulator mouthpiece
+B 12 18 7 2 1 2 9
+
+-- gloves
+B 4 15 9 3 2 3 0
+B 17 15 9 3 2 3 0
+
+-- bubbles rising
+S 15 25 8 1 8
+S 14 27 7 1 8
+S 16 29 8 1 8

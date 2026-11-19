@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>System 1 vs System 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --ink: #f5f0e6;
+    --muted: rgba(245, 240, 230, 0.55);
+    --rule: rgba(245, 240, 230, 0.12);
+    --warm: #e6b25a;   /* System 1 accent — warm, intuitive */
+    --cool: #6aa9c9;   /* System 2 accent — cool, deliberate */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 6vh 6vw;
+  }
+
+  /* === Header === */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1.4vh;
+  }
+
+  header h1 {
+    font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+
+  header .credit {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.4;
+  }
+
+  /* === Two columns === */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0;
+    align-items: stretch;
+    padding: 4vh 0;
+    min-height: 0;
+  }
+
+  .divider {
+    background: var(--rule);
+    width: 1px;
+  }
+
+  .col {
+    padding: 0 4.5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3vh;
+  }
+
+  .col .label {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .col .label-1 { color: var(--warm); }
+  .col .label-2 { color: var(--cool); }
+
+  .col h2 {
+    font-size: clamp(2.6rem, 5.2vw, 4.6rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .col .tagline {
+    font-style: italic;
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    opacity: 0.65;
+    line-height: 1.4;
+    max-width: 32ch;
+  }
+
+  /* === Attribute list === */
+  ul.traits {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9vh;
+    padding-top: 1vh;
+    border-top: 1px solid var(--rule);
+  }
+
+  ul.traits li {
+    display: grid;
+    grid-template-columns: 14ch 1fr;
+    align-items: baseline;
+    gap: 1.4vw;
+    font-size: clamp(0.95rem, 1.25vw, 1.15rem);
+    line-height: 1.45;
+    padding-top: 0.6vh;
+  }
+
+  ul.traits li .k {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.78em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.45;
+  }
+
+  ul.traits li .v {
+    font-weight: 400;
+  }
+
+  /* === Example block === */
+  .example {
+    margin-top: 1.5vh;
+    padding: 1.6vh 0 0;
+    border-top: 1px solid var(--rule);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    line-height: 1.5;
+  }
+
+  .example::before {
+    content: "e.g.";
+    font-style: normal;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.7em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-right: 0.8em;
+  }
+
+  /* === Footer === */
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 1.4vh;
+    border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.4;
+  }
+
+  /* Responsive: stack on small screens */
+  @media (max-width: 900px) {
+    .columns {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1px 1fr;
+    }
+    .divider { width: 100%; height: 1px; }
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+
+    <header>
+      <h1>Two Systems of Thought</h1>
+      <span class="credit">Kahneman, 2011</span>
+    </header>
+
+    <div class="columns">
+
+      <!-- ============================ SYSTEM 1 ============================ -->
+      <section class="col" style="--accent: var(--warm)">
+        <div>
+          <div class="label label-1">System 1</div>
+          <h2 style="color: var(--warm)">Fast</h2>
+          <p class="tagline">Automatic, intuitive, always running in the background.</p>
+        </div>
+
+        <ul class="traits">
+          <li><span class="k">Speed</span>      <span class="v">Instant, parallel</span></li>
+          <li><span class="k">Effort</span>     <span class="v">Effortless</span></li>
+          <li><span class="k">Control</span>    <span class="v">Involuntary</span></li>
+          <li><span class="k">Process</span>    <span class="v">Pattern matching, association</span></li>
+          <li><span class="k">Output</span>     <span class="v">Impressions, feelings, intuitions</span></li>
+          <li><span class="k">Cost</span>       <span class="v">Cheap, biased, often right</span></li>
+        </ul>
+
+        <div class="example">
+          Recognizing a friend's face. Reading the word <em>STOP</em>. Sensing anger in a voice. 2 + 2.
+        </div>
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <!-- ============================ SYSTEM 2 ============================ -->
+      <section class="col" style="--accent: var(--cool)">
+        <div>
+          <div class="label label-2">System 2</div>
+          <h2 style="color: var(--cool)">Slow</h2>
+          <p class="tagline">Deliberate, effortful, allocated attention to mental work.</p>
+        </div>
+
+        <ul class="traits">
+          <li><span class="k">Speed</span>      <span class="v">Sequential, serial</span></li>
+          <li><span class="k">Effort</span>     <span class="v">Demands focus</span></li>
+          <li><span class="k">Control</span>    <span class="v">Voluntary, deliberate</span></li>
+          <li><span class="k">Process</span>    <span class="v">Rule-following, computation</span></li>
+          <li><span class="k">Output</span>     <span class="v">Beliefs, choices, commitments</span></li>
+          <li><span class="k">Cost</span>       <span class="v">Expensive, lazy, accurate when engaged</span></li>
+        </ul>
+
+        <div class="example">
+          17 × 24. Parking in a tight space. Filling out a tax form. Following an unfamiliar route.
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <span>Thinking, Fast and Slow</span>
+      <span>Dual-Process Theory</span>
+    </footer>
+
+  </div>
+</body>
+</html>

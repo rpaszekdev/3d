@@ -1,0 +1,37 @@
+V 24 28 24
+
+-- base platform
+B 5 0 7 14 2 10 d
+
+-- pedestal
+B 8 2 9 8 3 6 d
+
+-- stem lower
+B 9 5 10 6 5 4 d
+
+-- neck
+B 10 10 10 4 3 3 d
+
+-- head back
+B 9 13 9 6 6 4 d
+
+-- muzzle forward toward viewer
+B 10 10 6 4 5 4 d
+
+-- snout tip
+B 11 10 4 2 3 2 d
+
+-- ear left
+B 9 19 10 2 3 2 d
+
+-- ear right
+B 13 19 10 2 3 2 d
+
+-- mane ridge
+B 14 13 10 1 6 2 8
+
+-- eye left
+S 10 15 8 1 0
+
+-- nostril
+B 11 10 3 2 1 1 0

@@ -1,0 +1,39 @@
+V 24 36 16
+
+-- flippers
+B 7 0 5 4 2 6 2
+B 13 0 5 4 2 6 2
+
+-- legs
+B 9 2 5 2 6 4 f
+B 13 2 5 2 6 4 f
+
+-- wetsuit torso
+B 7 8 4 10 9 7 f
+
+-- scuba tank
+B 9 8 10 6 8 2 9
+B 11 15 10 2 1 2 9
+
+-- regulator hose
+B 9 15 9 6 1 1 9
+
+-- arms
+B 4 9 4 3 6 3 f
+B 17 9 4 3 6 3 f
+
+-- gloves
+B 4 9 4 3 2 3 8
+B 17 9 4 3 2 3 8
+
+-- neck and hood
+B 10 17 4 4 2 5 f
+
+-- head
+S 12 21 6 3 f
+
+-- mask visor
+B 9 19 3 6 3 2 4
+
+-- regulator mouthpiece
+B 11 18 3 2 1 3 9

@@ -1,0 +1,31 @@
+V 24 16 24
+
+-- compass housing (brown outer rim)
+C 12 2 12 9 4 a
+
+-- bezel ring (gray)
+C 12 4 12 9 1 9
+
+-- compass face (white)
+C 12 5 12 8 1 8
+
+-- north needle (red, pointing toward viewer)
+B 11 5 4 2 1 8 1
+
+-- south needle (gray, opposite direction)
+B 11 5 12 2 1 8 9
+
+-- center pivot pin (yellow)
+S 12 6 12 1 6
+
+-- N cardinal marker (red)
+B 11 6 2 2 2 1 1
+
+-- S cardinal marker (black)
+B 11 6 20 2 2 1 0
+
+-- E cardinal marker (green)
+B 20 6 11 1 2 2 2
+
+-- W cardinal marker (blue)
+B 2 6 11 1 2 2 3

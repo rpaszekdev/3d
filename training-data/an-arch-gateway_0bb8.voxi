@@ -1,0 +1,37 @@
+V 32 28 16
+
+-- stone base
+B 2 0 5 28 2 6 9
+
+-- left column
+B 5 2 6 4 16 4 7
+
+-- right column
+B 23 2 6 4 16 4 7
+
+-- left column capital
+B 4 18 6 6 2 4 8
+
+-- right column capital
+B 22 18 6 6 2 4 8
+
+-- arch left lower
+B 9 20 6 2 3 4 7
+
+-- arch left mid
+B 11 22 6 2 2 4 7
+
+-- arch left upper
+B 13 23 6 2 2 4 7
+
+-- arch keystone
+B 15 24 6 2 2 4 d
+
+-- arch right upper
+B 17 23 6 2 2 4 7
+
+-- arch right mid
+B 19 22 6 2 2 4 7
+
+-- arch right lower
+B 21 20 6 2 3 4 7

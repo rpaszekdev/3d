@@ -1,0 +1,40 @@
+V 24 24 24
+
+-- well walls (stone)
+B 8 0 8 8 4 2 9
+B 8 0 14 8 4 2 9
+B 8 0 10 2 4 4 9
+B 14 0 10 2 4 4 9
+
+-- water inside
+B 10 0 10 4 2 4 3
+
+-- corner support posts
+B 8 0 8 2 10 2 a
+B 14 0 8 2 10 2 a
+B 8 0 14 2 10 2 a
+B 14 0 14 2 10 2 a
+
+-- crossbeam over well opening
+B 8 10 11 8 2 2 a
+
+-- rope
+B 12 4 12 1 6 1 9
+
+-- bucket
+B 11 2 12 2 2 2 a
+
+-- roof tier 1 (wide base)
+B 6 12 6 12 2 12 a
+
+-- roof tier 2
+B 8 14 8 8 2 8 a
+
+-- roof tier 3
+B 9 16 9 6 2 6 a
+
+-- roof tier 4
+B 10 18 10 4 2 4 a
+
+-- roof peak
+B 11 20 10 2 2 4 6

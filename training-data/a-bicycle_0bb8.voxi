@@ -1,0 +1,44 @@
+V 36 24 8
+
+-- rear wheel
+E 8 7 4 7 7 1 9
+S 8 7 4 1 0
+
+-- front wheel
+E 28 7 4 7 7 1 9
+S 28 7 4 1 0
+
+-- seat tube (vertical)
+B 16 7 3 2 11 2 3
+
+-- top tube (horizontal)
+B 16 17 3 11 2 2 3
+
+-- down tube (stepped diagonal, head tube to bottom bracket)
+B 17 7 3 2 3 2 3
+B 19 10 3 2 4 2 3
+B 21 13 3 5 5 2 3
+
+-- chain stays (rear axle to bottom bracket)
+B 8 5 3 9 2 2 3
+
+-- seat stays (rear axle to seat post)
+B 9 8 3 2 3 2 3
+B 11 10 3 2 4 2 3
+B 13 13 3 3 5 2 3
+
+-- saddle
+B 12 19 3 7 1 2 d
+-- seat post cap
+B 16 17 3 2 3 2 9
+
+-- handlebar stem
+B 26 17 3 2 5 2 9
+-- handlebars (crossbar)
+B 24 21 3 5 1 2 0
+
+-- front fork
+B 27 7 3 2 11 2 9
+
+-- pedal crank and pedals
+B 14 4 1 7 2 6 6

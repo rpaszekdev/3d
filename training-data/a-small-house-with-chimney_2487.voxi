@@ -1,0 +1,31 @@
+V 24 24 24
+
+-- house walls (tan)
+B 4 0 4 16 8 16 d
+
+-- door (brown)
+B 10 0 3 4 6 1 a
+
+-- left window (cyan)
+B 5 3 3 3 3 1 4
+
+-- right window (cyan)
+B 15 3 3 3 3 1 4
+
+-- roof layer 1 overhang (maroon)
+B 3 8 3 18 3 18 e
+
+-- roof layer 2
+B 5 11 5 14 3 14 e
+
+-- roof layer 3
+B 7 14 7 10 3 10 e
+
+-- roof peak
+B 9 17 9 6 2 6 e
+
+-- chimney base (gray)
+B 14 8 8 4 14 4 9
+
+-- chimney top opening (dark)
+B 14 21 8 4 1 4 0

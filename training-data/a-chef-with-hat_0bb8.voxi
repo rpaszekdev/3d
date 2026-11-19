@@ -1,0 +1,44 @@
+V 24 32 24
+
+-- legs
+B 9 0 10 3 7 3 9
+B 13 0 10 3 7 3 9
+
+-- torso (white chef coat)
+B 8 7 10 9 8 3 8
+
+-- apron overlay
+B 10 7 9 5 7 1 8
+
+-- left arm
+B 6 7 10 2 7 3 d
+-- right arm
+B 17 7 10 2 7 3 d
+
+-- hands
+B 6 4 10 2 3 3 d
+B 17 4 10 2 3 3 d
+
+-- neck
+C 12 15 12 1 2 d
+
+-- head
+S 12 18 12 3 d
+
+-- hat brim (wide)
+C 12 21 12 5 1 8
+
+-- hat body (tall)
+C 12 22 12 3 6 8
+
+-- coat buttons
+B 12 9 9 1 1 1 9
+B 12 11 9 1 1 1 9
+B 12 13 9 1 1 1 9
+
+-- eyes
+B 11 18 9 1 1 1 0
+B 13 18 9 1 1 1 0
+
+-- mouth (smile)
+B 11 16 9 3 1 1 0

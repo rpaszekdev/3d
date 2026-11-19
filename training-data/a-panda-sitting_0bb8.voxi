@@ -1,0 +1,43 @@
+V 24 24 24
+
+-- body (white)
+E 12 7 12 5 6 4 8
+
+-- belly detail (light gray)
+E 12 6 10 3 4 2 9
+
+-- head (white)
+S 12 15 12 4 8
+
+-- left ear (black)
+S 9 19 12 2 0
+
+-- right ear (black)
+S 15 19 12 2 0
+
+-- left eye patch (black)
+E 10 15 9 2 1 1 0
+
+-- right eye patch (black)
+E 14 15 9 2 1 1 0
+
+-- nose (black)
+S 12 13 9 1 0
+
+-- left arm (black)
+B 6 4 10 3 6 3 0
+
+-- right arm (black)
+B 15 4 10 3 6 3 0
+
+-- left leg (black)
+B 7 0 9 5 4 6 0
+
+-- right leg (black)
+B 12 0 9 5 4 6 0
+
+-- paw left (black)
+B 6 0 9 3 2 4 0
+
+-- paw right (black)
+B 15 0 9 3 2 4 0

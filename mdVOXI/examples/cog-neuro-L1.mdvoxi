@@ -1,0 +1,813 @@
+# Module 1 — Lecture 1: History & Approaches in Cognitive Neuroscience
+
+> [!info] 4 sources · 32 RAG chunks · Key exam topics marked with bold headers
+
+---
+
+## 1. What is Cognitive Neuroscience?
+
+Cognitive neuroscience is defined as work at the **intersection of cognitive science
+and neuroscience**. It seeks to understand the neural basis of cognition using every
+tool available: brain scanners, lesion studies, brain perturbations, and computational
+modelling.
+
+~~~voxi
+CANVAS 660 260 #0f1117
+-- Background panels
+RECT 40 30 240 200 1 #1a2a4a 12
+RECT 380 30 240 200 1 #0f2a1a 12
+
+-- Left: Cognitive Science
+TEXT 80 50 "COGNITIVE" 20 3 #6c8cff bold
+TEXT 80 76 "SCIENCE" 20 3 #6c8cff bold
+TEXT 60 110 "Mental processes:" 11 3 #8ec5fc
+TEXT 60 128 "perception, attention," 10 3 #8888a0
+TEXT 60 144 "memory, language," 10 3 #8888a0
+TEXT 60 160 "decision-making" 10 3 #8888a0
+TEXT 60 186 "Can ignore the brain" 9 3 #5a6a8a
+
+-- Right: Neuroscience
+TEXT 410 50 "NEURO-" 20 3 #43a047 bold
+TEXT 410 76 "SCIENCE" 20 3 #43a047 bold
+TEXT 400 110 "Nervous system:" 11 3 #81c784
+TEXT 400 128 "organisation, function," 10 3 #8888a0
+TEXT 400 144 "ion channels, cells," 10 3 #8888a0
+TEXT 400 160 "circuits, signalling" 10 3 #8888a0
+TEXT 400 186 "Can ignore cognition" 9 3 #5a8a6a
+
+-- Center: Intersection
+ELLIPSE 330 130 80 80 2 #1a1a3a
+RECT 270 80 120 100 4 #2a1a3a 12
+TEXT 282 100 "COGNITIVE" 14 5 #e040fb bold
+TEXT 274 118 "NEURO-" 14 5 #e040fb bold
+TEXT 274 136 "SCIENCE" 14 5 #e040fb bold
+TEXT 280 162 "Grounding" 9 5 #ce93d8
+TEXT 280 176 "mind in brain" 9 5 #ce93d8
+
+-- Arrows
+LINE 260 130 280 130 3 #6c8cff 2
+LINE 390 130 380 130 3 #43a047 2
+~~~
+
+**Key distinction:** Unlike pure cognitive science (which can ignore the brain) or
+molecular neuroscience (which studies ion channels), cognitive neuroscience tries to
+**ground psychological constructs in neurobiological processes**.
+
+> [!warning] Common Misconception
+> Cognitive neuroscience is NOT simply about mapping brain regions activated during
+> a task. The field goes well beyond creating maps of brain function — it aims to
+> create neurobiologically grounded *models* of cognition.
+
+---
+
+## 2. Historical Development of the Field
+
+The field evolved through distinct phases, each building on and reacting against
+the previous one:
+
+~~~voxi
+CANVAS 660 420 #0f1117
+
+-- Timeline spine
+LINE 50 30 50 400 1 #2d3244 2
+
+-- Era 1: Natural Philosophy
+ELLIPSE 50 50 8 8 2 #fdd835
+LINE 50 50 90 50 2 #fdd835 1
+RECT 90 30 540 60 2 #2a2510 8
+TEXT 106 38 "NATURAL PHILOSOPHY & EARLY PSYCHOLOGY" 12 3 #fdd835 bold
+TEXT 106 56 "19th Century — Helmholtz, Wundt, James" 10 3 #d4c87a
+TEXT 106 72 "Experimental study of mental processes via psychophysics" 9 3 #8888a0
+
+-- Era 2: Phrenology
+ELLIPSE 50 114 8 8 2 #ff9800
+LINE 50 114 90 114 2 #ff9800 1
+RECT 90 94 540 60 2 #2a1f0a 8
+TEXT 106 102 "PHRENOLOGY" 12 3 #ff9800 bold
+TEXT 260 102 "Franz Joseph Gall (1758-1828)" 9 3 #ffb74d
+TEXT 106 118 "Wrong method (skull bumps) but introduced localization of function" 9 3 #8888a0
+TEXT 106 136 "Modern equivalent: fMRI-based localization" 9 3 #5a5a6a
+
+-- Era 3: Neuron Doctrine
+ELLIPSE 50 178 8 8 2 #43a047
+LINE 50 178 90 178 2 #43a047 1
+RECT 90 158 540 60 2 #0f2a1a 8
+TEXT 106 166 "NEURON DOCTRINE" 12 3 #43a047 bold
+TEXT 290 166 "Late 19th Century" 9 3 #81c784
+TEXT 106 182 "Golgi staining -> Cajal identifies neurons as separate cells" 9 3 #8888a0
+TEXT 106 198 "Disproved reticular theory using Golgi's own technique (ironic!)" 9 3 #5a5a6a
+
+-- Era 4: Behaviourism
+ELLIPSE 50 242 8 8 2 #e53935
+LINE 50 242 90 242 2 #e53935 1
+RECT 90 222 540 60 2 #2a0f0f 8
+TEXT 106 230 "BEHAVIOURISM" 12 3 #e53935 bold
+TEXT 276 230 "Early 20th Century — B.F. Skinner" 9 3 #ef9a9a
+TEXT 106 246 "Brain as 'black box' — only stimulus-response matters" 9 3 #8888a0
+TEXT 106 264 "Abandoned all subjective work on mental functions" 9 3 #5a5a6a
+
+-- Era 5: Cognitive Revolution
+ELLIPSE 50 306 8 8 2 #1e88e5
+LINE 50 306 90 306 2 #1e88e5 1
+RECT 90 286 540 60 2 #0f1a2a 8
+TEXT 106 294 "COGNITIVE REVOLUTION" 12 3 #1e88e5 bold
+TEXT 316 294 "1950s-60s — Noam Chomsky" 9 3 #90caf9
+TEXT 106 310 "Behaviourism can't explain language — Dartmouth conference" 9 3 #8888a0
+TEXT 106 326 "Cognitive models without reference to brain" 9 3 #5a5a6a
+
+-- Era 6: Cognitive Neuroscience
+ELLIPSE 50 370 8 8 2 #e040fb
+LINE 50 370 90 370 2 #e040fb 1
+RECT 90 350 540 60 2 #1a0f2a 8
+TEXT 106 358 "COGNITIVE NEUROSCIENCE" 12 3 #e040fb bold
+TEXT 330 358 "Late 20th Century — Present" 9 3 #ce93d8
+TEXT 106 374 "Grounding cognitive models in neurobiology" 9 3 #8888a0
+TEXT 106 390 "fMRI, EEG, TMS, tDCS, optogenetics" 9 3 #5a5a6a
+~~~
+
+### 2.1 Natural Philosophy and Early Psychology
+
+Early physicians built models of mental processes through behavioural observation
+and experimental manipulation. Methods like psychophysical judgment and memorization
+tasks (some still used today) were pioneered here.
+
+~~~voxi
+CANVAS 660 100 #0f1117
+
+-- Helmholtz
+RECT 10 10 200 80 1 #1a2a4a 8
+ELLIPSE 40 50 16 16 2 #fdd835
+TEXT 66 28 "Helmholtz" 12 3 #fdd835 bold
+TEXT 66 46 "1821-1894" 9 3 #8888a0
+TEXT 66 62 "Early psychophysics" 9 3 #6c8cff
+
+-- Wundt
+RECT 230 10 200 80 1 #1a2a4a 8
+ELLIPSE 260 50 16 16 2 #43a047
+TEXT 286 28 "Wundt" 12 3 #43a047 bold
+TEXT 286 46 "1832-1920" 9 3 #8888a0
+TEXT 286 62 "1st psych lab" 9 3 #6c8cff
+
+-- James
+RECT 450 10 200 80 1 #1a2a4a 8
+ELLIPSE 480 50 16 16 2 #1e88e5
+TEXT 506 28 "James" 12 3 #1e88e5 bold
+TEXT 506 46 "1842-1910" 9 3 #8888a0
+TEXT 506 62 "Principles of Psych" 9 3 #6c8cff
+~~~
+
+### 2.2 Behaviourism (Early 20th Century)
+
+Driven by **B.F. Skinner** (1904-1990). Core argument: We cannot study mental
+representations directly, so focus only on observable behaviour. The brain was
+treated as a **"black box"** — only the stimulus-response relationship matters.
+
+~~~voxi
+CANVAS 660 110 #0f1117
+-- The Black Box model
+RECT 30 20 140 70 1 #43a047 6
+TEXT 50 40 "STIMULUS" 14 2 #43a047 bold
+TEXT 50 60 "Light, sound" 9 2 #81c784
+TEXT 50 76 "Reinforcement" 9 2 #81c784
+
+LINE 170 55 230 55 2 #8888a0 2
+TEXT 182 40 "input" 9 3 #8888a0
+
+RECT 230 15 180 80 1 #2d3244 6
+TEXT 270 34 "BLACK BOX" 16 2 #e53935 bold
+TEXT 264 58 "No internal states" 10 2 #ef9a9a
+TEXT 264 74 "No mental models" 10 2 #8888a0
+
+LINE 410 55 470 55 2 #8888a0 2
+TEXT 420 40 "output" 9 3 #8888a0
+
+RECT 470 20 160 70 1 #1e88e5 6
+TEXT 490 40 "RESPONSE" 14 2 #1e88e5 bold
+TEXT 490 60 "Lever press" 9 2 #90caf9
+TEXT 490 76 "Behaviour" 9 2 #90caf9
+~~~
+
+### 2.3 The Cognitive Revolution (Mid-20th Century)
+
+Born around the 1950s-60s at the **Dartmouth conference** on AI and Cognitive Science.
+**Noam Chomsky** argued that behaviourism cannot explain the structural and generative
+properties of language — humans have language capabilities animals do not share.
+
+This challenged the S-R framework and revived the legitimacy of studying cognitive
+functions. Eventually, the question arose: *How do we ground psychological constructs
+in neurobiological processes?* — This gave birth to **Cognitive Neuroscience**.
+
+---
+
+## 3. Early Neuroscience: Key Breakthroughs
+
+### 3.1 Phrenology — Wrong Method, Right Idea
+
+~~~voxi
+CANVAS 660 160 #0f1117
+-- Left: Wrong method
+RECT 20 10 290 140 1 #2a1f0a 8
+TEXT 36 26 "THE METHOD (wrong)" 11 2 #ff9800 bold
+TEXT 36 48 "Franz Joseph Gall (1758-1828)" 10 2 #ffb74d
+TEXT 36 68 "Measured bumps on the skull as" 9 2 #8888a0
+TEXT 36 84 "proxy for cortical region size" 9 2 #8888a0
+TEXT 36 106 "Skull shape does NOT reflect" 9 2 #ef9a9a
+TEXT 36 122 "brain organisation = pseudoscience" 9 2 #ef9a9a
+
+-- Arrow
+LINE 320 80 340 80 2 #8888a0 2
+
+-- Right: Right idea
+RECT 350 10 290 140 1 #0f2a1a 8
+TEXT 366 26 "THE IDEA (right)" 11 2 #43a047 bold
+TEXT 366 48 "Localization of Function" 10 2 #81c784
+TEXT 366 68 "Different brain regions serve" 9 2 #8888a0
+TEXT 366 84 "different cognitive purposes" 9 2 #8888a0
+TEXT 366 106 "Modern equivalent: fMRI, EEG" 9 2 #6c8cff
+TEXT 366 122 "Same logic, rigorous methods" 9 2 #6c8cff
+~~~
+
+> [!tip] Prof Quote
+> "The idea that there is sort of an organisation and that we could study this
+> organisation is great... but then measuring that on the skull is kind of
+> different than doing it with fMRI nowadays."
+
+### 3.2 Golgi, Cajal, and the Neuron Doctrine
+
+~~~voxi
+CANVAS 660 180 #0f1117
+-- Golgi
+RECT 20 10 300 160 1 #1a2a4a 8
+TEXT 36 24 "Camillo Golgi (1843-1926)" 11 2 #fdd835 bold
+TEXT 36 46 "Developed the Golgi staining" 10 2 #8888a0
+TEXT 36 62 "technique to visualize neurons" 10 2 #8888a0
+LINE 36 82 300 82 2 #2d3244 1
+TEXT 36 92 "Irony: Believed in reticular" 9 2 #ef9a9a
+TEXT 36 108 "theory (continuous network)" 9 2 #ef9a9a
+TEXT 36 128 "His own stain was used to" 9 2 #8888a0
+TEXT 36 144 "disprove his theory!" 9 2 #fdd835
+
+-- Arrow: technique flows
+LINE 320 90 340 90 2 #fdd835 2
+
+-- Cajal
+RECT 340 10 300 160 1 #0f2a1a 8
+TEXT 356 24 "Santiago R. y Cajal (1852-1934)" 11 2 #43a047 bold
+TEXT 356 46 "Used Golgi's stain to prove" 10 2 #8888a0
+TEXT 356 62 "neurons are DISCRETE cells" 10 2 #81c784
+LINE 356 82 620 82 2 #2d3244 1
+TEXT 356 92 "Established Neuron Doctrine:" 9 2 #43a047
+TEXT 356 108 "Cognitive processes carried" 9 2 #8888a0
+TEXT 356 124 "out by large populations of" 9 2 #8888a0
+TEXT 356 140 "individual neurons" 9 2 #81c784 bold
+~~~
+
+### 3.3 Electrical and Chemical Signalling
+
+Signals are transmitted along neuronal axons by **action potentials**. At specialized
+contacts called **synapses**, neurotransmitters are released, bind to receptor
+molecules on target neurons, and alter the membrane potential.
+
+This process requires energy from oxygen and metabolites supplied by the vascular
+system. Measurements of increased energy consumption and blood flow in active brain
+regions provide the basis for **fMRI**.
+
+---
+
+## 4. Localization of Function: Penfield and the Homunculus
+
+### 4.1 Wilder Penfield (1891-1976)
+
+Canadian neurosurgeon who sought better ways of mapping the cerebral cortex to
+minimize damage during surgery.
+
+~~~voxi
+CANVAS 660 260 #0f1117
+-- Method diagram
+RECT 20 10 300 240 1 #1a1a3a 8
+TEXT 36 24 "PENFIELD'S METHOD" 13 2 #e040fb bold
+
+-- Step boxes
+RECT 36 48 268 36 2 #1a2a4a 6
+TEXT 46 56 "1. Expose cortex during surgery" 10 3 #6c8cff
+RECT 36 92 268 36 2 #1a2a4a 6
+TEXT 46 100 "2. Apply weak electrical currents" 10 3 #6c8cff
+RECT 36 136 268 36 2 #1a2a4a 6
+TEXT 46 144 "3. Patient reports sensations" 10 3 #6c8cff
+RECT 36 180 268 36 2 #1a2a4a 6
+TEXT 46 188 "4. Map stimulation -> sensation" 10 3 #6c8cff
+TEXT 36 228 "Patient is AWAKE throughout" 9 2 #ef9a9a
+
+-- Result: Homunculus diagram (simplified)
+RECT 340 10 300 240 1 #0f1a2a 8
+TEXT 356 24 "THE HOMUNCULUS" 13 2 #1e88e5 bold
+
+-- Simplified body map (top to bottom = medial to lateral)
+RECT 362 50 18 14 2 #2e7d32 3
+TEXT 384 52 "Feet/Legs" 9 3 #81c784
+TEXT 500 52 "(top of brain)" 8 3 #5a5a6a
+
+RECT 362 70 18 14 2 #1e88e5 3
+TEXT 384 72 "Trunk" 9 3 #90caf9
+
+RECT 362 90 26 18 2 #fdd835 3
+TEXT 392 92 "Arms" 9 3 #d4c87a
+
+RECT 362 114 50 28 2 #ff9800 3
+TEXT 416 120 "Hands" 9 3 #ffb74d
+TEXT 500 120 "(large area!)" 8 3 #5a5a6a
+
+RECT 362 148 56 34 2 #e53935 3
+TEXT 422 158 "Face/Lips" 9 3 #ef9a9a
+TEXT 500 158 "(largest area!)" 8 3 #5a5a6a
+
+RECT 362 188 24 16 2 #ab47bc 3
+TEXT 390 190 "Tongue" 9 3 #ce93d8
+TEXT 500 190 "(side of brain)" 8 3 #5a5a6a
+
+TEXT 362 218 "More sensitive body parts =" 9 2 #8888a0
+TEXT 362 234 "larger cortical representation" 9 2 #fdd835
+~~~
+
+Body parts with greater sensory sensitivity (hands, face, lips) have
+**disproportionately larger** cortical representation. Stimulation near the top
+of the brain produces sensations in feet and legs; stimulation on the side produces
+sensations in face and lips.
+
+---
+
+## 5. Brain Anatomy Overview
+
+~~~voxi
+CANVAS 660 280 #0f1117
+-- Title
+TEXT 20 14 "KEY BRAIN STRUCTURES" 14 2 #fff bold
+
+-- Cortical (left side)
+RECT 20 40 300 230 1 #1a2a4a 8
+TEXT 36 52 "CORTICAL" 12 2 #6c8cff bold
+TEXT 120 52 "(surface)" 9 2 #8888a0
+
+RECT 36 72 268 30 2 #0f1a2a 6
+TEXT 46 80 "Occipital" 10 3 #90caf9
+TEXT 140 80 "Vision" 10 3 #8888a0
+
+RECT 36 108 268 30 2 #0f1a2a 6
+TEXT 46 116 "Somatosensory" 10 3 #90caf9
+TEXT 180 116 "Touch, body sense" 10 3 #8888a0
+
+RECT 36 144 268 30 2 #0f1a2a 6
+TEXT 46 152 "Motor Cortex" 10 3 #90caf9
+TEXT 170 152 "Movement control" 10 3 #8888a0
+
+RECT 36 180 268 30 2 #0f1a2a 6
+TEXT 46 188 "Prefrontal" 10 3 #90caf9
+TEXT 150 188 "Executive functions" 10 3 #8888a0
+
+TEXT 36 226 "The 'pink shell' of the brain" 9 2 #8888a0
+TEXT 36 242 "Higher cognitive functions" 9 2 #6c8cff
+
+-- Subcortical (right side)
+RECT 340 40 300 230 1 #2a1a3a 8
+TEXT 356 52 "SUBCORTICAL" 12 2 #e040fb bold
+TEXT 156 52 "(underneath)" 9 2 #8888a0
+
+RECT 356 72 268 36 2 #1a0f2a 6
+TEXT 366 76 "Thalamus" 10 3 #ce93d8
+TEXT 366 92 "Relay station for sensory info to cortex" 9 3 #8888a0
+
+RECT 356 114 268 36 2 #1a0f2a 6
+TEXT 366 118 "Amygdala" 10 3 #ce93d8
+TEXT 366 134 "Emotion processing" 9 3 #8888a0
+
+RECT 356 156 268 36 2 #1a0f2a 6
+TEXT 366 160 "Hippocampus" 10 3 #ce93d8
+TEXT 366 176 "Memory formation and storage" 9 3 #8888a0
+
+RECT 356 198 268 62 2 #1a0f2a 6
+TEXT 366 202 "Cerebellum" 10 3 #ce93d8
+TEXT 366 218 "Error correction — started as motor" 9 3 #8888a0
+TEXT 366 234 "evolved into general mechanism" 9 3 #8888a0
+~~~
+
+### 5.1 Prefrontal Cortex: Comparative Anatomy
+
+Early scientists believed frontal lobes were critical for controlling behaviour.
+Modern research (Semendeferi et al.) shows:
+
+~~~chart bar
+"Prefrontal Cortex % of Total" = Dog:7 Cat:4 Monkey:10 Apes:20 Humans:30
+colors = #8888a0 #8888a0 #8888a0 #ff9800 #6c8cff
+~~~
+
+> [!note] Key Insight
+> Humans are distinctive because of their **relatively large brains overall**,
+> not because of disproportionately large prefrontal cortices. Proportional size
+> of frontal lobes in humans (~35%) is similar to great apes.
+
+---
+
+## 6. The Neuron: Structure and Function
+
+~~~voxi
+CANVAS 660 220 #0f1117
+
+-- Dendrites (left, branching)
+LINE 70 70 120 90 1 #43a047 2
+LINE 70 110 120 90 1 #43a047 2
+LINE 50 60 70 70 1 #43a047 2
+LINE 50 80 70 70 1 #43a047 2
+LINE 50 100 70 110 1 #43a047 2
+LINE 50 120 70 110 1 #43a047 2
+LINE 40 55 50 60 1 #43a047 1
+LINE 40 70 50 60 1 #43a047 1
+LINE 40 85 50 80 1 #43a047 1
+LINE 40 95 50 100 1 #43a047 1
+LINE 40 115 50 120 1 #43a047 1
+LINE 40 130 50 120 1 #43a047 1
+TEXT 30 140 "DENDRITES" 9 2 #43a047 bold
+TEXT 24 154 "Receive inputs" 8 2 #81c784
+
+-- Cell body (soma)
+ELLIPSE 160 90 40 35 2 #fdd835
+TEXT 134 84 "SOMA" 12 3 #0f1117 bold
+TEXT 128 100 "(cell body)" 8 3 #0f1117
+TEXT 120 142 "CELL BODY" 9 2 #fdd835 bold
+TEXT 118 156 "Nucleus, metabolism" 8 2 #d4c87a
+
+-- Axon (long horizontal line)
+LINE 200 90 460 90 2 #1e88e5 3
+TEXT 290 74 "AXON" 11 3 #1e88e5 bold
+TEXT 260 104 "Carries action potentials" 8 3 #90caf9
+
+-- Myelin sheaths (bumps along axon)
+ELLIPSE 240 90 14 10 3 #64b5f6
+ELLIPSE 280 90 14 10 3 #64b5f6
+ELLIPSE 320 90 14 10 3 #64b5f6
+ELLIPSE 360 90 14 10 3 #64b5f6
+ELLIPSE 400 90 14 10 3 #64b5f6
+
+-- Synaptic terminals (right end)
+ELLIPSE 480 70 12 10 2 #e53935
+ELLIPSE 480 90 12 10 2 #e53935
+ELLIPSE 480 110 12 10 2 #e53935
+LINE 460 90 470 70 2 #1e88e5 2
+LINE 460 90 470 90 2 #1e88e5 2
+LINE 460 90 470 110 2 #1e88e5 2
+
+TEXT 460 130 "SYNAPTIC" 9 2 #e53935 bold
+TEXT 460 144 "TERMINALS" 9 2 #e53935 bold
+TEXT 450 160 "Neurotransmitter" 8 2 #ef9a9a
+TEXT 450 174 "release at synapses" 8 2 #ef9a9a
+
+-- Synapse detail box
+RECT 520 30 130 120 2 #2a1a3a 6
+TEXT 530 38 "SYNAPSE" 10 3 #e040fb bold
+LINE 530 52 640 52 3 #2d3244 1
+TEXT 530 60 "Transmitter binds" 8 3 #ce93d8
+TEXT 530 74 "to receptors on" 8 3 #ce93d8
+TEXT 530 88 "target neuron" 8 3 #ce93d8
+TEXT 530 106 "Alters membrane" 8 3 #8888a0
+TEXT 530 120 "potential" 8 3 #8888a0
+TEXT 530 136 "-> fire or not fire" 8 3 #fdd835
+~~~
+
+Neurons have three basic parts: **dendrites** (receive inputs), **cell body/soma**
+(contains nucleus), and **axon** (carries action potentials to synaptic terminals
+where neurotransmitters are released).
+
+---
+
+## 7. Methods of Cognitive Neuroscience
+
+Two major categories: **brain perturbation** (manipulate brain, observe cognition)
+and **neuromonitoring** (observe brain during cognitive tasks).
+
+~~~voxi
+CANVAS 660 340 #0f1117
+
+-- Title
+TEXT 20 12 "METHODS OVERVIEW" 14 2 #fff bold
+
+-- Left: Brain Perturbation
+RECT 20 36 300 294 1 #2a1f0a 8
+TEXT 36 48 "BRAIN PERTURBATION" 12 2 #ff9800 bold
+TEXT 36 64 "Manipulate brain -> observe cognition" 9 2 #ffb74d
+
+RECT 36 82 268 30 2 #1a1a0a 6
+TEXT 46 90 "Lesions" 10 3 #ff9800
+TEXT 130 90 "Stroke, trauma, disease" 9 3 #8888a0
+
+RECT 36 118 268 30 2 #1a1a0a 6
+TEXT 46 126 "Pharmacology" 10 3 #ff9800
+TEXT 170 126 "Agonists/Antagonists" 9 3 #8888a0
+
+RECT 36 154 268 30 2 #1a1a0a 6
+TEXT 46 162 "Intracranial Stim" 10 3 #ff9800
+TEXT 200 162 "Penfield's approach" 9 3 #8888a0
+
+RECT 36 190 268 30 2 #1a1a0a 6
+TEXT 46 198 "TMS / rTMS" 10 3 #ff9800
+TEXT 160 198 "Magnetic 'virtual lesion'" 9 3 #8888a0
+
+RECT 36 226 268 30 2 #1a1a0a 6
+TEXT 46 234 "tDCS" 10 3 #ff9800
+TEXT 110 234 "Electrical current through skull" 9 3 #8888a0
+
+RECT 36 262 268 30 2 #1a1a0a 6
+TEXT 46 270 "Optogenetics" 10 3 #ff9800
+TEXT 160 270 "Genetics + laser light" 9 3 #8888a0
+
+TEXT 36 306 "Agonist = activates receptors" 8 2 #81c784
+TEXT 36 318 "Antagonist = blocks receptors" 8 2 #ef9a9a
+
+-- Right: Neuromonitoring
+RECT 340 36 300 294 1 #0f1a2a 8
+TEXT 356 48 "NEUROMONITORING" 12 2 #1e88e5 bold
+TEXT 356 64 "Observe brain during cognitive tasks" 9 2 #90caf9
+
+RECT 356 82 268 44 2 #0a1a2a 6
+TEXT 366 86 "EEG / ERP" 10 3 #1e88e5
+TEXT 366 102 "Electrical activity from scalp" 9 3 #8888a0
+TEXT 366 112 "Excellent temporal resolution" 8 3 #43a047
+
+RECT 356 132 268 44 2 #0a1a2a 6
+TEXT 366 136 "fMRI" 10 3 #1e88e5
+TEXT 366 152 "Blood flow changes (BOLD signal)" 9 3 #8888a0
+TEXT 366 162 "Excellent spatial resolution" 8 3 #43a047
+
+RECT 356 182 268 44 2 #0a1a2a 6
+TEXT 366 186 "MEG" 10 3 #1e88e5
+TEXT 366 202 "Magnetic fields from neurons" 9 3 #8888a0
+TEXT 366 212 "Good temporal + spatial" 8 3 #fdd835
+
+RECT 356 232 268 44 2 #0a1a2a 6
+TEXT 366 236 "PET" 10 3 #1e88e5
+TEXT 366 252 "Radioactive tracers" 9 3 #8888a0
+TEXT 366 262 "Metabolic activity maps" 8 3 #8888a0
+
+TEXT 356 292 "Combining methods is essential" 9 2 #fdd835 bold
+TEXT 356 306 "EEG for timing + fMRI for location" 8 2 #fdd835
+TEXT 356 318 "= convergence + complementarity" 8 2 #d4c87a
+~~~
+
+### 7.1 The Spatial-Temporal Resolution Trade-off
+
+There is a fundamental trade-off between spatial and temporal resolution.
+No single method provides both perfectly.
+
+~~~voxi
+CANVAS 660 260 #0f1117
+-- Title
+TEXT 20 10 "SPATIAL vs TEMPORAL RESOLUTION" 12 2 #fff bold
+
+-- Axes
+LINE 80 230 640 230 2 #2d3244 2
+LINE 80 230 80 30 2 #2d3244 2
+TEXT 300 244 "TEMPORAL RESOLUTION" 10 3 #8888a0
+TEXT 20 50 "S" 10 3 #8888a0
+TEXT 20 62 "P" 10 3 #8888a0
+TEXT 20 74 "A" 10 3 #8888a0
+TEXT 20 86 "T" 10 3 #8888a0
+TEXT 20 98 "I" 10 3 #8888a0
+TEXT 20 110 "A" 10 3 #8888a0
+TEXT 20 122 "L" 10 3 #8888a0
+
+-- High spatial, low temporal labels
+TEXT 84 38 "high" 8 3 #5a5a6a
+TEXT 600 238 "high" 8 3 #5a5a6a
+
+-- fMRI: high spatial, low temporal
+ELLIPSE 200 70 50 24 3 #1e88e5
+TEXT 176 64 "fMRI" 12 4 #fff bold
+
+-- PET: medium spatial, low temporal
+ELLIPSE 170 110 40 20 3 #ab47bc
+TEXT 152 104 "PET" 11 4 #fff bold
+
+-- EEG: low spatial, high temporal
+ELLIPSE 520 180 44 22 3 #43a047
+TEXT 502 174 "EEG" 11 4 #fff bold
+
+-- MEG: medium both
+ELLIPSE 400 130 44 22 3 #fdd835
+TEXT 382 124 "MEG" 11 4 #0f1117 bold
+
+-- TMS: medium spatial, medium temporal
+ELLIPSE 340 160 44 22 3 #ff9800
+TEXT 322 154 "TMS" 11 4 #fff bold
+
+-- Single-unit: highest spatial, high temporal
+ELLIPSE 540 56 60 22 3 #e53935
+TEXT 500 50 "Single-unit" 10 4 #fff bold
+
+-- Annotation
+RECT 100 195 200 30 2 #1a1a3a 6
+TEXT 110 200 "No single method is perfect" 9 3 #fdd835
+TEXT 110 212 "-> combine multiple methods!" 9 3 #fdd835
+~~~
+
+### 7.2 Diaschisis — Critical Concept for Lesion Studies
+
+> [!warning] Diaschisis
+> If one brain area is lesioned, other **connected** areas may also stop
+> functioning normally due to loss of input. This can lead to wrongly attributing
+> the lost functionality to the lesioned area rather than a downstream area.
+
+~~~graph directed
+[Lesioned Area] --> [Connected Area A]
+[Lesioned Area] --> [Connected Area B]
+[Connected Area A] --> [Downstream Function]
+[Connected Area B] --> [Downstream Function]
+colors = #e53935 #ff9800 #ff9800 #fdd835
+~~~
+
+Damage to cortical areas can also damage nearby fibre tracts, disrupting more
+distant areas. Despite these limitations, lesion studies remain highly informative,
+especially with modern MRI that allows precise localization of lesions.
+
+### 7.3 Pharmacological Perturbations
+
+~~~voxi
+CANVAS 660 110 #0f1117
+-- Agonist
+RECT 20 10 300 90 1 #0f2a1a 8
+TEXT 36 24 "AGONIST" 14 2 #43a047 bold
+TEXT 36 46 "Activates receptors like" 10 2 #81c784
+TEXT 36 62 "natural neurotransmitters" 10 2 #81c784
+TEXT 36 82 "Example: nicotine" 9 2 #8888a0
+
+-- Antagonist
+RECT 340 10 300 90 1 #2a0f0f 8
+TEXT 356 24 "ANTAGONIST" 14 2 #e53935 bold
+TEXT 356 46 "Blocks receptors," 10 2 #ef9a9a
+TEXT 356 62 "prevents activation" 10 2 #ef9a9a
+TEXT 356 82 "Example: haloperidol" 9 2 #8888a0
+~~~
+
+**Dopamine system** plays a major role in reward evaluation. Cocaine addicts show
+impaired reward evaluation via changes in the dopamine system. **Drug tolerance**
+refers to needing increasing amounts to achieve the same pharmacological effect.
+
+---
+
+## 8. Neuroimaging Genomics
+
+**Polymorphisms:** Variations in a gene or segment of DNA that can be associated
+with greater risk of neurological and psychiatric disorders.
+
+~~~voxi
+CANVAS 660 140 #0f1117
+
+-- APOE example
+RECT 20 10 300 120 1 #1a2a4a 8
+TEXT 36 22 "APOE Gene & Alzheimer's" 11 2 #6c8cff bold
+TEXT 36 42 "APOE4 allele carriers show:" 9 2 #90caf9
+TEXT 36 58 "- Greater hippocampal" 9 2 #8888a0
+TEXT 46 72 "activation in memory tasks" 9 2 #8888a0
+TEXT 36 88 "- More memory decline" 9 2 #8888a0
+TEXT 36 106 "Detects changes BEFORE" 9 2 #fdd835
+TEXT 36 120 "clinical symptoms appear" 9 2 #fdd835
+
+-- Serotonin example
+RECT 340 10 300 120 1 #2a1a3a 8
+TEXT 356 22 "Serotonin Transporter Gene" 11 2 #e040fb bold
+TEXT 356 42 "Certain alleles associated with:" 9 2 #ce93d8
+TEXT 356 58 "- Greater serotonin levels" 9 2 #8888a0
+TEXT 356 74 "- Greater anxiety" 9 2 #8888a0
+TEXT 356 90 "- Greater amygdala activation" 9 2 #8888a0
+TEXT 366 90 "to emotional images (fMRI)" 9 2 #8888a0
+TEXT 356 106 "- Higher cortisol production" 9 2 #8888a0
+TEXT 366 106 "(stress marker)" 9 2 #ef9a9a
+~~~
+
+---
+
+## 9. Key Historical Figures
+
+~~~voxi
+CANVAS 660 340 #0f1117
+TEXT 20 10 "HISTORICAL FIGURES — EXAM REVIEW" 13 2 #fff bold
+
+-- Row 1
+RECT 20 32 200 50 1 #2a2510 6
+TEXT 30 40 "Helmholtz" 10 2 #fdd835 bold
+TEXT 30 56 "1821-94 Psychophysics" 8 2 #8888a0
+
+RECT 230 32 200 50 1 #2a2510 6
+TEXT 240 40 "Wundt" 10 2 #fdd835 bold
+TEXT 240 56 "1832-1920 1st Psych Lab" 8 2 #8888a0
+
+RECT 440 32 200 50 1 #2a2510 6
+TEXT 450 40 "James" 10 2 #fdd835 bold
+TEXT 450 56 "1842-1910 Principles" 8 2 #8888a0
+
+-- Row 2
+RECT 20 92 200 50 1 #2a1f0a 6
+TEXT 30 100 "Gall" 10 2 #ff9800 bold
+TEXT 30 116 "1758-1828 Phrenology" 8 2 #8888a0
+
+RECT 230 92 200 50 1 #0f2a1a 6
+TEXT 240 100 "Golgi" 10 2 #43a047 bold
+TEXT 240 116 "1843-1926 Staining" 8 2 #8888a0
+
+RECT 440 92 200 50 1 #0f2a1a 6
+TEXT 450 100 "Cajal" 10 2 #43a047 bold
+TEXT 450 116 "1852-1934 Neuron Doctrine" 8 2 #8888a0
+
+-- Row 3
+RECT 20 152 200 50 1 #2a0f0f 6
+TEXT 30 160 "Skinner" 10 2 #e53935 bold
+TEXT 30 176 "1904-90 Behaviourism" 8 2 #8888a0
+
+RECT 230 152 200 50 1 #0f1a2a 6
+TEXT 240 160 "Chomsky" 10 2 #1e88e5 bold
+TEXT 240 176 "1928- Cog Revolution" 8 2 #8888a0
+
+RECT 440 152 200 50 1 #1a0f2a 6
+TEXT 450 160 "Penfield" 10 2 #e040fb bold
+TEXT 450 176 "1891-1976 Homunculus" 8 2 #8888a0
+
+-- Bottom summary
+RECT 20 216 620 110 1 #1a1d27 8
+TEXT 36 228 "CONTRIBUTION FLOW:" 11 2 #fff bold
+TEXT 36 248 "Helmholtz/Wundt/James: experimental psychology foundations" 9 2 #fdd835
+TEXT 36 264 "Gall: localization idea (bad method) -> Golgi/Cajal: neurons are cells" 9 2 #ff9800
+TEXT 36 280 "Skinner: only behaviour matters -> Chomsky: language disproves S-R" 9 2 #e53935
+TEXT 36 296 "Penfield: mapped the cortex -> Modern Cognitive Neuroscience born" 9 2 #e040fb
+TEXT 36 312 "Sherrington: functional localization + reflex circuitry in animals" 9 2 #8888a0
+~~~
+
+---
+
+## 10. Multimethodological Synthesis
+
+The most effective cognitive neuroscience research **combines multiple methods**
+both within and across studies. This holds the promise for the deepest understanding
+of neural processes underlying cognition.
+
+~~~graph directed
+[EEG] --> [Temporal Info]
+[fMRI] --> [Spatial Info]
+[TMS] --> [Causal Evidence]
+[Lesion Studies] --> [Causal Evidence]
+[Temporal Info] --> [Integrated Model]
+[Spatial Info] --> [Integrated Model]
+[Causal Evidence] --> [Integrated Model]
+colors = #43a047 #1e88e5 #ff9800 #e53935 #fdd835 #fdd835 #fdd835 #e040fb
+~~~
+
+> [!note] Exam Tip: "What is the advantage of using multiple methods?"
+> **Convergence** — agreeing results increase confidence.
+> **Complementarity** — different methods reveal different aspects of the same
+> phenomenon that no single method can capture alone.
+
+---
+
+## 11. Key Takeaways (Exam Review)
+
+~~~voxi
+CANVAS 660 390 #0f1117
+TEXT 20 10 "KEY EXAM POINTS" 16 2 #e53935 bold
+
+RECT 20 34 620 42 1 #1a2a4a 6
+ELLIPSE 40 55 8 8 2 #6c8cff
+TEXT 56 42 "Cognitive neuroscience = intersection of cog sci + neuro" 10 2 #e0e0e8
+TEXT 56 58 "NOT just mapping brain regions — grounded models of cognition" 9 2 #8888a0
+
+RECT 20 82 620 42 1 #2a1f0a 6
+ELLIPSE 40 103 8 8 2 #ff9800
+TEXT 56 90 "Phrenology (Gall): wrong method but introduced localization" 10 2 #e0e0e8
+TEXT 56 106 "Skull bumps != brain org, but idea of regional specialization endures" 9 2 #8888a0
+
+RECT 20 130 620 42 1 #0f2a1a 6
+ELLIPSE 40 151 8 8 2 #43a047
+TEXT 56 138 "Neuron Doctrine: neurons are discrete cells (Cajal using Golgi stain)" 10 2 #e0e0e8
+TEXT 56 154 "Cognitive processes = large populations of neurons via synapses" 9 2 #8888a0
+
+RECT 20 178 620 42 1 #1a0f2a 6
+ELLIPSE 40 199 8 8 2 #e040fb
+TEXT 56 186 "Penfield: first systematic cortex maps = homunculus" 10 2 #e0e0e8
+TEXT 56 202 "Electrical stim of exposed brain in awake patients" 9 2 #8888a0
+
+RECT 20 226 620 42 1 #0f1a2a 6
+ELLIPSE 40 247 8 8 2 #1e88e5
+TEXT 56 234 "Evolution: Philosophy -> Behaviourism -> Cog Rev -> Cog Neuro" 10 2 #e0e0e8
+TEXT 56 250 "Each phase builds on and reacts against the previous" 9 2 #8888a0
+
+RECT 20 274 620 42 1 #2a1a1a 6
+ELLIPSE 40 295 8 8 2 #e53935
+TEXT 56 282 "Methods: perturbation (TMS, tDCS, lesions) + monitoring (EEG, fMRI)" 10 2 #e0e0e8
+TEXT 56 298 "Spatial-temporal trade-off -> combine methods for full picture" 9 2 #8888a0
+
+RECT 20 322 620 42 1 #2a2510 6
+ELLIPSE 40 343 8 8 2 #fdd835
+TEXT 56 330 "Diaschisis: damage to one area disrupts connected downstream areas" 10 2 #e0e0e8
+TEXT 56 346 "Can lead to misattribution of function to the lesioned area" 9 2 #8888a0
+
+TEXT 20 378 "Know your historical figures and contributions — high-probability exam topic!" 10 2 #e53935 bold
+~~~
+
+---
+
+*Cognitive Neuroscience — Module 1, Lecture 1 | Generated in mdVOXI v0.1*

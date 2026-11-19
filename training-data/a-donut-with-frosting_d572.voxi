@@ -1,0 +1,31 @@
+V 24 20 24
+
+-- donut body (brown dough)
+S 18 3 12 2.5 a
+S 16 3 16 2.5 a
+S 12 3 18 2.5 a
+S 8 3 16 2.5 a
+S 6 3 12 2.5 a
+S 8 3 8 2.5 a
+S 12 3 6 2.5 a
+S 16 3 8 2.5 a
+
+-- pink frosting (flattened ellipsoids on top)
+E 18 5 12 2 1 2 b
+E 16 5 16 2 1 2 b
+E 12 5 18 2 1 2 b
+E 8 5 16 2 1 2 b
+E 6 5 12 2 1 2 b
+E 8 5 8 2 1 2 b
+E 12 5 6 2 1 2 b
+E 16 5 8 2 1 2 b
+
+-- sprinkles
+B 17 6 12 1 1 1 1
+B 15 6 15 1 1 1 2
+B 12 6 17 1 1 1 3
+B 9 6 15 1 1 1 6
+B 7 6 12 1 1 1 5
+B 9 6 9 1 1 1 4
+B 12 6 7 1 1 1 1
+B 15 6 9 1 1 1 3

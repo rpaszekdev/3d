@@ -1,0 +1,28 @@
+V 24 24 24
+
+-- wooden serving board (brown)
+B 2 0 2 20 1 20 a
+
+-- nori outer wrap (black)
+C 12 5 12 6 8 0
+
+-- sushi rice layer (white)
+C 12 5 12 4 8 8
+
+-- salmon center filling (orange)
+C 12 5 12 2 8 7
+
+-- avocado garnish on top (green)
+S 12 9 12 2 2
+
+-- sesame seeds scattered on top (white)
+S 10 10 10 1 8
+S 14 10 10 1 8
+S 12 10 14 1 8
+
+-- soy sauce dipping dish (navy)
+B 3 1 16 5 1 5 f
+
+-- chopsticks (bamboo brown)
+B 19 1 6 1 14 1 a
+B 21 1 8 1 14 1 a

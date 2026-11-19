@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSL Benchmark — 3D Spatial Reasoning for LLMs</title>
+  <meta name="description" content="How well can LLMs reason in 3D space? A visual benchmark comparing Claude, GPT-4o, Gemini, Llama, and Grok on 50 spatial reasoning tasks.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="SSL Benchmark — 3D Spatial Reasoning for LLMs">
+  <meta property="og:description" content="Side-by-side comparison of 5 LLMs generating 3D scenes from text prompts using a compact numeric DSL.">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SSL Benchmark — 3D Spatial Reasoning for LLMs">
+  <meta name="twitter:description" content="How well can LLMs reason in 3D space? Visual benchmark across 50 prompts.">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1><span class="accent">SSL</span> Benchmark</h1>
+    <p class="subtitle">
+      3D Spatial Reasoning for LLMs —
+      <b id="header-models">0</b> models,
+      <b id="header-prompts">0</b> prompts,
+      generated <span id="header-date">-</span>
+    </p>
+    <div class="meta-chips" id="header-chips"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="tab-leaderboard">Leaderboard</button>
+    <button class="tab" data-tab="tab-gallery">Gallery</button>
+    <button class="tab" data-tab="tab-compare">Compare</button>
+    <button class="tab" data-tab="tab-about">About</button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">Loading benchmark data...</div>
+
+  <!-- Tab: Leaderboard -->
+  <div class="tab-content active" id="tab-leaderboard">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Model</th>
+          <th class="sorted">Overall</th>
+          <th>Recog.</th>
+          <th>Aesthetic</th>
+          <th>Creativity</th>
+          <th>T1</th>
+          <th>T2</th>
+          <th>T3</th>
+          <th>T4</th>
+          <th>T5</th>
+          <th>Scored</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Tab: Gallery -->
+  <div class="tab-content" id="tab-gallery">
+    <div class="gallery-controls">
+      <select id="gallery-tier">
+        <option value="all">All Tiers</option>
+        <option value="1">Tier 1 — Basic</option>
+        <option value="2">Tier 2 — Intermediate</option>
+        <option value="3">Tier 3 — Complex</option>
+        <option value="4">Tier 4 — Scenes</option>
+        <option value="5">Tier 5 — Abstract</option>
+      </select>
+      <select id="gallery-sort">
+        <option value="default">Default Order</option>
+        <option value="score-desc">Highest Avg Score</option>
+        <option value="score-asc">Lowest Avg Score</option>
+        <option value="spread">Biggest Score Spread</option>
+      </select>
+    </div>
+    <div id="gallery-grid"></div>
+  </div>
+
+  <!-- Tab: Compare -->
+  <div class="tab-content" id="tab-compare">
+    <div class="compare-controls">
+      <select id="compare-a"></select>
+      <span style="color:var(--text-dim); font-weight:600">vs</span>
+      <select id="compare-b"></select>
+    </div>
+    <div class="compare-tally" id="compare-tally"></div>
+    <div id="compare-grid"></div>
+  </div>
+
+  <!-- Tab: About -->
+  <div class="tab-content" id="tab-about">
+    <div class="about-content">
+      <h2>What is SSL?</h2>
+      <p>
+        <b>SSL (Spatial Sketch Language)</b> is a purely numeric format for describing 3D scenes.
+        Each line defines a shape with its type, position, size, and color — all as numbers.
+        It's designed for LLMs to generate without ambiguity.
+      </p>
+      <pre>P1                          -- isometric mode
+0 150 0 150 100 5 100 7     -- box: table top (orange)
+1 200 70 200 15 15 0 1      -- sphere: red ball on table
+2 180 5 180 8 60 0 9        -- cylinder: table leg (gray)</pre>
+
+      <h2>Why This Benchmark?</h2>
+      <p>
+        Existing LLM benchmarks test text, code, and math — but not <b>3D spatial reasoning</b>.
+        Can a model understand that a chimney goes on top of a roof? That wheels go under a car?
+        That a spiral staircase needs consistent spatial progression?
+      </p>
+      <p>
+        SSL makes this testable: the output is a compact numeric format that renders to a 3D scene.
+        We can see exactly how each model reasons about space.
+      </p>
+
+      <h2>Methodology</h2>
+      <ul>
+        <li>Each model receives the same system prompt with SSL format specification and examples</li>
+        <li>50 prompts across 5 tiers of difficulty (basic objects to abstract concepts)</li>
+        <li>Generated SSL is validated and rendered to PNG via Three.js (headless Playwright)</li>
+        <li>Each render is scored by Claude Sonnet on recognizability, aesthetic quality, and creativity (1-10)</li>
+        <li>Failed generations get one retry with error feedback</li>
+      </ul>
+
+      <h2>Scoring Dimensions</h2>
+      <ul>
+        <li><b>Recognizability (R)</b>: How clearly does this depict the prompted subject?</li>
+        <li><b>Aesthetic (A)</b>: Visual quality, proportions, spatial arrangement</li>
+        <li><b>Creativity (C)</b>: Use of shapes, clever composition, detail beyond minimum</li>
+        <li><b>Total</b>: Average of all three dimensions</li>
+      </ul>
+
+      <h2>Tiers</h2>
+      <ul>
+        <li><b>Tier 1 — Basic</b> (10 prompts): Simple objects — snowman, rocket, house</li>
+        <li><b>Tier 2 — Intermediate</b> (10 prompts): Multi-part objects — car, castle, guitar</li>
+        <li><b>Tier 3 — Complex</b> (15 prompts): Detailed assemblies — locomotive, cathedral, pirate ship</li>
+        <li><b>Tier 4 — Scenes</b> (10 prompts): Multi-object environments — park, city, farm</li>
+        <li><b>Tier 5 — Abstract</b> (5 prompts): Conceptual challenges — DNA helix, fractal tree, impossible triangle</li>
+      </ul>
+
+      <h2>Run It Yourself</h2>
+      <pre>git clone &lt;repo-url&gt;
+cd spatial-reasoning-dsl/benchmark
+cp .env.example .env   # add your API keys
+npm install
+npm run pipeline        # generate → render → evaluate → aggregate</pre>
+      <p>
+        You can run individual steps, filter by model or tier, and adjust concurrency.
+        See the README for full CLI options.
+      </p>
+
+      <h2>Links</h2>
+      <p>
+        SSL Spec &middot;
+        GitHub Repository &middot;
+        Interactive Playground
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <h2 id="modal-title"></h2>
+      <p class="modal-subtitle" id="modal-subtitle"></p>
+      <div class="modal-grid">
+        <img id="modal-img" src="" alt="SSL render">
+        <pre id="modal-ssl"></pre>
+      </div>
+      <div class="eval-section">
+        <div class="eval-row">
+          <span>Recognizability</span>
+          <div class="bar-wrap"><div class="bar" id="bar-recog"></div></div>
+          <span class="bar-label" id="val-recog"></span>
+        </div>
+        <div class="eval-row">
+          <span>Aesthetic</span>
+          <div class="bar-wrap"><div class="bar" id="bar-aesth"></div></div>
+          <span class="bar-label" id="val-aesth"></span>
+        </div>
+        <div class="eval-row">
+          <span>Creativity</span>
+          <div class="bar-wrap"><div class="bar" id="bar-creat"></div></div>
+          <span class="bar-label" id="val-creat"></span>
+        </div>
+        <div class="what-i-see" id="modal-what"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

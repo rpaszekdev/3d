@@ -1,0 +1,140 @@
+V 91 109 91
+-- Human Brain Atlas (MNI152 2mm space)
+-- Color = lobe: blue=frontal, green=temporal, magenta=parietal,
+--   red=occipital, gray=subcortical, yellow=cingulate,
+--   orange=insular, cyan=cerebellum
+
+
+-- === FRONTAL ===
+-- L-DLPFC: working memory, executive control
+E 26 50 70 10 16 14 3
+-- R-DLPFC: working memory, executive control
+E 64 50 70 10 16 14 3
+-- mPFC: self-reference, default mode
+E 45 60 68 7 7 9 3
+-- ACC: conflict monitoring, error detection
+E 45 34 58 5 7 6 3
+-- L-IFG: speech production (Broca's), syntax
+E 22 48 58 8 12 7 3
+-- R-IFG: inhibition, prosody
+E 68 48 58 8 12 7 3
+-- SMA: motor planning, sequencing
+E 45 68 62 8 6 5 3
+-- L-premotor: motor preparation
+E 30 62 60 8 10 6 3
+-- R-premotor: motor preparation
+E 60 62 60 8 10 6 3
+-- L-OFC: reward, decision-making
+E 30 34 72 8 6 6 3
+-- R-OFC: reward, decision-making
+E 60 34 72 8 6 6 3
+
+-- === TEMPORAL ===
+-- L-fusiform: face perception (FFA), visual word form
+E 28 28 38 5 12 4 2
+-- R-fusiform: face perception (FFA)
+E 62 28 38 5 12 4 2
+-- L-hippocampus: memory encoding, spatial navigation
+E 26 24 48 4 10 3 2
+-- R-hippocampus: memory encoding, spatial navigation
+E 64 24 48 4 10 3 2
+-- L-STG: auditory processing, speech perception
+E 20 36 52 6 14 5 2
+-- R-STG: auditory processing, voice
+E 70 36 52 6 14 5 2
+-- L-MTG: semantic processing, language
+E 24 32 46 5 12 4 2
+-- R-MTG: semantic processing
+E 66 32 46 5 12 4 2
+-- L-STS: biological motion, social cues
+E 22 34 50 4 12 3 2
+-- R-STS: biological motion, social cues
+E 68 34 50 4 12 3 2
+-- L-temporal-pole: social concepts, semantic memory
+E 20 22 62 6 6 5 2
+-- R-temporal-pole: social concepts, semantic memory
+E 70 22 62 6 6 5 2
+
+-- === PARIETAL ===
+-- L-IPL: attention, tool use, number
+E 30 58 58 8 10 7 5
+-- R-IPL: attention, spatial awareness
+E 60 58 58 8 10 7 5
+-- L-SPL: visuospatial, reaching
+E 28 66 54 6 8 6 5
+-- R-SPL: visuospatial, reaching
+E 62 66 54 6 8 6 5
+-- precuneus: self-awareness, episodic memory
+E 45 64 52 6 7 7 5
+-- L-SMG: phonological processing
+E 28 52 56 6 6 5 5
+-- R-SMG: spatial attention
+E 62 52 56 6 6 5 5
+-- L-AG: semantic integration, reading
+S 26 54 52 5 5
+-- R-AG: spatial cognition
+S 64 54 52 5 5
+
+-- === OCCIPITAL ===
+-- V1: primary visual, edges/orientation
+E 45 24 30 12 8 8 1
+-- L-V2/V3: early visual processing
+S 34 22 32 6 1
+-- R-V2/V3: early visual processing
+S 56 22 32 6 1
+-- L-V4: color, form perception
+E 30 22 36 5 6 5 1
+-- R-V4: color, form perception
+E 60 22 36 5 6 5 1
+-- L-V5/MT: motion perception
+S 22 32 40 4 1
+-- R-V5/MT: motion perception
+S 68 32 40 4 1
+-- L-LOC: object recognition
+E 26 30 38 6 8 5 1
+-- R-LOC: object recognition
+E 64 30 38 6 8 5 1
+
+-- === SUBCORTICAL ===
+-- L-thalamus: sensory relay, attention gating
+S 36 38 52 4 9
+-- R-thalamus: sensory relay, attention gating
+S 54 38 52 4 9
+-- L-amygdala: emotion, threat detection, salience
+S 32 28 50 3 9
+-- R-amygdala: emotion, threat detection, salience
+S 58 28 50 3 9
+-- L-caudate: learning, habit formation
+E 34 42 58 3 4 4 9
+-- R-caudate: learning, habit formation
+E 56 42 58 3 4 4 9
+-- L-putamen: motor control, reward learning
+E 32 38 54 4 5 3 9
+-- R-putamen: motor control, reward learning
+E 58 38 54 4 5 3 9
+-- L-NAcc: reward, motivation
+S 34 32 60 2 9
+-- R-NAcc: reward, motivation
+S 56 32 60 2 9
+
+-- === CINGULATE ===
+-- PCC: default mode, self-reflection
+S 45 52 46 5 6
+-- dACC: cognitive control, pain
+E 45 42 62 4 5 5 6
+-- mid-cingulate: salience, motor
+E 45 48 54 4 5 6 6
+
+-- === INSULAR ===
+-- L-insula: interoception, empathy, disgust
+E 24 36 56 4 8 6 7
+-- R-insula: interoception, empathy, disgust
+E 66 36 56 4 8 6 7
+
+-- === CEREBELLUM ===
+-- L-cerebellum: motor coordination, timing
+E 30 36 30 14 12 10 4
+-- R-cerebellum: motor coordination, timing
+E 60 36 30 14 12 10 4
+-- vermis: balance, posture
+E 45 30 32 4 6 8 4

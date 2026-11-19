@@ -1,0 +1,57 @@
+V 32 32 32
+
+-- base platform
+B 5 0 7 22 1 18 7
+
+-- main building walls
+B 6 1 8 20 8 16 d
+
+-- wall top trim
+B 6 9 8 20 1 16 8
+
+-- drum cylinder under dome
+C 16 10 16 5 3 d
+
+-- main dome
+S 16 16 16 6 4
+
+-- inner dome highlight
+S 16 16 16 4 8
+
+-- front portico
+B 10 1 6 12 5 2 8
+
+-- entrance arch (dark)
+B 14 1 5 4 5 1 0
+
+-- facade windows
+B 9 3 7 2 3 1 4
+B 15 3 7 2 3 1 4
+B 21 3 7 2 3 1 4
+
+-- side windows
+B 5 3 12 1 3 3 4
+B 5 3 17 1 3 3 4
+B 26 3 12 1 3 3 4
+B 26 3 17 1 3 3 4
+
+-- minarets
+C 7 0 9 1 18 d
+C 25 0 9 1 18 d
+C 7 0 23 1 18 d
+C 25 0 23 1 18 d
+
+-- minaret balconies
+C 7 13 9 2 1 8
+C 25 13 9 2 1 8
+C 7 13 23 2 1 8
+C 25 13 23 2 1 8
+
+-- minaret caps
+S 7 19 9 2 4
+S 25 19 9 2 4
+S 7 19 23 2 4
+S 25 19 23 2 4
+
+-- crescent on dome
+B 15 22 16 2 3 1 6

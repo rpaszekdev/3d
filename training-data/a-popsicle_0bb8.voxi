@@ -1,0 +1,19 @@
+V 16 32 8
+
+-- stick
+B 7 0 3 2 8 2 d
+
+-- main popsicle body (pink)
+B 3 7 2 10 15 4 b
+
+-- rounded top cap
+E 8 21 4 5 3 2 b
+
+-- white highlight stripe
+B 5 10 2 6 4 4 8
+
+-- magenta accent band
+B 4 15 2 5 3 4 5
+
+-- stick shadow base
+B 7 7 3 2 1 2 9

@@ -1,0 +1,29 @@
+V 32 32 32
+
+-- main saucer disc
+E 16 8 16 12 3 12 9
+
+-- upper dome
+E 16 12 16 5 4 5 3
+
+-- dome window band
+E 16 11 16 5 2 5 4
+
+-- underbelly hull
+E 16 6 16 9 2 9 e
+
+-- rim lights
+S 27 8 16 1 6
+S 5 8 16 1 6
+S 16 8 5 1 6
+S 16 8 27 1 6
+S 24 8 24 1 6
+S 8 8 8 1 6
+S 24 8 8 1 6
+S 8 8 24 1 6
+
+-- tractor beam
+C 16 1 16 3 6 4
+
+-- engine glow
+S 16 4 16 2 5

@@ -1,0 +1,43 @@
+V 32 32 32
+
+-- desk surface
+B 4 10 8 24 2 14 d
+
+-- desk legs
+B 4 0 8 2 10 2 a
+B 26 0 8 2 10 2 a
+B 4 0 20 2 10 2 a
+B 26 0 20 2 10 2 a
+
+-- monitor stand base
+B 13 12 12 6 1 4 9
+
+-- monitor stand neck
+B 15 13 13 2 5 2 9
+
+-- monitor screen back
+B 10 18 13 12 8 1 7
+
+-- monitor screen front (display)
+B 11 19 12 10 6 1 3
+
+-- monitor bezel top
+B 10 24 13 12 1 1 9
+
+-- monitor bezel left
+B 10 18 13 1 7 1 9
+
+-- monitor bezel right
+B 21 18 13 1 7 1 9
+
+-- keyboard
+B 9 12 16 14 1 6 9
+
+-- keyboard keys detail
+B 10 13 17 12 1 4 8
+
+-- mouse
+S 22 12 19 2 8
+
+-- mouse pad
+B 18 12 17 8 1 6 9

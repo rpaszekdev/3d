@@ -1,0 +1,9 @@
+
+WHAT front col=8 row=7
+→ 3D position: (8, 8, 2)
+→ Color: orange (7)
+→ Depth: 2
+→ Source:
+  line 2: S 8 8 8 6 7
+→ To edit: P 8 8 2 <color>
+

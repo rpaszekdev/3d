@@ -1,0 +1,31 @@
+V 24 24 24
+
+-- seat cushion (padded top)
+C 12 21 12 5 2 b
+
+-- seat base (wood)
+C 12 20 12 6 1 d
+
+-- center pole (chrome)
+C 12 5 12 1 15 7
+
+-- footrest ring
+C 12 11 12 4 1 7
+
+-- base leg northeast
+B 15 0 7 2 5 2 9
+
+-- base leg northwest
+B 7 0 7 2 5 2 9
+
+-- base leg southeast
+B 15 0 15 2 5 2 9
+
+-- base leg southwest
+B 7 0 15 2 5 2 9
+
+-- base brace horizontal
+B 8 2 12 8 1 1 9
+
+-- base brace vertical
+B 12 2 8 1 1 8 9

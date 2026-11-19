@@ -1,0 +1,172 @@
+CANVAS 595 842 #ffffff
+
+-- ═══════════════════════════════════════════════════
+-- TOP BAR — terminal style
+-- ═══════════════════════════════════════════════════
+RECT 0 0 595 40 0 #0d1117
+
+TEXT 14 14 "●" 10 1 #ff5f56
+TEXT 28 14 "●" 10 1 #ffbd2e
+TEXT 42 14 "●" 10 1 #27c93f
+
+TEXT 70 14 "robert@dev ~ % cat resume.json" 8 1 #7ee787
+
+-- ═══════════════════════════════════════════════════
+-- NAME + CONTACT
+-- ═══════════════════════════════════════════════════
+TEXT 30 62 "ROBERT PASZEK" 26 1 #0d1117 bold
+
+TEXT 30 84 "Software Developer" 10 1 #1f6feb bold
+TEXT 168 84 "·" 10 1 #484f58
+TEXT 178 84 "Cognitive Science & AI" 10 1 #1f6feb bold
+
+TEXT 30 102 "+48 725 850 750" 7 1 #57606a
+TEXT 140 102 "r.f.paszek@gmail.com" 7 1 #57606a
+TEXT 290 102 "Tilburg, Netherlands" 7 1 #57606a
+
+DIVIDER 30 116 565 116 1 #d0d7de
+
+-- Profile
+TEXT 30 130 "Student of Cognitive Science and AI. Won 1st place (of 93 teams) at an international" 8 1 #444444
+TEXT 30 142 "Hackathon. Created a domain-specific language for CV generation — this CV was built with it." 8 1 #444444
+
+-- ═══════════════════════════════════════════════════
+-- TECH STACK BAR
+-- ═══════════════════════════════════════════════════
+DIVIDER 30 158 565 158 1 #d0d7de
+
+TEXT 30 171 "React · TypeScript · Rust · Node.js · SQLite · Playwright · RAG · DSL Design · Claude API · MCP" 7 1 #1f6feb bold
+
+DIVIDER 30 183 565 183 1 #d0d7de
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN — Projects, Experience, Education
+-- ═══════════════════════════════════════════════════
+
+TEXT 30 202 "PROJECTS" 9 1 #0d1117 bold
+RECT 30 214 70 2 0 #1f6feb
+
+-- Bed&Market
+TEXT 30 230 "Bed&Market" 10 1 #0d1117 bold
+TEXT 112 230 "— Autonomous Marketing Agent" 8 1 #57606a
+TEXT 340 230 "2026" 7.5 1 #8b949e
+TEXT 30 244 "Playwright  ·  Perplexity API  ·  Claude API" 6.5 1 #1f6feb
+TEXT 30 258 "End-to-end automation pipeline: scrapes hundreds of B&B" 7.5 1 #444444
+TEXT 30 269 "websites, extracts business contacts, generates personalized" 7.5 1 #444444
+TEXT 30 280 "outreach — runs overnight with zero human intervention." 7.5 1 #444444
+TEXT 30 291 "Replaced a full day of manual research per batch." 7.5 1 #444444
+
+DIVIDER 30 304 370 304 1 #eaeef2
+
+-- Hackathon
+TEXT 30 316 "BCI Hackathon" 10 1 #0d1117 bold
+TEXT 138 316 "— 1st of 93 Teams" 8 1 #57606a
+TEXT 340 316 "2025" 7.5 1 #8b949e
+TEXT 30 330 "G-tec Medical Engineering, Tilburg" 6.5 1 #1f6feb
+TEXT 30 344 "Created a working EEG brain-computer interface that translated" 7.5 1 #444444
+TEXT 30 355 "brain activity into music in real time." 7.5 1 #444444
+
+DIVIDER 30 368 370 368 1 #eaeef2
+
+-- ChatResume
+TEXT 30 380 "ChatResume" 10 1 #0d1117 bold
+TEXT 112 380 "— AI CV Generator" 8 1 #57606a
+TEXT 340 380 "2026" 7.5 1 #8b949e
+TEXT 30 394 "TypeScript  ·  Canvas 2D  ·  Custom DSL" 6.5 1 #1f6feb
+TEXT 30 408 "CV generation engine powered by a custom markup language." 7.5 1 #444444
+TEXT 30 419 "User pastes resume + job description, AI tailors and renders" 7.5 1 #444444
+TEXT 30 430 "a professional PDF in seconds." 7.5 1 #444444
+
+DIVIDER 30 443 370 443 1 #eaeef2
+
+-- AI-Native IDE
+TEXT 30 455 "AI-Native IDE" 10 1 #0d1117 bold
+TEXT 340 455 "2026" 7.5 1 #8b949e
+TEXT 30 469 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite  ·  RAG" 6.5 1 #1f6feb
+TEXT 30 483 "Developer productivity tool: one-click workspace indexing," 7.5 1 #444444
+TEXT 30 494 "natural-language code search, parallel AI session orchestration." 7.5 1 #444444
+
+-- Experience
+TEXT 30 522 "EXPERIENCE" 9 1 #0d1117 bold
+RECT 30 534 70 2 0 #1f6feb
+
+TEXT 30 550 "Vice-Chair" 9.5 1 #0d1117 bold
+TEXT 100 550 "— CSAI Programme Committee, Tilburg University" 7.5 1 #57606a
+TEXT 30 562 "Sept 2025 — Current" 6.5 1 #8b949e
+
+DIVIDER 30 574 370 574 1 #eaeef2
+
+TEXT 30 586 "Sales Rep" 9.5 1 #0d1117 bold
+TEXT 92 586 "— Genergy Poland" 7.5 1 #57606a
+TEXT 30 598 "Jan — Jun 2024  ·  Gdansk  ·  Solar panels  ·  B2B sales" 6.5 1 #8b949e
+
+-- Education
+TEXT 30 624 "EDUCATION" 9 1 #0d1117 bold
+RECT 30 636 70 2 0 #1f6feb
+
+TEXT 30 652 "BSc Cognitive Science & AI" 9.5 1 #0d1117 bold
+TEXT 200 652 "— 2nd year" 7.5 1 #57606a
+TEXT 30 664 "Tilburg University  ·  Sept 2024 — Current" 6.5 1 #8b949e
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN — Stats, links, meta
+-- ═══════════════════════════════════════════════════
+
+TEXT 400 202 "DEV STATS" 9 1 #0d1117 bold
+RECT 400 214 70 2 0 #1f6feb
+
+TEXT 400 234 "2,400+" 15 1 #0d1117 bold
+TEXT 400 248 "hours with Claude Code" 7 1 #57606a
+
+TEXT 400 268 "3,000+" 15 1 #0d1117 bold
+TEXT 400 282 "AI sessions completed" 7 1 #57606a
+
+TEXT 400 302 "15+" 15 1 #0d1117 bold
+TEXT 400 316 "projects shipped" 7 1 #57606a
+
+TEXT 400 336 "5" 15 1 #0d1117 bold
+TEXT 400 350 "live products in production" 7 1 #57606a
+
+-- Deployed
+TEXT 400 378 "DEPLOYED" 9 1 #0d1117 bold
+RECT 400 390 70 2 0 #1f6feb
+
+TEXT 400 406 "stayinbocas.com" 7.5 1 #1f6feb
+TEXT 400 418 "bedandmarket.com" 7.5 1 #1f6feb
+TEXT 400 430 "brainquiz.study" 7.5 1 #1f6feb
+TEXT 400 442 "batchresume.com" 7.5 1 #1f6feb
+TEXT 400 454 "csai.live" 7.5 1 #1f6feb
+
+-- Languages
+TEXT 400 480 "LANGUAGES" 9 1 #0d1117 bold
+RECT 400 492 70 2 0 #1f6feb
+
+TEXT 400 508 "Polish" 7.5 1 #444444
+TEXT 470 508 "native" 6.5 1 #8b949e
+TEXT 400 520 "English" 7.5 1 #444444
+TEXT 470 520 "fluent" 6.5 1 #8b949e
+TEXT 400 532 "Spanish" 7.5 1 #444444
+TEXT 470 532 "communicative" 6.5 1 #8b949e
+
+-- Speaking
+TEXT 400 558 "PUBLIC SPEAKING" 9 1 #0d1117 bold
+RECT 400 570 70 2 0 #1f6feb
+
+TEXT 400 586 "Art of Presenting course" 7 1 #57606a
+TEXT 400 598 "University Theatre (active)" 7 1 #57606a
+
+-- Interests
+TEXT 400 622 "INTERESTS" 9 1 #0d1117 bold
+RECT 400 634 70 2 0 #1f6feb
+
+TEXT 400 650 "Sailing, Chess, Skiing" 7 1 #57606a
+TEXT 400 662 "Traveling (4 continents)" 7 1 #57606a
+TEXT 400 674 "Brain-Computer Interfaces" 7 1 #57606a
+
+-- Certificates
+TEXT 400 698 "CERTIFICATES" 9 1 #0d1117 bold
+RECT 400 710 70 2 0 #1f6feb
+
+TEXT 400 726 "Motorboat Operator" 7 1 #57606a
+TEXT 400 738 "Sailing Permit" 7 1 #57606a

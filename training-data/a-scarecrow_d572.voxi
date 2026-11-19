@@ -1,0 +1,47 @@
+V 24 24 24
+
+-- center post
+C 12 0 12 1 22 a
+
+-- legs
+B 9 0 12 3 7 3 3
+B 14 0 12 3 7 3 3
+
+-- straw at boots
+B 9 0 12 3 2 3 6
+B 14 0 12 3 2 3 6
+
+-- body (shirt)
+B 8 7 11 8 8 4 7
+
+-- left arm
+B 2 10 11 6 2 4 7
+
+-- right arm
+B 16 10 11 6 2 4 7
+
+-- straw hands
+B 1 9 11 2 4 4 6
+B 21 9 11 2 4 4 6
+
+-- straw at collar
+B 10 14 11 4 2 3 6
+
+-- head (burlap sack)
+S 12 17 12 3 d
+
+-- hat brim
+B 7 19 10 10 1 5 0
+
+-- hat crown
+B 9 20 10 6 4 5 0
+
+-- eyes
+B 11 17 9 1 1 1 0
+B 13 17 9 1 1 1 0
+
+-- nose
+B 12 16 9 1 1 1 1
+
+-- stitched mouth
+B 10 15 9 4 1 1 0

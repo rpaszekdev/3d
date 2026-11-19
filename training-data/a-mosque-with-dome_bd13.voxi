@@ -1,0 +1,50 @@
+V 32 32 32
+
+-- base platform
+B 2 0 2 28 2 28 d
+
+-- main building body
+B 5 2 5 22 10 22 8
+
+-- front entrance arch base
+B 13 2 1 6 8 4 8
+B 14 4 1 4 6 4 7
+
+-- main dome base (drum)
+C 16 12 16 8 3 8
+
+-- main dome
+S 16 17 16 7 8
+
+-- dome top finial
+C 16 22 16 1 3 8
+S 16 25 16 1 6
+
+-- left minaret base
+C 6 2 6 2 18 9
+
+-- left minaret balcony
+B 4 17 4 4 1 4 7
+
+-- left minaret spire
+C 6 19 6 1 6 9
+S 6 25 6 1 6
+
+-- right minaret base
+C 26 2 6 2 18 9
+
+-- right minaret balcony
+B 24 17 4 4 1 4 7
+
+-- right minaret spire
+C 26 19 6 1 6 9
+S 26 25 6 1 6
+
+-- windows on facade
+B 7 5 4 3 4 1 3
+B 12 5 4 3 4 1 3
+B 18 5 4 3 4 1 3
+B 23 5 4 3 4 1 3
+
+-- door
+B 14 2 4 4 7 1 7

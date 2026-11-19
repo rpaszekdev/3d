@@ -1,0 +1,140 @@
+CANVAS 595 842 #ffffff
+
+-- ── Name + Photo ─────────────────────────────────
+TEXT 40 40 "ROBERT" 42 1 #1a3a5c bold
+TEXT 40 90 "PASZEK" 42 1 #1a3a5c bold
+
+PHOTO 460 30 110 1 #4a9ad4 3
+
+-- ── Contact ──────────────────────────────────────
+DIVIDER 40 150 555 150 1 #4a9ad4
+CONTACT 100 160 1 #3a6a8a phone "+48 725 850 750"
+CONTACT 245 160 1 #3a6a8a email "r.f.paszek@gmail.com"
+CONTACT 420 160 1 #3a6a8a location "Tilburg, Netherlands"
+DIVIDER 40 182 555 182 1 #4a9ad4
+
+-- ═══════════════════════════════════════════════════
+-- HERO STATEMENT — the eye-catcher
+-- ═══════════════════════════════════════════════════
+
+TEXT 40 210 "I find repetitive processes" 18 1 #1a3a5c bold
+TEXT 40 236 "and engineer them away." 18 1 #4a9ad4 bold
+
+TEXT 40 264 "Autonomous agents that replace full workdays. Custom DSLs that turn hours" 9 1 #5a7a8e
+TEXT 40 278 "of formatting into seconds. 2,400+ hours of AI-assisted development" 9 1 #5a7a8e
+TEXT 40 292 "across 15+ shipped projects — including the system that generated this CV." 9 1 #5a7a8e
+
+DIVIDER 40 314 555 314 1 #4a9ad4
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN — Projects
+-- ═══════════════════════════════════════════════════
+
+RECT 40 330 340 2 1 #4a9ad4
+TEXT 40 338 "PROJECTS & ACHIEVEMENTS" 8 1 #4a9ad4 bold
+
+-- Bed&Market
+TEXT 40 360 "Bed&Market — Autonomous Marketing Agent" 11 1 #1a3a5c bold
+TEXT 330 360 "2026" 8 1 #8aaabe
+TEXT 40 376 "Playwright  ·  Perplexity API  ·  Claude API" 8.5 1 #5a7a8e
+TEXT 40 392 "End-to-end automation pipeline: scrapes hundreds of B&B websites," 8.5 1 #3a4a5a
+TEXT 40 406 "extracts business contacts, generates personalized outreach —" 8.5 1 #3a4a5a
+TEXT 40 420 "runs overnight with zero human intervention." 8.5 1 #3a4a5a
+
+DIVIDER 40 438 380 438 1 #d8e4ee
+
+-- Hackathon Winner
+TEXT 40 450 "Hackathon Winner — 1st of 93 Teams" 11 1 #1a3a5c bold
+TEXT 330 450 "Spring 2025" 8 1 #8aaabe
+TEXT 40 466 "G-tec Medical Engineering, Tilburg" 8.5 1 #5a7a8e
+TEXT 40 482 "Built a real-time EEG brain-computer interface that translated" 8.5 1 #3a4a5a
+TEXT 40 496 "brain activity into music — live signal processing pipeline." 8.5 1 #3a4a5a
+
+DIVIDER 40 514 380 514 1 #d8e4ee
+
+-- ChatResume
+TEXT 40 526 "ChatResume — AI CV Generator" 11 1 #1a3a5c bold
+TEXT 330 526 "2026" 8 1 #8aaabe
+TEXT 40 542 "TypeScript  ·  Canvas 2D  ·  Custom DSL  ·  Compiler" 8.5 1 #5a7a8e
+TEXT 40 558 "Designed a markup language and compiler for automated document" 8.5 1 #3a4a5a
+TEXT 40 572 "generation. Paste data in, get a polished PDF out in seconds." 8.5 1 #3a4a5a
+
+DIVIDER 40 590 380 590 1 #d8e4ee
+
+-- AI-Native IDE
+TEXT 40 602 "AI-Native IDE — Workspace Intelligence" 11 1 #1a3a5c bold
+TEXT 330 602 "2026" 8 1 #8aaabe
+TEXT 40 618 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite  ·  RAG" 8.5 1 #5a7a8e
+TEXT 40 634 "Developer productivity tool: one-click workspace indexing," 8.5 1 #3a4a5a
+TEXT 40 648 "natural-language code search, parallel AI session management." 8.5 1 #3a4a5a
+
+-- ── Education ────────────────────────────────────
+RECT 40 680 340 2 1 #4a9ad4
+TEXT 40 688 "EDUCATION" 8 1 #4a9ad4 bold
+
+TEXT 40 708 "BSc Cognitive Science & AI — 2nd year" 11 1 #1a3a5c bold
+TEXT 290 708 "Sept 2024 — Current" 8 1 #8aaabe
+TEXT 40 724 "Tilburg University, Tilburg, Netherlands" 8.5 1 #5a7a8e
+
+-- ── Work Experience ──────────────────────────────
+RECT 40 748 340 2 1 #4a9ad4
+TEXT 40 756 "WORK EXPERIENCE" 8 1 #4a9ad4 bold
+
+TEXT 40 776 "Vice-Chair — CSAI Programme Committee" 11 1 #1a3a5c bold
+TEXT 40 792 "Tilburg University" 8.5 1 #5a7a8e
+TEXT 290 792 "Sept 2025 — Current" 8 1 #8aaabe
+
+DIVIDER 40 808 380 808 1 #d8e4ee
+
+TEXT 40 818 "Sales Rep — Genergy Poland" 11 1 #1a3a5c bold
+TEXT 290 818 "Jan — Jun 2024" 8 1 #8aaabe
+TEXT 40 834 "Gdansk  ·  Solar panels  ·  B2B sales" 8.5 1 #5a7a8e
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN
+-- ═══════════════════════════════════════════════════
+
+RECT 400 330 155 2 1 #4a9ad4
+TEXT 400 338 "SKILLS" 8 1 #4a9ad4 bold
+
+TEXT 400 358 "Automation & Tooling" 8.5 1 #1a3a5c bold
+TEXT 400 372 "Workflow automation (E2E)" 8 1 #3a4a5a
+TEXT 400 386 "Web scraping (Playwright)" 8 1 #3a4a5a
+TEXT 400 400 "DSL design & compilers" 8 1 #3a4a5a
+TEXT 400 414 "API integration & MCP" 8 1 #3a4a5a
+
+TEXT 400 436 "AI & Development" 8.5 1 #1a3a5c bold
+TEXT 400 450 "RAG systems & embeddings" 8 1 #3a4a5a
+TEXT 400 464 "Full-stack (React, Node, Rust)" 8 1 #3a4a5a
+TEXT 400 478 "CI/CD & test-driven dev" 8 1 #3a4a5a
+
+TEXT 400 500 "Communication" 8.5 1 #1a3a5c bold
+TEXT 400 514 "Art of Presenting course" 8 1 #3a4a5a
+TEXT 400 528 "University Theatre (active)" 8 1 #3a4a5a
+
+-- Live Projects
+RECT 400 554 155 2 1 #4a9ad4
+TEXT 400 562 "LIVE PROJECTS" 8 1 #4a9ad4 bold
+TEXT 400 582 "bedandmarket.com" 9 1 #1a3a5c
+TEXT 400 598 "batchresume.com" 9 1 #1a3a5c
+TEXT 400 614 "stayinbocas.com" 9 1 #1a3a5c
+TEXT 400 630 "brainquiz.study" 9 1 #1a3a5c
+TEXT 400 646 "csai.live" 9 1 #1a3a5c
+
+-- Languages
+RECT 400 672 155 2 1 #4a9ad4
+TEXT 400 680 "LANGUAGES" 8 1 #4a9ad4 bold
+TEXT 400 700 "Polish" 9 1 #3a4a5a
+TEXT 520 700 "native" 7.5 1 #8aaabe
+TEXT 400 716 "English" 9 1 #3a4a5a
+TEXT 520 716 "fluent" 7.5 1 #8aaabe
+TEXT 400 732 "Spanish" 9 1 #3a4a5a
+TEXT 520 732 "communicative" 7.5 1 #8aaabe
+
+-- Interests
+RECT 400 758 155 2 1 #4a9ad4
+TEXT 400 766 "INTERESTS" 8 1 #4a9ad4 bold
+TEXT 400 786 "Sailing, Chess, Skiing" 8.5 1 #3a4a5a
+TEXT 400 802 "Traveling (4 continents)" 8.5 1 #3a4a5a
+TEXT 400 818 "Brain-Computer Interfaces" 8.5 1 #3a4a5a

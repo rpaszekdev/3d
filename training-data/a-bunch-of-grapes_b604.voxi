@@ -1,0 +1,42 @@
+V 24 32 16
+
+-- stem
+C 12 26 8 1 4 a
+
+-- leaf
+B 8 27 6 8 2 3 2
+
+-- top row of grapes
+S 6 22 8 2 5
+S 10 22 8 2 5
+S 14 22 8 2 5
+S 18 22 8 2 5
+
+-- second row
+S 8 18 8 2 5
+S 12 18 8 2 5
+S 16 18 8 2 5
+
+-- second row back layer
+S 8 18 12 2 5
+S 12 18 12 2 5
+S 16 18 12 2 5
+
+-- third row
+S 8 14 8 2 5
+S 12 14 8 2 5
+S 16 14 8 2 5
+
+-- third row back
+S 10 14 11 2 5
+S 14 14 11 2 5
+
+-- fourth row
+S 10 10 8 2 5
+S 14 10 8 2 5
+
+-- fourth row back
+S 12 10 11 2 5
+
+-- tip
+S 12 6 8 2 5

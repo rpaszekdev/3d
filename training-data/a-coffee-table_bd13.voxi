@@ -1,0 +1,13 @@
+V 24 20 24
+
+-- table legs (tan wood)
+B 3 0 6 2 8 2 d
+B 19 0 6 2 8 2 d
+B 3 0 16 2 8 2 d
+B 19 0 16 2 8 2 d
+
+-- lower shelf
+B 4 4 7 16 1 10 d
+
+-- tabletop (brown wood)
+B 2 8 5 20 2 14 a

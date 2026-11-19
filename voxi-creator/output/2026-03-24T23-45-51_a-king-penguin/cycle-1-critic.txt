@@ -1,0 +1,20 @@
+`★ Insight ─────────────────────────────────────`
+- The front view is the most informative angle for a bilaterally symmetric creature like a penguin — it reveals color distribution and belly/back contrast most clearly
+- The top-down view exposes a critical structural weakness: the yellow ear patches are positioned on the sides of the body rather than on the head/neck, which maps to a placement logic error in the VOXI coordinates
+- Comparing to the reference photo, a king penguin's most distinguishing features are: black head, white belly, and the vivid yellow-orange auricular (ear) patches that sweep from behind the eye down the neck
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 4
+
+STRENGTHS: The model has the right overall silhouette — upright bipedal stance with stubby feet, a head block, and flanking wing/flipper extensions. The blue/navy body color is plausible for the dark dorsal plumage, and the yellow patches are present as a key king penguin identifier. The white belly stripe visible from the front is a good start.
+
+ISSUES:
+- **Wrong body color — no black head.** The entire model is uniform blue (navy). A king penguin has a distinctly black head and back, contrasting sharply with a white belly. The head block should use color `f` (navy/black) and the back column should be dark. Currently everything reads as one flat mid-blue tone. Fix: change the head box to `B ... f` and use `f` for the dorsal body.
+- **Yellow ear patches are misplaced on the body flanks, not the head.** From the top view, the yellow areas appear mid-body on the sides — but king penguin auricular patches sit on the sides of the neck/head, curving down to the chest. Move the yellow blocks up to the neck/head zone (Y near the top of the body), e.g. `B 13 24 14 2 4 2 6` and `B 17 24 14 2 4 2 6` for symmetric neck patches.
+- **White belly is a single narrow 1-voxel-wide stripe rather than a broad oval front patch.** From the front it is clearly just one column of white. The belly of a king penguin is wide and prominent — widen it to at least 4–6 voxels across: e.g. `B 12 4 15 8 20 2 8` for a thick front white panel.
+- **No beak.** The head is a plain box with no protruding beak. King penguins have a distinctive long narrow orange-pink beak. Add `B 15 28 12 2 2 3 7` (orange) protruding forward from the head.
+- **Flippers are too horizontal and flat-board-like.** From the front-iso the wings extend perfectly horizontally like arms, making it look like a cross. Real penguin flippers angle slightly downward. Trim the outer flipper blocks 1 voxel lower on the outer edge to taper them.
+
+PRIORITY_FIX: Add a black head (`B ... f`) and widen the white belly from 1 voxel to ~6 voxels wide — these two changes will make the model immediately recognizable as a penguin rather than a generic blue figure.

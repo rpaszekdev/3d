@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- chair legs
+B 12 0 12 2 8 2 d
+B 18 0 12 2 8 2 d
+B 12 0 19 2 8 2 d
+B 18 0 19 2 8 2 d
+
+-- chair seat
+B 12 8 12 8 2 8 d
+
+-- chair back
+B 12 10 20 8 12 2 d
+
+-- person upper legs on seat
+B 13 10 12 3 3 7 1
+B 17 10 12 3 3 7 1
+
+-- person lower legs hanging down
+B 13 2 10 3 8 2 1
+B 17 2 10 3 8 2 1
+
+-- feet
+B 13 0 7 3 2 4 0
+B 17 0 7 3 2 4 0
+
+-- torso
+B 13 13 14 6 9 5 7
+
+-- neck
+C 16 22 16 1 2 8
+
+-- head
+S 16 25 16 3 8
+
+-- hair
+B 13 25 13 6 3 5 a
+
+-- left arm
+B 11 13 14 2 7 5 7
+
+-- right arm
+B 19 13 14 2 7 5 7
+
+-- left hand on thigh
+S 13 12 15 2 8
+
+-- right hand on thigh
+S 19 12 15 2 8

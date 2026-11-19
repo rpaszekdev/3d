@@ -1,0 +1,24 @@
+V 24 16 24
+
+-- bench legs (4 corners)
+B 2 0 8 2 8 2 a
+B 20 0 8 2 8 2 a
+B 2 0 14 2 8 2 a
+B 20 0 14 2 8 2 a
+
+-- side support beams
+B 2 4 8 2 2 8 a
+B 20 4 8 2 2 8 a
+
+-- seat planks
+B 1 8 8 22 2 2 c
+B 1 8 11 22 2 2 c
+B 1 8 14 22 2 2 c
+
+-- back support posts
+B 2 8 14 2 7 2 a
+B 20 8 14 2 7 2 a
+
+-- back rest planks
+B 1 11 14 22 2 2 c
+B 1 13 14 22 2 2 c

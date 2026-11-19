@@ -1,0 +1,50 @@
+V 32 32 32
+
+-- rear left wheel (large)
+S 4 7 22 6 0
+-- rear right wheel (large)
+S 28 7 22 6 0
+-- rear wheel hubs
+S 4 7 22 3 9
+S 28 7 22 3 9
+
+-- front left wheel (small)
+S 8 5 9 4 0
+-- front right wheel (small)
+S 24 5 9 4 0
+-- front wheel hubs
+S 8 5 9 2 9
+S 24 5 9 2 9
+
+-- main chassis
+B 7 8 9 18 5 15 7
+
+-- engine hood
+B 9 8 4 14 7 7 7
+
+-- front grill
+B 9 8 3 14 7 1 9
+
+-- cab structure
+B 9 13 14 14 9 9 7
+
+-- cab front window
+B 10 14 13 12 6 1 3
+
+-- cab rear window
+B 10 14 23 12 6 1 3
+
+-- cab side window left
+B 9 14 14 1 6 8 3
+
+-- cab side window right
+B 23 14 14 1 6 8 3
+
+-- cab roof
+B 9 22 13 14 1 10 a
+
+-- exhaust pipe
+C 16 22 6 1 5 9
+
+-- rear hitch
+B 12 9 27 8 3 2 1

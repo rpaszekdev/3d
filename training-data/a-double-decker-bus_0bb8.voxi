@@ -1,0 +1,53 @@
+V 48 32 48
+
+-- chassis
+B 18 0 6 12 2 36 9
+
+-- wheels
+S 20 2 10 3 0
+S 28 2 10 3 0
+S 20 2 38 3 0
+S 28 2 38 3 0
+
+-- lower deck body
+B 18 2 6 12 9 36 1
+
+-- upper deck body
+B 18 11 6 12 10 36 1
+
+-- roof
+B 18 21 6 12 2 36 8
+
+-- lower side windows left
+B 18 4 9 1 5 26 4
+
+-- lower side windows right
+B 29 4 9 1 5 26 4
+
+-- lower front windows
+B 19 4 6 10 5 1 4
+
+-- lower rear windows
+B 19 4 41 10 5 1 4
+
+-- upper side windows left
+B 18 13 9 1 6 26 4
+
+-- upper side windows right
+B 29 13 9 1 6 26 4
+
+-- upper front windows
+B 19 13 6 10 6 1 4
+
+-- upper rear windows
+B 19 13 41 10 6 1 4
+
+-- headlights
+B 20 3 6 3 2 1 6
+B 25 3 6 3 2 1 6
+
+-- destination board
+B 19 9 6 10 2 1 7
+
+-- entrance door
+B 27 2 41 2 8 1 c

@@ -1,0 +1,25 @@
+V 24 24 24
+
+-- nightstand legs
+B 8 0 8 2 4 2 a
+B 14 0 8 2 4 2 a
+B 8 0 14 2 4 2 a
+B 14 0 14 2 4 2 a
+
+-- nightstand body
+B 8 4 8 8 6 8 d
+
+-- drawer front
+B 9 5 7 6 3 1 a
+
+-- drawer handle
+S 12 7 7 1 9
+
+-- lamp base
+C 12 10 12 2 1 7
+
+-- lamp pole
+C 12 11 12 1 7 8
+
+-- lampshade
+E 12 18 12 4 2 4 6

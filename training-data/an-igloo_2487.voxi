@@ -1,0 +1,16 @@
+V 32 20 32
+
+-- snow ground
+B 2 0 2 28 2 28 8
+
+-- main igloo dome
+E 16 10 16 9 8 9 8
+
+-- entrance tunnel
+B 13 2 4 6 5 8 9
+
+-- entrance opening (dark interior)
+B 14 2 4 4 4 1 0
+
+-- icy blue highlight on dome top
+S 16 17 16 2 3

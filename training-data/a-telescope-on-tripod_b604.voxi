@@ -1,0 +1,42 @@
+V 24 32 24
+
+-- tripod feet
+B 11 0 4 2 1 2 9
+B 4 0 17 2 1 2 9
+B 18 0 17 2 1 2 9
+
+-- front leg
+B 11 1 4 2 4 3 9
+B 11 5 7 2 4 3 9
+B 11 9 10 2 5 2 9
+
+-- back-left leg
+B 5 1 16 2 4 2 9
+B 7 5 14 2 4 2 9
+B 9 9 13 2 5 1 9
+
+-- back-right leg
+B 17 1 16 2 4 2 9
+B 15 5 14 2 4 2 9
+B 13 9 13 2 5 1 9
+
+-- mount hub
+S 12 14 12 2 7
+
+-- mount bracket
+B 11 14 10 2 3 3 7
+
+-- telescope main tube
+E 12 17 10 2 2 8 3
+
+-- eyepiece end
+B 11 16 2 2 3 2 9
+
+-- objective lens
+S 12 17 18 2 4
+
+-- focusing knob
+B 10 16 9 1 2 1 d
+
+-- finder scope
+B 12 19 9 1 1 5 6

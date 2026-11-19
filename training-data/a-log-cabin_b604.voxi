@@ -1,0 +1,33 @@
+V 32 24 32
+
+-- foundation
+B 6 0 8 20 1 16 d
+
+-- front wall
+B 6 1 8 20 9 2 a
+-- door
+B 13 1 8 6 6 2 0
+-- front windows
+B 8 4 8 4 3 2 4
+B 20 4 8 4 3 2 4
+
+-- back wall
+B 6 1 22 20 9 2 a
+-- back window
+B 13 4 22 6 3 2 4
+
+-- side walls
+B 6 1 10 2 9 12 a
+B 24 1 10 2 9 12 a
+
+-- roof layers
+B 5 10 7 22 2 18 e
+B 7 12 8 18 2 16 e
+B 9 14 9 14 2 14 e
+B 11 16 10 10 2 12 e
+
+-- chimney
+B 21 10 14 3 12 3 9
+
+-- porch step
+B 12 0 6 8 1 2 d

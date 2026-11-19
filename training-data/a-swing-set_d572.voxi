@@ -1,0 +1,18 @@
+V 32 24 16
+
+-- left A-frame legs
+B 3 0 3 2 18 2 a
+B 3 0 11 2 18 2 a
+-- right A-frame legs
+B 27 0 3 2 18 2 a
+B 27 0 11 2 18 2 a
+-- top horizontal crossbar
+B 3 17 5 26 2 6 a
+-- ground base stabilizers
+B 1 0 2 4 1 12 a
+B 26 0 2 4 1 12 a
+-- swing chains (gray)
+C 12 11 8 1 12 9
+C 19 11 8 1 12 9
+-- swing seat (yellow plank)
+B 11 5 7 9 1 2 6

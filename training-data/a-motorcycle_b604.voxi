@@ -1,0 +1,41 @@
+V 32 20 28
+
+-- rear wheel
+E 16 5 23 2 5 5 9
+E 16 5 23 1 2 2 8
+
+-- front wheel
+E 16 5 5 2 5 5 9
+E 16 5 5 1 2 2 8
+
+-- engine block
+B 13 3 13 6 5 7 1
+
+-- frame spine
+B 15 9 8 2 4 16 7
+
+-- fuel tank
+B 12 11 10 8 3 6 3
+
+-- seat
+B 12 13 14 8 2 7 9
+
+-- front fork
+B 15 5 6 2 8 1 9
+
+-- handlebars
+B 11 16 7 10 1 2 9
+B 11 16 7 2 3 2 0
+B 19 16 7 2 3 2 0
+
+-- exhaust pipe
+B 18 3 14 1 1 9 6
+
+-- headlight
+S 16 13 4 2 6
+
+-- rear fender
+B 13 10 22 6 2 2 9
+
+-- kickstand
+B 17 0 18 1 4 1 0

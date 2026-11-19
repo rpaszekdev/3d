@@ -1,0 +1,19 @@
+V 24 28 24
+
+-- base disc
+C 12 1 12 7 2 9
+
+-- center pole
+C 12 11 12 1 18 9
+
+-- footrest ring
+C 12 10 12 5 1 9
+
+-- seat support collar
+C 12 20 12 3 2 7
+
+-- seat disc
+C 12 22 12 7 2 d
+
+-- seat cushion
+C 12 24 12 6 1 a

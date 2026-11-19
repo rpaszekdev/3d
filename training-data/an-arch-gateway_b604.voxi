@@ -1,0 +1,32 @@
+V 32 32 8
+
+-- stone base
+B 0 0 0 32 2 8 9
+
+-- left pillar
+B 3 2 1 5 20 6 7
+
+-- right pillar
+B 24 2 1 5 20 6 7
+
+-- pillar caps
+B 2 22 1 7 2 6 d
+B 23 22 1 7 2 6 d
+
+-- left arch rise
+B 7 23 1 5 5 6 d
+
+-- left arch curve
+B 10 27 1 4 3 6 d
+
+-- arch crown
+B 13 29 1 6 3 6 d
+
+-- right arch curve
+B 18 27 1 4 3 6 d
+
+-- right arch rise
+B 20 23 1 5 5 6 d
+
+-- keystone accent
+B 15 29 1 2 3 6 6

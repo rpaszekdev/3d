@@ -1,0 +1,22 @@
+V 32 18 14
+
+-- left abutment (stone)
+B 0 0 0 8 12 14 9
+-- right abutment
+B 24 0 0 8 12 14 9
+-- arch left outer
+B 8 0 0 4 10 14 9
+-- arch left inner
+B 12 2 0 2 8 14 9
+-- arch right outer
+B 20 0 0 4 10 14 9
+-- arch right inner
+B 18 2 0 2 8 14 9
+-- arch keystone
+B 14 4 0 4 8 14 9
+-- road deck (tan stone)
+B 0 12 0 32 2 14 d
+-- front parapet wall
+B 0 14 0 32 3 2 9
+-- rear parapet wall
+B 0 14 12 32 3 2 9

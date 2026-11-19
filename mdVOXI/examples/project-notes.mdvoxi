@@ -1,0 +1,140 @@
+# VOXI Project Architecture
+
+> [!info] Living document — updated as the system evolves
+
+## System Overview
+
+The VOXI platform converts natural language into spatial representations
+through a three-tier pipeline:
+
+~~~graph directed
+[User Prompt] --> [Brain Converter]
+[Brain Converter] --> [VOXI DSL]
+[VOXI DSL] --> [3D Renderer]
+[VOXI DSL] --> [2D Renderer]
+[Brain Converter] --> [Depth Estimator]
+[Depth Estimator] --> [VOXI DSL]
+colors = #6c8cff #43a047 #e53935 #fdd835
+~~~
+
+## Token Efficiency
+
+One of VOXI's key advantages: describing a 3D scene in ~100 tokens
+vs thousands for mesh formats.
+
+~~~chart bar
+"Tokens per Scene" = OBJ:2400 STL:3200 GLTF:1800 VOXI:95
+colors = #8888a0 #8888a0 #8888a0 #6c8cff
+~~~
+
+The difference is dramatic. VOXI achieves this through:
+
+1. **Single-letter commands** — `B` for box, `S` for sphere
+2. **Hex color shorthand** — 16 palette colors via `0-f`
+3. **Implicit defaults** — volume size auto-inferred
+
+## Module Breakdown
+
+### Brain Converter
+
+Handles NL → VOXI translation with Claude.
+
+~~~voxi
+CANVAS 500 160 #0f1117
+RECT 10 10 140 60 1 #1a3a6b 6
+TEXT 30 32 "Prompt" 14 2 #6c8cff bold
+TEXT 30 52 "\"a penguin\"" 10 2 #8888a0
+
+LINE 150 40 200 40 2 #6c8cff 2
+TEXT 158 28 "Claude" 9 3 #43a047
+
+RECT 200 10 160 60 1 #2e7d32 6
+TEXT 220 32 "Brain Conv." 14 2 #43a047 bold
+TEXT 220 52 "NL → DSL" 10 2 #8888a0
+
+LINE 360 40 400 40 2 #6c8cff 2
+
+RECT 400 10 90 60 1 #8d6e4a 6
+TEXT 415 32 ".voxi" 14 2 #ff9800 bold
+TEXT 410 52 "~100 tok" 10 2 #8888a0
+
+RECT 10 90 480 60 1 #1a1d27 4
+TEXT 20 106 "Pipeline: prompt → system prompt → Claude API → parse → validate → .voxi" 10 2 #8888a0
+~~~
+
+### Renderer Stack
+
+~~~voxi
+CANVAS 500 100 #0f1117
+RECT 10 10 100 80 1 #e53935 6
+TEXT 25 38 "Parser" 13 2 #fff bold
+TEXT 20 58 "tokenize" 9 2 #ffcdd2
+
+RECT 130 10 100 80 1 #ff9800 6
+TEXT 140 38 "Voxelize" 13 2 #fff bold
+TEXT 135 58 "fill volume" 9 2 #ffe0b2
+
+RECT 250 10 110 80 1 #1e88e5 6
+TEXT 260 38 "Raycast" 13 2 #fff bold
+TEXT 255 58 "pixel buffer" 9 2 #bbdefb
+
+RECT 380 10 110 80 1 #43a047 6
+TEXT 395 38 "Shade" 13 2 #fff bold
+TEXT 385 58 "depth+light" 9 2 #c8e6c9
+
+LINE 110 50 130 50 2 #8888a0 2
+LINE 230 50 250 50 2 #8888a0 2
+LINE 360 50 380 50 2 #8888a0 2
+~~~
+
+## Benchmark Results
+
+Latest spatial reasoning accuracy (March 2026):
+
+~~~chart bar
+"Accuracy %" = VOXI:87 Text-only:34 Image:72 Depth-map:51
+colors = #6c8cff #e53935 #43a047 #ff9800
+~~~
+
+## Sample Output
+
+A castle scene generated from the prompt *"a castle on a green hill"*:
+
+~~~voxi3d 35 25
+V 32 32 32
+-- Green hill
+K 16 0 16 14 10 2
+B 2 0 2 28 2 28 2
+-- Castle base
+B 11 10 11 10 8 10 9
+-- Towers
+B 10 10 10 3 14 3 9
+B 19 10 10 3 14 3 9
+B 10 10 19 3 14 3 9
+B 19 10 19 3 14 3 9
+-- Tower tops (red)
+K 11 24 11 2 3 1
+K 20 24 11 2 3 1
+K 11 24 20 2 3 1
+K 20 24 20 2 3 1
+-- Gate
+B 14 10 10 4 5 1 0
+B 15 10 10 2 6 1 0
+-- Walls top crenellations
+B 11 18 11 2 1 10 9
+B 13 18 11 1 2 10 9
+B 15 18 11 2 1 10 9
+B 17 18 11 1 2 10 9
+B 19 18 11 2 1 10 9
+~~~
+
+## Todo
+
+- [ ] Add animation support to renderer
+- [ ] Implement `~~~graph` layout engine
+- [ ] Export to PDF with rasterized VOXI blocks
+- [ ] LSP integration for `.mdvoxi` syntax highlighting
+
+---
+
+*Last updated: 2026-03-27*

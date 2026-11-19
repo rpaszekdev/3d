@@ -1,0 +1,39 @@
+V 24 28 24
+-- robe lower wide
+B 6 0 9 12 4 6 3
+-- robe mid
+B 7 4 9 10 4 6 3
+-- robe upper torso
+B 8 8 10 8 4 4 3
+-- belt
+B 8 7 10 8 1 4 6
+-- left sleeve
+B 5 8 10 3 4 4 3
+-- right sleeve
+B 16 8 10 3 4 4 3
+-- left hand
+S 6 7 12 2 d
+-- right hand
+S 18 7 12 2 d
+-- neck
+B 10 12 10 4 2 4 d
+-- beard
+B 9 12 10 6 3 4 8
+-- head
+S 12 16 12 3 d
+-- left eye
+S 11 16 10 1 0
+-- right eye
+S 13 16 10 1 0
+-- hat brim
+B 7 19 9 10 1 6 5
+-- hat body lower
+B 9 20 10 6 3 4 5
+-- hat body upper
+B 10 23 10 4 2 4 5
+-- hat tip
+B 11 25 11 2 2 2 5
+-- staff
+C 21 0 12 1 20 6
+-- crystal top
+S 21 20 12 2 4

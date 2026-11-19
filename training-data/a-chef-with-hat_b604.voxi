@@ -1,0 +1,41 @@
+V 24 32 24
+
+-- shoes
+B 8 0 10 3 1 4 0
+B 13 0 10 3 1 4 0
+
+-- pants/legs
+B 8 1 10 3 5 4 8
+B 13 1 10 3 5 4 8
+
+-- torso / white chef jacket
+B 7 6 9 10 7 6 8
+
+-- jacket buttons
+B 11 7 9 2 5 1 0
+
+-- left arm
+B 5 6 9 2 6 5 8
+-- right arm
+B 17 6 9 2 6 5 8
+
+-- hands
+B 5 6 9 2 2 5 d
+B 17 6 9 2 2 5 d
+
+-- neck
+B 10 13 10 4 2 4 d
+
+-- head
+S 12 16 12 3 d
+
+-- chef hat brim
+B 7 18 9 10 1 6 8
+
+-- chef hat tall
+B 9 19 10 6 7 4 8
+
+-- face details
+B 10 16 9 2 1 1 0
+B 13 16 9 2 1 1 0
+B 11 14 9 2 1 1 1

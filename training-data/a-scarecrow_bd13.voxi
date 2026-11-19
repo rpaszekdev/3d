@@ -1,0 +1,44 @@
+V 24 28 24
+
+-- post/stake
+B 11 0 11 2 24 2 a
+
+-- body shirt
+B 7 8 10 10 7 4 3
+
+-- straw poking from shirt bottom
+B 7 6 10 2 3 2 6
+B 11 6 10 2 3 2 6
+B 15 6 10 2 3 2 6
+
+-- arms
+B 2 13 11 20 2 2 3
+
+-- straw from arm ends
+B 2 11 11 2 4 2 6
+B 20 11 11 2 4 2 6
+
+-- collar straw
+B 8 15 9 2 2 2 6
+B 14 15 9 2 2 2 6
+
+-- head
+S 12 20 12 3 d
+
+-- hat brim
+B 7 22 9 10 1 6 0
+
+-- hat crown
+C 12 23 12 3 3 0
+
+-- eyes
+B 10 21 9 1 1 1 0
+B 13 21 9 1 1 1 0
+
+-- stitched mouth
+B 10 18 9 1 1 1 0
+B 12 19 9 1 1 1 0
+B 14 18 9 1 1 1 0
+
+-- nose
+B 12 20 9 1 1 1 7

@@ -1,0 +1,25 @@
+V 24 24 24
+
+-- ring (top loop)
+S 12 21 12 2 9
+
+-- shaft (main vertical column)
+B 11 4 11 2 17 2 f
+
+-- stock (horizontal crossbar near top, along Z axis)
+B 10 18 2 4 2 20 9
+
+-- left arm
+B 3 3 11 8 2 2 f
+
+-- right arm
+B 13 3 11 8 2 2 f
+
+-- left fluke
+B 2 0 10 4 4 4 f
+
+-- right fluke
+B 18 0 10 4 4 4 f
+
+-- crown (base of shaft connecting to arms)
+B 9 2 10 6 3 4 9

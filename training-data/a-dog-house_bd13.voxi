@@ -1,0 +1,25 @@
+V 24 24 24
+
+-- floor
+B 6 0 6 12 1 12 a
+
+-- walls (brown wood)
+B 6 1 17 12 10 1 a
+B 6 1 6 1 10 12 a
+B 17 1 6 1 10 12 a
+
+-- front wall with door gap
+B 6 1 6 3 10 1 a
+B 15 1 6 3 10 1 a
+B 9 7 6 6 4 1 a
+
+-- door opening
+B 9 1 6 6 6 1 e
+
+-- roof layers (red shingles)
+B 5 11 5 14 2 14 1
+B 7 13 6 10 2 12 1
+B 9 15 7 6 1 10 1
+
+-- chimney
+B 14 11 9 2 5 2 9

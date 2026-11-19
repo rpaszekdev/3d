@@ -1,0 +1,31 @@
+V 24 20 24
+
+-- base band (golden ring)
+C 12 2 12 8 3 6
+
+-- front point
+B 11 4 4 2 6 2 6
+B 12 10 5 1 4 1 7
+
+-- front-right point
+B 18 4 9 2 6 2 6
+B 19 10 10 1 4 1 7
+
+-- back-right point
+B 15 4 17 2 6 2 6
+B 16 10 18 1 4 1 7
+
+-- back-left point
+B 7 4 17 2 6 2 6
+B 8 10 18 1 4 1 7
+
+-- front-left point
+B 5 4 9 2 6 2 6
+B 6 10 10 1 4 1 7
+
+-- gems on band
+S 12 2 5 1 1
+S 19 2 10 1 3
+S 16 2 18 1 2
+S 8 2 18 1 5
+S 6 2 10 1 1

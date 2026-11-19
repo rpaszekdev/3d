@@ -1,0 +1,27 @@
+V 24 24 24
+
+-- cupcake wrapper
+C 12 2 12 5 4 3
+
+-- wrapper ridges
+B 8 0 11 1 4 2 6
+B 11 0 11 1 4 2 6
+B 14 0 11 1 4 2 6
+
+-- cake body
+C 12 5 12 5 3 d
+
+-- frosting dome
+E 12 9 12 6 5 6 b
+
+-- frosting peak
+S 12 14 12 2 8
+
+-- cherry
+S 12 17 12 2 1
+
+-- sprinkles
+B 9 10 9 1 1 1 1
+B 14 11 9 1 1 1 2
+B 11 12 8 1 1 1 6
+B 15 10 10 1 1 1 4

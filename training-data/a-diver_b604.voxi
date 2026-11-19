@@ -1,0 +1,37 @@
+V 32 32 32
+
+-- flippers (yellow)
+B 9 0 11 6 1 8 6
+B 17 0 11 6 1 8 6
+
+-- legs (navy wetsuit)
+B 11 1 13 4 9 5 f
+B 17 1 13 4 9 5 f
+
+-- torso (navy wetsuit)
+B 10 10 13 12 8 5 f
+
+-- left arm
+B 7 10 14 3 6 4 f
+-- right arm
+B 21 10 14 3 6 4 f
+
+-- hands (cyan gloves)
+S 9 11 16 2 4
+S 23 11 16 2 4
+
+-- scuba tank (gray, on back)
+C 16 13 20 2 8 9
+
+-- head (tan skin)
+S 16 20 15 3 d
+
+-- mask frame (gray)
+B 13 18 12 6 3 1 9
+-- mask lens (blue)
+B 14 19 11 4 2 2 3
+
+-- air bubbles (white)
+S 15 24 13 1 8
+S 17 25 11 1 8
+S 16 27 13 1 8

@@ -1,0 +1,23 @@
+V 24 32 24
+
+-- cone tip
+C 12 1 12 1 2 d
+-- cone lower
+C 12 4 12 2 2 d
+-- cone mid
+C 12 7 12 3 2 d
+-- cone upper
+C 12 10 12 4 2 d
+-- cone rim
+C 12 13 12 5 1 a
+
+-- waffle texture lines
+B 8 5 12 8 1 1 a
+B 8 9 12 8 1 1 a
+B 12 2 12 1 12 1 a
+
+-- strawberry ice cream scoop
+S 12 20 12 6 b
+
+-- cherry on top
+S 12 27 12 1 1

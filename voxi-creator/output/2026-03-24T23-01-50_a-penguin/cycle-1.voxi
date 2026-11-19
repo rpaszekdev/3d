@@ -1,0 +1,26 @@
+V 32 32 32
+-- Body (white belly)
+S 16 10 16 8 8
+-- Body overlay (black back)
+B 10 4 14 12 14 5 f
+-- White belly
+B 13 5 15 6 12 2 8
+-- Head
+S 16 22 16 5 f
+-- White face
+B 13 22 14 6 5 2 8
+-- Eyes
+P 14 24 12 0
+P 18 24 12 0
+-- Beak (orange)
+B 14 21 11 4 2 1 7
+-- Wings (left)
+B 7 8 13 3 10 4 f
+-- Wings (right)
+B 22 8 13 3 10 4 f
+-- Feet (left)
+B 11 0 13 4 2 5 7
+-- Feet (right)
+B 17 0 13 4 2 5 7
+-- Belly white detail
+B 13 8 15 6 8 2 8

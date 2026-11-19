@@ -1,0 +1,40 @@
+V 40 22 20
+
+-- main body
+E 20 11 10 16 7 8 3
+
+-- white belly
+E 20 9 10 14 4 7 8
+
+-- head
+E 7 11 10 6 6 7 3
+
+-- snout
+E 4 10 10 3 4 5 3
+
+-- tail stock
+E 35 9 10 5 4 5 9
+
+-- tail fluke near
+B 37 8 5 3 3 5 3
+
+-- tail fluke far
+B 37 8 12 3 3 5 3
+
+-- dorsal fin
+B 22 17 9 4 4 2 9
+
+-- pectoral fin near
+B 14 5 2 5 2 4 9
+
+-- pectoral fin far
+B 14 5 14 5 2 4 9
+
+-- eye
+S 9 13 7 1 0
+
+-- blowhole
+S 16 18 10 1 9
+
+-- mouth line
+B 4 8 8 3 1 4 8

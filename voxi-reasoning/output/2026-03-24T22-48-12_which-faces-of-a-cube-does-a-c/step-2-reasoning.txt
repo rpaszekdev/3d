@@ -1,0 +1,78 @@
+## Step 3: Normal Vector Visualization
+
+The verification confirmed all 3 visible faces are correctly identified. Now I'll fix the face-overlap issue and make the dot-product visibility condition **geometrically explicit** by:
+1. Drawing face markers **offset 1 voxel outward** (no overlap between faces)
+2. Drawing outward **normal arrows** colored green (toward camera) vs red (away)
+
+**Expected:** Green markers+arrows on left/top/front faces point generally toward camera at (0,8,0). Red markers+arrows on right/bottom/back faces point away.
+
+```voxi
+V 14 10 14
+
+-- Gray floor
+B 0 0 0 14 1 14 9
+
+-- === CUBE BODY (gray interior — faces drawn outside) ===
+B 6 1 6 4 4 4 9
+
+-- === FACE MARKERS: offset 1 voxel outward from each face ===
+-- No voxel overlaps between faces this way
+
+-- VISIBLE (green): normals point toward camera half-spaces
+-- Left marker at X=5 (normal -X, camera at X=0 is in -X half-space)
+B 5 1 6 1 4 4 2
+-- Top marker at Y=5 (normal +Y, camera at Y=8 is in +Y half-space)
+B 6 5 6 4 1 4 2
+-- Front marker at Z=5 (normal -Z, camera at Z=0 is in -Z half-space)
+B 6 1 5 4 4 1 2
+
+-- HIDDEN (red): normals point away from camera
+-- Right marker at X=10 (normal +X, camera is NOT in +X half-space)
+B 10 1 6 1 4 4 1
+-- Bottom marker at Y=0 (normal -Y, camera is NOT in -Y half-space)
+B 6 0 6 4 1 4 1
+-- Back marker at Z=10 (normal +Z, camera is NOT in +Z half-space)
+B 6 1 10 4 4 1 1
+
+-- === OUTWARD NORMAL ARROWS (2 voxels each) ===
+-- Green arrows: visible normals pointing TOWARD camera
+-- Left normal arrow (-X direction from left marker center)
+P 4 3 7 2
+P 3 3 7 2
+-- Top normal arrow (+Y direction from top marker center)
+P 7 6 7 2
+P 7 7 7 2
+-- Front normal arrow (-Z direction from front marker center)
+P 7 3 4 2
+P 7 3 3 2
+
+-- Red arrows: hidden normals pointing AWAY from camera
+-- Right normal arrow (+X)
+P 11 3 7 1
+P 12 3 7 1
+-- Bottom normal arrow (-Y, going down into floor)
+P 7 0 7 1
+-- Back normal arrow (+Z)
+P 7 3 11 1
+P 7 3 12 1
+
+-- === CAMERA (yellow) ===
+B 0 8 0 1 1 1 6
+-- View ray sample points (cyan)
+P 2 7 2 4
+P 4 6 4 4
+P 6 5 6 4
+```
+
+CHECK
+
+**What I expect to see:**
+- Gray cube body with colored slabs floating just outside each face
+- 3 green slabs on the left/top/front sides with green arrows pointing away from the cube toward the camera's region
+- 3 red slabs on the right/bottom/back sides with red arrows pointing away from the camera's region
+- From the **top view**: green markers at X=5 and Z=5, red at X=10 and Z=10 — clearly asymmetric around the cube
+- From the **front view**: green at top (Y=5) and left (X=5), red at bottom (Y=0) and right (X=10)
+
+`★ Insight ─────────────────────────────────────`
+Offsetting face markers by 1 voxel outward is the voxel equivalent of rendering face normals as line segments in 3D graphics debuggers. It avoids the "last-write-wins" overwrite problem that caused the back face to appear green in the previous sketch.
+`─────────────────────────────────────────────────`

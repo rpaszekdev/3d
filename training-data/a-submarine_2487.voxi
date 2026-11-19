@@ -1,0 +1,54 @@
+V 48 24 48
+
+-- main hull
+E 24 10 24 18 6 6 3
+
+-- conning tower
+B 22 16 22 4 6 4 3
+
+-- nose cone
+E 8 10 24 4 6 6 9
+
+-- tail section
+E 40 10 24 4 6 6 9
+
+-- periscope
+C 24 22 24 1 5 9
+
+-- top antenna
+C 26 22 24 1 4 9
+
+-- rudder vertical
+B 40 10 24 2 8 1 9
+
+-- rudder horizontal
+B 40 8 22 2 2 5 9
+
+-- front dive planes left
+B 12 10 16 4 1 6 9
+
+-- front dive planes right
+B 12 10 26 4 1 6 9
+
+-- rear dive planes left
+B 36 10 16 4 1 5 9
+
+-- rear dive planes right
+B 36 10 26 4 1 5 9
+
+-- propeller hub
+S 42 10 24 2 9
+
+-- porthole row
+S 16 12 18 1 8
+S 20 12 18 1 8
+S 24 12 18 1 8
+S 28 12 18 1 8
+S 32 12 18 1 8
+
+-- conning tower windows
+S 24 20 20 1 8
+S 24 18 20 1 8
+
+-- hull stripe
+B 10 14 18 28 1 1 1

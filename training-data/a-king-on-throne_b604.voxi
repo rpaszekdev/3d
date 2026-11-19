@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- throne base
+B 9 0 10 14 5 10 9
+
+-- throne tall back
+B 9 5 18 14 20 3 8
+
+-- throne armrests
+B 9 5 10 3 6 10 9
+B 20 5 10 3 6 10 9
+
+-- seat cushion
+B 11 5 11 10 2 8 5
+
+-- royal cape draped over back
+B 10 12 17 12 8 2 1
+
+-- king lower robe
+B 12 7 12 8 5 6 e
+
+-- king torso robe
+B 12 12 12 8 7 5 e
+
+-- king left arm
+B 11 12 12 2 5 2 d
+
+-- king right arm holding scepter
+B 21 12 12 2 5 2 d
+
+-- king head
+S 16 22 13 3 d
+
+-- king white beard
+B 14 18 12 4 3 3 8
+
+-- crown base gold
+B 13 25 11 6 2 4 6
+
+-- crown points
+B 13 27 11 2 3 2 6
+B 16 27 11 2 3 2 6
+B 19 27 11 2 3 2 6
+
+-- crown jewel red center
+S 17 27 10 1 1
+
+-- scepter pole
+C 23 5 13 1 13 6
+
+-- scepter orb
+S 23 18 13 2 6

@@ -1,0 +1,40 @@
+V 24 16 24
+
+-- tabletop
+B 4 9 8 16 1 8 d
+
+-- tabletop support beam
+B 5 7 11 14 1 2 6
+
+-- front bench
+B 5 5 3 14 1 3 d
+
+-- back bench
+B 5 5 18 14 1 3 d
+
+-- table leg front-left
+B 5 0 9 1 9 1 6
+
+-- table leg front-right
+B 18 0 9 1 9 1 6
+
+-- table leg back-left
+B 5 0 15 1 9 1 6
+
+-- table leg back-right
+B 18 0 15 1 9 1 6
+
+-- front bench leg left
+B 6 0 4 1 5 1 6
+
+-- front bench leg right
+B 17 0 4 1 5 1 6
+
+-- back bench leg left
+B 6 0 19 1 5 1 6
+
+-- back bench leg right
+B 17 0 19 1 5 1 6
+
+-- lower cross brace
+B 5 3 10 14 1 4 6

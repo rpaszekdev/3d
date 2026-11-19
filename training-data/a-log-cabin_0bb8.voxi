@@ -1,0 +1,39 @@
+V 32 32 32
+
+-- foundation
+B 6 0 9 20 1 14 a
+
+-- front wall logs
+B 6 1 9 20 10 2 a
+
+-- back wall logs
+B 6 1 21 20 10 2 a
+
+-- left side wall
+B 6 1 9 2 10 14 d
+
+-- right side wall
+B 24 1 9 2 10 14 d
+
+-- door opening
+B 14 1 9 4 8 2 0
+
+-- front windows (glass)
+B 8 4 9 3 4 2 4
+B 20 4 9 3 4 2 4
+
+-- chimney
+B 22 10 15 3 14 3 9
+
+-- roof eave layer
+B 5 11 8 22 2 16 e
+
+-- roof stepped gable
+B 6 13 9 20 2 14 e
+B 7 15 9 18 2 14 e
+B 9 17 10 14 2 12 e
+B 11 19 10 10 2 11 c
+B 13 21 11 6 2 10 c
+
+-- roof ridge
+B 14 23 11 4 2 9 c

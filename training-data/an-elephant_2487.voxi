@@ -1,0 +1,38 @@
+V 32 32 32
+
+-- body
+E 16 12 16 9 7 6 8
+
+-- head
+E 16 18 10 6 5 5 8
+
+-- trunk
+C 16 10 7 2 8 9
+
+-- left ear
+E 9 18 12 4 5 1 d
+
+-- right ear
+E 23 18 12 4 5 1 d
+
+-- left front leg
+C 10 5 14 2 6 8
+-- right front leg
+C 22 5 14 2 6 8
+
+-- left back leg
+C 10 5 19 2 6 8
+-- right back leg
+C 22 5 19 2 6 8
+
+-- tusks
+C 14 14 6 1 4 7
+C 18 14 6 1 4 7
+
+-- left eye
+S 12 20 8 1 0
+-- right eye
+S 20 20 8 1 0
+
+-- tail
+C 16 14 22 1 4 8

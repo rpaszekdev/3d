@@ -1,0 +1,26 @@
+V 24 36 24
+
+-- waffle cone (tan)
+C 12 1 12 1 2 d
+C 12 3 12 2 2 d
+C 12 5 12 3 2 d
+C 12 7 12 4 2 d
+C 12 9 12 5 2 d
+
+-- cone rim highlight (brown)
+C 12 11 12 5 1 a
+
+-- waffle cross lines
+B 10 4 12 4 1 1 6
+B 12 4 10 1 1 4 6
+B 9 7 12 6 1 1 6
+B 12 7 9 1 1 6 6
+
+-- vanilla scoop (white)
+S 12 16 12 5 8
+
+-- strawberry scoop (pink)
+S 12 23 12 4 b
+
+-- cherry (red)
+S 12 28 12 1 1

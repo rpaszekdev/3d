@@ -1,0 +1,34 @@
+V 24 20 24
+
+-- left rocker
+B 9 1 5 1 1 3 a
+B 9 2 8 1 2 7 a
+B 9 1 15 1 1 3 a
+
+-- right rocker
+B 16 1 5 1 1 3 a
+B 16 2 8 1 2 7 a
+B 16 1 15 1 1 3 a
+
+-- front legs
+B 9 4 8 1 5 1 a
+B 16 4 8 1 5 1 a
+
+-- back posts (tall)
+B 9 4 15 1 11 1 a
+B 16 4 15 1 11 1 a
+
+-- seat frame
+B 8 9 7 9 1 9 a
+
+-- seat cushion
+B 9 10 8 7 1 7 3
+
+-- armrests
+B 9 13 8 1 1 7 a
+B 16 13 8 1 1 7 a
+
+-- back slats
+B 9 11 15 8 1 1 a
+B 9 13 15 8 1 1 a
+B 9 15 15 8 1 1 a

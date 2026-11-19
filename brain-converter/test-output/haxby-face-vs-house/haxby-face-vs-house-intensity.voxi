@@ -1,0 +1,26 @@
+V 64 40 64
+-- Haxby 2001: face vs house (pseudo t-statistic)
+-- Threshold: |t| >= 0.8
+-- Color = activation intensity: yellow(low) → orange → red → maroon → white(peak)
+-- 10 significant clusters
+
+-- cluster-1: R-amygdala (emotion, threat detection, salience), 27 vox, peak t=-3.0
+E 26 25 22 1 2 4 6
+-- cluster-2: unknown (), 26 vox, peak t=-2.8
+E 34 10 15 3 2 2 6
+-- cluster-3: R-fusiform (face perception (FFA)), 19 vox, peak t=-2.5
+E 32 22 19 3 3 1 6
+-- cluster-4: R-hippocampus (memory encoding, spatial navigation), 18 vox, peak t=-1.8
+E 30 16 22 1 2 2 6
+-- cluster-5: unknown (), 16 vox, peak t=-1.8
+E 26 12 22 1 2 2 6
+-- cluster-6: R-hippocampus (memory encoding, spatial navigation), 10 vox, peak t=-1.2
+E 29 22 25 1 1 2 6
+-- cluster-7: R-cerebellum (motor coordination, timing), 9 vox, peak t=-2.3
+E 35 26 13 2 1 1 6
+-- cluster-8: R-cerebellum (motor coordination, timing), 9 vox, peak t=-1.1
+S 33 27 15 1 6
+-- cluster-9: unknown (), 6 vox, peak t=-1.8
+S 32 16 20 1 6
+-- cluster-10: unknown (), 5 vox, peak t=-1.8
+S 35 12 18 1 6

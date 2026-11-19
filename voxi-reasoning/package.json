@@ -1,0 +1,16 @@
+{
+  "name": "voxi-reasoning",
+  "version": "1.0.0",
+  "description": "Spatial algorithm reasoning with VOXI visual verification — sketch, render, verify loop",
+  "type": "module",
+  "scripts": {
+    "server": "node server.js",
+    "reason": "node reason.js",
+    "interactive": "node reason.js --interactive"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "express": "^5.2.1",
+    "ws": "^8.18.0"
+  }
+}

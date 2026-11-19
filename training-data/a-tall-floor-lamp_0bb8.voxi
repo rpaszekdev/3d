@@ -1,0 +1,28 @@
+V 20 40 20
+
+-- base weight
+C 10 1 10 5 2 9
+
+-- base detail ring
+C 10 2 10 3 1 7
+
+-- pole
+C 10 3 10 1 26 9
+
+-- pole neck
+C 10 29 10 2 2 9
+
+-- shade outer body
+C 10 34 10 6 5 d
+
+-- shade inner glow
+C 10 34 10 4 4 6
+
+-- shade rim top
+B 5 37 5 10 1 10 7
+
+-- shade rim bottom
+B 6 30 6 8 1 8 9
+
+-- bulb
+S 10 33 10 2 6

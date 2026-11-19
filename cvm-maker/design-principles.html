@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVM — 10 Design Principles</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0c10;
+    --paper: #f4f1eb;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --muted: #6b7280;
+    --border: #d1d5db;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--ink); color: var(--paper); overflow-x: hidden; }
+
+  /* ── Navigation ─────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: 56px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; background: rgba(10,12,16,0.92); backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  nav .logo { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: 2px; }
+  nav .logo span { color: var(--blue); }
+  nav .dots { display: flex; gap: 6px; }
+  nav .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.12);
+    cursor: pointer; transition: all 0.3s;
+  }
+  nav .dot.active { background: var(--blue); box-shadow: 0 0 12px rgba(37,99,235,0.5); transform: scale(1.3); }
+  nav .dot:hover { background: rgba(255,255,255,0.3); }
+  nav .counter { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+  /* ── Sections ───────────────────── */
+  .principle {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 80px 40px; position: relative; overflow: hidden;
+  }
+  .principle::before {
+    content: attr(data-num);
+    position: absolute; top: -40px; right: -20px;
+    font-family: var(--serif); font-size: 300px; font-weight: 400;
+    color: rgba(255,255,255,0.02); pointer-events: none; line-height: 1;
+  }
+
+  .principle-inner {
+    max-width: 1320px; width: 100%; display: grid;
+    grid-template-columns: 400px 1fr; gap: 60px; align-items: center;
+  }
+
+  /* ── Text Column ────────────────── */
+  .principle-text { position: relative; }
+  .principle-num {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+    color: var(--blue); margin-bottom: 12px; text-transform: uppercase;
+  }
+  .principle-title {
+    font-family: var(--serif); font-size: 42px; line-height: 1.15;
+    margin-bottom: 20px; color: var(--paper);
+  }
+  .principle-desc {
+    font-size: 15px; line-height: 1.7; color: rgba(244,241,235,0.55);
+    max-width: 360px;
+  }
+  .principle-quote {
+    margin-top: 24px; padding: 16px 20px; border-left: 2px solid var(--blue);
+    font-family: var(--serif); font-style: italic; font-size: 14px;
+    color: rgba(244,241,235,0.4); background: rgba(37,99,235,0.04);
+  }
+
+  /* ── Sketch Column ──────────────── */
+  .sketch-frame {
+    background: #1a1d24; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .sketch-chrome {
+    height: 36px; background: #12141a; display: flex; align-items: center;
+    padding: 0 14px; gap: 7px;
+  }
+  .sketch-chrome i { width: 10px; height: 10px; border-radius: 50%; }
+  .sketch-chrome i:nth-child(1) { background: #ff5f57; }
+  .sketch-chrome i:nth-child(2) { background: #febc2e; }
+  .sketch-chrome i:nth-child(3) { background: #28c840; }
+  .sketch-chrome span { margin-left: auto; font-family: var(--mono); font-size: 10px; color: #555; }
+  .sketch-body { position: relative; }
+  .sketch-body canvas { display: block; width: 100%; height: auto; }
+
+  /* ── Scroll indicator ───────────── */
+  .scroll-hint {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.2);
+    letter-spacing: 2px; animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.2; } 50% { opacity: 0.5; } }
+
+  /* ── Alternating backgrounds ────── */
+  .principle:nth-child(even) { background: #0d0f14; }
+  .principle:nth-child(odd) { background: #0a0c10; }
+  .principle:nth-child(even)::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(37,99,235,0.03), transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Animations ─────────────────── */
+  .principle-inner { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .principle.visible .principle-inner { opacity: 1; transform: translateY(0); }
+  .sketch-frame { opacity: 0; transform: translateY(30px) scale(0.97); transition: all 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s; }
+  .principle.visible .sketch-frame { opacity: 1; transform: translateY(0) scale(1); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">CVM <span>PRINCIPLES</span></div>
+  <div class="dots" id="nav-dots"></div>
+  <div class="counter" id="nav-counter">01 / 10</div>
+</nav>
+
+<div id="principles"></div>
+<div class="scroll-hint">SCROLL ↓</div>
+
+<script>
+const PRINCIPLES = [
+  { num: '01', title: 'The 10-Second\nRule', desc: 'The user sees a rendered CV within 10 seconds. No spinner. The canvas draws itself live — rectangles appearing, text filling in. Collapsed perceived time even if actual generation takes longer.', quote: 'Hormozi: minimize time delay. The faster the result, the higher the perceived value.' },
+  { num: '02', title: 'Two Inputs,\nOne Button', desc: 'Your info textarea. Job posting textarea. Generate button. That is the entire product. Every additional field kills conversion. AI picks template, colors, fonts, pages.', quote: 'Rob Walling: at each funnel step you lose the majority. So have fewer steps.' },
+  { num: '03', title: 'Never Show\nan Empty State', desc: 'When someone lands, the canvas shows a pre-generated beautiful example CV. Rotating examples. When they hit Generate, their CV replaces the example. Instant gratification.', quote: 'Perceived likelihood goes up — they can see the end result before starting.' },
+  { num: '04', title: 'Variations Are\nthe Product', desc: 'Generate 4 variations every time. Different layouts, emphasis, visual styles. Choice = ownership. Eliminates "is this good enough?" The variations screen IS the product.', quote: 'Picking from options feels like agency, not passivity.' },
+  { num: '05', title: 'Chat Fixes,\nNot Edit Mode', desc: '"Add my Python cert." "Make work experience longer." "Remove the photo." Natural language, not drag-and-drop. Like messaging a CV writer on Fiverr. The user never sees the DSL.', quote: 'The chat input should feel like messaging, not a command line.' },
+  { num: '06', title: 'ATS Score =\nTrust Signal', desc: 'A number that says "this CV is 92% matched to this job." That number justifies $15-39. Without it, just another pretty PDF. With it, a strategic tool. Break it down by keyword category.', quote: 'Hormozi: perceived likelihood of achievement.' },
+  { num: '07', title: 'Paywall After\nthe Dopamine', desc: 'Generate free. See the beautiful CV. Feel the "holy shit" moment. Then paywall the download. Don\'t blur everything — let them see enough. Sunk cost + visible result = conversion.', quote: 'Deliver actual value first, then measure willingness to pay.' },
+  { num: '08', title: 'Mobile-First\nIs Non-Negotiable', desc: 'Job seekers browse on phones. Copy job URL from LinkedIn, switch to your site, paste, generate, swipe 4 variations, download. No pinch-to-zoom. Full-width cards they swipe.', quote: 'The canvas preview should be a full-width card, not a miniature A4.' },
+  { num: '09', title: 'Remember\nReturning Users', desc: 'First visit: empty textareas. Second visit: info pre-filled. Only job description is empty. Generating a new tailored CV for a new job takes 5 seconds. That\'s when $29/mo feels like nothing.', quote: 'The value metric is CVs generated per job.' },
+  { num: '10', title: 'Output Is\nthe Marketing', desc: 'The PDF is so good that when someone asks "how did you make this?", the answer is visible. Subtle watermark on free tier. Quality itself spreads through the job market without you lifting a finger.', quote: 'If a recruiter thinks "this person has their shit together" — that\'s your social proof.' },
+];
+
+const SKETCHES = [
+  // P1: Live rendering
+  `CANVAS 800 520 #0f172a
+RECT 0 0 800 520 0 #0f172a
+RECT 180 20 440 480 1 #ffffff
+RECT 180 20 154 480 2 #1e293b
+ELLIPSE 257 60 26 26 3 #475569
+RECT 206 100 102 6 3 #f1f5f9
+RECT 206 114 84 3 3 #94a3b8
+RECT 206 122 90 3 3 #94a3b8
+RECT 206 140 46 6 3 #f1f5f9
+RECT 206 156 42 11 3 #2563eb 5
+RECT 252 156 42 11 3 #2563eb 5
+TEXT 346 30 "Sarah" 18 3 #1e293b bold
+TEXT 346 52 "Mitchell" 14 3 #94a3b8
+LINE 346 72 608 72 3 #e2e8f0 1
+RECT 346 84 90 6 3 #1e293b
+LINE 346 96 608 96 3 #1e293b 1
+RECT 346 108 60 4 3 #334155
+RECT 346 118 80 3 3 #94a3b8
+RECT 352 130 180 3 3 #64748b
+RECT 352 138 190 3 3 #64748b
+RECT 352 146 160 3 3 #64748b
+RECT 352 154 140 2 3 #64748b
+RECT 494 152 2 6 4 #2563eb
+RECT 180 492 290 8 4 #2563eb 4
+RECT 470 492 150 8 4 #1e293b 4
+TEXT 200 478 "Rendering... 65%" 9 4 #2563eb
+RECT 16 100 140 80 3 #1e293b 8
+TEXT 28 112 "LIVE BUILD" 8 4 #2563eb bold
+RECT 32 128 6 6 4 #16a34a
+TEXT 44 126 "Layout done" 8 4 #94a3b8
+RECT 32 142 6 6 4 #16a34a
+TEXT 44 140 "Skills extracted" 8 4 #94a3b8
+RECT 32 156 6 6 4 #2563eb
+TEXT 44 154 "Writing exp..." 8 4 #2563eb
+RECT 32 170 6 6 4 #334155
+TEXT 44 168 "Education" 8 4 #475569
+RECT 660 20 120 24 3 #1e293b 10
+TEXT 676 26 "3.2s" 13 4 #2563eb bold`,
+
+  // P2: Two inputs one button
+  `CANVAS 800 520 #f8fafb
+RECT 0 0 800 520 0 #f8fafb
+RECT 0 0 800 40 1 #ffffff
+LINE 0 40 800 40 1 #e2e6ea 1
+RECT 12 8 20 24 2 #2563eb 5
+TEXT 15 14 "CV" 10 3 #ffffff bold
+TEXT 38 14 "CVM" 12 2 #1e293b bold
+TEXT 200 80 "Your CV in 10 seconds." 24 2 #1e293b bold
+TEXT 200 110 "Paste your info. Get a perfect CV." 12 2 #64748b
+TEXT 160 148 "YOUR INFORMATION" 8 2 #94a3b8 bold
+RECT 160 164 480 140 2 #ffffff 8
+RECT 160 164 480 140 3 #e2e6ea 8
+TEXT 178 178 "Sarah Mitchell" 12 4 #1e293b bold
+TEXT 178 196 "Full Stack Developer, 5 years at TechFlow." 10 4 #475569
+TEXT 178 212 "Microservice architecture, 2M req/day." 10 4 #475569
+TEXT 178 228 "BSc Computer Science, UCL 2018-2022." 10 4 #475569
+TEXT 178 248 "Python, React, Docker, AWS." 10 4 #475569
+TEXT 178 268 "sarah@example.com · London, UK" 9 4 #94a3b8
+TEXT 160 318 "JOB POSTING" 8 2 #94a3b8 bold
+TEXT 238 318 "(optional)" 7 2 #c4c8cc
+RECT 160 334 480 80 2 #ffffff 8
+RECT 160 334 480 80 3 #e2e6ea 8
+TEXT 178 350 "Software Engineer — Albert Heijn" 10 4 #475569 italic
+TEXT 178 368 "React, Node.js, cloud infra required..." 10 4 #94a3b8
+RECT 260 434 280 44 2 #2563eb 22
+TEXT 338 446 "Generate CV →" 15 3 #ffffff bold
+TEXT 312 490 "Free · No signup · 10 seconds" 9 2 #94a3b8`,
+
+  // P3: Never empty state
+  `CANVAS 800 520 #f8fafb
+RECT 0 0 800 520 0 #f8fafb
+RECT 0 0 800 40 1 #ffffff
+LINE 0 40 800 40 1 #e2e6ea 1
+TEXT 12 14 "CVM" 12 2 #1e293b bold
+RECT 16 52 340 440 2 #ffffff 10
+TEXT 36 72 "Create your CV" 18 3 #1e293b bold
+TEXT 36 96 "Paste your info and get a" 10 3 #64748b
+TEXT 36 110 "professional CV in seconds." 10 3 #64748b
+TEXT 36 140 "YOUR INFORMATION" 8 3 #94a3b8 bold
+RECT 36 156 290 110 3 #f8fafc 6
+TEXT 50 170 "Start typing..." 10 4 #c4c8cc italic
+TEXT 36 282 "JOB POSTING" 8 3 #94a3b8 bold
+RECT 36 298 290 60 3 #f8fafc 6
+TEXT 50 312 "Paste job description..." 10 4 #c4c8cc italic
+RECT 36 376 290 40 3 #2563eb 8
+TEXT 130 388 "Generate CV →" 12 4 #ffffff bold
+TEXT 100 428 "Free · No signup" 9 3 #94a3b8
+RECT 376 52 404 440 2 #edf0f3 10
+RECT 390 62 100 22 3 #1e293b 10
+TEXT 402 68 "LIVE EXAMPLE" 8 4 #2563eb bold
+RECT 424 96 320 380 3 #ffffff
+RECT 424 96 112 380 4 #1e293b
+ELLIPSE 480 126 18 18 5 #475569
+RECT 446 156 72 5 5 #f1f5f9
+RECT 446 166 60 3 5 #94a3b8
+RECT 446 180 34 8 5 #2563eb 4
+RECT 484 180 34 8 5 #2563eb 4
+TEXT 548 104 "Alexandra" 14 5 #1e293b bold
+TEXT 548 122 "Thompson" 11 5 #94a3b8
+LINE 548 140 732 140 5 #e2e8f0 1
+RECT 548 152 80 5 5 #1e293b
+RECT 548 166 50 3 5 #334155
+RECT 548 176 70 3 5 #94a3b8
+RECT 552 190 150 2 5 #64748b
+RECT 552 198 140 2 5 #64748b`,
+
+  // P4: Variations grid
+  `CANVAS 800 520 #0f172a
+RECT 0 0 800 520 0 #0f172a
+RECT 0 0 800 40 1 #1e293b
+TEXT 12 12 "CVM" 12 2 #2563eb bold
+TEXT 44 14 "· 4 variations ready" 10 2 #4ade80
+RECT 680 8 100 24 2 #2563eb 5
+TEXT 700 14 "Export ↓" 10 3 #ffffff bold
+RECT 20 56 186 220 2 #1e293b 8
+RECT 30 66 166 180 3 #ffffff
+RECT 30 66 58 180 4 #1e293b
+ELLIPSE 59 84 12 12 5 #475569
+TEXT 96 72 "Sarah" 10 5 #1e293b bold
+TEXT 96 84 "Mitchell" 8 5 #94a3b8
+RECT 96 100 80 4 5 #1e293b
+RECT 96 110 60 2 5 #64748b
+RECT 96 118 70 2 5 #64748b
+TEXT 66 286 "V1 — Modern" 9 3 #94a3b8 bold
+RECT 30 300 70 24 3 #2563eb 5
+TEXT 42 306 "Select" 9 4 #ffffff bold
+RECT 216 56 186 220 2 #1e293b 8
+RECT 226 66 166 180 3 #ffffff
+ELLIPSE 309 84 12 12 5 #e2e6ea
+TEXT 284 100 "Sarah" 10 5 #1e293b bold
+TEXT 280 112 "Mitchell" 8 5 #94a3b8
+LINE 274 128 380 128 5 #e2e8f0 1
+RECT 274 138 80 4 5 #1e293b
+TEXT 268 286 "V2 — Classic" 9 3 #94a3b8 bold
+RECT 412 56 186 220 2 #1e293b 8
+RECT 422 66 166 180 3 #fafafa
+RECT 534 66 54 180 4 #1a1a2e
+TEXT 432 76 "Sarah" 10 5 #1a1a2e bold
+TEXT 432 88 "Mitchell" 8 5 #f97066
+RECT 432 104 100 4 5 #1a1a2e
+RECT 432 114 70 2 5 #64748b
+TEXT 460 286 "V3 — Coral" 9 3 #94a3b8 bold
+RECT 608 56 172 220 2 #1e293b 8
+RECT 618 66 152 180 3 #ffffff
+TEXT 630 76 "SARAH" 12 5 #111111 bold
+TEXT 630 92 "MITCHELL" 12 5 #111111 bold
+LINE 630 108 748 108 5 #111111 2
+RECT 630 120 80 4 5 #111111
+RECT 630 130 60 2 5 #444444
+TEXT 654 286 "V4 — Minimal" 9 3 #94a3b8 bold
+TEXT 240 340 "Click to preview full-size, or chat to tweak" 10 3 #475569`,
+
+  // P5: Chat fixes
+  `CANVAS 800 520 #f8fafb
+RECT 0 0 800 520 0 #f8fafb
+RECT 0 0 800 36 1 #ffffff
+LINE 0 36 800 36 1 #e2e6ea 1
+TEXT 12 10 "CVM" 12 2 #1e293b bold
+TEXT 300 12 "Chat with your CV" 10 2 #94a3b8
+RECT 0 36 460 484 2 #edf0f3
+RECT 100 56 280 400 3 #ffffff
+RECT 100 56 98 400 4 #1e293b
+ELLIPSE 149 82 16 16 5 #475569
+RECT 118 110 62 5 5 #f1f5f9
+TEXT 208 64 "Sarah" 14 5 #1e293b bold
+TEXT 208 80 "Mitchell" 11 5 #94a3b8
+RECT 208 100 72 5 5 #1e293b
+RECT 208 114 50 3 5 #334155
+RECT 208 124 60 3 5 #94a3b8
+RECT 212 138 130 2 5 #64748b
+RECT 460 36 340 484 2 #ffffff
+LINE 460 36 460 520 2 #e2e6ea 1
+TEXT 478 50 "Chat" 13 3 #1e293b bold
+TEXT 478 66 "Talk naturally" 9 3 #94a3b8
+LINE 478 80 780 80 3 #f1f5f9 1
+RECT 520 96 250 24 3 #f1f5f9 12
+TEXT 534 102 "Add my AWS cert from 2023" 9 4 #334155
+RECT 478 130 280 28 3 #eff6ff 12
+RECT 478 130 2 28 4 #2563eb
+TEXT 490 138 "Done! Added AWS Solutions Architect." 9 4 #334155
+RECT 520 170 250 24 3 #f1f5f9 12
+TEXT 534 176 "Make experience section longer" 9 4 #334155
+RECT 478 206 280 36 3 #eff6ff 12
+RECT 478 206 2 36 4 #2563eb
+TEXT 490 214 "Expanded with 3 more bullet points" 9 4 #334155
+TEXT 490 228 "about inventory and training." 8 4 #64748b
+RECT 520 254 250 24 3 #f1f5f9 12
+TEXT 534 260 "Remove the photo" 9 4 #334155
+RECT 478 290 280 24 3 #eff6ff 12
+RECT 478 290 2 24 4 #2563eb
+TEXT 490 296 "Photo removed. Layout adjusted." 9 4 #334155
+RECT 478 330 280 56 3 #fef3c7 8
+RECT 478 330 2 56 4 #d97706
+TEXT 490 342 "NO EDIT MODE" 8 4 #92400e bold
+TEXT 490 358 "Users talk, not drag-and-drop." 9 4 #92400e
+TEXT 490 372 "Like messaging a CV writer." 9 4 #b45309
+RECT 474 484 292 28 4 #f8fafc 14
+TEXT 490 492 "Type a change..." 9 5 #94a3b8 italic
+RECT 772 484 24 28 4 #2563eb 14
+TEXT 778 492 "↑" 12 5 #ffffff bold`,
+
+  // P6: ATS Score
+  `CANVAS 800 520 #f8fafb
+RECT 0 0 800 520 0 #f8fafb
+RECT 0 0 800 36 1 #ffffff
+LINE 0 36 800 36 1 #e2e6ea 1
+TEXT 12 10 "CVM" 12 2 #1e293b bold
+RECT 16 52 300 440 2 #edf0f3 10
+RECT 46 68 240 340 3 #ffffff
+RECT 46 68 84 340 4 #1e293b
+ELLIPSE 88 90 14 14 5 #475569
+RECT 62 114 50 4 5 #f1f5f9
+TEXT 140 74 "Sarah" 12 5 #1e293b bold
+RECT 140 92 60 4 5 #1e293b
+RECT 140 106 50 3 5 #64748b
+RECT 140 116 60 2 5 #64748b
+RECT 340 52 440 440 2 #ffffff 10
+TEXT 370 68 "ATS MATCH SCORE" 10 3 #94a3b8 bold
+ELLIPSE 560 128 50 50 3 #eff6ff
+ELLIPSE 560 128 42 42 4 #dbeafe
+TEXT 534 112 "92" 36 5 #1e40af bold
+TEXT 584 122 "%" 16 5 #1e40af
+TEXT 540 150 "MATCH" 9 5 #2563eb
+TEXT 370 200 "MATCHED" 8 3 #16a34a bold
+RECT 370 216 80 22 3 #dcfce7 6
+TEXT 382 222 "React ✓" 8 4 #166534
+RECT 458 216 80 22 3 #dcfce7 6
+TEXT 470 222 "Node.js ✓" 8 4 #166534
+RECT 546 216 80 22 3 #dcfce7 6
+TEXT 558 222 "Docker ✓" 8 4 #166534
+RECT 634 216 80 22 3 #dcfce7 6
+TEXT 650 222 "AWS ✓" 8 4 #166534
+RECT 370 244 80 22 3 #dcfce7 6
+TEXT 382 250 "Python ✓" 8 4 #166534
+RECT 458 244 80 22 3 #dcfce7 6
+TEXT 470 250 "CI/CD ✓" 8 4 #166534
+TEXT 370 282 "MISSING" 8 3 #dc2626 bold
+RECT 370 298 80 22 3 #fef2f2 6
+TEXT 382 304 "Dutch ✗" 8 4 #991b1b
+RECT 458 298 100 22 3 #fef3c7 6
+TEXT 470 304 "GraphQL ?" 8 4 #92400e
+RECT 370 338 120 28 3 #2563eb 6
+TEXT 386 346 "Fix via Chat →" 9 4 #ffffff bold
+LINE 370 382 740 382 3 #f1f5f9 1
+TEXT 370 398 "SECTION SCORES" 9 3 #1e293b bold
+RECT 370 416 300 22 3 #f8fafc 6
+TEXT 382 422 "Work Experience" 9 4 #334155
+TEXT 636 422 "95%" 9 4 #16a34a bold
+RECT 370 444 300 22 3 #f8fafc 6
+TEXT 382 450 "Skills" 9 4 #334155
+TEXT 636 450 "88%" 9 4 #16a34a bold
+RECT 370 472 300 22 3 #f8fafc 6
+TEXT 382 478 "Languages" 9 4 #334155
+TEXT 636 478 "40%" 9 4 #dc2626 bold`,
+
+  // P7: Paywall
+  `CANVAS 800 520 #0f172a
+RECT 0 0 800 520 0 #0f172a
+RECT 200 10 340 440 1 rgba(255,255,255,0.04)
+RECT 200 10 120 440 2 rgba(30,41,59,0.3)
+RECT 340 40 180 14 2 rgba(100,100,100,0.08)
+RECT 340 64 140 8 2 rgba(100,100,100,0.06)
+RECT 340 84 160 4 2 rgba(100,100,100,0.04)
+RECT 340 96 150 4 2 rgba(100,100,100,0.04)
+TEXT 280 220 "CVM PREVIEW" 28 3 rgba(96,165,250,0.06) bold
+RECT 200 100 400 360 5 #ffffff 16
+ELLIPSE 400 146 22 22 6 #dcfce7
+TEXT 392 138 "✓" 18 7 #16a34a bold
+TEXT 290 180 "Your CV is ready!" 22 6 #1e293b bold
+TEXT 310 210 "ATS Match for this job:" 11 6 #64748b
+RECT 342 228 116 36 6 #dcfce7 10
+TEXT 362 236 "92%" 22 7 #166534 bold
+TEXT 416 244 "match" 9 7 #16a34a
+LINE 240 276 560 276 6 #f1f5f9 1
+RECT 258 290 10 10 6 #2563eb 5
+TEXT 276 288 "4 unique variations" 10 7 #334155
+RECT 258 308 10 10 6 #2563eb 5
+TEXT 276 306 "ATS-optimized for this job" 10 7 #334155
+RECT 258 326 10 10 6 #2563eb 5
+TEXT 276 324 "Print-ready PDF" 10 7 #334155
+LINE 240 346 560 346 6 #f1f5f9 1
+RECT 240 360 320 40 6 #2563eb 10
+TEXT 328 372 "Download — $15" 14 7 #ffffff bold
+RECT 240 410 320 34 6 #ffffff 10
+RECT 240 410 320 34 7 #e2e6ea 10
+TEXT 310 420 "Unlimited — $29/mo" 11 8 #334155
+TEXT 326 452 "30-day money back" 9 6 #94a3b8`,
+
+  // P8: Mobile
+  `CANVAS 800 520 #f0f2f5
+RECT 0 0 800 520 0 #f0f2f5
+TEXT 60 40 "Mobile-First" 20 2 #1e293b bold
+TEXT 60 64 "Job seekers browse on phones." 11 2 #64748b
+RECT 160 100 200 380 2 #1e293b 24
+RECT 164 104 192 372 3 #ffffff 22
+RECT 164 104 192 36 4 #f8fafc 22
+TEXT 184 114 "CVM" 10 5 #2563eb bold
+TEXT 324 114 "→" 10 5 #2563eb bold
+RECT 178 148 164 60 5 #f8fafc 6
+TEXT 188 158 "Your info (saved)" 8 6 #64748b
+TEXT 188 172 "Sarah Mitchell, 5yr..." 8 6 #334155
+RECT 178 216 164 50 5 #f8fafc 6
+TEXT 188 226 "Job posting" 8 6 #94a3b8
+TEXT 188 240 "Paste here..." 8 6 #c4c8cc italic
+RECT 178 278 164 32 5 #2563eb 6
+TEXT 226 288 "Generate" 10 6 #ffffff bold
+RECT 178 322 164 140 5 #ffffff 6
+RECT 178 322 58 140 6 #1e293b
+RECT 178 454 56 8 6 #2563eb 4
+RECT 238 454 56 8 6 #e2e8f0 4
+TEXT 188 470 "Swipe →" 7 6 #94a3b8
+RECT 430 100 200 380 2 #1e293b 24
+RECT 434 104 192 372 3 #0f172a 22
+RECT 434 104 192 36 4 #1e293b 22
+TEXT 454 114 "4 Variations" 9 5 #2563eb bold
+RECT 448 150 164 100 5 #1e293b 8
+RECT 448 150 164 100 6 rgba(255,255,255,0.06) 8
+RECT 448 150 58 100 6 #1e293b
+ELLIPSE 477 172 10 10 7 #475569
+TEXT 514 158 "Sarah" 9 7 #f1f5f9 bold
+RECT 514 172 80 3 7 #64748b
+RECT 514 180 70 3 7 #64748b
+TEXT 494 256 "V1 — Modern" 8 6 #94a3b8
+RECT 448 270 164 100 5 #1e293b 8
+RECT 448 270 164 100 6 rgba(255,255,255,0.06) 8
+ELLIPSE 530 296 10 10 7 #e2e6ea
+TEXT 510 312 "Sarah" 9 7 #f1f5f9 bold
+TEXT 494 376 "V2 — Classic" 8 6 #94a3b8
+RECT 448 402 164 32 5 #2563eb 6
+TEXT 494 412 "Download" 10 6 #ffffff bold
+TEXT 448 442 "Swipe between variations ↕" 8 5 #475569`,
+
+  // P9: Returning users
+  `CANVAS 800 520 #f8fafb
+RECT 0 0 800 520 0 #f8fafb
+TEXT 60 30 "First Visit vs Return Visit" 18 2 #1e293b bold
+TEXT 60 52 "Pre-filled info = 5-second generation" 11 2 #64748b
+RECT 30 80 360 400 2 #ffffff 12
+RECT 30 80 360 36 3 #f8fafc 12
+TEXT 50 90 "FIRST VISIT" 10 4 #94a3b8 bold
+TEXT 140 92 "new user" 9 4 #dc2626
+TEXT 50 132 "YOUR INFORMATION" 8 3 #94a3b8 bold
+RECT 50 148 320 100 3 #f8fafc 6
+TEXT 70 168 "Start typing or paste your" 10 4 #c4c8cc italic
+TEXT 70 184 "resume content here..." 10 4 #c4c8cc italic
+TEXT 50 266 "JOB POSTING" 8 3 #94a3b8 bold
+RECT 50 282 320 60 3 #f8fafc 6
+TEXT 70 300 "Paste job description..." 10 4 #c4c8cc italic
+RECT 50 360 320 40 3 #2563eb 8
+TEXT 160 372 "Generate CV →" 11 4 #ffffff bold
+TEXT 108 416 "Both fields empty — full effort" 9 3 #dc2626
+RECT 410 80 360 400 2 #ffffff 12
+RECT 410 80 360 36 3 #f0fdf4 12
+TEXT 430 90 "RETURN VISIT" 10 4 #16a34a bold
+TEXT 536 92 "saved user" 9 4 #16a34a
+TEXT 430 132 "YOUR INFORMATION" 8 3 #94a3b8 bold
+RECT 432 134 60 14 3 #dcfce7 4
+TEXT 438 138 "SAVED" 7 4 #16a34a bold
+RECT 430 148 320 100 3 #f0fdf4 6
+TEXT 450 164 "Sarah Mitchell" 11 4 #1e293b bold
+TEXT 450 180 "Full Stack Developer, 5yr exp." 10 4 #334155
+TEXT 450 196 "Python, React, Docker, AWS." 10 4 #334155
+TEXT 450 212 "BSc Computer Science, UCL." 10 4 #334155
+TEXT 450 232 "sarah@example.com · London" 9 4 #94a3b8
+TEXT 430 266 "JOB POSTING" 8 3 #94a3b8 bold
+TEXT 498 266 "(new)" 7 3 #2563eb
+RECT 430 282 320 60 3 #f8fafc 6
+TEXT 450 300 "Paste new job here..." 10 4 #c4c8cc italic
+RECT 430 360 320 40 3 #2563eb 8
+TEXT 536 372 "Generate CV →" 11 4 #ffffff bold
+TEXT 460 416 "Info pre-filled — only paste job" 9 3 #16a34a
+TEXT 478 432 "$29/mo feels like nothing" 9 3 #16a34a bold`,
+
+  // P10: Output is marketing
+  `CANVAS 800 520 #0f172a
+RECT 0 0 800 520 0 #0f172a
+TEXT 50 40 "The Output Is the Marketing" 20 2 #f1f5f9 bold
+TEXT 50 66 "Quality spreads through the job market." 11 2 #475569
+RECT 200 96 400 390 2 rgba(96,165,250,0.04)
+RECT 200 96 400 390 3 #ffffff
+RECT 200 96 140 390 4 #1e293b
+ELLIPSE 270 136 28 28 5 #475569
+RECT 224 180 92 6 5 #f1f5f9
+RECT 224 194 76 3 5 #94a3b8
+RECT 224 204 82 3 5 #94a3b8
+RECT 224 224 48 6 5 #f1f5f9
+RECT 224 240 42 12 5 #2563eb 5
+RECT 272 240 42 12 5 #2563eb 5
+RECT 224 258 48 12 5 #38bdf8 5
+RECT 278 258 36 12 5 #38bdf8 5
+RECT 224 286 66 6 5 #f1f5f9
+RECT 224 302 76 3 5 #4a5a6a
+TEXT 352 106 "Sarah Mitchell" 16 5 #1e293b bold
+TEXT 352 128 "Full Stack Developer" 11 5 #94a3b8
+RECT 352 148 10 4 5 #64748b
+RECT 368 148 60 4 5 #94a3b8
+RECT 440 148 10 4 5 #64748b
+RECT 456 148 60 4 5 #94a3b8
+LINE 352 162 588 162 5 #e2e8f0 1
+RECT 352 174 90 6 5 #1e293b
+LINE 352 186 588 186 5 #1e293b 1
+RECT 352 198 62 4 5 #334155
+RECT 352 208 82 3 5 #94a3b8
+RECT 358 222 190 3 5 #64748b
+RECT 358 232 200 3 5 #64748b
+RECT 358 242 176 3 5 #64748b
+RECT 352 266 62 4 5 #334155
+RECT 352 276 72 3 5 #94a3b8
+RECT 358 290 180 3 5 #64748b
+RECT 352 314 72 6 5 #1e293b
+LINE 352 326 588 326 5 #1e293b 1
+RECT 352 338 80 4 5 #334155
+RECT 352 348 100 3 5 #94a3b8
+TEXT 280 474 "Made with CVM" 8 5 rgba(148,163,184,0.3)
+RECT 50 200 120 140 3 #1e293b 10
+RECT 50 200 3 140 4 #2563eb
+TEXT 66 216 "RECRUITER" 8 4 #2563eb bold
+TEXT 66 236 "\"This person" 10 4 #e2e8f0
+TEXT 66 252 "has their" 10 4 #e2e8f0
+TEXT 66 268 "shit together.\"" 10 4 #e2e8f0
+TEXT 66 296 "= free marketing" 9 4 #2563eb
+RECT 640 200 140 100 3 #1e293b 10
+RECT 640 200 3 100 4 #4ade80
+TEXT 656 216 "FRIEND ASKS:" 8 4 #4ade80 bold
+TEXT 656 236 "\"How did you" 10 4 #e2e8f0
+TEXT 656 252 "make this?\"" 10 4 #e2e8f0
+TEXT 656 276 "→ CVM.com" 10 4 #4ade80 bold`,
+];
+
+// ── Render ──────────────────────────────────────
+
+function roundedRect(ctx, x, y, w, h, r) {
+  r = Math.min(r||0, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function parse(code) {
+  let W=800, H=520, bg='#1a1a1a';
+  const els = [];
+  for (const raw of code.split('\n')) {
+    const t = raw.trim();
+    if (!t || t.startsWith('--')) continue;
+    const tk = [];
+    let j = 0;
+    while (j < t.length) {
+      if (t[j]===' '||t[j]==='\t') { j++; continue; }
+      if (t[j]==='"') { const e=t.indexOf('"',j+1); if(e===-1){tk.push(t.slice(j+1));j=t.length;}else{tk.push(t.slice(j+1,e));j=e+1;} }
+      else { const e=t.indexOf(' ',j); if(e===-1){tk.push(t.slice(j));j=t.length;}else{tk.push(t.slice(j,e));j=e+1;} }
+    }
+    if (!tk.length) continue;
+    const c = tk[0].toUpperCase();
+    if (c==='CANVAS') { W=+tk[1]||800; H=+tk[2]||520; bg=tk[3]||'#1a1a1a'; }
+    else if (c==='RECT') els.push({t:'r',x:+tk[1],y:+tk[2],w:+tk[3],h:+tk[4],z:+tk[5]||0,c:tk[6]||'#888',rd:+tk[7]||0});
+    else if (c==='TEXT') els.push({t:'t',x:+tk[1],y:+tk[2],s:tk[3]||'',sz:+tk[4]||14,z:+tk[5]||0,c:tk[6]||'#fff',wt:(tk[7]||'').toLowerCase()});
+    else if (c==='LINE') els.push({t:'l',x1:+tk[1],y1:+tk[2],x2:+tk[3],y2:+tk[4],z:+tk[5]||0,c:tk[6]||'#fff',w:+tk[7]||1});
+    else if (c==='ELLIPSE') els.push({t:'e',cx:+tk[1],cy:+tk[2],rx:+tk[3],ry:+tk[4],z:+tk[5]||0,c:tk[6]||'#888'});
+  }
+  els.sort((a,b) => a.z - b.z);
+  return { W, H, bg, els };
+}
+
+function draw(canvas, code) {
+  const { W, H, bg, els } = parse(code);
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+  for (const e of els) {
+    ctx.save();
+    if (e.t==='r') { ctx.fillStyle=e.c; if(e.rd>0){roundedRect(ctx,e.x,e.y,e.w,e.h,e.rd);ctx.fill();}else ctx.fillRect(e.x,e.y,e.w,e.h); }
+    else if (e.t==='t') { ctx.font=`${e.wt==='italic'?'italic ':''}${e.wt==='bold'?'bold ':''}${e.sz}px -apple-system,system-ui,sans-serif`; ctx.fillStyle=e.c; ctx.textBaseline='top'; ctx.fillText(e.s,e.x,e.y); }
+    else if (e.t==='l') { ctx.strokeStyle=e.c; ctx.lineWidth=e.w; ctx.beginPath(); ctx.moveTo(e.x1,e.y1); ctx.lineTo(e.x2,e.y2); ctx.stroke(); }
+    else if (e.t==='e') { ctx.fillStyle=e.c; ctx.beginPath(); ctx.ellipse(e.cx,e.cy,e.rx,e.ry,0,0,Math.PI*2); ctx.fill(); }
+    ctx.restore();
+  }
+}
+
+// ── Build DOM ───────────────────────────────────
+
+const container = document.getElementById('principles');
+const dotsEl = document.getElementById('nav-dots');
+
+PRINCIPLES.forEach((p, i) => {
+  // Nav dot
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => sections[i].scrollIntoView({ behavior: 'smooth' });
+  dotsEl.appendChild(dot);
+
+  // Section
+  const section = document.createElement('div');
+  section.className = 'principle';
+  section.dataset.num = p.num;
+  section.innerHTML = `
+    <div class="principle-inner">
+      <div class="principle-text">
+        <div class="principle-num">PRINCIPLE ${p.num}</div>
+        <h2 class="principle-title">${p.title.replace('\n','<br>')}</h2>
+        <p class="principle-desc">${p.desc}</p>
+        <div class="principle-quote">${p.quote}</div>
+      </div>
+      <div class="sketch-frame">
+        <div class="sketch-chrome"><i></i><i></i><i></i><span>principle-${p.num}.voxi</span></div>
+        <div class="sketch-body"><canvas id="sketch-${i}"></canvas></div>
+      </div>
+    </div>
+  `;
+  container.appendChild(section);
+});
+
+const sections = document.querySelectorAll('.principle');
+
+// Render all sketches
+SKETCHES.forEach((code, i) => {
+  const canvas = document.getElementById(`sketch-${i}`);
+  if (canvas) draw(canvas, code);
+});
+
+// ── Scroll Observer ─────────────────────────────
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      const idx = Array.from(sections).indexOf(entry.target);
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      document.getElementById('nav-counter').textContent = `${String(idx + 1).padStart(2, '0')} / 10`;
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

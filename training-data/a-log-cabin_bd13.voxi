@@ -1,0 +1,37 @@
+V 32 32 32
+
+-- stone foundation
+B 5 0 8 22 1 16 9
+
+-- front log wall left of door
+B 5 1 8 5 10 2 a
+-- front log wall right of door
+B 19 1 8 8 10 2 a
+-- front log wall above door
+B 10 7 8 10 4 2 a
+
+-- door opening
+B 10 1 7 5 6 2 0
+
+-- back wall
+B 5 1 22 22 10 2 a
+
+-- left side wall
+B 5 1 10 2 10 12 a
+-- right side wall
+B 25 1 10 2 10 12 a
+
+-- front windows
+B 6 4 7 3 3 1 4
+B 22 4 7 3 3 1 4
+
+-- gabled roof layers
+B 5 11 8 22 2 16 d
+B 7 13 9 18 2 14 d
+B 9 15 10 14 2 12 d
+B 11 17 11 10 2 10 d
+B 13 19 12 6 2 8 d
+B 15 21 13 2 2 6 d
+
+-- stone chimney
+B 22 11 12 3 10 3 9

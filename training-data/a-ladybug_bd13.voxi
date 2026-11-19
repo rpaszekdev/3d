@@ -1,0 +1,38 @@
+V 24 24 24
+
+-- body shell
+E 12 5 13 6 4 7 1
+
+-- head
+S 12 4 5 3 0
+
+-- wing divider
+B 11 5 7 2 5 12 0
+
+-- spots left wing
+S 9 8 10 1 0
+S 9 8 14 1 0
+S 9 6 12 1 0
+
+-- spots right wing
+S 15 8 10 1 0
+S 15 8 14 1 0
+S 15 6 12 1 0
+
+-- antennae
+B 10 7 3 1 2 2 0
+B 14 7 3 1 2 2 0
+
+-- antenna tips
+S 10 10 3 1 0
+S 14 10 3 1 0
+
+-- legs left
+B 4 2 9 4 1 1 0
+B 4 2 12 4 1 1 0
+B 4 2 15 4 1 1 0
+
+-- legs right
+B 16 2 9 4 1 1 0
+B 16 2 12 4 1 1 0
+B 16 2 15 4 1 1 0

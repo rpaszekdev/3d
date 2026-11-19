@@ -1,0 +1,21 @@
+-- Living Room — 5m × 4m
+-- A typical living room with sofa facing the TV
+
+ROOM 5.0 4.0 2.7
+
+DOOR north @2.5 w:0.9
+WINDOW east @2.0 w:1.2 h:1.4
+
+-- Seating
+SOFA 3seat @1.0 0.5 facing:east
+SOFA armchair @0.3 3.0 facing:south
+
+-- Tables
+TABLE coffee @2.0 1.5
+
+-- Entertainment
+TV 55 @3.7 2.0 wall:east
+
+-- Decor
+RUG medium @1.2 0.8
+LAMP floor @0.2 0.2

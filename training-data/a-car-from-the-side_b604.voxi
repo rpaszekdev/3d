@@ -1,0 +1,39 @@
+V 32 16 12
+
+-- main chassis
+B 2 3 3 28 4 6 7
+
+-- front hood slope
+B 22 5 3 8 2 6 7
+
+-- rear trunk deck
+B 2 5 3 6 2 6 7
+
+-- cabin
+B 8 7 3 16 4 6 8
+
+-- windows glass
+B 9 7 4 14 3 4 3
+
+-- rear wheel
+S 8 3 6 3 0
+S 8 3 6 1 9
+
+-- front wheel
+S 24 3 6 3 0
+S 24 3 6 1 9
+
+-- headlight
+B 29 4 4 1 2 4 6
+
+-- taillight
+B 2 4 4 1 2 4 1
+
+-- front bumper
+B 30 2 3 1 2 6 9
+
+-- rear bumper
+B 1 2 3 1 2 6 9
+
+-- door line detail
+B 8 4 4 16 1 4 9

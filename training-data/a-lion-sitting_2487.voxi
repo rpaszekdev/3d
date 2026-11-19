@@ -1,0 +1,55 @@
+V 32 32 32
+
+-- body
+E 16 10 16 6 5 5 6
+
+-- chest
+E 16 8 14 5 4 4 6
+
+-- head
+S 16 18 14 5 6
+
+-- mane
+E 16 18 14 7 7 6 7
+
+-- face center
+S 16 17 10 3 d
+
+-- nose
+S 16 16 9 1 e
+
+-- left eye
+S 14 19 10 1 0
+
+-- right eye
+S 18 19 10 1 0
+
+-- left ear
+B 13 22 12 2 2 1 6
+
+-- right ear
+B 18 22 12 2 2 1 6
+
+-- front left leg
+C 13 4 14 2 6 3
+
+-- front right leg
+C 19 4 14 2 6 3
+
+-- hind haunches left
+E 12 8 18 3 4 3 6
+
+-- hind haunches right
+E 20 8 18 3 4 3 6
+
+-- tail base
+C 22 8 18 1 4 3
+
+-- tail tip
+S 24 12 20 2 7
+
+-- left paw
+E 13 2 14 2 1 2 d
+
+-- right paw
+E 19 2 14 2 1 2 d

@@ -1,0 +1,158 @@
+CANVAS 595 842 #ffffff
+
+-- ═══════════════════════════════════════════════════
+-- LEFT SIDEBAR — light grey background
+-- ═══════════════════════════════════════════════════
+RECT 0 0 160 842 0 #f0ede8
+
+-- Photo
+PHOTO 30 20 100 1 #cccccc 0
+
+-- ── Contact ──────────────────────────────────────
+TEXT 14 142 "CONTACT" 9 1 #333333 bold
+DIVIDER 14 154 146 154 2 #333333
+
+TEXT 14 170 "Address" 7 1 #888888 bold
+TEXT 14 182 "Tilburg, Netherlands" 7 1 #444444
+
+TEXT 14 198 "Phone" 7 1 #888888 bold
+TEXT 14 210 "+48 725 850 750" 7 1 #444444
+
+TEXT 14 226 "Email" 7 1 #888888 bold
+TEXT 14 238 "r.f.paszek@gmail.com" 6.5 1 #444444
+
+-- ── Professional ─────────────────────────────────
+TEXT 14 270 "PROFESSIONAL" 9 1 #333333 bold
+DIVIDER 14 282 146 282 2 #333333
+
+TEXT 14 298 "2,400+ hours of AI-assisted" 7 1 #444444
+TEXT 14 310 "development with Claude Code." 7 1 #444444
+
+TEXT 14 328 "3,000+ AI sessions across" 7 1 #444444
+TEXT 14 340 "15+ shipped projects." 7 1 #444444
+
+TEXT 14 358 "Built autonomous agents," 7 1 #444444
+TEXT 14 370 "custom DSLs, and RAG" 7 1 #444444
+TEXT 14 382 "systems from scratch." 7 1 #444444
+
+TEXT 14 400 "Full-stack: React, Node," 7 1 #444444
+TEXT 14 412 "Rust, TypeScript, SQLite." 7 1 #444444
+
+TEXT 14 430 "Strong communicator —" 7 1 #444444
+TEXT 14 442 "Art of Presenting course," 7 1 #444444
+TEXT 14 454 "University Theatre." 7 1 #444444
+
+-- ── Certificates ─────────────────────────────────
+TEXT 14 484 "CERTIFICATES" 9 1 #333333 bold
+DIVIDER 14 496 146 496 2 #333333
+
+TEXT 14 512 "Motorboat Operator" 7 1 #444444
+TEXT 14 524 "Sailing Permit" 7 1 #444444
+
+-- ── Languages ────────────────────────────────────
+TEXT 14 554 "LANGUAGES" 9 1 #333333 bold
+DIVIDER 14 566 146 566 2 #333333
+
+TEXT 14 582 "Polish" 7 1 #444444
+TEXT 100 582 "native" 6.5 1 #888888
+TEXT 14 594 "English" 7 1 #444444
+TEXT 100 594 "fluent" 6.5 1 #888888
+TEXT 14 606 "Spanish" 7 1 #444444
+TEXT 100 606 "communicative" 6 1 #888888
+
+-- ── Interests ────────────────────────────────────
+TEXT 14 636 "INTERESTS" 9 1 #333333 bold
+DIVIDER 14 648 146 648 2 #333333
+
+TEXT 14 664 "Sailing, Chess, Skiing" 7 1 #444444
+TEXT 14 676 "Traveling (4 continents)" 7 1 #444444
+TEXT 14 688 "Brain-Computer Interfaces" 7 1 #444444
+
+-- ── Live Projects ────────────────────────────────
+TEXT 14 718 "LIVE PROJECTS" 9 1 #333333 bold
+DIVIDER 14 730 146 730 2 #333333
+
+TEXT 14 746 "stayinbocas.com" 7 1 #444444
+TEXT 14 758 "bedandmarket.com" 7 1 #444444
+TEXT 14 770 "brainquiz.study" 7 1 #444444
+TEXT 14 782 "batchresume.com" 7 1 #444444
+TEXT 14 794 "csai.live" 7 1 #444444
+
+
+-- ═══════════════════════════════════════════════════
+-- MAIN CONTENT — right side, white
+-- ═══════════════════════════════════════════════════
+
+-- Name
+TEXT 180 30 "Robert Paszek" 24 1 #333333 bold
+TEXT 180 56 "Software Developer  ·  CSAI" 10 1 #888888 italic
+
+-- ── Profile ──────────────────────────────────────
+TEXT 180 86 "PROFILE" 10 1 #333333 bold
+DIVIDER 180 98 565 98 2 #333333
+
+TEXT 180 114 "Student of Cognitive Science and AI, whose passion for building" 8 1 #444444
+TEXT 180 126 "software is matched by hands-on experience shipping products. Won" 8 1 #444444
+TEXT 180 138 "1st place (of 93 teams) at an international Hackathon. Created a" 8 1 #444444
+TEXT 180 150 "domain-specific language for CV generation — this CV was built with it." 8 1 #444444
+
+-- ── Projects (Career equivalent) ─────────────────
+TEXT 180 176 "PROJECTS" 10 1 #333333 bold
+DIVIDER 180 188 565 188 2 #333333
+
+TEXT 180 206 "2026" 8 1 #444444
+TEXT 240 206 "Bed&Market — Autonomous Marketing Agent" 9 1 #333333 bold
+TEXT 240 220 "Playwright  ·  Perplexity API  ·  Claude API" 7 1 #888888
+TEXT 240 236 "End-to-end automation pipeline: scrapes hundreds of B&B websites," 7.5 1 #444444
+TEXT 240 248 "extracts business contacts, generates personalized outreach — runs" 7.5 1 #444444
+TEXT 240 260 "overnight with zero human intervention. Replaced a full day of" 7.5 1 #444444
+TEXT 240 272 "manual research per batch." 7.5 1 #444444
+
+TEXT 180 294 "Spring 2025" 8 1 #444444
+TEXT 240 294 "Hackathon Winner — 1st of 93 Teams" 9 1 #333333 bold
+TEXT 240 308 "G-tec Medical Engineering, Tilburg" 7 1 #888888
+TEXT 240 324 "Created a working EEG brain-computer interface that translated" 7.5 1 #444444
+TEXT 240 336 "brain activity into music in real time." 7.5 1 #444444
+
+TEXT 180 358 "2026" 8 1 #444444
+TEXT 240 358 "ChatResume — AI CV Generator" 9 1 #333333 bold
+TEXT 240 372 "TypeScript  ·  Canvas 2D  ·  Custom DSL" 7 1 #888888
+TEXT 240 388 "CV generation engine powered by a custom markup language (CVM)." 7.5 1 #444444
+TEXT 240 400 "User pastes resume + job description, AI tailors and renders" 7.5 1 #444444
+TEXT 240 412 "a professional PDF in seconds." 7.5 1 #444444
+
+TEXT 180 434 "2026" 8 1 #444444
+TEXT 240 434 "AI-Native IDE" 9 1 #333333 bold
+TEXT 240 448 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite  ·  RAG" 7 1 #888888
+TEXT 240 464 "Developer productivity tool: one-click workspace indexing via RAG" 7.5 1 #444444
+TEXT 240 476 "embeddings, natural-language code search, parallel AI session" 7.5 1 #444444
+TEXT 240 488 "orchestration." 7.5 1 #444444
+
+-- ── Skills ───────────────────────────────────────
+TEXT 180 516 "SKILLS" 10 1 #333333 bold
+DIVIDER 180 528 565 528 2 #333333
+
+TEXT 180 544 "Web scraping and automation with Playwright. API integration" 7.5 1 #444444
+TEXT 180 556 "and orchestration (Claude API, MCP). DSL design and compilers." 7.5 1 #444444
+TEXT 180 568 "RAG systems and embeddings. Full-stack development." 7.5 1 #444444
+
+-- ── Education (Academic) ─────────────────────────
+TEXT 180 596 "ACADEMIC" 10 1 #333333 bold
+DIVIDER 180 608 565 608 2 #333333
+
+TEXT 180 626 "2024 — Current" 8 1 #444444
+TEXT 280 626 "BSc Cognitive Science & AI" 9 1 #333333 bold
+TEXT 280 640 "Tilburg University, Netherlands" 7.5 1 #444444
+TEXT 470 626 "2nd year" 7.5 1 #888888
+
+-- ── Work Experience ──────────────────────────────
+TEXT 180 668 "EXPERIENCE" 10 1 #333333 bold
+DIVIDER 180 680 565 680 2 #333333
+
+TEXT 180 698 "2025 — Current" 8 1 #444444
+TEXT 280 698 "Vice-Chair — CSAI Programme Committee" 9 1 #333333 bold
+TEXT 280 712 "Tilburg University" 7.5 1 #444444
+
+TEXT 180 734 "Jan — Jun 2024" 8 1 #444444
+TEXT 280 734 "Sales Rep — Genergy Poland" 9 1 #333333 bold
+TEXT 280 748 "Gdansk  ·  Solar panels  ·  B2B sales" 7.5 1 #444444

@@ -1,0 +1,27 @@
+V 24 24 24
+
+-- plate base
+B 3 0 3 18 1 18 9
+
+-- nori outer wrapper
+C 12 5 12 8 8 c
+
+-- rice layer inside nori
+C 12 5 12 6 8 8
+
+-- salmon filling center
+C 12 5 12 2 8 7
+
+-- avocado accent ring
+C 12 5 12 4 8 2
+
+-- top sesame seeds
+S 10 9 12 1 8
+S 14 9 12 1 8
+S 12 9 10 1 8
+S 12 9 14 1 8
+S 11 9 11 1 8
+S 13 9 13 1 8
+
+-- nori top face detail
+B 4 9 4 16 1 16 c

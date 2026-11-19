@@ -1,0 +1,36 @@
+V 32 32 32
+
+-- main saucer disc
+E 16 12 16 11 3 11 9
+
+-- top dome
+S 16 16 16 5 3
+
+-- dome window ring
+E 16 16 16 4 2 4 4
+
+-- underbelly hub
+S 16 9 16 3 9
+
+-- rim lights front
+S 16 12 6 1 6
+-- rim lights back
+S 16 12 26 1 6
+-- rim lights left
+S 6 12 16 1 6
+-- rim lights right
+S 26 12 16 1 6
+-- rim lights front-left
+S 10 12 9 1 6
+-- rim lights front-right
+S 22 12 9 1 6
+-- rim lights back-left
+S 10 12 23 1 6
+-- rim lights back-right
+S 22 12 23 1 6
+
+-- tractor beam
+C 16 4 16 3 8 6
+
+-- beam glow base
+S 16 2 16 4 4

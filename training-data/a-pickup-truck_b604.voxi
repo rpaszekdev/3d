@@ -1,0 +1,57 @@
+V 32 16 32
+
+-- chassis (full length)
+B 10 1 4 12 2 22 d
+
+-- hood
+B 10 3 4 12 3 6 d
+
+-- cab body
+B 10 3 10 12 6 8 d
+
+-- cab roof
+B 10 8 10 12 2 8 d
+
+-- windshield
+B 11 5 10 10 3 1 3
+
+-- rear cab window
+B 11 5 17 10 3 1 3
+
+-- side windows
+B 10 5 11 1 3 5 3
+B 22 5 11 1 3 5 3
+
+-- truck bed left wall
+B 10 3 18 2 5 8 d
+
+-- truck bed right wall
+B 20 3 18 2 5 8 d
+
+-- truck bed rear wall
+B 10 3 26 12 5 2 d
+
+-- front grill
+B 10 1 4 12 3 1 9
+
+-- headlights
+B 10 3 4 2 2 1 6
+B 20 3 4 2 2 1 6
+
+-- front bumper
+B 9 0 4 14 1 2 9
+
+-- rear bumper
+B 9 0 25 14 1 2 9
+
+-- front left wheel
+B 8 0 5 3 4 4 0
+
+-- front right wheel
+B 21 0 5 3 4 4 0
+
+-- rear left wheel
+B 8 0 20 3 4 4 0
+
+-- rear right wheel
+B 21 0 20 3 4 4 0

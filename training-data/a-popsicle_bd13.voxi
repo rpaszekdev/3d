@@ -1,0 +1,19 @@
+V 16 32 16
+
+-- stick
+B 7 1 6 2 10 4 a
+
+-- frozen body
+B 4 10 5 8 13 6 b
+
+-- rounded top
+E 8 23 8 4 2 3 b
+
+-- highlight stripe
+B 6 13 4 1 7 1 8
+
+-- drip left
+S 5 10 8 1 b
+
+-- drip right
+S 11 11 8 1 5

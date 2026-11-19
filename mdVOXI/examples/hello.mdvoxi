@@ -1,0 +1,61 @@
+# Hello mdVOXI
+
+This is the simplest possible mdVOXI document. It combines regular
+markdown text with embedded VOXI visualizations.
+
+## A Simple Graphic
+
+Here's an inline card rendered right in the document:
+
+~~~voxi
+CANVAS 400 120 #1a1d27
+RECT 10 10 380 100 1 #232733 8
+TEXT 30 40 "Hello, mdVOXI!" 24 2 #6c8cff bold
+TEXT 30 72 "Markdown meets visual computing" 12 2 #8888a0
+~~~
+
+## A Bar Chart
+
+Programming languages I use, by hours per week:
+
+~~~chart bar
+"Weekly Hours" = Python:18 JavaScript:12 Go:8 Rust:4 SQL:6
+colors = #e53935 #fdd835 #00bcd4 #ff9800 #43a047
+~~~
+
+## A 3D Scene
+
+And here's a tiny voxel penguin sitting right in the notes:
+
+~~~voxi3d 35 25
+V 16 20 12
+-- Body
+E 8 6 6 3 6 3 0
+-- Belly
+E 8 6 4 2 5 1 8
+-- Head
+S 8 14 6 2 0
+-- Eyes
+P 7 15 4 8
+P 9 15 4 8
+-- Beak
+B 7 14 2 2 1 2 7
+-- Feet
+B 5 0 5 2 1 2 7
+B 10 0 5 2 1 2 7
+~~~
+
+## Regular Markdown Still Works
+
+- **Bold text** works fine
+- *Italic text* too
+- `Inline code` as expected
+- [Links](https://example.com) work normally
+
+> [!tip] The beauty of mdVOXI is that it degrades gracefully.
+> In any standard markdown viewer, the VOXI blocks just appear as
+> fenced code blocks — still readable, just not rendered visually.
+
+---
+
+*Written in mdVOXI v0.1*

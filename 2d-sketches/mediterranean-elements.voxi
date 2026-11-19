@@ -1,0 +1,335 @@
+-- ═══════════════════════════════════════════════════════
+-- MEDITERRANEAN SCENE ELEMENTS
+-- Four reusable group definitions
+-- ═══════════════════════════════════════════════════════
+
+-- ───────────────────────────────────────────────────────
+-- 1. CYPRESS TREE
+--    Bounding: ~4w × 20h × 4d
+--    Tall columnar Italian cypress silhouette
+-- ───────────────────────────────────────────────────────
+G cypress
+
+-- Trunk — 2×2 base, narrowing upward
+B 1 0 1 2 3 2 a
+B 1 3 1 2 2 2 a
+-- Trunk core continuing up inside canopy
+B 1 5 1 2 12 2 a
+
+-- Lower canopy tier — widest (y 3-6), ellipse-like spread
+E 2 4 2 2 2 2 c
+B 0 3 0 4 3 4 c
+-- Inner green variation
+B 1 3 1 2 3 2 2
+
+-- Mid-lower canopy (y 6-10)
+B 0 6 0 4 4 4 c
+B 1 6 1 2 4 2 2
+-- Slight narrowing
+B 0 7 0 3 3 3 c
+
+-- Mid canopy (y 10-14)
+B 1 10 1 2 4 2 c
+B 0 10 0 4 1 4 c
+B 0 11 0 3 3 3 c
+B 1 12 1 2 2 2 2
+
+-- Upper canopy (y 14-17) — getting narrow
+B 1 14 1 2 3 2 c
+B 1 15 1 2 2 2 2
+-- Slight width at mid-upper
+P 0 14 1 c
+P 3 14 1 c
+P 1 14 0 c
+P 1 14 3 c
+
+-- Near-tip (y 17-19)
+B 1 17 1 2 2 2 c
+P 2 18 1 2
+P 1 18 2 2
+
+-- Tip (y 19-20)
+P 1 19 1 c
+P 2 19 2 2
+P 1 20 1 2
+
+-- Texture flecks — lighter green peeking through dark
+P 0 5 1 2
+P 3 5 2 2
+P 0 8 0 2
+P 3 9 3 2
+P 0 12 2 2
+P 3 13 1 2
+P 1 16 0 2
+P 2 16 3 2
+
+/G
+
+-- ───────────────────────────────────────────────────────
+-- 2. OLIVE TREE
+--    Bounding: ~10w × 10h × 10d
+--    Wide spreading canopy, gnarled trunk, organic shape
+-- ───────────────────────────────────────────────────────
+G olive
+
+-- Main trunk — thick, gnarled (2×2 base, slightly offset sections)
+B 4 0 4 2 2 2 a
+B 3 2 4 3 2 2 a
+B 4 4 3 2 2 3 a
+
+-- Major branches radiating outward
+-- Left branch
+B 1 5 4 3 1 2 a
+B 0 6 4 2 1 2 a
+-- Right branch
+B 6 5 4 3 1 2 a
+B 8 6 4 2 1 2 a
+-- Front branch
+B 3 5 1 2 1 3 a
+B 2 6 0 3 1 2 a
+-- Back branch
+B 4 5 6 2 1 3 a
+B 3 6 8 3 1 2 a
+-- Upper center branches
+B 3 6 3 4 1 4 a
+B 4 7 4 2 1 2 a
+
+-- Exposed branch tips visible in canopy
+B 1 7 4 2 1 1 a
+B 7 7 4 2 1 1 a
+B 2 7 1 1 1 2 a
+B 6 7 7 2 1 1 a
+
+-- Canopy — wide, irregular, mix of dark-green, green, gray-green
+-- Base canopy layer (y 5-7), wide spread ~10×10
+B 0 5 1 3 2 3 c
+B 7 5 1 3 2 3 c
+B 0 5 6 3 2 3 c
+B 7 5 6 3 2 3 c
+B 2 5 0 6 2 2 c
+B 2 5 8 6 2 2 c
+B 0 5 3 2 2 4 c
+B 8 5 3 2 2 4 c
+-- Green mixed in
+B 2 5 2 6 2 6 2
+B 2 6 1 6 1 8 2
+-- Gray-green (silvery olive tone using gray)
+P 1 6 2 9
+P 8 6 2 9
+P 1 6 7 9
+P 8 6 7 9
+P 2 7 1 9
+P 7 7 8 9
+P 0 6 4 9
+P 9 6 5 9
+P 4 5 9 9
+P 4 5 0 9
+P 5 7 0 9
+P 5 7 9 9
+
+-- Mid canopy (y 7-8)
+B 1 7 1 8 1 8 c
+B 2 7 2 6 1 6 2
+B 1 8 1 8 1 8 c
+B 2 8 2 5 1 5 2
+-- Gray-green shimmer
+P 2 8 2 9
+P 7 8 3 9
+P 3 8 7 9
+P 6 8 6 9
+P 1 7 5 9
+P 8 7 4 9
+
+-- Upper canopy (y 8-9) — more open, patchy
+B 2 9 2 2 1 2 c
+B 6 9 2 2 1 2 c
+B 2 9 6 2 1 2 c
+B 6 9 6 2 1 2 c
+B 3 9 4 4 1 2 2
+B 3 9 5 3 1 3 c
+P 4 9 3 9
+P 5 9 6 9
+-- Top tufts
+P 3 10 4 c
+P 6 10 5 2
+P 4 10 6 c
+P 5 10 3 2
+P 4 10 4 9
+
+/G
+
+-- ───────────────────────────────────────────────────────
+-- 3. MARKET STALL
+--    Bounding: ~8w × 7h × 6d
+--    4 posts, striped awning, counter, goods, crates
+-- ───────────────────────────────────────────────────────
+G stall
+
+-- 4 corner wooden posts (brown, 1×4 tall)
+B 0 0 0 1 4 1 a
+B 7 0 0 1 4 1 a
+B 0 0 5 1 4 1 a
+B 7 0 5 1 4 1 a
+
+-- Post detail — slightly darker knot marks
+P 0 1 0 0
+P 7 2 0 0
+P 0 2 5 0
+P 7 1 5 0
+
+-- Awning frame (thin brown beam across top of posts)
+B 0 4 0 8 1 1 a
+B 0 4 5 8 1 1 a
+B 0 4 0 1 1 6 a
+B 7 4 0 1 1 6 a
+
+-- Awning — alternating red and white stripes (z direction)
+-- Each stripe 1 unit deep, 8 wide
+B 0 5 0 8 1 1 1
+B 0 5 1 8 1 1 8
+B 0 5 2 8 1 1 1
+B 0 5 3 8 1 1 8
+B 0 5 4 8 1 1 1
+B 0 5 5 8 1 1 8
+-- Awning slight overhang front (y slope suggestion with front row)
+B 0 4 5 8 1 1 1
+
+-- Wooden counter/table (full width, waist height)
+B 0 2 1 8 1 4 a
+-- Counter top surface detail
+B 0 3 1 8 1 4 d
+-- Counter legs support under surface
+B 0 2 1 1 1 1 a
+B 7 2 1 1 1 1 a
+B 0 2 4 1 1 1 a
+B 7 2 4 1 1 1 a
+
+-- GOODS ON COUNTER:
+-- Oranges cluster (center-left)
+P 1 4 2 7
+P 2 4 2 7
+P 1 4 3 7
+P 2 4 3 7
+P 1 4 4 7
+
+-- Tomatoes / red goods (center)
+P 3 4 2 1
+P 4 4 2 1
+P 3 4 3 1
+P 4 4 3 1
+
+-- Yellow lemons / peppers (center-right)
+P 5 4 2 6
+P 5 4 3 6
+P 6 4 2 6
+P 6 4 3 6
+
+-- Leafy greens (right end)
+P 6 4 4 2
+P 7 4 4 2
+P 6 4 5 2
+
+-- Green herb bundles (far left)
+P 0 4 4 2
+P 0 4 5 2
+P 1 4 5 2
+
+-- Purple eggplant / grapes suggestion (5=magenta)
+P 4 4 4 5
+P 5 4 4 5
+P 4 4 5 5
+
+-- CRATES stacked beside stall (right side on ground)
+B 7 0 2 1 1 2 a
+B 7 1 2 1 1 2 a
+-- Crate cross slat detail
+P 7 0 3 0
+P 7 1 3 0
+
+-- Small basket (left side, on ground)
+B 0 0 2 1 1 2 7
+P 0 1 2 a
+P 0 1 3 a
+-- Basket weave color
+P 0 0 2 d
+P 0 0 3 d
+
+-- Hanging goods from awning bar (strings of garlic / peppers)
+P 2 4 1 8
+P 2 5 1 d
+P 2 6 1 d
+P 4 4 1 8
+P 4 5 1 1
+P 4 6 1 1
+P 6 4 1 8
+P 6 5 1 d
+P 6 6 1 d
+
+/G
+
+-- ───────────────────────────────────────────────────────
+-- 4. STREET LAMP
+--    Bounding: ~3w × 8h × 3d
+--    Wrought iron post, ornate arm, glass lantern
+-- ───────────────────────────────────────────────────────
+G lamp
+
+-- Main post — centered, 1×1 black iron
+B 1 0 1 1 6 1 0
+
+-- Decorative base flare (wider at bottom)
+B 0 0 1 3 1 1 0
+B 1 0 0 1 1 3 0
+P 0 0 0 0
+P 2 0 0 0
+P 0 0 2 0
+P 2 0 2 0
+
+-- Post detail — slight flange at mid height
+P 0 3 1 0
+P 2 3 1 0
+P 1 3 0 0
+P 1 3 2 0
+
+-- Decorative scroll / curving arm
+-- Arm extends forward (z-) from post top
+B 1 6 0 1 1 2 0
+-- Scroll curl suggestion (horizontal then vertical joint)
+B 0 6 0 2 1 1 0
+P 0 7 0 0
+-- Second curving bracket (back side ornament)
+B 1 5 2 1 1 1 0
+B 0 5 2 2 1 1 0
+P 0 4 2 0
+
+-- Lantern housing (at top of arm, small cage)
+-- Outer cage frame — black iron
+B 0 7 0 3 1 1 0
+B 0 7 0 1 1 3 0
+B 2 7 0 1 1 3 0
+B 0 7 2 3 1 1 0
+-- Lantern top cap
+B 0 8 0 3 1 3 0
+
+-- Glass panels — yellow glow fill inside lantern
+B 1 7 1 1 1 1 6
+-- Warm glow spill on cage sides
+P 0 7 1 6
+P 2 7 1 6
+P 1 7 0 6
+P 1 7 2 6
+
+-- Finial on top of lantern
+P 1 9 1 0
+
+-- Extra ornamental rings on post
+P 0 2 1 9
+P 2 2 1 9
+P 1 2 0 9
+P 1 2 2 9
+P 0 4 1 9
+P 2 4 1 9
+P 1 4 0 9
+P 1 4 2 9
+
+/G

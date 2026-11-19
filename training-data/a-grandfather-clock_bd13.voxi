@@ -1,0 +1,40 @@
+V 24 48 24
+
+-- base
+B 7 0 9 10 3 6 a
+
+-- lower trunk (pendulum chamber)
+B 8 3 10 8 20 4 a
+
+-- pendulum rod
+B 11 8 11 2 14 2 d
+
+-- pendulum bob
+S 12 7 12 2 6
+
+-- waist molding
+B 7 23 9 10 3 6 8
+
+-- upper case (clock chamber)
+B 8 26 10 8 14 4 a
+
+-- clock face
+S 12 33 9 4 8
+
+-- hour markers
+B 11 37 9 2 1 1 0
+B 11 28 9 2 1 1 0
+B 16 32 9 1 2 1 0
+B 7 32 9 1 2 1 0
+
+-- hour hand
+B 12 33 8 1 3 1 0
+
+-- minute hand
+B 11 33 8 2 4 1 e
+
+-- hood top
+B 7 40 9 10 4 6 a
+
+-- pediment crown
+B 9 44 10 6 3 4 a

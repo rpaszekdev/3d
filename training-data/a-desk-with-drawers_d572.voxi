@@ -1,0 +1,24 @@
+V 32 24 32
+
+-- desk surface
+B 4 12 8 24 2 16 d
+
+-- left front leg
+B 4 2 8 2 10 2 d
+-- left back leg
+B 4 2 22 2 10 2 d
+
+-- drawer cabinet right side
+B 22 2 8 6 10 14 d
+
+-- top drawer front
+B 23 9 8 4 2 1 8
+-- middle drawer front
+B 23 6 8 4 2 1 8
+-- bottom drawer front
+B 23 3 8 4 2 1 8
+
+-- drawer handles
+B 24 10 8 2 1 1 9
+B 24 7 8 2 1 1 9
+B 24 4 8 2 1 1 9

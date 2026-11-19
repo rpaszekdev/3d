@@ -1,0 +1,1 @@
+Key fixes: (1) Hollow top uses a dark inner cylinder overlapping the body to simulate open cavity. (2) Body starts at Y=0 eliminating the float. (3) Handle bars thickened in Z to 3 voxels for 3D depth. (4) Gray artifacts removed — inner wall hint moved to top rim only.

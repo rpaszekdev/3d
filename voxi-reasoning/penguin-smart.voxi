@@ -1,0 +1,38 @@
+V 24 24 24
+-- Auto-generated from image analysis + iteration 1
+
+-- Body (main, from segment analysis)
+E 11 9 12 8 5 6 0
+
+-- Belly (white, front-facing)
+E 11 9 9 7 4 3 8
+
+-- Neck (from segment analysis)
+E 11 15 12 4 2 5 0
+
+-- Head (reclassified from "narrow" segment at rows 4-8)
+S 11 18 12 4 0
+
+-- Beak (orange, pointing forward)
+B 10 17 6 2 1 3 7
+
+-- Eyes (white)
+P 9 19 8 8
+P 13 19 8 8
+
+-- Yellow chest patch
+E 11 14 9 3 2 3 6
+
+-- Left flipper
+B 3 7 10 2 8 4 0
+
+-- Right flipper
+B 19 7 10 2 8 4 0
+
+-- Feet (orange, from row 20)
+B 8 3 10 3 1 4 7
+B 13 3 10 3 1 4 7
+
+-- Legs
+B 9 4 11 2 2 2 0
+B 14 4 11 2 2 2 0

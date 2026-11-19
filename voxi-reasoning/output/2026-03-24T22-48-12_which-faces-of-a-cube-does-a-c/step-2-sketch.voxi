@@ -1,0 +1,55 @@
+V 14 10 14
+
+-- Gray floor
+B 0 0 0 14 1 14 9
+
+-- === CUBE BODY (gray interior — faces drawn outside) ===
+B 6 1 6 4 4 4 9
+
+-- === FACE MARKERS: offset 1 voxel outward from each face ===
+-- No voxel overlaps between faces this way
+
+-- VISIBLE (green): normals point toward camera half-spaces
+-- Left marker at X=5 (normal -X, camera at X=0 is in -X half-space)
+B 5 1 6 1 4 4 2
+-- Top marker at Y=5 (normal +Y, camera at Y=8 is in +Y half-space)
+B 6 5 6 4 1 4 2
+-- Front marker at Z=5 (normal -Z, camera at Z=0 is in -Z half-space)
+B 6 1 5 4 4 1 2
+
+-- HIDDEN (red): normals point away from camera
+-- Right marker at X=10 (normal +X, camera is NOT in +X half-space)
+B 10 1 6 1 4 4 1
+-- Bottom marker at Y=0 (normal -Y, camera is NOT in -Y half-space)
+B 6 0 6 4 1 4 1
+-- Back marker at Z=10 (normal +Z, camera is NOT in +Z half-space)
+B 6 1 10 4 4 1 1
+
+-- === OUTWARD NORMAL ARROWS (2 voxels each) ===
+-- Green arrows: visible normals pointing TOWARD camera
+-- Left normal arrow (-X direction from left marker center)
+P 4 3 7 2
+P 3 3 7 2
+-- Top normal arrow (+Y direction from top marker center)
+P 7 6 7 2
+P 7 7 7 2
+-- Front normal arrow (-Z direction from front marker center)
+P 7 3 4 2
+P 7 3 3 2
+
+-- Red arrows: hidden normals pointing AWAY from camera
+-- Right normal arrow (+X)
+P 11 3 7 1
+P 12 3 7 1
+-- Bottom normal arrow (-Y, going down into floor)
+P 7 0 7 1
+-- Back normal arrow (+Z)
+P 7 3 11 1
+P 7 3 12 1
+
+-- === CAMERA (yellow) ===
+B 0 8 0 1 1 1 6
+-- View ray sample points (cyan)
+P 2 7 2 4
+P 4 6 4 4
+P 6 5 6 4

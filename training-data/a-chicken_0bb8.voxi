@@ -1,0 +1,49 @@
+V 24 24 24
+
+-- body
+E 12 6 12 4 3 5 8
+
+-- neck
+C 12 9 11 1 3 8
+
+-- head
+S 12 12 9 3 8
+
+-- comb
+B 11 15 9 2 2 1 1
+
+-- beak
+B 11 11 6 2 2 2 6
+
+-- wattle
+S 12 9 7 1 1
+
+-- left eye
+S 11 13 7 1 0
+
+-- right eye
+S 13 13 7 1 0
+
+-- left wing
+B 7 4 9 2 5 6 d
+
+-- right wing
+B 15 4 9 2 5 6 d
+
+-- tail feathers
+B 11 7 17 4 5 2 8
+
+-- tail accent
+B 12 9 18 2 3 1 7
+
+-- left leg
+C 10 0 12 1 4 7
+
+-- right leg
+C 14 0 12 1 4 7
+
+-- left foot
+B 8 0 11 4 1 3 7
+
+-- right foot
+B 12 0 11 4 1 3 7

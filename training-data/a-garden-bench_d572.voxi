@@ -1,0 +1,27 @@
+V 24 20 16
+
+-- back legs (full height, support backrest)
+B 1 0 1 2 12 2 a
+B 21 0 1 2 12 2 a
+
+-- front legs
+B 1 0 12 2 5 2 a
+B 21 0 12 2 5 2 a
+
+-- side rails connecting legs
+B 1 4 1 2 1 13 a
+B 21 4 1 2 1 13 a
+
+-- seat slats (3 planks, front to back)
+B 1 5 1 22 1 3 d
+B 1 5 5 22 1 3 d
+B 1 5 9 22 1 3 d
+
+-- backrest slats
+B 1 7 1 22 1 2 d
+B 1 9 1 22 1 2 d
+B 1 11 1 22 1 2 d
+
+-- armrests
+B 1 5 1 2 1 6 d
+B 21 5 1 2 1 6 d

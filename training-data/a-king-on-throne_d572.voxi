@@ -1,0 +1,36 @@
+V 32 32 32
+
+-- throne legs
+B 12 0 13 2 7 2 d
+B 19 0 13 2 7 2 d
+B 12 0 17 2 7 2 d
+B 19 0 17 2 7 2 d
+-- throne seat
+B 11 7 12 10 2 7 d
+-- throne back panel
+B 10 9 19 12 13 2 6
+-- throne armrests
+B 10 8 12 2 3 7 d
+B 20 8 12 2 3 7 d
+-- king legs and robe lower
+B 13 3 9 3 5 4 e
+B 17 3 9 3 5 4 e
+-- boots
+B 13 3 8 3 3 2 0
+B 17 3 8 3 3 2 0
+-- king robe torso
+B 12 9 13 8 7 4 e
+-- king arms
+B 11 9 13 2 6 3 e
+B 19 9 13 2 6 3 e
+-- king head
+S 16 18 13 3 b
+-- beard
+B 14 16 12 4 2 1 9
+-- crown base and spikes
+C 16 21 13 3 2 6
+B 14 23 12 2 3 2 6
+B 16 23 12 2 4 2 6
+B 18 23 12 2 3 2 6
+-- golden scepter
+C 21 13 12 1 8 6

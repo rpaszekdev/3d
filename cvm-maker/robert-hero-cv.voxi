@@ -1,0 +1,147 @@
+CANVAS 595 842 #ffffff
+
+-- ── Name + Photo ─────────────────────────────────
+TEXT 40 40 "ROBERT" 42 1 #1a3a5c bold
+TEXT 40 90 "PASZEK" 42 1 #1a3a5c bold
+
+PHOTO 460 30 110 1 #4a9ad4 3
+
+-- ── Contact (compact) ────────────────────────────
+DIVIDER 40 148 555 148 1 #4a9ad4
+CONTACT 100 157 1 #3a6a8a phone "+48 725 850 750"
+CONTACT 245 157 1 #3a6a8a email "r.f.paszek@gmail.com"
+CONTACT 420 157 1 #3a6a8a location "Tilburg, Netherlands"
+DIVIDER 40 174 555 174 1 #4a9ad4
+
+-- ═══════════════════════════════════════════════════
+-- HERO PROFILE — short punchy lines
+-- ═══════════════════════════════════════════════════
+
+TEXT 40 198 "Software Developer  ·  CSAI" 13 1 #4a9ad4 bold
+
+TEXT 40 224 "Student of Cognitive Science and AI. Won 1st place" 11 1 #3a4a5a italic
+TEXT 40 240 "(of 93 teams) at an international Hackathon. Created a DSL" 11 1 #3a4a5a italic
+TEXT 40 256 "for CV generation — this CV was built with it." 11 1 #3a4a5a italic
+
+DIVIDER 40 274 555 274 1 #4a9ad4
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN — Projects
+-- ═══════════════════════════════════════════════════
+
+RECT 40 288 340 2 1 #4a9ad4
+TEXT 40 296 "PROJECTS & ACHIEVEMENTS" 8 1 #4a9ad4 bold
+
+-- Bed&Market
+TEXT 40 314 "Bed&Market — Autonomous Marketing Agent" 11 1 #1a3a5c bold
+TEXT 330 314 "2026" 8 1 #8aaabe
+TEXT 40 330 "Playwright  ·  Perplexity API  ·  Claude API" 8.5 1 #5a7a8e
+TEXT 40 346 "End-to-end automation pipeline: scrapes hundreds of B&B websites," 8.5 1 #3a4a5a
+TEXT 40 360 "extracts business contacts, generates personalized outreach —" 8.5 1 #3a4a5a
+TEXT 40 374 "runs overnight with zero human intervention." 8.5 1 #3a4a5a
+
+DIVIDER 40 390 380 390 1 #d8e4ee
+
+-- Hackathon Winner
+TEXT 40 402 "Hackathon Winner — 1st of 93 Teams" 11 1 #1a3a5c bold
+TEXT 330 402 "Spring 2025" 8 1 #8aaabe
+TEXT 40 418 "G-tec Medical Engineering, Tilburg" 8.5 1 #5a7a8e
+TEXT 40 434 "Created a working EEG brain-computer interface that translated" 8.5 1 #3a4a5a
+TEXT 40 448 "brain activity into music in real time." 8.5 1 #3a4a5a
+
+DIVIDER 40 464 380 464 1 #d8e4ee
+
+-- ChatResume
+TEXT 40 476 "ChatResume — AI CV Generator" 11 1 #1a3a5c bold
+TEXT 330 476 "2026" 8 1 #8aaabe
+TEXT 40 492 "TypeScript  ·  Canvas 2D  ·  Custom DSL" 8.5 1 #5a7a8e
+TEXT 40 508 "CV generation engine powered by a custom markup language (CVM)." 8.5 1 #3a4a5a
+TEXT 40 522 "User pastes resume + job description, AI tailors and renders a" 8.5 1 #3a4a5a
+TEXT 40 536 "professional PDF in seconds." 8.5 1 #3a4a5a
+
+DIVIDER 40 552 380 552 1 #d8e4ee
+
+-- AI-Native IDE
+TEXT 40 564 "AI-Native IDE" 11 1 #1a3a5c bold
+TEXT 330 564 "2026" 8 1 #8aaabe
+TEXT 40 580 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite" 8.5 1 #5a7a8e
+TEXT 40 596 "Developer productivity tool: one-click workspace indexing via RAG" 8.5 1 #3a4a5a
+TEXT 40 610 "embeddings, natural-language code search, parallel AI session" 8.5 1 #3a4a5a
+TEXT 40 624 "orchestration." 8.5 1 #3a4a5a
+
+-- ── Education ────────────────────────────────────
+RECT 40 650 340 2 1 #4a9ad4
+TEXT 40 658 "EDUCATION" 8 1 #4a9ad4 bold
+
+TEXT 40 678 "BSc Cognitive Science & AI — 2nd year" 11 1 #1a3a5c bold
+TEXT 290 678 "Sept 2024 — Current" 8 1 #8aaabe
+TEXT 40 694 "Tilburg University, Tilburg, Netherlands" 8.5 1 #5a7a8e
+
+-- ── Work Experience ──────────────────────────────
+RECT 40 718 340 2 1 #4a9ad4
+TEXT 40 726 "WORK EXPERIENCE" 8 1 #4a9ad4 bold
+
+TEXT 40 746 "Vice-Chair — CSAI Programme Committee" 11 1 #1a3a5c bold
+TEXT 40 762 "Tilburg University" 8.5 1 #5a7a8e
+TEXT 290 762 "Sept 2025 — Current" 8 1 #8aaabe
+
+DIVIDER 40 778 380 778 1 #d8e4ee
+
+TEXT 40 788 "Sales Rep — Genergy Poland" 11 1 #1a3a5c bold
+TEXT 290 788 "Jan — Jun 2024" 8 1 #8aaabe
+TEXT 40 804 "Gdansk  ·  Solar panels  ·  B2B sales" 8.5 1 #5a7a8e
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN
+-- ═══════════════════════════════════════════════════
+
+RECT 400 288 155 2 1 #4a9ad4
+TEXT 400 296 "SKILLS" 8 1 #4a9ad4 bold
+
+TEXT 400 316 "AI-Assisted Development" 8.5 1 #1a3a5c bold
+TEXT 400 330 "2,400+ hrs with Claude Code" 8 1 #3a4a5a
+TEXT 400 344 "3,000+ sessions, 15+ projects" 8 1 #3a4a5a
+TEXT 400 358 "since Nov 2025" 8 1 #3a4a5a
+
+TEXT 400 378 "RAG & Embeddings" 8.5 1 #1a3a5c bold
+TEXT 400 392 "Web Scraping (Playwright)" 8.5 1 #3a4a5a
+TEXT 400 406 "API Integration & MCP" 8.5 1 #3a4a5a
+TEXT 400 420 "DSL Design & Compilers" 8.5 1 #3a4a5a
+TEXT 400 434 "Full-Stack (React, Node, Rust)" 8.5 1 #3a4a5a
+
+TEXT 400 454 "Public Speaking" 8.5 1 #1a3a5c bold
+TEXT 400 468 "Art of Presenting course" 8 1 #3a4a5a
+TEXT 400 482 "University Theatre (active)" 8 1 #3a4a5a
+
+-- Live Projects
+RECT 400 506 155 2 1 #4a9ad4
+TEXT 400 514 "LIVE PROJECTS" 8 1 #4a9ad4 bold
+TEXT 400 534 "stayinbocas.com" 9 1 #1a3a5c
+TEXT 400 550 "bedandmarket.com" 9 1 #1a3a5c
+TEXT 400 566 "brainquiz.study" 9 1 #1a3a5c
+TEXT 400 582 "batchresume.com" 9 1 #1a3a5c
+TEXT 400 598 "csai.live" 9 1 #1a3a5c
+
+-- Languages
+RECT 400 622 155 2 1 #4a9ad4
+TEXT 400 630 "LANGUAGES" 8 1 #4a9ad4 bold
+TEXT 400 650 "Polish" 9 1 #3a4a5a
+TEXT 520 650 "native" 7.5 1 #8aaabe
+TEXT 400 666 "English" 9 1 #3a4a5a
+TEXT 520 666 "fluent" 7.5 1 #8aaabe
+TEXT 400 682 "Spanish" 9 1 #3a4a5a
+TEXT 520 682 "communicative" 7.5 1 #8aaabe
+
+-- Interests
+RECT 400 706 155 2 1 #4a9ad4
+TEXT 400 714 "INTERESTS" 8 1 #4a9ad4 bold
+TEXT 400 734 "Sailing, Chess, Skiing" 8.5 1 #3a4a5a
+TEXT 400 750 "Traveling (4 continents)" 8.5 1 #3a4a5a
+TEXT 400 766 "Brain-Computer Interfaces" 8.5 1 #3a4a5a
+
+-- Certificates
+RECT 400 790 155 2 1 #4a9ad4
+TEXT 400 798 "CERTIFICATES" 8 1 #4a9ad4 bold
+TEXT 400 816 "Motorboat Operator" 8.5 1 #3a4a5a
+TEXT 400 832 "Sailing Permit" 8.5 1 #3a4a5a

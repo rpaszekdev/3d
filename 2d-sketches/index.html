@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXI 2D Sketch Renderer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+    --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #6c8cff; --canvas-bg: #13151f;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); height: 100vh; overflow: hidden;
+  }
+  .header {
+    height: 40px; display: flex; align-items: center; gap: 12px;
+    padding: 0 12px; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .header h1 { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .header h1 .accent { color: var(--accent); }
+  .header select, .header button, .header input {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text); padding: 4px 10px; font-size: 11px; cursor: pointer;
+  }
+  .header select:hover, .header button:hover { border-color: var(--accent); }
+  .header .spacer { flex: 1; }
+  .header .info { font-size: 11px; color: var(--text-dim); }
+  .header label { font-size: 11px; color: var(--text-dim); }
+
+  .split { display: flex; height: calc(100vh - 40px); }
+
+  /* Editor pane */
+  .editor-pane {
+    width: 360px; min-width: 260px; display: flex; flex-direction: column;
+    border-right: 1px solid var(--border); background: var(--surface);
+  }
+  .editor-wrap { flex: 1; position: relative; overflow: hidden; }
+  .line-numbers {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 32px;
+    background: var(--surface2); color: var(--text-dim); font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; padding: 8px 4px; text-align: right; overflow: hidden;
+    user-select: none; border-right: 1px solid var(--border);
+  }
+  textarea {
+    position: absolute; left: 32px; top: 0; right: 0; bottom: 0;
+    background: transparent; color: var(--text); border: none; resize: none;
+    font-size: 12px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; padding: 8px; outline: none; tab-size: 4;
+    white-space: pre; overflow: auto;
+  }
+  textarea::placeholder { color: var(--text-dim); }
+
+  .palette-bar {
+    display: flex; gap: 2px; padding: 6px 8px; align-items: center;
+    border-top: 1px solid var(--border); background: var(--surface2);
+  }
+  .palette-bar .label { font-size: 10px; color: var(--text-dim); padding: 0 4px; }
+  .swatch {
+    width: 18px; height: 18px; border-radius: 3px; border: 1px solid var(--border);
+    font-size: 8px; display: flex; align-items: center; justify-content: center;
+    color: #fff; text-shadow: 0 0 2px #000; cursor: default;
+  }
+  .status {
+    height: 24px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 11px; color: var(--text-dim); border-top: 1px solid var(--border);
+  }
+  .status .ok { color: #4caf50; }
+  .status .spacer { flex: 1; }
+
+  /* Canvas pane */
+  .canvas-pane {
+    flex: 1; background: var(--canvas-bg); overflow: auto; padding: 20px;
+  }
+
+  /* View layout */
+  .views-container {
+    display: flex; flex-direction: column; gap: 16px; align-items: flex-start;
+  }
+  .view-row {
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .view-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    overflow: hidden;
+  }
+  .view-label {
+    font-size: 10px; color: var(--text-dim); padding: 4px 8px;
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    font-family: 'SF Mono', 'Fira Code', monospace; letter-spacing: 0.5px;
+  }
+  .view-card canvas {
+    display: block; image-rendering: pixelated;
+  }
+
+  /* Render mode buttons */
+  .mode-btn { font-size: 11px !important; }
+  .mode-btn.active { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+  .format-ref {
+    padding: 6px 8px; border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--text-dim); line-height: 1.6;
+    background: var(--surface2);
+  }
+  .format-ref code { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VOXI <span class="accent">2D Sketch</span></h1>
+  <select id="examples">
+    <option value="">— examples —</option>
+  </select>
+  <label>Scale:</label>
+  <select id="scale">
+    <option value="1">1x</option>
+    <option value="2">2x</option>
+    <option value="4" selected>4x</option>
+    <option value="6">6x</option>
+    <option value="8">8x</option>
+  </select>
+  <label>Mode:</label>
+  <button class="mode-btn active" data-mode="color" id="btn-color">Color</button>
+  <button class="mode-btn" data-mode="depth" id="btn-depth">Depth</button>
+  <button class="mode-btn" data-mode="shaded" id="btn-shaded">Shaded</button>
+  <button class="mode-btn" data-mode="normal" id="btn-normal">Normal</button>
+  <div class="spacer"></div>
+  <button id="btn-export">Export PNG</button>
+  <span class="info" id="info"></span>
+</div>
+
+<div class="split">
+  <div class="editor-pane">
+    <div class="editor-wrap">
+      <div class="line-numbers" id="line-numbers"></div>
+      <textarea id="editor" spellcheck="false" placeholder="-- Type VOXI code here&#10;V 32 32 32&#10;B 0 0 0 32 1 32 9&#10;S 16 10 16 6 1"></textarea>
+    </div>
+    <div class="palette-bar" id="palette"></div>
+    <div class="format-ref">
+      <code>V W H D</code> grid &middot;
+      <code>B X Y Z W H D C</code> box &middot;
+      <code>S X Y Z R C</code> sphere &middot;
+      <code>C X Y Z R H C</code> cyl<br>
+      <code>K X Y Z R H C</code> cone &middot;
+      <code>E X Y Z RX RY RZ C</code> ellipsoid &middot;
+      <code>D X Y Z W H D C</code> dome &middot;
+      <code>P X Y Z C</code> point
+    </div>
+    <div class="status">
+      <span id="status-text" class="ok">Ready</span>
+      <span class="spacer"></span>
+      <span id="voxel-count"></span>
+    </div>
+  </div>
+
+  <div class="canvas-pane" id="canvas-pane">
+    <div class="views-container" id="views-container"></div>
+  </div>
+</div>
+
+<script>
+// ── Color Palette (matches v4-voxel.html exactly) ──────────────────
+const COLORS = [
+  0x111111, 0xe53935, 0x43a047, 0x1e88e5,
+  0x00bcd4, 0xab47bc, 0xfdd835, 0xff9800,
+  0xeeeeee, 0x9e9e9e, 0x8d6e4a, 0xff9eb5,
+  0x2e7d32, 0xd4b896, 0x8b1a1a, 0x1a3a6b,
+];
+const CNAMES = ['blk','red','grn','blu','cyn','mag','yel','org','wht','gry','brn','pnk','dkg','tan','mar','nav'];
+const CKEYS = '0123456789abcdef';
+
+// Build palette swatches
+document.getElementById('palette').innerHTML = '<span class="label">Colors:</span>' +
+  COLORS.map((c, i) =>
+    `<span class="swatch" style="background:#${c.toString(16).padStart(6,'0')}" title="${CKEYS[i]}=${CNAMES[i]}">${CKEYS[i]}</span>`
+  ).join('');
+
+
+// ── VOXI Parser (identical to text-view.js) ────────────────────────
+
+function parseVoxi(code) {
+  let W = 32, H = 32, D = 32;
+  const vm = new Map();
+
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix >= 0 && ix < W && iy >= 0 && iy < H && iz >= 0 && iz < D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c || 9, 0), 15));
+  };
+
+  const addBox = (px, py, pz, w, h, d, c) => {
+    for (let x = px; x < px + w; x++)
+      for (let y = py; y < py + h; y++)
+        for (let z = pz; z < pz + d; z++) set(x, y, z, c);
+  };
+
+  const addSphere = (cx, cy, cz, r, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let y = cy - r; y <= cy + r; y++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2 <= r2) set(x, y, z, c);
+  };
+
+  const addCyl = (cx, cy, cz, r, h, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let z = cz - r; z <= cz + r; z++)
+        if ((x - cx) ** 2 + (z - cz) ** 2 <= r2)
+          for (let y = cy; y < cy + h; y++) set(x, y, z, c);
+  };
+
+  const addCone = (cx, cy, cz, r, h, c) => {
+    for (let y = 0; y < h; y++) {
+      const rr = r * (1 - y / h), rr2 = rr * rr;
+      for (let x = cx - r; x <= cx + r; x++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x - cx) ** 2 + (z - cz) ** 2 <= rr2) set(cx + (x - cx), cy + y, cz + (z - cz), c);
+    }
+  };
+
+  const addEllipsoid = (cx, cy, cz, rx, ry, rz, c) => {
+    for (let x = cx - rx; x <= cx + rx; x++)
+      for (let y = cy - ry; y <= cy + ry; y++)
+        for (let z = cz - rz; z <= cz + rz; z++)
+          if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2 <= 1)
+            set(x, y, z, c);
+  };
+
+  const addDome = (px, py, pz, w, h, d, c) => {
+    const rx = w / 2, ry = h, rz = d / 2, cx = px + rx, cz = pz + rz;
+    for (let x = px; x < px + w; x++)
+      for (let y = py; y < py + h; y++)
+        for (let z = pz; z < pz + d; z++)
+          if (((x - cx + .5) / rx) ** 2 + ((y - py) / ry) ** 2 + ((z - cz + .5) / rz) ** 2 <= 1)
+            set(x, y, z, c);
+  };
+
+  const groups = {};
+  let currentGroup = null;
+  let currentGroupName = null;
+  let scale = 1;
+
+  function scaled(cmd, n) {
+    if (scale === 1) return n;
+    const s = [...n];
+    switch (cmd) {
+      case 'B': case 'D':
+        s[0] = Math.round(s[0]*scale); s[1] = Math.round(s[1]*scale); s[2] = Math.round(s[2]*scale);
+        s[3] = Math.max(1, Math.round(s[3]*scale)); s[4] = Math.max(1, Math.round(s[4]*scale)); s[5] = Math.max(1, Math.round(s[5]*scale));
+        break;
+      case 'S':
+        s[0] = Math.round(s[0]*scale); s[1] = Math.round(s[1]*scale); s[2] = Math.round(s[2]*scale);
+        s[3] = Math.max(1, Math.round(s[3]*scale));
+        break;
+      case 'C': case 'K':
+        s[0] = Math.round(s[0]*scale); s[1] = Math.round(s[1]*scale); s[2] = Math.round(s[2]*scale);
+        s[3] = Math.max(1, Math.round(s[3]*scale)); s[4] = Math.max(1, Math.round(s[4]*scale));
+        break;
+      case 'P':
+        s[0] = Math.round(s[0]*scale); s[1] = Math.round(s[1]*scale); s[2] = Math.round(s[2]*scale);
+        break;
+      case 'E':
+        s[0] = Math.round(s[0]*scale); s[1] = Math.round(s[1]*scale); s[2] = Math.round(s[2]*scale);
+        s[3] = Math.max(1, Math.round(s[3]*scale)); s[4] = Math.max(1, Math.round(s[4]*scale)); s[5] = Math.max(1, Math.round(s[5]*scale));
+        break;
+    }
+    return s;
+  }
+
+  function execCmd(cmd, n) {
+    const sn = scaled(cmd, n);
+    switch (cmd) {
+      case 'B': addBox(sn[0], sn[1], sn[2], sn[3], sn[4], sn[5], sn[6]); break;
+      case 'S': addSphere(sn[0], sn[1], sn[2], sn[3], sn[4]); break;
+      case 'C': addCyl(sn[0], sn[1], sn[2], sn[3], sn[4], sn[5]); break;
+      case 'K': addCone(sn[0], sn[1], sn[2], sn[3], sn[4], sn[5]); break;
+      case 'P': set(sn[0], sn[1], sn[2], sn[3]); break;
+      case 'E': addEllipsoid(sn[0], sn[1], sn[2], sn[3], sn[4], sn[5], sn[6]); break;
+      case 'D': addDome(sn[0], sn[1], sn[2], sn[3], sn[4], sn[5], sn[6]); break;
+      default: return false;
+    }
+    return true;
+  }
+
+  function placeGroup(name, ox, oy, oz) {
+    const g = groups[name];
+    if (!g) return;
+    const sox = Math.round(ox*scale), soy = Math.round(oy*scale), soz = Math.round(oz*scale);
+    for (const entry of g) {
+      const sn = scaled(entry.cmd, entry.args);
+      sn[0] += sox; sn[1] += soy; sn[2] += soz;
+      execCmd(entry.cmd, sn);
+    }
+  }
+
+  const allLines = code.split('\n');
+  for (let i = 0; i < allLines.length; i++) {
+    const line = allLines[i].trim();
+    if (!line || line.startsWith('--') || line.startsWith('//')) continue;
+    const p = line.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+
+    if (cmd === 'G') { currentGroupName = p[1] || `g${i}`; currentGroup = []; continue; }
+    if (cmd === '/G') {
+      if (currentGroup && currentGroupName) groups[currentGroupName] = currentGroup;
+      currentGroup = null; currentGroupName = null; continue;
+    }
+    if (cmd === '@') { placeGroup(p[1], Number(p[2])||0, Number(p[3])||0, Number(p[4])||0); continue; }
+    if (cmd === 'V') { W = Number(p[1])||32; H = Number(p[2])||32; D = Number(p[3])||32; continue; }
+    if (cmd === 'R') { scale = Number(p[1])||1; continue; }
+
+    const parseArg = (s, isColor) => {
+      if (isColor && /^[a-f]$/i.test(s)) return CKEYS.indexOf(s.toLowerCase());
+      return Number(s);
+    };
+    const rawArgs = p.slice(1);
+    const n = rawArgs.map((s, idx) => parseArg(s, idx === rawArgs.length - 1));
+    execCmd(cmd, n);
+    if (currentGroup) currentGroup.push({ cmd, args: n });
+  }
+
+  return { W, H, D, vm };
+}
+
+
+// ── Grid + Projection ──────────────────────────────────────────────
+
+function buildGrid(W, H, D, vm) {
+  const grid = new Int8Array(W * H * D).fill(-1);
+  const idx = (x, y, z) => x + y * W + z * W * H;
+  for (const [k, c] of vm) {
+    const [x, y, z] = k.split(',').map(Number);
+    grid[idx(x, y, z)] = c;
+  }
+  return { grid, idx, W, H, D };
+}
+
+/**
+ * Project a view, returning color AND depth per pixel (not just depth digit).
+ */
+function projectViewFull(g, view) {
+  const { grid, idx, W, H, D } = g;
+  let viewW, viewH, maxDepth, label;
+  let getVoxel;
+
+  switch (view) {
+    case 'front':
+      viewW = W; viewH = H; maxDepth = D;
+      label = 'FRONT';
+      getVoxel = (col, row, d) => grid[idx(col, viewH - 1 - row, d)];
+      break;
+    case 'back':
+      viewW = W; viewH = H; maxDepth = D;
+      label = 'BACK';
+      getVoxel = (col, row, d) => grid[idx(viewW - 1 - col, viewH - 1 - row, D - 1 - d)];
+      break;
+    case 'right':
+      viewW = D; viewH = H; maxDepth = W;
+      label = 'RIGHT';
+      getVoxel = (col, row, d) => grid[idx(W - 1 - d, viewH - 1 - row, col)];
+      break;
+    case 'left':
+      viewW = D; viewH = H; maxDepth = W;
+      label = 'LEFT';
+      getVoxel = (col, row, d) => grid[idx(d, viewH - 1 - row, viewW - 1 - col)];
+      break;
+    case 'top':
+      viewW = W; viewH = D; maxDepth = H;
+      label = 'TOP';
+      getVoxel = (col, row, d) => grid[idx(col, H - 1 - d, viewH - 1 - row)];
+      break;
+    case 'bottom':
+      viewW = W; viewH = D; maxDepth = H;
+      label = 'BOTTOM';
+      getVoxel = (col, row, d) => grid[idx(col, d, row)];
+      break;
+  }
+
+  // Each pixel: { color: 0-15, depth: 0.0-1.0, hit: bool }
+  const pixels = new Array(viewW * viewH);
+  for (let row = 0; row < viewH; row++) {
+    for (let col = 0; col < viewW; col++) {
+      let hit = -1, hitDepth = -1;
+      for (let d = 0; d < maxDepth; d++) {
+        const v = getVoxel(col, row, d);
+        if (v >= 0) { hit = v; hitDepth = d; break; }
+      }
+      const i = row * viewW + col;
+      if (hit < 0) {
+        pixels[i] = { color: -1, depth: 1, hit: false };
+      } else {
+        pixels[i] = {
+          color: hit,
+          depth: maxDepth <= 1 ? 0 : hitDepth / (maxDepth - 1),
+          hit: true,
+        };
+      }
+    }
+  }
+
+  return { pixels, viewW, viewH, label, maxDepth };
+}
+
+
+// ── Pixel Renderers ────────────────────────────────────────────────
+
+function colorToRGB(hex) {
+  return [(hex >> 16) & 0xff, (hex >> 8) & 0xff, hex & 0xff];
+}
+
+const BG_COLOR = [19, 21, 31]; // matches --canvas-bg
+
+function renderColor(ctx, proj, scale) {
+  const { pixels, viewW, viewH } = proj;
+  const imgData = ctx.createImageData(viewW * scale, viewH * scale);
+  const d = imgData.data;
+  for (let row = 0; row < viewH; row++) {
+    for (let col = 0; col < viewW; col++) {
+      const p = pixels[row * viewW + col];
+      const [r, g, b] = p.hit ? colorToRGB(COLORS[p.color]) : BG_COLOR;
+      // Fill scaled pixel block
+      for (let sy = 0; sy < scale; sy++) {
+        for (let sx = 0; sx < scale; sx++) {
+          const idx = ((row * scale + sy) * viewW * scale + col * scale + sx) * 4;
+          d[idx] = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function renderDepth(ctx, proj, scale) {
+  const { pixels, viewW, viewH } = proj;
+  const imgData = ctx.createImageData(viewW * scale, viewH * scale);
+  const d = imgData.data;
+  for (let row = 0; row < viewH; row++) {
+    for (let col = 0; col < viewW; col++) {
+      const p = pixels[row * viewW + col];
+      let r, g, b;
+      if (!p.hit) {
+        [r, g, b] = BG_COLOR;
+      } else {
+        // Near = bright white, far = dark
+        const v = Math.round(255 * (1 - p.depth));
+        r = g = b = v;
+      }
+      for (let sy = 0; sy < scale; sy++) {
+        for (let sx = 0; sx < scale; sx++) {
+          const idx = ((row * scale + sy) * viewW * scale + col * scale + sx) * 4;
+          d[idx] = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function renderShaded(ctx, proj, scale) {
+  const { pixels, viewW, viewH } = proj;
+  const imgData = ctx.createImageData(viewW * scale, viewH * scale);
+  const d = imgData.data;
+  for (let row = 0; row < viewH; row++) {
+    for (let col = 0; col < viewW; col++) {
+      const p = pixels[row * viewW + col];
+      let r, g, b;
+      if (!p.hit) {
+        [r, g, b] = BG_COLOR;
+      } else {
+        // Color darkened by depth: near = full color, far = 30% color
+        const shade = 1 - p.depth * 0.7;
+        const [cr, cg, cb] = colorToRGB(COLORS[p.color]);
+        r = Math.round(cr * shade);
+        g = Math.round(cg * shade);
+        b = Math.round(cb * shade);
+      }
+      for (let sy = 0; sy < scale; sy++) {
+        for (let sx = 0; sx < scale; sx++) {
+          const idx = ((row * scale + sy) * viewW * scale + col * scale + sx) * 4;
+          d[idx] = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function renderNormal(ctx, proj, scale) {
+  const { pixels, viewW, viewH } = proj;
+  const imgData = ctx.createImageData(viewW * scale, viewH * scale);
+  const d = imgData.data;
+
+  // Compute surface normals from depth differences
+  for (let row = 0; row < viewH; row++) {
+    for (let col = 0; col < viewW; col++) {
+      const p = pixels[row * viewW + col];
+      let r, g, b;
+      if (!p.hit) {
+        [r, g, b] = BG_COLOR;
+      } else {
+        // Sobel-like gradient from depth
+        const getD = (c, r2) => {
+          if (c < 0 || c >= viewW || r2 < 0 || r2 >= viewH) return p.depth;
+          const pp = pixels[r2 * viewW + c];
+          return pp.hit ? pp.depth : p.depth;
+        };
+        const dx = getD(col + 1, row) - getD(col - 1, row);
+        const dy = getD(col, row + 1) - getD(col, row - 1);
+        // Normal map: encode dx,dy,1 as RGB
+        r = Math.round(128 + dx * 512);
+        g = Math.round(128 + dy * 512);
+        b = 255;
+        r = Math.max(0, Math.min(255, r));
+        g = Math.max(0, Math.min(255, g));
+      }
+      for (let sy = 0; sy < scale; sy++) {
+        for (let sx = 0; sx < scale; sx++) {
+          const idx = ((row * scale + sy) * viewW * scale + col * scale + sx) * 4;
+          d[idx] = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+const RENDERERS = { color: renderColor, depth: renderDepth, shaded: renderShaded, normal: renderNormal };
+
+
+// ── Main Render Pipeline ───────────────────────────────────────────
+
+const VIEWS = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+let currentMode = 'color';
+let currentScale = 4;
+
+function render() {
+  const code = editor.value;
+  if (!code.trim()) {
+    statusText.textContent = 'Empty';
+    voxelCount.textContent = '';
+    viewsContainer.innerHTML = '';
+    return;
+  }
+
+  try {
+    const { W, H, D, vm } = parseVoxi(code);
+    const g = buildGrid(W, H, D, vm);
+
+    // Count voxels
+    let count = 0;
+    for (let i = 0; i < g.grid.length; i++) if (g.grid[i] >= 0) count++;
+
+    statusText.className = 'ok';
+    statusText.textContent = `${W}×${H}×${D}`;
+    voxelCount.textContent = `${count.toLocaleString()} voxels`;
+    info.textContent = `${W}×${H}×${D} · ${currentMode}`;
+
+    // Project all views
+    const projections = {};
+    for (const v of VIEWS) {
+      projections[v] = projectViewFull(g, v);
+    }
+
+    // Build canvas layout — cube net:
+    //         TOP
+    //  LEFT  FRONT  RIGHT
+    //        BOTTOM
+    //         BACK
+    viewsContainer.innerHTML = '';
+
+    const renderFn = RENDERERS[currentMode];
+    const sc = currentScale;
+
+    function makeCard(viewName) {
+      const proj = projections[viewName];
+      const card = document.createElement('div');
+      card.className = 'view-card';
+
+      const label = document.createElement('div');
+      label.className = 'view-label';
+      label.textContent = `${proj.label} (${proj.viewW}×${proj.viewH})`;
+      card.appendChild(label);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = proj.viewW * sc;
+      canvas.height = proj.viewH * sc;
+      const ctx = canvas.getContext('2d');
+      renderFn(ctx, proj, sc);
+      card.appendChild(canvas);
+
+      return card;
+    }
+
+    // Row 1: TOP (centered)
+    const row1 = document.createElement('div');
+    row1.className = 'view-row';
+    // Spacer to align with FRONT column
+    const spacer1 = document.createElement('div');
+    spacer1.style.width = (projections.left.viewW * sc + 18) + 'px'; // card + gap
+    row1.appendChild(spacer1);
+    row1.appendChild(makeCard('top'));
+    viewsContainer.appendChild(row1);
+
+    // Row 2: LEFT | FRONT | RIGHT
+    const row2 = document.createElement('div');
+    row2.className = 'view-row';
+    row2.appendChild(makeCard('left'));
+    row2.appendChild(makeCard('front'));
+    row2.appendChild(makeCard('right'));
+    viewsContainer.appendChild(row2);
+
+    // Row 3: BOTTOM (centered)
+    const row3 = document.createElement('div');
+    row3.className = 'view-row';
+    const spacer3 = document.createElement('div');
+    spacer3.style.width = (projections.left.viewW * sc + 18) + 'px';
+    row3.appendChild(spacer3);
+    row3.appendChild(makeCard('bottom'));
+    viewsContainer.appendChild(row3);
+
+    // Row 4: BACK (centered)
+    const row4 = document.createElement('div');
+    row4.className = 'view-row';
+    const spacer4 = document.createElement('div');
+    spacer4.style.width = (projections.left.viewW * sc + 18) + 'px';
+    row4.appendChild(spacer4);
+    row4.appendChild(makeCard('back'));
+    viewsContainer.appendChild(row4);
+
+  } catch (e) {
+    statusText.className = '';
+    statusText.textContent = 'Parse error: ' + e.message;
+    console.error(e);
+  }
+}
+
+
+// ── Editor Setup ───────────────────────────────────────────────────
+
+const editor = document.getElementById('editor');
+const lineNumbers = document.getElementById('line-numbers');
+const statusText = document.getElementById('status-text');
+const voxelCount = document.getElementById('voxel-count');
+const viewsContainer = document.getElementById('views-container');
+const info = document.getElementById('info');
+
+function updateLineNumbers() {
+  const lines = editor.value.split('\n').length;
+  lineNumbers.textContent = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
+}
+
+editor.addEventListener('scroll', () => { lineNumbers.scrollTop = editor.scrollTop; });
+
+let renderTimer = null;
+editor.addEventListener('input', () => {
+  updateLineNumbers();
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(render, 150);
+});
+
+// Mode buttons
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    render();
+  });
+});
+
+// Scale select
+document.getElementById('scale').addEventListener('change', e => {
+  currentScale = Number(e.target.value);
+  render();
+});
+
+// Export
+document.getElementById('btn-export').addEventListener('click', () => {
+  // Composite all view canvases into a single PNG
+  const canvases = viewsContainer.querySelectorAll('canvas');
+  if (!canvases.length) return;
+
+  // Calculate composite size
+  const container = viewsContainer.getBoundingClientRect();
+  const cards = viewsContainer.querySelectorAll('.view-card');
+
+  // Simple approach: capture each canvas and tile them
+  const padding = 8;
+  let totalW = 0, totalH = 0;
+  const cardInfos = [];
+  cards.forEach(card => {
+    const canvas = card.querySelector('canvas');
+    const label = card.querySelector('.view-label').textContent;
+    cardInfos.push({ canvas, label, w: canvas.width, h: canvas.height });
+  });
+
+  // Layout: 2 columns (front views | side views)
+  const maxW = Math.max(...cardInfos.map(c => c.w));
+  const labelH = 16;
+  totalW = maxW * 3 + padding * 4;
+  totalH = cardInfos.reduce((s, c) => Math.max(s, c.h), 0) * 4 + labelH * 4 + padding * 5;
+
+  // Just export front view for simplicity, or all as grid
+  const exportCanvas = document.createElement('canvas');
+  const cols = 3, rows = 2;
+  const cellW = maxW + padding;
+  const cellH = Math.max(...cardInfos.map(c => c.h)) + labelH + padding;
+  exportCanvas.width = cellW * cols + padding;
+  exportCanvas.height = cellH * rows + padding;
+  const ectx = exportCanvas.getContext('2d');
+  ectx.fillStyle = '#13151f';
+  ectx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+  ectx.font = '11px monospace';
+  ectx.fillStyle = '#8888a0';
+
+  const order = [0, 1, 2, 3, 4, 5]; // front back left right top bottom
+  cardInfos.forEach((ci, i) => {
+    if (i >= 6) return;
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = padding + col * cellW, y = padding + row * cellH;
+    ectx.fillStyle = '#8888a0';
+    ectx.fillText(ci.label, x, y + 11);
+    ectx.drawImage(ci.canvas, x, y + labelH);
+  });
+
+  const link = document.createElement('a');
+  link.download = 'voxi-2d-sketch.png';
+  link.href = exportCanvas.toDataURL('image/png');
+  link.click();
+});
+
+
+// ── Examples ───────────────────────────────────────────────────────
+
+const EXAMPLES = {
+  'Penguin': `V 20 32 16
+-- King Penguin
+
+-- Body (black)
+E 10 12 8 5 10 5 0
+
+-- White belly
+E 10 11 5 4 9 2 8
+
+-- Neck
+E 10 22 8 3 3 3 0
+
+-- Head
+S 9 26 7 3 0
+
+-- Orange ear patches
+B 6 25 6 1 3 3 7
+B 12 25 6 1 3 3 7
+
+-- Yellow chest crescent
+E 10 20 6 4 3 3 6
+B 7 19 5 6 3 2 6
+
+-- Beak
+B 8 25 2 2 1 4 7
+B 7 26 2 3 1 3 7
+
+-- Eyes
+P 8 27 5 0
+P 11 27 5 0
+
+-- Left flipper (raised)
+B 3 16 7 2 10 3 0
+B 2 20 7 1 7 3 0
+B 1 23 7 1 4 3 0
+
+-- Right flipper (down)
+B 15 8 7 2 12 3 0
+B 17 6 7 1 8 3 0
+
+-- Legs
+B 8 0 7 2 3 2 0
+B 12 0 7 2 3 2 0
+
+-- Feet
+B 7 0 6 3 1 4 0
+B 12 0 6 3 1 4 0`,
+
+  'FPS Arena': `V 40 12 40
+-- Floor
+B 0 0 0 40 1 40 9
+
+-- Central tower
+B 17 1 17 6 8 6 9
+B 17 1 19 1 3 2 0
+B 22 1 19 1 3 2 0
+B 19 1 17 2 3 1 0
+B 19 1 22 2 3 1 0
+
+-- Corner pillars
+B 0 1 0 3 10 3 9
+B 37 1 0 3 10 3 9
+B 0 1 37 3 10 3 9
+B 37 1 37 3 10 3 9
+
+-- Walls
+B 0 1 0 40 4 1 9
+B 0 1 39 40 4 1 9
+B 0 1 0 1 4 40 9
+B 39 1 0 1 4 40 9
+
+-- Ramps
+B 5 1 5 3 1 8 d
+B 5 2 8 3 1 5 d
+B 32 1 27 3 1 8 d
+B 32 2 27 3 1 5 d
+
+-- Spawn markers
+P 5 1 5 2
+P 35 1 35 1`,
+
+  'Simple House': `V 32 20 32
+-- Floor
+B 2 0 2 28 1 28 d
+
+-- Walls
+B 2 1 2 28 8 1 8
+B 2 1 29 28 8 1 8
+B 2 1 2 1 8 28 8
+B 29 1 2 1 8 28 8
+
+-- Door
+B 14 1 2 4 6 1 0
+
+-- Windows
+B 6 4 2 3 3 1 4
+B 23 4 2 3 3 1 4
+
+-- Roof
+D 0 9 0 32 8 32 1
+
+-- Chimney
+B 24 9 10 3 7 3 9`,
+
+  'Sphere Grid': `V 48 48 48
+-- 3x3 grid of spheres in different colors
+S 12 12 24 5 1
+S 24 12 24 5 2
+S 36 12 24 5 3
+S 12 24 24 5 4
+S 24 24 24 5 5
+S 36 24 24 5 6
+S 12 36 24 5 7
+S 24 36 24 5 8
+S 36 36 24 5 9`,
+
+  'Tree': `V 24 32 24
+-- Trunk
+C 12 0 12 2 12 a
+
+-- Canopy layers
+S 12 14 12 6 2
+S 12 18 12 5 c
+S 12 21 12 4 2
+S 12 24 12 3 c
+S 12 26 12 2 2`,
+
+  'Robot': `V 24 32 24
+-- Body
+B 7 8 9 10 10 6 9
+
+-- Head
+B 8 18 10 8 6 4 9
+-- Eyes
+P 10 22 10 4
+P 14 22 10 4
+-- Mouth
+B 10 20 10 4 1 1 1
+
+-- Left arm
+B 4 10 10 3 8 4 9
+B 3 8 10 3 3 4 7
+
+-- Right arm
+B 17 10 10 3 8 4 9
+B 18 8 10 3 3 4 7
+
+-- Left leg
+B 8 0 10 3 8 4 9
+B 8 0 10 3 2 4 0
+
+-- Right leg
+B 13 0 10 3 8 4 9
+B 13 0 10 3 2 4 0
+
+-- Antenna
+B 11 24 11 2 4 2 6
+S 12 28 12 1 1`,
+
+  'Hi-Res Landscape': `V 64 24 64
+-- Ground
+B 0 0 0 64 1 64 2
+
+-- Lake
+E 40 0 40 12 1 12 3
+
+-- Mountain
+K 16 1 32 12 18 9
+K 14 1 30 8 14 a
+K 20 1 28 6 10 9
+
+-- Snow caps
+S 16 16 32 4 8
+S 14 13 30 3 8
+
+-- Trees (forest)
+C 8 1 8 1 6 a
+S 8 7 8 3 c
+C 12 1 12 1 5 a
+S 12 6 12 2 2
+C 6 1 14 1 7 a
+S 6 8 14 3 c
+C 10 1 18 1 5 a
+S 10 6 18 2 2
+C 4 1 10 1 6 a
+S 4 7 10 3 c
+
+-- House
+B 48 1 12 8 6 8 d
+D 47 7 11 10 4 10 1
+B 51 1 12 3 5 1 0`,
+};
+
+const examplesSelect = document.getElementById('examples');
+for (const name of Object.keys(EXAMPLES)) {
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  examplesSelect.appendChild(opt);
+}
+examplesSelect.addEventListener('change', e => {
+  if (e.target.value && EXAMPLES[e.target.value]) {
+    editor.value = EXAMPLES[e.target.value];
+    updateLineNumbers();
+    render();
+  }
+});
+
+
+// ── Init ───────────────────────────────────────────────────────────
+
+// Load with penguin example
+editor.value = EXAMPLES['Penguin'];
+updateLineNumbers();
+render();
+
+</script>
+</body>
+</html>

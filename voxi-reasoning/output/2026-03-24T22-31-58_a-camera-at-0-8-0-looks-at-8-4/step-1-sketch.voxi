@@ -1,0 +1,40 @@
+V 16 16 16
+
+-- === BASE FLOOR: gray ===
+B 0 0 0 16 1 16 9
+
+-- === ORANGE CUBE 4x4x4 at (6,1,6) ===
+-- Spans X:[6,10], Y:[1,5], Z:[6,10]
+B 6 1 6 4 4 4 7
+
+-- === VISIBLE FACES (highlighted) ===
+
+-- LEFT FACE (X=6 plane): camera is at X=0, left of cube → faces camera → RED
+B 6 1 6 1 4 4 1
+
+-- TOP FACE (Y=5 plane): camera is at Y=8, above cube top Y=5 → looks down → GREEN
+B 6 5 6 4 1 4 2
+
+-- FRONT FACE (Z=6 plane): camera is at Z=0, in front of cube Z=6 → faces camera → MAGENTA
+B 6 1 6 4 4 1 5
+
+-- === CAMERA POSITION at (0,8,0) ===
+-- Yellow sphere, radius 1 — at front-left, mid-high
+S 0 8 0 1 6
+
+-- === LINE OF SIGHT: (0,8,0) → (8,4,8) ===
+-- t=0.25: (2,7,2), t=0.5: (4,6,4), t=0.75: (6,5,6) hits cube corner!
+P 2 7 2 4
+P 4 6 4 4
+P 6 5 6 4
+
+-- === OCCLUDED FLOOR REGIONS (blue=3, camera cannot see these) ===
+
+-- Floor directly under cube: X:[6,10], Z:[6,10] at Y=0
+B 6 0 6 4 1 4 3
+
+-- Extended shadow: cube blocks view of floor BEHIND and to the RIGHT
+-- Camera shadow extends: X:[10,12], Z:[6,12]
+B 10 0 6 2 1 6 3
+-- and: X:[6,12], Z:[10,12]
+B 6 0 10 6 1 2 3

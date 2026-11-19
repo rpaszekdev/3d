@@ -1,0 +1,61 @@
+V 48 24 32
+
+-- fuselage body
+E 24 8 16 4 4 13 8
+
+-- nose cone
+E 24 8 3 3 3 3 7
+
+-- tail cone
+E 24 8 28 3 3 4 9
+
+-- cockpit windows
+B 21 9 4 6 2 3 3
+
+-- wings
+B 4 6 13 40 2 6 8
+
+-- wing underskin detail
+B 6 5 14 36 1 4 9
+
+-- left engine pod
+C 12 4 13 2 9 9
+
+-- right engine pod
+C 36 4 13 2 9 9
+
+-- left engine intake
+S 12 4 9 2 1
+
+-- right engine intake
+S 36 4 9 2 1
+
+-- engine exhaust left
+S 12 4 22 2 7
+
+-- engine exhaust right
+S 36 4 22 2 7
+
+-- vertical tail fin
+B 22 9 26 4 10 2 8
+
+-- horizontal tail stabilizers
+B 14 10 27 20 2 5 8
+
+-- fuselage window row
+B 12 9 8 24 1 1 3
+
+-- cockpit stripe
+B 20 7 3 8 1 4 4
+
+-- nose landing gear bay
+B 22 3 8 4 3 2 9
+
+-- main landing gear left
+B 10 1 16 2 5 2 9
+
+-- main landing gear right
+B 36 1 16 2 5 2 9
+
+-- airline stripe
+B 6 7 6 36 2 1 3

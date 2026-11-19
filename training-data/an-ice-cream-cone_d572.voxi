@@ -1,0 +1,21 @@
+V 24 32 24
+
+-- cone tip
+C 12 1 12 1 2 d
+-- lower cone
+C 12 4 12 2 3 d
+-- mid cone
+C 12 7 12 3 3 d
+-- upper cone body
+C 12 11 12 4 2 d
+-- cone rim
+B 8 12 10 8 1 4 d
+
+-- vanilla scoop (main)
+S 12 18 12 5 8
+
+-- strawberry scoop (top)
+S 12 24 12 4 b
+
+-- cherry on top
+S 12 28 12 1 1

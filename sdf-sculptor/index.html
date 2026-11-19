@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDF Sculptor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0b;
+    --surface: #131316;
+    --surface2: #1a1a1f;
+    --border: #2a2a30;
+    --border-hi: #3a3a42;
+    --text: #e8e6e3;
+    --text-dim: #7a7880;
+    --text-muted: #4a4850;
+    --accent: #c4f042;
+    --accent-dim: #8aab2e;
+    --red: #f04242;
+    --blue: #42a0f0;
+    --orange: #f0a042;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Instrument Serif', serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .logo h1 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .stat-val {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── Main Layout ── */
+  .workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Editor Panel ── */
+  .editor-panel {
+    width: 420px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .panel-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .panel-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+  }
+
+  .preset-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .preset-select:hover { border-color: var(--border-hi); }
+  .preset-select:focus { border-color: var(--accent-dim); }
+
+  .editor-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #editor {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 16px;
+    border: none;
+    outline: none;
+    resize: none;
+    tab-size: 2;
+  }
+
+  /* ── Controls Bar ── */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface2);
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn:hover { border-color: var(--border-hi); background: var(--border); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    flex: 1;
+  }
+
+  .btn-primary:hover {
+    background: #d4ff52;
+    border-color: #d4ff52;
+  }
+
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .btn-sm.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .slider-group label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .slider-group input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+    height: 4px;
+  }
+
+  .slider-val {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
+    min-width: 24px;
+    text-align: right;
+  }
+
+  /* ── Viewport ── */
+  .viewport {
+    flex: 1;
+    position: relative;
+    background: var(--bg);
+  }
+
+  #canvas-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  #canvas-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .viewport-overlay {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .generating-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,10,11,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .generating-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .generating-text {
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* ── Error display ── */
+  .error-bar {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: rgba(240,66,66,0.15);
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    max-width: 300px;
+    display: none;
+    z-index: 20;
+  }
+
+  .error-bar.visible { display: block; }
+
+  /* ── Reference Panel ── */
+  .ref-panel {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(19,19,22,0.92);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    max-width: 260px;
+    z-index: 5;
+    display: none;
+  }
+
+  .ref-panel.visible { display: block; }
+
+  .ref-panel h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .ref-panel code {
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+  }
+
+  .toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <h1>SDF Sculptor</h1>
+    <span>signed distance fields</span>
+  </div>
+  <div class="header-stats">
+    <span>Quad: <span class="stat-val" id="para-count">0</span></span>
+    <span>MC: <span class="stat-val" id="mc-count">0</span></span>
+    <span>Tris: <span class="stat-val" id="tri-count">0</span></span>
+    <span>Verts: <span class="stat-val" id="vert-count">0</span></span>
+    <span>Welded: <span class="stat-val" id="weld-count">0</span></span>
+    <span>Time: <span class="stat-val" id="gen-time">0ms</span></span>
+  </div>
+</header>
+
+<div class="workspace">
+  <div class="editor-panel">
+    <div class="panel-toolbar">
+      <span class="panel-title">Scene DSL</span>
+      <select class="preset-select" id="presets">
+        <option value="">— presets —</option>
+        <option value="snowman">Snowman</option>
+        <option value="pawn">Chess Pawn</option>
+        <option value="mug">Mug</option>
+        <option value="donut">Donut</option>
+        <option value="tower">Castle Tower</option>
+        <option value="castle">Castle</option>
+        <option value="sofa">Sofa</option>
+        <option value="lighthouse">Lighthouse</option>
+      </select>
+    </div>
+
+    <div class="editor-wrap">
+      <textarea id="editor" spellcheck="false">
+# ═══ HEADPHONES ═══
+
+# ── Headband ──
+# main band arc (series of overlapping cylinders forming a curve)
+torus 0 1.2 0 0.55 0.035 rx:90
+
+# band padding on top
+box 0 1.75 0 0.12 0.02 0.04
+box 0 1.73 0 0.1 0.015 0.035
+
+# ── Left Ear Cup ──
+# outer shell
+cylinder -0.55 0.95 0 0.22 0.12 rz:90
+# inner cushion ring
+torus -0.58 0.95 0 0.18 0.04 rz:90
+# driver flat face
+cylinder -0.52 0.95 0 0.18 0.02 rz:90
+# hollow inside
+subtract
+cylinder -0.56 0.95 0 0.16 0.08 rz:90
+
+# ── Right Ear Cup ──
+# outer shell
+cylinder 0.55 0.95 0 0.22 0.12 rz:90
+# inner cushion ring
+torus 0.58 0.95 0 0.18 0.04 rz:90
+# driver flat face
+cylinder 0.52 0.95 0 0.18 0.02 rz:90
+# hollow inside
+subtract
+cylinder 0.56 0.95 0 0.16 0.08 rz:90
+
+# ── Left Arm (band to cup connector) ──
+cylinder -0.55 1.15 0 0.03 0.25
+# adjustment slider
+box -0.55 1.08 0 0.02 0.08 0.015
+# pivot joint
+sphere -0.55 1.03 0 0.04
+
+# ── Right Arm (band to cup connector) ──
+cylinder 0.55 1.15 0 0.03 0.25
+# adjustment slider
+box 0.55 1.08 0 0.02 0.08 0.015
+# pivot joint
+sphere 0.55 1.03 0 0.04
+
+# ── Cable ──
+cylinder -0.55 0.82 0.08 0.012 0.15
+cylinder -0.55 0.73 0.12 0.012 0.12 rx:20</textarea>
+    </div>
+
+    <div class="controls">
+      <div class="controls-row">
+        <div class="slider-group">
+          <label>Res</label>
+          <input type="range" id="resolution" min="16" max="128" value="64" step="8">
+          <span class="slider-val" id="res-val">64</span>
+        </div>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-sm" id="btn-wireframe">Wire</button>
+        <button class="btn btn-sm" id="btn-normals">Normals</button>
+        <button class="btn btn-sm" id="btn-ref">Ref</button>
+        <div style="flex:1"></div>
+        <button class="btn btn-sm" id="btn-obj">OBJ</button>
+        <button class="btn btn-sm" id="btn-glb">GLB</button>
+        <button class="btn btn-sm" id="btn-png">PNG</button>
+        <button class="btn btn-sm" id="btn-copy">Copy</button>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" id="btn-generate">Generate Mesh</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="viewport">
+    <div id="canvas-container"></div>
+    <div class="generating-overlay" id="gen-overlay">
+      <span class="generating-text">Marching cubes...</span>
+    </div>
+    <div class="error-bar" id="error-bar"></div>
+    <div class="toast" id="toast"></div>
+    <div class="ref-panel" id="ref-panel">
+      <h3>DSL Reference</h3>
+      <p><code>sphere x y z radius</code></p>
+      <p><code>box x y z sx sy sz</code></p>
+      <p><code>cylinder x y z radius height</code></p>
+      <p><code>torus x y z R r</code></p>
+      <p style="margin-top:8px"><code>subtract</code> — next shape subtracts</p>
+      <p><code>intersect</code> — next shape intersects</p>
+      <p style="margin-top:8px">Transforms (append):</p>
+      <p><code>rx:90 ry:45 rz:30</code></p>
+      <p style="margin-top:8px"><code>#</code> comments ignored</p>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+
+// ─────────────────────────────────────────────
+// Presets
+// ─────────────────────────────────────────────
+const PRESETS = {
+  snowman: `# Snowman
+sphere 0 0.4 0 0.45
+sphere 0 1.05 0 0.32
+sphere 0 1.52 0 0.22
+
+# nose
+cylinder 0 1.52 0.22 0.03 0.18 rx:90
+
+# hat brim
+cylinder 0 1.7 0 0.25 0.03
+# hat top
+cylinder 0 1.88 0 0.16 0.15`,
+
+  pawn: `# Chess Pawn
+# base
+cylinder 0 0.05 0 0.4 0.1
+# base curve
+torus 0 0.1 0 0.35 0.06
+
+# stem (built from stacked spheres for smooth shape)
+cylinder 0 0.35 0 0.18 0.4
+sphere 0 0.55 0 0.2
+
+# neck
+cylinder 0 0.65 0 0.1 0.15
+
+# collar
+torus 0 0.72 0 0.14 0.04
+
+# head
+sphere 0 0.92 0 0.18
+
+# tip
+sphere 0 1.12 0 0.06`,
+
+  mug: `# Mug
+# outer wall
+cylinder 0 0.5 0 0.42 1.0
+
+# hollow inside
+subtract
+cylinder 0 0.55 0 0.36 0.95
+
+# handle
+torus 0.52 0.5 0 0.18 0.045 rz:90
+
+# subtract inside of handle to flatten against mug
+subtract
+box 0.25 0.5 0 0.15 0.4 0.2`,
+
+  donut: `# Donut (Torus)
+torus 0 0.5 0 0.35 0.18
+
+# bite taken out
+subtract
+sphere 0.38 0.5 0.2 0.16
+
+# drizzle stripes on top
+cylinder -0.15 0.68 -0.1 0.025 0.5 rx:8 rz:70
+cylinder 0.05 0.7 0.05 0.025 0.5 rx:-5 rz:75
+cylinder -0.05 0.69 -0.2 0.025 0.45 rx:4 rz:68`,
+
+  tower: `# Castle Tower
+# main cylinder
+cylinder 0 0.8 0 0.4 1.6
+
+# hollow inside
+subtract
+cylinder 0 0.85 0 0.34 1.55
+
+# top rim
+torus 0 1.6 0 0.42 0.05
+
+# battlement posts
+box 0.38 1.75 0 0.08 0.15 0.08
+box -0.38 1.75 0 0.08 0.15 0.08
+box 0 1.75 0.38 0.08 0.15 0.08
+box 0 1.75 -0.38 0.08 0.15 0.08
+
+# door
+subtract
+box 0 0.18 0.42 0.12 0.2 0.1
+
+# window
+subtract
+cylinder 0 1.1 0.42 0.06 0.1 rx:90`,
+
+  castle: `# ═══ CASTLE ═══
+
+# ── Ground / Base Platform ──
+box 0 0.06 0 1.6 0.06 1.6
+
+# ── Front Wall ──
+box 0 0.35 1.35 1.4 0.35 0.08
+# ── Back Wall ──
+box 0 0.35 -1.35 1.4 0.35 0.08
+# ── Left Wall ──
+box -1.35 0.35 0 0.08 0.35 1.4
+# ── Right Wall ──
+box 1.35 0.35 0 0.08 0.35 1.4
+
+# ── Gate (subtract from front wall) ──
+subtract
+box 0 0.22 1.38 0.16 0.22 0.12
+
+# ── Gate arch ──
+subtract
+sphere 0 0.44 1.38 0.16
+
+# ── Corner Tower: Front-Left ──
+cylinder -1.35 0.6 1.35 0.22 1.2
+# hollow
+subtract
+cylinder -1.35 0.65 1.35 0.17 1.1
+# rim
+torus -1.35 1.2 1.35 0.24 0.03
+# battlements
+box -1.35 1.3 1.15 0.06 0.1 0.06
+box -1.35 1.3 1.55 0.06 0.1 0.06
+box -1.15 1.3 1.35 0.06 0.1 0.06
+box -1.55 1.3 1.35 0.06 0.1 0.06
+
+# ── Corner Tower: Front-Right ──
+cylinder 1.35 0.6 1.35 0.22 1.2
+subtract
+cylinder 1.35 0.65 1.35 0.17 1.1
+torus 1.35 1.2 1.35 0.24 0.03
+box 1.35 1.3 1.15 0.06 0.1 0.06
+box 1.35 1.3 1.55 0.06 0.1 0.06
+box 1.15 1.3 1.35 0.06 0.1 0.06
+box 1.55 1.3 1.35 0.06 0.1 0.06
+
+# ── Corner Tower: Back-Left ──
+cylinder -1.35 0.6 -1.35 0.22 1.2
+subtract
+cylinder -1.35 0.65 -1.35 0.17 1.1
+torus -1.35 1.2 -1.35 0.24 0.03
+box -1.35 1.3 -1.15 0.06 0.1 0.06
+box -1.35 1.3 -1.55 0.06 0.1 0.06
+box -1.15 1.3 -1.35 0.06 0.1 0.06
+box -1.55 1.3 -1.35 0.06 0.1 0.06
+
+# ── Corner Tower: Back-Right ──
+cylinder 1.35 0.6 -1.35 0.22 1.2
+subtract
+cylinder 1.35 0.65 -1.35 0.17 1.1
+torus 1.35 1.2 -1.35 0.24 0.03
+box 1.35 1.3 -1.15 0.06 0.1 0.06
+box 1.35 1.3 -1.55 0.06 0.1 0.06
+box 1.15 1.3 -1.35 0.06 0.1 0.06
+box 1.55 1.3 -1.35 0.06 0.1 0.06
+
+# ── Keep (central tower) ──
+cylinder 0 0.85 0 0.4 1.7
+subtract
+cylinder 0 0.9 0 0.34 1.6
+torus 0 1.7 0 0.42 0.04
+# keep battlements
+box 0.38 1.82 0 0.07 0.12 0.07
+box -0.38 1.82 0 0.07 0.12 0.07
+box 0 1.82 0.38 0.07 0.12 0.07
+box 0 1.82 -0.38 0.07 0.12 0.07
+
+# ── Keep roof (cone via sphere) ──
+sphere 0 2.05 0 0.28
+
+# ── Keep windows ──
+subtract
+cylinder 0 1.3 0.42 0.05 0.08 rx:90
+subtract
+cylinder 0 1.3 -0.42 0.05 0.08 rx:90
+subtract
+cylinder 0.42 1.3 0 0.05 0.08 rz:90
+
+# ── Wall battlements (front) ──
+box -0.7 0.78 1.35 0.08 0.08 0.08
+box -0.3 0.78 1.35 0.08 0.08 0.08
+box 0.3 0.78 1.35 0.08 0.08 0.08
+box 0.7 0.78 1.35 0.08 0.08 0.08
+
+# ── Wall battlements (back) ──
+box -0.7 0.78 -1.35 0.08 0.08 0.08
+box -0.3 0.78 -1.35 0.08 0.08 0.08
+box 0.3 0.78 -1.35 0.08 0.08 0.08
+box 0.7 0.78 -1.35 0.08 0.08 0.08
+
+# ── Wall battlements (left) ──
+box -1.35 0.78 -0.7 0.08 0.08 0.08
+box -1.35 0.78 -0.3 0.08 0.08 0.08
+box -1.35 0.78 0.3 0.08 0.08 0.08
+box -1.35 0.78 0.7 0.08 0.08 0.08
+
+# ── Wall battlements (right) ──
+box 1.35 0.78 -0.7 0.08 0.08 0.08
+box 1.35 0.78 -0.3 0.08 0.08 0.08
+box 1.35 0.78 0.3 0.08 0.08 0.08
+box 1.35 0.78 0.7 0.08 0.08 0.08`,
+
+  sofa: `# ═══ SOFA ═══
+
+# ── Base Frame ──
+# solid base block
+box 0 0.18 0 0.9 0.08 0.4
+
+# ── Legs ──
+# front-left
+cylinder -0.78 0.05 0.3 0.04 0.1
+# front-right
+cylinder 0.78 0.05 0.3 0.04 0.1
+# back-left
+cylinder -0.78 0.05 -0.3 0.04 0.1
+# back-right
+cylinder 0.78 0.05 -0.3 0.04 0.1
+
+# ── Seat Cushion ──
+# main seat — rounded with spheres at edges
+box 0 0.32 0.02 0.82 0.08 0.34
+# softness: round the front edge
+cylinder 0 0.32 0.36 0.08 1.64 rz:90
+# cushion split line (subtle groove)
+subtract
+box 0 0.41 0.02 0.005 0.02 0.38
+
+# ── Left Seat Cushion ──
+sphere -0.42 0.36 0.04 0.12
+# ── Right Seat Cushion ──
+sphere 0.42 0.36 0.04 0.12
+
+# ── Backrest ──
+box 0 0.58 -0.32 0.82 0.22 0.08
+# round the top of backrest
+cylinder 0 0.8 -0.32 0.08 1.64 rz:90
+# back pillow puffiness
+sphere -0.35 0.6 -0.28 0.16
+sphere 0 0.6 -0.28 0.16
+sphere 0.35 0.6 -0.28 0.16
+
+# ── Left Armrest ──
+box -0.88 0.4 0 0.08 0.16 0.38
+# armrest top rounded
+cylinder -0.88 0.56 0 0.08 0.76 rx:90
+# armrest front cap
+sphere -0.88 0.48 0.36 0.09
+
+# ── Right Armrest ──
+box 0.88 0.4 0 0.08 0.16 0.38
+# armrest top rounded
+cylinder 0.88 0.56 0 0.08 0.76 rx:90
+# armrest front cap
+sphere 0.88 0.48 0.36 0.09
+
+# ── Throw Pillows ──
+# left pillow (tilted against armrest)
+sphere -0.6 0.48 0.05 0.13
+# right pillow (tilted against armrest)
+sphere 0.6 0.48 0.05 0.13`,
+
+  lighthouse: `# ═══ LIGHTHOUSE ═══
+
+# ── Rocky Base ──
+cylinder 0 0.08 0 0.65 0.16
+sphere 0 0.06 0.3 0.2
+sphere 0.25 0.05 -0.2 0.18
+sphere -0.3 0.04 0.15 0.15
+
+# ── Foundation Ring ──
+cylinder 0 0.22 0 0.5 0.08
+torus 0 0.26 0 0.5 0.04
+
+# ── Main Tower (tapered via stacked cylinders) ──
+cylinder 0 0.6 0 0.4 0.7
+cylinder 0 1.15 0 0.36 0.4
+cylinder 0 1.55 0 0.33 0.4
+
+# ── Band Stripes (decorative rings) ──
+torus 0 0.55 0 0.41 0.02
+torus 0 0.95 0 0.38 0.02
+torus 0 1.35 0 0.34 0.02
+
+# ── Gallery Deck ──
+cylinder 0 1.78 0 0.42 0.04
+torus 0 1.8 0 0.44 0.03
+
+# ── Railing Posts ──
+cylinder 0.42 1.88 0 0.02 0.12
+cylinder -0.42 1.88 0 0.02 0.12
+cylinder 0 1.88 0.42 0.02 0.12
+cylinder 0 1.88 -0.42 0.02 0.12
+cylinder 0.3 1.88 0.3 0.02 0.12
+cylinder -0.3 1.88 0.3 0.02 0.12
+cylinder 0.3 1.88 -0.3 0.02 0.12
+cylinder -0.3 1.88 -0.3 0.02 0.12
+
+# ── Railing Ring ──
+torus 0 1.94 0 0.42 0.015
+
+# ── Lantern Room ──
+cylinder 0 2.05 0 0.25 0.18
+
+# ── Lantern Windows (cut out) ──
+subtract
+cylinder 0 2.05 0.26 0.07 0.12 rx:90
+subtract
+cylinder 0 2.05 -0.26 0.07 0.12 rx:90
+subtract
+cylinder 0.26 2.05 0 0.07 0.12 rz:90
+subtract
+cylinder -0.26 2.05 0 0.07 0.12 rz:90
+
+# ── Light Bulb ──
+sphere 0 2.05 0 0.12
+
+# ── Lantern Roof ──
+cylinder 0 2.18 0 0.28 0.04
+sphere 0 2.28 0 0.18
+
+# ── Top Finial ──
+sphere 0 2.42 0 0.04
+cylinder 0 2.38 0 0.015 0.08
+
+# ── Door ──
+subtract
+box 0 0.38 0.42 0.1 0.15 0.08
+subtract
+sphere 0 0.53 0.42 0.1
+
+# ── Window ──
+subtract
+cylinder 0 1.1 0.38 0.05 0.06 rx:90`
+};
+
+// ─────────────────────────────────────────────
+// SDF Parser
+// ─────────────────────────────────────────────
+function parseDSL(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  const operations = [];
+  let currentBool = 'union';
+
+  for (const line of lines) {
+    if (line === 'subtract') { currentBool = 'subtract'; continue; }
+    if (line === 'intersect') { currentBool = 'intersect'; continue; }
+
+    const parts = line.split(/\s+/);
+    const type = parts[0];
+    const transforms = { rx: 0, ry: 0, rz: 0 };
+
+    // extract transforms from end
+    const numParts = [];
+    for (let i = 1; i < parts.length; i++) {
+      const m = parts[i].match(/^(rx|ry|rz):(-?\d+\.?\d*)$/);
+      if (m) {
+        transforms[m[1]] = parseFloat(m[2]) * Math.PI / 180;
+      } else {
+        numParts.push(parseFloat(parts[i]));
+      }
+    }
+
+    let op = null;
+    switch (type) {
+      case 'sphere':
+        if (numParts.length >= 4) {
+          op = { type: 'sphere', center: numParts.slice(0, 3), radius: numParts[3], transforms, bool: currentBool };
+        }
+        break;
+      case 'box':
+        if (numParts.length >= 6) {
+          op = { type: 'box', center: numParts.slice(0, 3), size: numParts.slice(3, 6), transforms, bool: currentBool };
+        } else if (numParts.length >= 4) {
+          const s = numParts[3];
+          op = { type: 'box', center: numParts.slice(0, 3), size: [s, s, s], transforms, bool: currentBool };
+        }
+        break;
+      case 'cylinder':
+        if (numParts.length >= 5) {
+          op = { type: 'cylinder', center: numParts.slice(0, 3), radius: numParts[3], height: numParts[4], transforms, bool: currentBool };
+        }
+        break;
+      case 'torus':
+        if (numParts.length >= 5) {
+          op = { type: 'torus', center: numParts.slice(0, 3), R: numParts[3], r: numParts[4], transforms, bool: currentBool };
+        }
+        break;
+      default:
+        throw new Error(`Unknown primitive: ${type}`);
+    }
+
+    if (op) {
+      operations.push(op);
+      if (currentBool !== 'union') currentBool = 'union'; // reset after use
+    }
+  }
+
+  return operations;
+}
+
+// ─────────────────────────────────────────────
+// SDF Evaluator
+// ─────────────────────────────────────────────
+function applyRotation(px, py, pz, t) {
+  let x = px, y = py, z = pz;
+
+  // rotate X
+  if (t.rx !== 0) {
+    const c = Math.cos(t.rx), s = Math.sin(t.rx);
+    const ny = c * y - s * z;
+    const nz = s * y + c * z;
+    y = ny; z = nz;
+  }
+  // rotate Y
+  if (t.ry !== 0) {
+    const c = Math.cos(t.ry), s = Math.sin(t.ry);
+    const nx = c * x + s * z;
+    const nz = -s * x + c * z;
+    x = nx; z = nz;
+  }
+  // rotate Z
+  if (t.rz !== 0) {
+    const c = Math.cos(t.rz), s = Math.sin(t.rz);
+    const nx = c * x - s * y;
+    const ny = s * x + c * y;
+    x = nx; y = ny;
+  }
+
+  return [x, y, z];
+}
+
+function sdfPrimitive(px, py, pz, op) {
+  // translate to local space
+  let lx = px - op.center[0];
+  let ly = py - op.center[1];
+  let lz = pz - op.center[2];
+
+  // apply inverse rotation
+  if (op.transforms.rx || op.transforms.ry || op.transforms.rz) {
+    [lx, ly, lz] = applyRotation(lx, ly, lz, {
+      rx: -op.transforms.rx,
+      ry: -op.transforms.ry,
+      rz: -op.transforms.rz
+    });
+  }
+
+  switch (op.type) {
+    case 'sphere':
+      return Math.sqrt(lx * lx + ly * ly + lz * lz) - op.radius;
+
+    case 'box': {
+      const dx = Math.abs(lx) - op.size[0];
+      const dy = Math.abs(ly) - op.size[1];
+      const dz = Math.abs(lz) - op.size[2];
+      const outside = Math.sqrt(
+        Math.max(dx, 0) ** 2 + Math.max(dy, 0) ** 2 + Math.max(dz, 0) ** 2
+      );
+      const inside = Math.min(Math.max(dx, dy, dz), 0);
+      return outside + inside;
+    }
+
+    case 'cylinder': {
+      const h = op.height / 2;
+      const d = Math.sqrt(lx * lx + lz * lz) - op.radius;
+      const dy = Math.abs(ly) - h;
+      const outside = Math.sqrt(Math.max(d, 0) ** 2 + Math.max(dy, 0) ** 2);
+      const inside = Math.min(Math.max(d, dy), 0);
+      return outside + inside;
+    }
+
+    case 'torus': {
+      const qx = Math.sqrt(lx * lx + lz * lz) - op.R;
+      return Math.sqrt(qx * qx + ly * ly) - op.r;
+    }
+
+    default:
+      return 1e10;
+  }
+}
+
+function evaluateSDF(px, py, pz, operations) {
+  if (operations.length === 0) return 1e10;
+
+  let d = sdfPrimitive(px, py, pz, operations[0]);
+
+  for (let i = 1; i < operations.length; i++) {
+    const op = operations[i];
+    const di = sdfPrimitive(px, py, pz, op);
+
+    switch (op.bool) {
+      case 'union':     d = Math.min(d, di); break;
+      case 'subtract':  d = Math.max(d, -di); break;
+      case 'intersect': d = Math.max(d, di); break;
+    }
+  }
+
+  return d;
+}
+
+// ─────────────────────────────────────────────
+// Per-Part Grouping
+// ─────────────────────────────────────────────
+// Groups operations into parts: each union primitive starts a new part,
+// subsequent subtract/intersect ops attach to that part.
+function groupIntoParts(operations) {
+  const parts = [];
+  let current = null;
+
+  for (const op of operations) {
+    if (op.bool === 'union') {
+      // new part starts
+      current = [op];
+      parts.push(current);
+    } else {
+      // subtract/intersect attaches to current part
+      if (current) {
+        current.push(op);
+      }
+    }
+  }
+
+  return parts;
+}
+
+// Compute tight bounds for a single part (group of ops)
+function computePartBounds(part) {
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+
+  for (const op of part) {
+    if (op.bool === 'subtract') continue; // subtracts don't expand bounds
+    const c = op.center;
+    let r = 0;
+
+    switch (op.type) {
+      case 'sphere': r = op.radius; break;
+      case 'box': r = Math.max(op.size[0], op.size[1], op.size[2]); break;
+      case 'cylinder': r = Math.max(op.radius, op.height / 2); break;
+      case 'torus': r = op.R + op.r; break;
+    }
+
+    r *= 1.3; // padding for marching cubes accuracy
+    minX = Math.min(minX, c[0] - r);
+    minY = Math.min(minY, c[1] - r);
+    minZ = Math.min(minZ, c[2] - r);
+    maxX = Math.max(maxX, c[0] + r);
+    maxY = Math.max(maxY, c[1] + r);
+    maxZ = Math.max(maxZ, c[2] + r);
+  }
+
+  // Make cubic for uniform sampling
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+  const half = Math.max(maxX - minX, maxY - minY, maxZ - minZ) / 2 + 0.05;
+  return [[cx - half, cy - half, cz - half], [cx + half, cy + half, cz + half]];
+}
+
+// ─────────────────────────────────────────────
+// Parametric Mesh Generators (Quad-dominant)
+// ─────────────────────────────────────────────
+// For standalone primitives (no booleans), generate clean
+// quad topology instead of marching cubes triangle soup.
+// Spheres use transition strips for N→2N ring count changes.
+
+function nearestPow2(n) {
+  let p = 4;
+  while (p < n) p *= 2;
+  return p;
+}
+
+function applyTransformToVerts(verts, cx, cy, cz, t) {
+  if (!t.rx && !t.ry && !t.rz) return;
+  for (let i = 0; i < verts.length; i += 3) {
+    let x = verts[i] - cx, y = verts[i+1] - cy, z = verts[i+2] - cz;
+    [x, y, z] = applyRotation(x, y, z, t);
+    verts[i] = x + cx;
+    verts[i+1] = y + cy;
+    verts[i+2] = z + cz;
+  }
+}
+
+// Connect two adjacent rings with same or doubling/halving segment counts
+function connectRings(topStart, topSegs, botStart, botSegs, idxs) {
+  if (topSegs === botSegs) {
+    // Pure quads
+    for (let s = 0; s < topSegs; s++) {
+      const t0 = topStart + s;
+      const t1 = topStart + (s + 1) % topSegs;
+      const b0 = botStart + s;
+      const b1 = botStart + (s + 1) % botSegs;
+      idxs.push(t0, b0, t1);
+      idxs.push(t1, b0, b1);
+    }
+  } else if (botSegs === topSegs * 2) {
+    // Transition strip: N top → 2N bottom (doubling toward equator)
+    // Pattern per top segment: 1 triangle + 1 quad (2 tris)
+    for (let s = 0; s < topSegs; s++) {
+      const t0 = topStart + s;
+      const t1 = topStart + (s + 1) % topSegs;
+      const b0 = botStart + (2 * s);
+      const b1 = botStart + (2 * s + 1);
+      const b2 = botStart + (2 * s + 2) % botSegs;
+      // Left triangle (transition face)
+      idxs.push(t0, b0, b1);
+      // Quad as 2 triangles
+      idxs.push(t0, b1, t1);
+      idxs.push(t1, b1, b2);
+    }
+  } else if (topSegs === botSegs * 2) {
+    // Transition strip: 2N top → N bottom (halving toward pole)
+    for (let s = 0; s < botSegs; s++) {
+      const b0 = botStart + s;
+      const b1 = botStart + (s + 1) % botSegs;
+      const t0 = topStart + (2 * s);
+      const t1 = topStart + (2 * s + 1);
+      const t2 = topStart + (2 * s + 2) % topSegs;
+      // Quad as 2 triangles
+      idxs.push(t0, b0, t1);
+      idxs.push(t1, b0, b1);
+      // Right triangle (transition face)
+      idxs.push(t1, b1, t2);
+    }
+  }
+}
+
+// ── SPHERE ──
+function generateParametricSphere(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const radius = op.radius;
+  const verts = [];
+  const idxs = [];
+
+  const maxSegs = nearestPow2(Math.max(8, Math.min(resolution, 64)));
+  const latBands = Math.max(8, Math.floor(resolution / 2));
+
+  // North pole
+  verts.push(cx, cy + radius, cz);
+
+  // Generate latitude rings with adaptive segment counts
+  const ringData = []; // [{startIdx, segs}]
+
+  for (let lat = 1; lat < latBands; lat++) {
+    const phi = Math.PI * lat / latBands;
+    const sinPhi = Math.sin(phi);
+    const cosPhi = Math.cos(phi);
+
+    // Segment count: power-of-2, scaled by circumference at this latitude
+    let segs = 4;
+    while (segs * 2 <= maxSegs && segs < maxSegs * sinPhi * 1.3) {
+      segs *= 2;
+    }
+
+    const startIdx = verts.length / 3;
+    for (let s = 0; s < segs; s++) {
+      const theta = 2 * Math.PI * s / segs;
+      verts.push(
+        cx + radius * sinPhi * Math.cos(theta),
+        cy + radius * cosPhi,
+        cz + radius * sinPhi * Math.sin(theta)
+      );
+    }
+    ringData.push({ startIdx, segs });
+  }
+
+  // South pole
+  const southIdx = verts.length / 3;
+  verts.push(cx, cy - radius, cz);
+
+  // ── Faces ──
+
+  // North pole cap: triangle fan
+  if (ringData.length > 0) {
+    const first = ringData[0];
+    for (let s = 0; s < first.segs; s++) {
+      idxs.push(0, first.startIdx + s, first.startIdx + (s + 1) % first.segs);
+    }
+  }
+
+  // Between adjacent rings: quads or transition strips
+  for (let r = 0; r < ringData.length - 1; r++) {
+    connectRings(
+      ringData[r].startIdx, ringData[r].segs,
+      ringData[r+1].startIdx, ringData[r+1].segs,
+      idxs
+    );
+  }
+
+  // South pole cap: triangle fan
+  if (ringData.length > 0) {
+    const last = ringData[ringData.length - 1];
+    for (let s = 0; s < last.segs; s++) {
+      idxs.push(
+        last.startIdx + (s + 1) % last.segs,
+        last.startIdx + s,
+        southIdx
+      );
+    }
+  }
+
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+// ── CYLINDER ──
+function generateParametricCylinder(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const r = op.radius;
+  const halfH = op.height / 2;
+  const segs = Math.max(8, resolution);
+  const heightDivs = Math.max(1, Math.floor(resolution / 8));
+  const verts = [];
+  const idxs = [];
+
+  // Top cap center
+  verts.push(cx, cy + halfH, cz);
+  const topCenter = 0;
+
+  // Generate rings from top to bottom
+  const ringStarts = [];
+  for (let h = 0; h <= heightDivs; h++) {
+    const y = cy + halfH - (h / heightDivs) * op.height;
+    const startIdx = verts.length / 3;
+    for (let s = 0; s < segs; s++) {
+      const theta = 2 * Math.PI * s / segs;
+      verts.push(cx + r * Math.cos(theta), y, cz + r * Math.sin(theta));
+    }
+    ringStarts.push(startIdx);
+  }
+
+  // Bottom cap center
+  const botCenter = verts.length / 3;
+  verts.push(cx, cy - halfH, cz);
+
+  // Top cap (triangle fan, winding inward from top)
+  for (let s = 0; s < segs; s++) {
+    idxs.push(topCenter, ringStarts[0] + (s + 1) % segs, ringStarts[0] + s);
+  }
+
+  // Side quads between rings
+  for (let h = 0; h < heightDivs; h++) {
+    for (let s = 0; s < segs; s++) {
+      const t0 = ringStarts[h] + s;
+      const t1 = ringStarts[h] + (s + 1) % segs;
+      const b0 = ringStarts[h+1] + s;
+      const b1 = ringStarts[h+1] + (s + 1) % segs;
+      idxs.push(t0, t1, b1);
+      idxs.push(t0, b1, b0);
+    }
+  }
+
+  // Bottom cap
+  const lastRing = ringStarts[heightDivs];
+  for (let s = 0; s < segs; s++) {
+    idxs.push(botCenter, lastRing + s, lastRing + (s + 1) % segs);
+  }
+
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+// ── BOX ──
+function generateParametricBox(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const [sx, sy, sz] = op.size;
+  const verts = [];
+  const idxs = [];
+
+  // Subdivide each face for better welding compatibility
+  const divs = Math.max(1, Math.floor(resolution / 16));
+
+  function addFace(origin, uAxis, vAxis, uLen, vLen) {
+    const baseIdx = verts.length / 3;
+    for (let v = 0; v <= divs; v++) {
+      for (let u = 0; u <= divs; u++) {
+        const fu = u / divs, fv = v / divs;
+        verts.push(
+          origin[0] + uAxis[0] * uLen * fu + vAxis[0] * vLen * fv,
+          origin[1] + uAxis[1] * uLen * fu + vAxis[1] * vLen * fv,
+          origin[2] + uAxis[2] * uLen * fu + vAxis[2] * vLen * fv
+        );
+      }
+    }
+    const stride = divs + 1;
+    for (let v = 0; v < divs; v++) {
+      for (let u = 0; u < divs; u++) {
+        const a = baseIdx + v * stride + u;
+        const b = a + 1;
+        const c = a + stride + 1;
+        const d = a + stride;
+        idxs.push(a, b, c);
+        idxs.push(a, c, d);
+      }
+    }
+  }
+
+  // 6 faces
+  // Front (+Z)
+  addFace([cx-sx, cy-sy, cz+sz], [1,0,0], [0,1,0], 2*sx, 2*sy);
+  // Back (-Z)
+  addFace([cx+sx, cy-sy, cz-sz], [-1,0,0], [0,1,0], 2*sx, 2*sy);
+  // Top (+Y)
+  addFace([cx-sx, cy+sy, cz-sz], [1,0,0], [0,0,1], 2*sx, 2*sz);
+  // Bottom (-Y)
+  addFace([cx-sx, cy-sy, cz+sz], [1,0,0], [0,0,-1], 2*sx, 2*sz);
+  // Right (+X)
+  addFace([cx+sx, cy-sy, cz-sz], [0,0,1], [0,1,0], 2*sz, 2*sy);
+  // Left (-X)
+  addFace([cx-sx, cy-sy, cz+sz], [0,0,-1], [0,1,0], 2*sz, 2*sy);
+
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+// ── TORUS ──
+function generateParametricTorus(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const R = op.R, r = op.r;
+  const majorSegs = Math.max(8, resolution);
+  const minorSegs = Math.max(6, Math.floor(resolution * 0.6));
+  const verts = [];
+  const idxs = [];
+
+  for (let i = 0; i < majorSegs; i++) {
+    const theta = 2 * Math.PI * i / majorSegs;
+    const cosT = Math.cos(theta), sinT = Math.sin(theta);
+
+    for (let j = 0; j < minorSegs; j++) {
+      const phi = 2 * Math.PI * j / minorSegs;
+      const cosP = Math.cos(phi), sinP = Math.sin(phi);
+      verts.push(
+        cx + (R + r * cosP) * cosT,
+        cy + r * sinP,
+        cz + (R + r * cosP) * sinT
+      );
+    }
+  }
+
+  // All quads — UV grid wrapping both directions
+  for (let i = 0; i < majorSegs; i++) {
+    const ni = (i + 1) % majorSegs;
+    for (let j = 0; j < minorSegs; j++) {
+      const nj = (j + 1) % minorSegs;
+      const a = i * minorSegs + j;
+      const b = ni * minorSegs + j;
+      const c = ni * minorSegs + nj;
+      const d = i * minorSegs + nj;
+      idxs.push(a, b, c);
+      idxs.push(a, c, d);
+    }
+  }
+
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+// ── Dispatch: parametric or marching cubes ──
+function canUseParametric(part) {
+  // Parametric only for single primitives with no boolean modifiers
+  return part.length === 1 && part[0].bool === 'union';
+}
+
+function generateParametricMesh(op, resolution) {
+  switch (op.type) {
+    case 'sphere':   return generateParametricSphere(op, resolution);
+    case 'cylinder': return generateParametricCylinder(op, resolution);
+    case 'box':      return generateParametricBox(op, resolution);
+    case 'torus':    return generateParametricTorus(op, resolution);
+    default:         return null;
+  }
+}
+
+// ─────────────────────────────────────────────
+// Vertex Welding (merge by distance)
+// ─────────────────────────────────────────────
+function weldMeshes(meshes, threshold) {
+  // Collect all vertices and indices from all part meshes
+  const allVerts = []; // flat [x,y,z, x,y,z, ...]
+  const allIndices = [];
+  let vertexOffset = 0;
+
+  for (const mesh of meshes) {
+    const vCount = mesh.vertices.length / 3;
+    for (let i = 0; i < mesh.vertices.length; i++) {
+      allVerts.push(mesh.vertices[i]);
+    }
+    for (let i = 0; i < mesh.indices.length; i++) {
+      allIndices.push(mesh.indices[i] + vertexOffset);
+    }
+    vertexOffset += vCount;
+  }
+
+  const totalVerts = allVerts.length / 3;
+
+  // Spatial hash for fast neighbor lookup
+  const cellSize = threshold * 10; // cell slightly larger than threshold
+  const grid = new Map();
+
+  function cellKey(x, y, z) {
+    const cx = Math.floor(x / cellSize);
+    const cy = Math.floor(y / cellSize);
+    const cz = Math.floor(z / cellSize);
+    return `${cx},${cy},${cz}`;
+  }
+
+  // remap[i] = the canonical vertex index that vertex i maps to
+  const remap = new Int32Array(totalVerts);
+  const finalVerts = []; // welded vertex positions
+  let finalCount = 0;
+  const threshSq = threshold * threshold;
+
+  for (let i = 0; i < totalVerts; i++) {
+    const x = allVerts[i * 3];
+    const y = allVerts[i * 3 + 1];
+    const z = allVerts[i * 3 + 2];
+
+    // Check neighboring cells for existing vertex within threshold
+    const cx = Math.floor(x / cellSize);
+    const cy = Math.floor(y / cellSize);
+    const cz = Math.floor(z / cellSize);
+
+    let merged = -1;
+
+    outer:
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const key = `${cx + dx},${cy + dy},${cz + dz}`;
+          const cell = grid.get(key);
+          if (!cell) continue;
+
+          for (const candidate of cell) {
+            const fx = finalVerts[candidate * 3] - x;
+            const fy = finalVerts[candidate * 3 + 1] - y;
+            const fz = finalVerts[candidate * 3 + 2] - z;
+            if (fx * fx + fy * fy + fz * fz <= threshSq) {
+              merged = candidate;
+              break outer;
+            }
+          }
+        }
+      }
+    }
+
+    if (merged >= 0) {
+      // Weld to existing vertex
+      remap[i] = merged;
+    } else {
+      // New unique vertex
+      const vi = finalCount++;
+      remap[i] = vi;
+      finalVerts.push(x, y, z);
+
+      const key = cellKey(x, y, z);
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key).push(vi);
+    }
+  }
+
+  // Remap indices
+  const finalIndices = [];
+  for (let i = 0; i < allIndices.length; i += 3) {
+    const a = remap[allIndices[i]];
+    const b = remap[allIndices[i + 1]];
+    const c = remap[allIndices[i + 2]];
+    // Skip degenerate triangles (collapsed by welding)
+    if (a !== b && b !== c && a !== c) {
+      finalIndices.push(a, b, c);
+    }
+  }
+
+  return {
+    vertices: new Float32Array(finalVerts),
+    indices: new Uint32Array(finalIndices),
+    originalVertCount: totalVerts,
+    weldedVertCount: finalCount,
+    partsCount: meshes.length
+  };
+}
+
+// ─────────────────────────────────────────────
+// Marching Cubes
+// ─────────────────────────────────────────────
+
+// Edge table and tri table for marching cubes (standard lookup tables)
+const EDGE_TABLE = [
+  0x0,0x109,0x203,0x30a,0x406,0x50f,0x605,0x70c,0x80c,0x905,0xa0f,0xb06,0xc0a,0xd03,0xe09,0xf00,
+  0x190,0x99,0x393,0x29a,0x596,0x49f,0x795,0x69c,0x99c,0x895,0xb9f,0xa96,0xd9a,0xc93,0xf99,0xe90,
+  0x230,0x339,0x33,0x13a,0x636,0x73f,0x435,0x53c,0xa3c,0xb35,0x83f,0x936,0xe3a,0xf33,0xc39,0xd30,
+  0x3a0,0x2a9,0x1a3,0xaa,0x7a6,0x6af,0x5a5,0x4ac,0xbac,0xaa5,0x9af,0x8a6,0xfaa,0xea3,0xda9,0xca0,
+  0x460,0x569,0x663,0x76a,0x66,0x16f,0x265,0x36c,0xc6c,0xd65,0xe6f,0xf66,0x86a,0x963,0xa69,0xb60,
+  0x5f0,0x4f9,0x7f3,0x6fa,0x1f6,0xff,0x3f5,0x2fc,0xdfc,0xcf5,0xfff,0xef6,0x9fa,0x8f3,0xbf9,0xaf0,
+  0x650,0x759,0x453,0x55a,0x256,0x35f,0x55,0x15c,0xe5c,0xf55,0xc5f,0xd56,0xa5a,0xb53,0x859,0x950,
+  0x7c0,0x6c9,0x5c3,0x4ca,0x3c6,0x2cf,0x1c5,0xcc,0xfcc,0xec5,0xdcf,0xcc6,0xbca,0xac3,0x9c9,0x8c0,
+  0x8c0,0x9c9,0xac3,0xbca,0xcc6,0xdcf,0xec5,0xfcc,0xcc,0x1c5,0x2cf,0x3c6,0x4ca,0x5c3,0x6c9,0x7c0,
+  0x950,0x859,0xb53,0xa5a,0xd56,0xc5f,0xf55,0xe5c,0x15c,0x55,0x35f,0x256,0x55a,0x453,0x759,0x650,
+  0xaf0,0xbf9,0x8f3,0x9fa,0xef6,0xfff,0xcf5,0xdfc,0x2fc,0x3f5,0xff,0x1f6,0x6fa,0x7f3,0x4f9,0x5f0,
+  0xb60,0xa69,0x963,0x86a,0xf66,0xe6f,0xd65,0xc6c,0x36c,0x265,0x16f,0x66,0x76a,0x663,0x569,0x460,
+  0xca0,0xda9,0xea3,0xfaa,0x8a6,0x9af,0xaa5,0xbac,0x4ac,0x5a5,0x6af,0x7a6,0xaa,0x1a3,0x2a9,0x3a0,
+  0xd30,0xc39,0xf33,0xe3a,0x936,0x83f,0xb35,0xa3c,0x53c,0x435,0x73f,0x636,0x13a,0x33,0x339,0x230,
+  0xe90,0xf99,0xc93,0xd9a,0xa96,0xb9f,0x895,0x99c,0x69c,0x795,0x49f,0x596,0x29a,0x393,0x99,0x190,
+  0xf00,0xe09,0xd03,0xc0a,0xb06,0xa0f,0x905,0x80c,0x70c,0x605,0x50f,0x406,0x30a,0x203,0x109,0x0
+];
+
+const TRI_TABLE = [
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],
+  [-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1]
+];
+
+// Full marching cubes tri table
+(function initTriTable() {
+  const t = [
+    [],
+    [0,8,3],
+    [0,1,9],
+    [1,8,3,9,8,1],
+    [1,2,10],
+    [0,8,3,1,2,10],
+    [9,2,10,0,2,9],
+    [2,8,3,2,10,8,10,9,8],
+    [3,11,2],
+    [0,11,2,8,11,0],
+    [1,9,0,2,3,11],
+    [1,11,2,1,9,11,9,8,11],
+    [3,10,1,11,10,3],
+    [0,10,1,0,8,10,8,11,10],
+    [3,9,0,3,11,9,11,10,9],
+    [9,8,10,10,8,11],
+    [4,7,8],
+    [4,3,0,7,3,4],
+    [0,1,9,8,4,7],
+    [4,1,9,4,7,1,7,3,1],
+    [1,2,10,8,4,7],
+    [3,4,7,3,0,4,1,2,10],
+    [9,2,10,9,0,2,8,4,7],
+    [2,10,9,2,9,7,2,7,3,7,9,4],
+    [8,4,7,3,11,2],
+    [11,4,7,11,2,4,2,0,4],
+    [9,0,1,8,4,7,2,3,11],
+    [4,7,11,9,4,11,9,11,2,9,2,1],
+    [3,10,1,3,11,10,7,8,4],
+    [1,11,10,1,4,11,1,0,4,7,11,4],
+    [4,7,8,9,0,11,9,11,10,11,0,3],
+    [4,7,11,4,11,9,9,11,10],
+    [9,5,4],
+    [9,5,4,0,8,3],
+    [0,5,4,1,5,0],
+    [8,5,4,8,3,5,3,1,5],
+    [1,2,10,9,5,4],
+    [3,0,8,1,2,10,4,9,5],
+    [5,2,10,5,4,2,4,0,2],
+    [2,10,5,3,2,5,3,5,4,3,4,8],
+    [9,5,4,2,3,11],
+    [0,11,2,0,8,11,4,9,5],
+    [0,5,4,0,1,5,2,3,11],
+    [2,1,5,2,5,8,2,8,11,4,8,5],
+    [10,3,11,10,1,3,9,5,4],
+    [4,9,5,0,8,1,8,10,1,8,11,10],
+    [5,4,0,5,0,11,5,11,10,11,0,3],
+    [5,4,8,5,8,10,10,8,11],
+    [9,7,8,5,7,9],
+    [9,3,0,9,5,3,5,7,3],
+    [0,7,8,0,1,7,1,5,7],
+    [1,5,3,3,5,7],
+    [9,7,8,9,5,7,10,1,2],
+    [10,1,2,9,5,0,5,3,0,5,7,3],
+    [8,0,2,8,2,5,8,5,7,10,5,2],
+    [2,10,5,2,5,3,3,5,7],
+    [7,9,5,7,8,9,3,11,2],
+    [9,5,7,9,7,2,9,2,0,2,7,11],
+    [2,3,11,0,1,8,1,7,8,1,5,7],
+    [11,2,1,11,1,7,7,1,5],
+    [9,5,8,8,5,7,10,1,3,10,3,11],
+    [5,7,0,5,0,9,7,11,0,1,0,10,11,10,0],
+    [11,10,0,11,0,3,10,5,0,8,0,7,5,7,0],
+    [11,10,5,7,11,5],
+    [10,6,5],
+    [0,8,3,5,10,6],
+    [9,0,1,5,10,6],
+    [1,8,3,1,9,8,5,10,6],
+    [1,6,5,2,6,1],
+    [1,6,5,1,2,6,3,0,8],
+    [9,6,5,9,0,6,0,2,6],
+    [5,9,8,5,8,2,5,2,6,3,2,8],
+    [2,3,11,10,6,5],
+    [11,0,8,11,2,0,10,6,5],
+    [0,1,9,2,3,11,5,10,6],
+    [5,10,6,1,9,2,9,11,2,9,8,11],
+    [6,3,11,6,5,3,5,1,3],
+    [0,8,11,0,11,5,0,5,1,5,11,6],
+    [3,11,6,0,3,6,0,6,5,0,5,9],
+    [6,5,9,6,9,11,11,9,8],
+    [5,10,6,4,7,8],
+    [4,3,0,4,7,3,6,5,10],
+    [1,9,0,5,10,6,8,4,7],
+    [10,6,5,1,9,7,1,7,3,7,9,4],
+    [6,1,2,6,5,1,4,7,8],
+    [1,2,5,5,2,6,3,0,4,3,4,7],
+    [8,4,7,9,0,5,0,6,5,0,2,6],
+    [7,3,9,7,9,4,3,2,9,5,9,6,2,6,9],
+    [3,11,2,7,8,4,10,6,5],
+    [5,10,6,4,7,2,4,2,0,2,7,11],
+    [0,1,9,4,7,8,2,3,11,5,10,6],
+    [9,2,1,9,11,2,9,4,11,7,11,4,5,10,6],
+    [8,4,7,3,11,5,3,5,1,5,11,6],
+    [5,1,11,5,11,6,1,0,11,7,11,4,0,4,11],
+    [0,5,9,0,6,5,0,3,6,11,6,3,8,4,7],
+    [6,5,9,6,9,11,4,7,9,7,11,9],
+    [10,4,9,6,4,10],
+    [4,10,6,4,9,10,0,8,3],
+    [10,0,1,10,6,0,6,4,0],
+    [8,3,1,8,1,6,8,6,4,6,1,10],
+    [1,4,9,1,2,4,2,6,4],
+    [3,0,8,1,2,9,2,4,9,2,6,4],
+    [0,2,4,4,2,6],
+    [8,3,2,8,2,4,4,2,6],
+    [10,4,9,10,6,4,11,2,3],
+    [0,8,2,2,8,11,4,9,10,4,10,6],
+    [3,11,2,0,1,6,0,6,4,6,1,10],
+    [6,4,1,6,1,10,4,8,1,2,1,11,8,11,1],
+    [9,6,4,9,3,6,9,1,3,11,6,3],
+    [8,11,1,8,1,0,11,6,1,9,1,4,6,4,1],
+    [3,11,6,3,6,0,0,6,4],
+    [6,4,8,11,6,8],
+    [7,10,6,7,8,10,8,9,10],
+    [0,7,3,0,10,7,0,9,10,6,7,10],
+    [10,6,7,1,10,7,1,7,8,1,8,0],
+    [10,6,7,10,7,1,1,7,3],
+    [1,2,6,1,6,8,1,8,9,8,6,7],
+    [2,6,9,2,9,1,6,7,9,0,9,3,7,3,9],
+    [7,8,0,7,0,6,6,0,2],
+    [7,3,2,6,7,2],
+    [2,3,11,10,6,8,10,8,9,8,6,7],
+    [2,0,7,2,7,11,0,9,7,6,7,10,9,10,7],
+    [1,8,0,1,7,8,1,10,7,6,7,10,2,3,11],
+    [11,2,1,11,1,7,10,6,1,6,7,1],
+    [8,9,6,8,6,7,9,1,6,11,6,3,1,3,6],
+    [0,9,1,11,6,7],
+    [7,8,0,7,0,6,3,11,0,11,6,0],
+    [7,11,6],
+    [7,6,11],
+    [3,0,8,11,7,6],
+    [0,1,9,11,7,6],
+    [8,1,9,8,3,1,11,7,6],
+    [10,1,2,6,11,7],
+    [1,2,10,3,0,8,6,11,7],
+    [2,9,0,2,10,9,6,11,7],
+    [6,11,7,2,10,3,10,8,3,10,9,8],
+    [7,2,3,6,2,7],
+    [7,0,8,7,6,0,6,2,0],
+    [2,7,6,2,3,7,0,1,9],
+    [1,6,2,1,8,6,1,9,8,8,7,6],
+    [10,7,6,10,1,7,1,3,7],
+    [10,7,6,1,7,10,1,8,7,1,0,8],
+    [0,3,7,0,7,10,0,10,9,6,10,7],
+    [7,6,10,7,10,8,8,10,9],
+    [6,8,4,11,8,6],
+    [3,6,11,3,0,6,0,4,6],
+    [8,6,11,8,4,6,9,0,1],
+    [9,4,6,9,6,3,9,3,1,11,3,6],
+    [6,8,4,6,11,8,2,10,1],
+    [1,2,10,3,0,11,0,6,11,0,4,6],
+    [4,11,8,4,6,11,0,2,9,2,10,9],
+    [10,9,3,10,3,2,9,4,3,11,3,6,4,6,3],
+    [8,2,3,8,4,2,4,6,2],
+    [0,4,2,4,6,2],
+    [1,9,0,2,3,4,2,4,6,4,3,8],
+    [1,9,4,1,4,2,2,4,6],
+    [8,1,3,8,6,1,8,4,6,6,10,1],
+    [10,1,0,10,0,6,6,0,4],
+    [4,6,3,4,3,8,6,10,3,0,3,9,10,9,3],
+    [10,9,4,6,10,4],
+    [4,9,5,7,6,11],
+    [0,8,3,4,9,5,11,7,6],
+    [5,0,1,5,4,0,7,6,11],
+    [11,7,6,8,3,4,3,5,4,3,1,5],
+    [9,5,4,10,1,2,7,6,11],
+    [6,11,7,1,2,10,0,8,3,4,9,5],
+    [7,6,11,5,4,10,4,2,10,4,0,2],
+    [3,4,8,3,5,4,3,2,5,10,5,2,11,7,6],
+    [7,2,3,7,6,2,5,4,9],
+    [9,5,4,0,8,6,0,6,2,6,8,7],
+    [3,6,2,3,7,6,1,5,0,5,4,0],
+    [6,2,8,6,8,7,2,1,8,4,8,5,1,5,8],
+    [9,5,4,10,1,6,1,7,6,1,3,7],
+    [1,6,10,1,7,6,1,0,7,8,7,0,9,5,4],
+    [4,0,10,4,10,5,0,3,10,6,10,7,3,7,10],
+    [7,6,10,7,10,8,5,4,10,4,8,10],
+    [6,9,5,6,11,9,11,8,9],
+    [3,6,11,0,6,3,0,5,6,0,9,5],
+    [0,11,8,0,5,11,0,1,5,5,6,11],
+    [6,11,3,6,3,5,5,3,1],
+    [1,2,10,9,5,11,9,11,8,11,5,6],
+    [0,11,3,0,6,11,0,9,6,5,6,9,1,2,10],
+    [11,8,5,11,5,6,8,0,5,10,5,2,0,2,5],
+    [6,11,3,6,3,5,2,10,3,10,5,3],
+    [5,8,9,5,2,8,5,6,2,3,8,2],
+    [9,5,6,9,6,0,0,6,2],
+    [1,5,8,1,8,0,5,6,8,3,8,2,6,2,8],
+    [1,5,6,2,1,6],
+    [1,3,6,1,6,10,3,8,6,5,6,9,8,9,6],
+    [10,1,0,10,0,6,9,5,0,5,6,0],
+    [0,3,8,5,6,10],
+    [10,5,6],
+    [11,5,10,7,5,11],
+    [11,5,10,11,7,5,8,3,0],
+    [5,11,7,5,10,11,1,9,0],
+    [10,7,5,10,11,7,9,8,1,8,3,1],
+    [11,1,2,11,7,1,7,5,1],
+    [0,8,3,1,2,7,1,7,5,7,2,11],
+    [9,7,5,9,2,7,9,0,2,2,11,7],
+    [7,5,2,7,2,11,5,9,2,3,2,8,9,8,2],
+    [2,5,10,2,3,5,3,7,5],
+    [8,2,0,8,5,2,8,7,5,10,2,5],
+    [9,0,1,5,10,3,5,3,7,3,10,2],
+    [9,8,2,9,2,1,8,7,2,10,2,5,7,5,2],
+    [1,3,5,3,7,5],
+    [0,8,7,0,7,1,1,7,5],
+    [9,0,3,9,3,5,5,3,7],
+    [9,8,7,5,9,7],
+    [5,8,4,5,10,8,10,11,8],
+    [5,0,4,5,11,0,5,10,11,11,3,0],
+    [0,1,9,8,4,10,8,10,11,10,4,5],
+    [10,11,4,10,4,5,11,3,4,9,4,1,3,1,4],
+    [2,5,1,2,8,5,2,11,8,4,5,8],
+    [0,4,11,0,11,3,4,5,11,2,11,1,5,1,11],
+    [0,2,5,0,5,9,2,11,5,4,5,8,11,8,5],
+    [9,4,5,2,11,3],
+    [2,5,10,3,5,2,3,4,5,3,8,4],
+    [5,10,2,5,2,4,4,2,0],
+    [3,10,2,3,5,10,3,8,5,4,5,8,0,1,9],
+    [5,10,2,5,2,4,1,9,2,9,4,2],
+    [8,4,5,8,5,3,3,5,1],
+    [0,4,5,1,0,5],
+    [8,4,5,8,5,3,9,0,5,0,3,5],
+    [9,4,5],
+    [4,11,7,4,9,11,9,10,11],
+    [0,8,3,4,9,7,9,11,7,9,10,11],
+    [1,10,11,1,11,4,1,4,0,7,4,11],
+    [3,1,4,3,4,8,1,10,4,7,4,11,10,11,4],
+    [4,11,7,9,11,4,9,2,11,9,1,2],
+    [9,7,4,9,11,7,9,1,11,2,11,1,0,8,3],
+    [11,7,4,11,4,2,2,4,0],
+    [11,7,4,11,4,2,8,3,4,3,2,4],
+    [2,9,10,2,7,9,2,3,7,7,4,9],
+    [9,10,7,9,7,4,10,2,7,8,7,0,2,0,7],
+    [3,7,10,3,10,2,7,4,10,1,10,0,4,0,10],
+    [1,10,2,8,7,4],
+    [4,9,1,4,1,7,7,1,3],
+    [4,9,1,4,1,7,0,8,1,8,7,1],
+    [4,0,3,7,4,3],
+    [4,8,7],
+    [9,10,8,10,11,8],
+    [3,0,9,3,9,11,11,9,10],
+    [0,1,10,0,10,8,8,10,11],
+    [3,1,10,11,3,10],
+    [1,2,11,1,11,9,9,11,8],
+    [3,0,9,3,9,11,1,2,9,2,11,9],
+    [0,2,11,8,0,11],
+    [3,2,11],
+    [2,3,8,2,8,10,10,8,9],
+    [9,10,2,0,9,2],
+    [2,3,8,2,8,10,0,1,8,1,10,8],
+    [1,10,2],
+    [1,3,8,9,1,8],
+    [0,9,1],
+    [0,3,8],
+    []
+  ];
+  for (let i = 0; i < 256; i++) TRI_TABLE[i] = t[i];
+})();
+
+function marchingCubes(sdfFn, resolution, bounds) {
+  const [minB, maxB] = bounds;
+  const step = (maxB[0] - minB[0]) / resolution;
+  const vertices = [];
+  const indices = [];
+
+  // Sample the field
+  const size = resolution + 1;
+  const field = new Float32Array(size * size * size);
+
+  for (let z = 0; z < size; z++) {
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const px = minB[0] + x * step;
+        const py = minB[1] + y * step;
+        const pz = minB[2] + z * step;
+        field[x + y * size + z * size * size] = sdfFn(px, py, pz);
+      }
+    }
+  }
+
+  const idx = (x, y, z) => x + y * size + z * size * size;
+
+  function interp(x1, y1, z1, v1, x2, y2, z2, v2) {
+    if (Math.abs(v1) < 1e-6) return [x1, y1, z1];
+    if (Math.abs(v2) < 1e-6) return [x2, y2, z2];
+    if (Math.abs(v1 - v2) < 1e-6) return [x1, y1, z1];
+    const t = -v1 / (v2 - v1);
+    return [
+      x1 + t * (x2 - x1),
+      y1 + t * (y2 - y1),
+      z1 + t * (z2 - z1)
+    ];
+  }
+
+  const vertCache = new Map();
+
+  function getVertex(x1, y1, z1, v1, x2, y2, z2, v2, edgeKey) {
+    const cached = vertCache.get(edgeKey);
+    if (cached !== undefined) return cached;
+    const p = interp(x1, y1, z1, v1, x2, y2, z2, v2);
+    const vi = vertices.length / 3;
+    vertices.push(p[0], p[1], p[2]);
+    vertCache.set(edgeKey, vi);
+    return vi;
+  }
+
+  for (let z = 0; z < resolution; z++) {
+    for (let y = 0; y < resolution; y++) {
+      for (let x = 0; x < resolution; x++) {
+        const px = minB[0] + x * step;
+        const py = minB[1] + y * step;
+        const pz = minB[2] + z * step;
+
+        const v = [
+          field[idx(x, y, z)],
+          field[idx(x + 1, y, z)],
+          field[idx(x + 1, y, z + 1)],
+          field[idx(x, y, z + 1)],
+          field[idx(x, y + 1, z)],
+          field[idx(x + 1, y + 1, z)],
+          field[idx(x + 1, y + 1, z + 1)],
+          field[idx(x, y + 1, z + 1)]
+        ];
+
+        let cubeIndex = 0;
+        for (let i = 0; i < 8; i++) {
+          if (v[i] < 0) cubeIndex |= (1 << i);
+        }
+
+        if (EDGE_TABLE[cubeIndex] === 0) continue;
+
+        const corners = [
+          [px, py, pz],
+          [px + step, py, pz],
+          [px + step, py, pz + step],
+          [px, py, pz + step],
+          [px, py + step, pz],
+          [px + step, py + step, pz],
+          [px + step, py + step, pz + step],
+          [px, py + step, pz + step]
+        ];
+
+        const edgeVerts = new Array(12);
+        const edgePairs = [
+          [0,1],[1,2],[2,3],[3,0],
+          [4,5],[5,6],[6,7],[7,4],
+          [0,4],[1,5],[2,6],[3,7]
+        ];
+
+        // Edge keys for deduplication
+        const cornerKeys = [
+          x+y*size+z*size*size,
+          (x+1)+y*size+z*size*size,
+          (x+1)+y*size+(z+1)*size*size,
+          x+y*size+(z+1)*size*size,
+          x+(y+1)*size+z*size*size,
+          (x+1)+(y+1)*size+z*size*size,
+          (x+1)+(y+1)*size+(z+1)*size*size,
+          x+(y+1)*size+(z+1)*size*size
+        ];
+
+        for (let i = 0; i < 12; i++) {
+          if (EDGE_TABLE[cubeIndex] & (1 << i)) {
+            const [a, b] = edgePairs[i];
+            const ka = cornerKeys[a], kb = cornerKeys[b];
+            const edgeKey = ka < kb ? ka * size * size * size + kb : kb * size * size * size + ka;
+            edgeVerts[i] = getVertex(
+              corners[a][0], corners[a][1], corners[a][2], v[a],
+              corners[b][0], corners[b][1], corners[b][2], v[b],
+              edgeKey
+            );
+          }
+        }
+
+        const tri = TRI_TABLE[cubeIndex];
+        for (let i = 0; i < tri.length; i += 3) {
+          indices.push(edgeVerts[tri[i]], edgeVerts[tri[i + 1]], edgeVerts[tri[i + 2]]);
+        }
+      }
+    }
+  }
+
+  return { vertices: new Float32Array(vertices), indices: new Uint32Array(indices) };
+}
+
+// ─────────────────────────────────────────────
+// Compute bounds from operations
+// ─────────────────────────────────────────────
+function computeBounds(operations) {
+  if (operations.length === 0) return [[-1, -1, -1], [1, 1, 1]];
+
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+
+  for (const op of operations) {
+    if (op.bool === 'subtract') continue;
+    const c = op.center;
+    let r = 0;
+
+    switch (op.type) {
+      case 'sphere': r = op.radius; break;
+      case 'box': r = Math.max(op.size[0], op.size[1], op.size[2]); break;
+      case 'cylinder': r = Math.max(op.radius, op.height / 2); break;
+      case 'torus': r = op.R + op.r; break;
+    }
+
+    r *= 1.2; // padding
+    minX = Math.min(minX, c[0] - r);
+    minY = Math.min(minY, c[1] - r);
+    minZ = Math.min(minZ, c[2] - r);
+    maxX = Math.max(maxX, c[0] + r);
+    maxY = Math.max(maxY, c[1] + r);
+    maxZ = Math.max(maxZ, c[2] + r);
+  }
+
+  // Make cubic
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+  const half = Math.max(maxX - minX, maxY - minY, maxZ - minZ) / 2 + 0.1;
+  return [[cx - half, cy - half, cz - half], [cx + half, cy + half, cz + half]];
+}
+
+// ─────────────────────────────────────────────
+// Export OBJ
+// ─────────────────────────────────────────────
+// Try to merge two triangles sharing an edge into a quad
+function tryMergeQuad(tri1, tri2) {
+  const shared = [];
+  const unique1 = [];
+  const unique2 = [];
+
+  for (const v of tri1) {
+    if (tri2.includes(v)) shared.push(v);
+    else unique1.push(v);
+  }
+  for (const v of tri2) {
+    if (!tri1.includes(v)) unique2.push(v);
+  }
+
+  // Need exactly 2 shared verts (1 shared edge) + 1 unique each
+  if (shared.length !== 2 || unique1.length !== 1 || unique2.length !== 1) {
+    return null;
+  }
+
+  // Build quad with correct winding order
+  const u1 = unique1[0], u2 = unique2[0];
+  const s0 = shared[0], s1 = shared[1];
+
+  // Follow tri1's winding: find which shared vert comes after u1
+  const i1 = tri1.indexOf(u1);
+  const next = tri1[(i1 + 1) % 3];
+
+  if (next === s0) {
+    return [u1, s0, u2, s1]; // u1 → s0 → u2 → s1
+  } else {
+    return [u1, s1, u2, s0]; // u1 → s1 → u2 → s0
+  }
+}
+
+function exportOBJ(geometry) {
+  const pos = geometry.attributes.position;
+  const idx = geometry.index;
+  let obj = '# SDF Sculptor Export\n';
+  let quadCount = 0, triCount = 0;
+
+  for (let i = 0; i < pos.count; i++) {
+    obj += `v ${pos.getX(i).toFixed(6)} ${pos.getY(i).toFixed(6)} ${pos.getZ(i).toFixed(6)}\n`;
+  }
+
+  if (geometry.attributes.normal) {
+    const norm = geometry.attributes.normal;
+    for (let i = 0; i < norm.count; i++) {
+      obj += `vn ${norm.getX(i).toFixed(6)} ${norm.getY(i).toFixed(6)} ${norm.getZ(i).toFixed(6)}\n`;
+    }
+  }
+
+  if (idx) {
+    let i = 0;
+    while (i < idx.count) {
+      if (i + 5 < idx.count) {
+        // Try merging consecutive triangle pair into a quad
+        const t1 = [idx.getX(i), idx.getX(i+1), idx.getX(i+2)];
+        const t2 = [idx.getX(i+3), idx.getX(i+4), idx.getX(i+5)];
+        const quad = tryMergeQuad(t1, t2);
+
+        if (quad) {
+          const [a, b, c, d] = quad;
+          obj += `f ${a+1}//${a+1} ${b+1}//${b+1} ${c+1}//${c+1} ${d+1}//${d+1}\n`;
+          quadCount++;
+          i += 6;
+          continue;
+        }
+      }
+      // Standalone triangle (pole cap, transition strip, or unmergeable)
+      const a = idx.getX(i)+1, b = idx.getX(i+1)+1, c = idx.getX(i+2)+1;
+      obj += `f ${a}//${a} ${b}//${b} ${c}//${c}\n`;
+      triCount++;
+      i += 3;
+    }
+  }
+
+  obj += `# ${quadCount} quads, ${triCount} triangles\n`;
+  return obj;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────
+// Three.js Setup
+// ─────────────────────────────────────────────
+const container = document.getElementById('canvas-container');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setClearColor(0x0a0a0b);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+container.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.01, 100);
+camera.position.set(2.5, 2.2, 3);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 0.7, 0);
+controls.update();
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0x404050, 0.6);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xfff8f0, 1.8);
+dirLight.position.set(3, 5, 4);
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0x8090c0, 0.5);
+fillLight.position.set(-3, 2, -2);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xc4f042, 0.3);
+rimLight.position.set(0, -1, -4);
+scene.add(rimLight);
+
+// Grid
+const gridHelper = new THREE.GridHelper(4, 20, 0x1a1a1f, 0x1a1a1f);
+scene.add(gridHelper);
+
+const axesHelper = new THREE.AxesHelper(0.5);
+axesHelper.position.set(-2, 0.001, -2);
+scene.add(axesHelper);
+
+// Mesh holder
+let currentMesh = null;
+let wireframeMode = false;
+let normalMode = false;
+
+const meshMaterial = new THREE.MeshStandardMaterial({
+  color: 0xd8d4cc,
+  roughness: 0.55,
+  metalness: 0.05,
+  flatShading: true,
+  side: THREE.DoubleSide
+});
+
+const normalMaterial = new THREE.MeshNormalMaterial({
+  flatShading: true,
+  side: THREE.DoubleSide
+});
+
+const wireLineMaterial = new THREE.LineBasicMaterial({
+  color: 0xc4f042,
+  linewidth: 1
+});
+
+const wireSolidMaterial = new THREE.MeshBasicMaterial({
+  color: 0x0a0a0b,
+  side: THREE.DoubleSide
+});
+
+let currentWireframe = null; // LineSegments for quad-edge wireframe
+
+// ─────────────────────────────────────────────
+// Generate
+// ─────────────────────────────────────────────
+const editorEl = document.getElementById('editor');
+const resSlider = document.getElementById('resolution');
+const resVal = document.getElementById('res-val');
+const triCount = document.getElementById('tri-count');
+const vertCount = document.getElementById('vert-count');
+const genTime = document.getElementById('gen-time');
+const overlay = document.getElementById('gen-overlay');
+const errorBar = document.getElementById('error-bar');
+
+function showError(msg) {
+  errorBar.textContent = msg;
+  errorBar.classList.add('visible');
+  setTimeout(() => errorBar.classList.remove('visible'), 4000);
+}
+
+function generate() {
+  const text = editorEl.value.trim();
+  if (!text) return;
+
+  let operations;
+  try {
+    operations = parseDSL(text);
+  } catch (e) {
+    showError(e.message);
+    return;
+  }
+
+  if (operations.length === 0) {
+    showError('No primitives defined');
+    return;
+  }
+
+  overlay.classList.add('active');
+  errorBar.classList.remove('visible');
+
+  // Use requestAnimationFrame so overlay renders before heavy computation
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const t0 = performance.now();
+      const res = parseInt(resSlider.value);
+
+      // ── Per-part mesh generation ──
+      // Parametric (quad-based) for standalone primitives,
+      // marching cubes fallback for boolean operations
+      const parts = groupIntoParts(operations);
+      const partMeshes = [];
+      let parametricCount = 0;
+      let marchingCount = 0;
+
+      for (const part of parts) {
+        let partResult;
+
+        if (canUseParametric(part)) {
+          // Clean quad topology for standalone primitives
+          partResult = generateParametricMesh(part[0], res);
+          if (partResult) parametricCount++;
+        }
+
+        if (!partResult) {
+          // Marching cubes for boolean combinations
+          const partBounds = computePartBounds(part);
+          const partSdf = (x, y, z) => evaluateSDF(x, y, z, part);
+          partResult = marchingCubes(partSdf, res, partBounds);
+          marchingCount++;
+        }
+
+        if (partResult && partResult.indices.length > 0) {
+          partMeshes.push(partResult);
+        }
+      }
+
+      // ── Vertex weld pass ──
+      // Merge vertices within 0.0001m at contact points between parts
+      const WELD_THRESHOLD = 0.0001;
+      const welded = weldMeshes(partMeshes, WELD_THRESHOLD);
+      const elapsed = performance.now() - t0;
+
+      // Remove old mesh + wireframe
+      if (currentMesh) {
+        scene.remove(currentMesh);
+        currentMesh.geometry.dispose();
+      }
+      if (currentWireframe) {
+        scene.remove(currentWireframe);
+        currentWireframe.geometry.dispose();
+        currentWireframe = null;
+      }
+
+      // Build geometry
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(welded.vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(welded.indices, 1));
+      geometry.computeVertexNormals();
+
+      // Build quad-edge wireframe (EdgesGeometry skips co-planar diagonals)
+      const edgesGeo = new THREE.EdgesGeometry(geometry, 1);
+      currentWireframe = new THREE.LineSegments(edgesGeo, wireLineMaterial);
+      currentWireframe.visible = wireframeMode;
+      scene.add(currentWireframe);
+
+      let mat = meshMaterial;
+      if (normalMode) mat = normalMaterial;
+      if (wireframeMode) mat = wireSolidMaterial;
+
+      currentMesh = new THREE.Mesh(geometry, mat);
+      scene.add(currentMesh);
+
+      // Update stats
+      document.getElementById('para-count').textContent = parametricCount;
+      document.getElementById('mc-count').textContent = marchingCount;
+      triCount.textContent = (welded.indices.length / 3).toLocaleString();
+      vertCount.textContent = welded.weldedVertCount.toLocaleString();
+      document.getElementById('weld-count').textContent =
+        (welded.originalVertCount - welded.weldedVertCount).toLocaleString();
+      genTime.textContent = `${elapsed.toFixed(0)}ms`;
+
+      overlay.classList.remove('active');
+    }, 30);
+  });
+}
+
+resSlider.addEventListener('input', () => {
+  resVal.textContent = resSlider.value;
+});
+
+document.getElementById('btn-generate').addEventListener('click', generate);
+
+// Keyboard shortcut
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    generate();
+  }
+});
+
+// Presets
+document.getElementById('presets').addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (PRESETS[val]) {
+    editorEl.value = PRESETS[val];
+    // Adjust camera per scene
+    if (val === 'castle') {
+      camera.position.set(4.5, 3.5, 5);
+      controls.target.set(0, 0.8, 0);
+    } else if (val === 'sofa') {
+      camera.position.set(2.2, 1.4, 2.5);
+      controls.target.set(0, 0.4, 0);
+    } else if (val === 'lighthouse') {
+      camera.position.set(3, 2.5, 3.5);
+      controls.target.set(0, 1.1, 0);
+    } else {
+      camera.position.set(2.5, 2.2, 3);
+      controls.target.set(0, 0.7, 0);
+    }
+    controls.update();
+    generate();
+  }
+});
+
+// Wireframe toggle — shows quad edges, hides diagonals
+document.getElementById('btn-wireframe').addEventListener('click', function () {
+  wireframeMode = !wireframeMode;
+  if (wireframeMode) normalMode = false;
+  this.classList.toggle('active', wireframeMode);
+  document.getElementById('btn-normals').classList.remove('active');
+  if (currentMesh) {
+    currentMesh.material = wireframeMode ? wireSolidMaterial : meshMaterial;
+  }
+  if (currentWireframe) {
+    currentWireframe.visible = wireframeMode;
+  }
+});
+
+// Normal toggle
+document.getElementById('btn-normals').addEventListener('click', function () {
+  normalMode = !normalMode;
+  if (normalMode) wireframeMode = false;
+  this.classList.toggle('active', normalMode);
+  document.getElementById('btn-wireframe').classList.remove('active');
+  if (currentMesh) {
+    currentMesh.material = normalMode ? normalMaterial : meshMaterial;
+  }
+  if (currentWireframe) {
+    currentWireframe.visible = false;
+  }
+});
+
+// Reference panel
+document.getElementById('btn-ref').addEventListener('click', function () {
+  const panel = document.getElementById('ref-panel');
+  panel.classList.toggle('visible');
+  this.classList.toggle('active', panel.classList.contains('visible'));
+});
+
+// OBJ export
+document.getElementById('btn-obj').addEventListener('click', () => {
+  if (!currentMesh) return;
+  const obj = exportOBJ(currentMesh.geometry);
+  downloadBlob(new Blob([obj], { type: 'text/plain' }), 'sdf-model.obj');
+});
+
+// GLB export
+document.getElementById('btn-glb').addEventListener('click', () => {
+  if (!currentMesh) return;
+  const exporter = new GLTFExporter();
+  exporter.parse(currentMesh, (glb) => {
+    downloadBlob(new Blob([glb], { type: 'application/octet-stream' }), 'sdf-model.glb');
+  }, (err) => showError(err.message), { binary: true });
+});
+
+// ── Toast helper ──
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('visible'), 2200);
+}
+
+// ── Capture canvas as blob ──
+function captureCanvasBlob() {
+  return new Promise(resolve => {
+    // Force a render so we get current frame
+    renderer.render(scene, camera);
+    renderer.domElement.toBlob(blob => resolve(blob), 'image/png');
+  });
+}
+
+// ── PNG download ──
+document.getElementById('btn-png').addEventListener('click', async () => {
+  if (!currentMesh) return;
+  const blob = await captureCanvasBlob();
+  downloadBlob(blob, 'sdf-model.png');
+  showToast('PNG downloaded');
+});
+
+// ── Copy: DSL code + render to clipboard ──
+document.getElementById('btn-copy').addEventListener('click', async () => {
+  if (!currentMesh) {
+    // Just copy text if no mesh
+    await navigator.clipboard.writeText(editorEl.value);
+    showToast('Code copied');
+    return;
+  }
+
+  const blob = await captureCanvasBlob();
+  const code = editorEl.value;
+
+  try {
+    // Try writing both text + image to clipboard
+    const clipItems = [
+      new ClipboardItem({
+        'text/plain': new Blob([code], { type: 'text/plain' }),
+        'image/png': blob
+      })
+    ];
+    await navigator.clipboard.write(clipItems);
+    showToast('Code + render copied to clipboard');
+  } catch (e) {
+    // Fallback: copy text, download image
+    try {
+      await navigator.clipboard.writeText(code);
+      downloadBlob(blob, 'sdf-model.png');
+      showToast('Code copied + PNG downloaded');
+    } catch (e2) {
+      showError('Clipboard access denied');
+    }
+  }
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+});
+
+// Render loop
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// Generate initial scene
+generate();
+
+</script>
+</body>
+</html>

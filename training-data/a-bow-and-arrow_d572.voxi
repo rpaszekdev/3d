@@ -1,0 +1,33 @@
+V 32 32 6
+
+-- bow grip
+B 13 13 2 4 6 2 a
+
+-- upper limb
+B 14 19 2 2 5 2 a
+B 13 23 2 3 3 2 a
+B 11 26 2 4 2 2 a
+
+-- lower limb
+B 14 7 2 2 6 2 a
+B 13 4 2 3 3 2 a
+B 11 2 2 4 2 2 a
+
+-- bowstring
+B 11 2 1 1 26 1 8
+
+-- arrow shaft
+B 2 15 2 25 1 1 6
+
+-- arrowhead
+B 27 14 2 3 3 1 1
+B 29 15 2 2 1 1 1
+
+-- fletching upper
+B 2 16 2 4 3 1 3
+
+-- fletching lower
+B 2 12 2 4 3 1 3
+
+-- nock
+B 2 15 2 2 1 2 e

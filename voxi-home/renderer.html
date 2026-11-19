@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXI-Home — 3D Room Visualizer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+    --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #6c8cff;
+  }
+  body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+  .header {
+    height: 44px; display: flex; align-items: center; gap: 12px;
+    padding: 0 16px; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .header h1 { font-size: 14px; font-weight: 600; }
+  .header .accent { color: var(--accent); }
+  .header .spacer { flex: 1; }
+  .header .info { font-size: 11px; color: var(--text-dim); }
+  .header select, .header button {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text); padding: 5px 12px; font-size: 12px; cursor: pointer;
+  }
+  .header select:hover, .header button:hover { border-color: var(--accent); }
+  .split { display: flex; height: calc(100vh - 44px); }
+  .editor-pane {
+    width: 380px; min-width: 280px; display: flex; flex-direction: column;
+    border-right: 1px solid var(--border); background: var(--surface);
+  }
+  .canvas-pane { flex: 1; position: relative; background: #13151f; }
+  .editor-wrap { flex: 1; position: relative; overflow: hidden; }
+  textarea {
+    width: 100%; height: 100%; background: transparent; color: var(--text); border: none; resize: none;
+    font-size: 12px; font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1.6; padding: 12px; outline: none; tab-size: 2; white-space: pre; overflow: auto;
+  }
+  .status-bar {
+    padding: 6px 12px; border-top: 1px solid var(--border); background: var(--surface2);
+    font-size: 11px; color: var(--text-dim); display: flex; gap: 16px;
+  }
+  .status-bar .error { color: #e74c3c; }
+  .status-bar .warn { color: #f39c12; }
+  .status-bar .ok { color: #2ecc71; }
+  .ref {
+    padding: 8px 12px; border-top: 1px solid var(--border); background: var(--surface2);
+    font-size: 10px; color: var(--text-dim); line-height: 1.6;
+  }
+  code { background: rgba(108,140,255,0.1); padding: 1px 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VOXI<span class="accent">-Home</span></h1>
+  <select id="examples">
+    <option value="">Examples...</option>
+    <option value="living-room">Living Room</option>
+    <option value="bedroom">Bedroom</option>
+    <option value="studio">Studio Apartment</option>
+  </select>
+  <button id="btn-top">Top View</button>
+  <button id="btn-front">Front View</button>
+  <button id="btn-reset">Reset Camera</button>
+  <div class="spacer"></div>
+  <div class="info" id="info">Loading...</div>
+</div>
+
+<div class="split">
+  <div class="editor-pane">
+    <div class="editor-wrap">
+      <textarea id="editor" spellcheck="false" placeholder="ROOM 5.0 4.0 2.7
+DOOR north @2.5 w:0.9
+WINDOW east @2.0 w:1.2 h:1.4
+
+SOFA 3seat @1.0 0.5 facing:east
+TABLE coffee @2.0 1.5
+TV 55 @3.7 2.0 wall:east"></textarea>
+    </div>
+    <div class="status-bar" id="status"></div>
+    <div class="ref">
+      <code>ROOM w d h</code> room (meters) · <code>DOOR wall @pos w:width</code> · <code>WINDOW wall @pos w:w h:h</code><br>
+      <code>TYPE variant @x z facing:dir</code> — sofa, table, chair, bed, tv, storage, desk, rug, lamp, nightstand
+    </div>
+  </div>
+  <div class="canvas-pane" id="canvas-pane"></div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// ── Catalog (inline, matches catalog.json) ──────────────────────────
+
+const CATALOG = {
+  sofa: {
+    '3seat':    { w: 2.28, d: 0.95, h: 0.83, asset: 'sofa-3seat.glb' },
+    '2seat':    { w: 1.90, d: 0.95, h: 0.83, asset: 'sofa-2seat.glb' },
+    'armchair': { w: 0.80, d: 0.80, h: 0.83, asset: 'sofa-armchair.glb' },
+  },
+  table: {
+    'coffee':   { w: 0.90, d: 0.55, h: 0.45, asset: 'table-coffee.glb' },
+    'dining-4': { w: 1.20, d: 0.75, h: 0.74, asset: 'table-dining-4.glb' },
+    'dining-6': { w: 1.80, d: 0.90, h: 0.74, asset: 'table-dining-6.glb' },
+    'side':     { w: 0.45, d: 0.45, h: 0.55, asset: 'table-side.glb' },
+  },
+  chair: {
+    'dining': { w: 0.45, d: 0.52, h: 0.80, asset: 'chair-dining.glb' },
+    'office': { w: 0.65, d: 0.65, h: 1.10, asset: 'chair-office.glb' },
+  },
+  bed: {
+    'single': { w: 0.90, d: 2.00, h: 0.45, asset: 'bed-single.glb' },
+    'double': { w: 1.40, d: 2.00, h: 0.45, asset: 'bed-double.glb' },
+    'king':   { w: 1.80, d: 2.00, h: 0.45, asset: 'bed-king.glb' },
+  },
+  tv: {
+    '43': { w: 0.97, d: 0.08, h: 0.57, asset: 'tv-43.glb' },
+    '55': { w: 1.24, d: 0.08, h: 0.72, asset: 'tv-55.glb' },
+  },
+  storage: {
+    'bookshelf': { w: 0.80, d: 0.30, h: 1.80, asset: 'storage-bookshelf.glb' },
+    'wardrobe':  { w: 1.20, d: 0.60, h: 2.00, asset: 'storage-wardrobe.glb' },
+  },
+  desk: {
+    'standard': { w: 1.20, d: 0.60, h: 0.75, asset: 'desk-standard.glb' },
+  },
+  rug: {
+    'small':  { w: 1.40, d: 0.80, h: 0.01, asset: 'rug-small.glb' },
+    'medium': { w: 2.00, d: 1.50, h: 0.01, asset: 'rug-medium.glb' },
+  },
+  lamp: {
+    'floor': { w: 0.30, d: 0.30, h: 1.60, asset: 'lamp-floor.glb' },
+  },
+  nightstand: {
+    'standard': { w: 0.45, d: 0.40, h: 0.55, asset: 'nightstand-standard.glb' },
+  },
+};
+
+// Measured bounding boxes from GLB files (GLTF Y-up, models face -Z)
+// x = width axis, y = height axis, z = depth axis (negative = forward)
+const MODEL_BOUNDS = {
+  'sofa-3seat.glb':         { min:[0,0,-0.41],      max:[0.98,0.46,0],     },
+  'sofa-2seat.glb':         { min:[0,0,-0.41],      max:[1.12,0.4,0],      },
+  'sofa-armchair.glb':      { min:[0,0,-0.41],      max:[0.49,0.46,0],     },
+  'table-coffee.glb':       { min:[-0.461,0,-0.3],  max:[0.2,0.23,0.1],    },
+  'table-dining-4.glb':     { min:[0,0,-0.447],     max:[0.841,0.327,0],   },
+  'table-dining-6.glb':     { min:[0,0,-1.065],     max:[2.029,0.827,0],   },
+  'table-side.glb':         { min:[-0.01,0,-0.21],  max:[0.524,0.384,0.01],},
+  'chair-dining.glb':       { min:[0,0,-0.2],       max:[0.2,0.47,0],      },
+  'chair-office.glb':       { min:[-0.167,0,-0.283],max:[0.311,0.418,0.16],},
+  'bed-single.glb':         { min:[-0.059,-0.13,-1.892], max:[1.565,0.375,0], },
+  'bed-double.glb':         { min:[-0.059,-0.13,-1.892], max:[1.565,0.375,0.02], },
+  'bed-king.glb':           { min:[-0.059,-0.13,-1.892], max:[1.565,0.375,0.02], },
+  'tv-55.glb':              { min:[-0.342,0,-0.064],max:[0.342,0.455,0.064],},
+  'tv-43.glb':              { min:[-0.342,0,-0.064],max:[0.342,0.455,0.064],},
+  'storage-bookshelf.glb':  { min:[0,0,-0.25],      max:[0.4,0.88,0],      },
+  'storage-wardrobe.glb':   { min:[-0.16,0,-0.25],  max:[0.4,0.85,0.02],   },
+  'desk-standard.glb':      { min:[-0.01,0,-0.38],  max:[0.724,0.384,0.176],},
+  'rug-small.glb':          { min:[0,0,-0.237],     max:[0.429,0.01,0],    },
+  'rug-medium.glb':         { min:[0,0,-0.92],      max:[1.57,0.01,0],     },
+  'lamp-floor.glb':         { min:[-0.016,0,-0.148],max:[0.136,0.86,0.028],},
+  'nightstand-standard.glb':{ min:[-0.01,0,-0.205], max:[0.256,0.263,0.176],},
+};
+
+// ── Example scenes ──────────────────────────────────────────────────
+
+const EXAMPLES = {
+  'living-room': `-- Living Room — 5m × 4m
+ROOM 5.0 4.0 2.7
+
+DOOR north @2.5 w:0.9
+WINDOW east @2.0 w:1.2 h:1.4
+
+SOFA 3seat @1.0 0.5 facing:east
+SOFA armchair @0.3 3.0 facing:south
+TABLE coffee @2.0 1.5
+TV 55 @3.7 2.0 wall:east
+RUG medium @1.2 0.8
+LAMP floor @0.2 0.2`,
+
+  'bedroom': `-- Master Bedroom — 4m × 3.5m
+ROOM 4.0 3.5 2.7
+
+DOOR west @1.5 w:0.9
+WINDOW south @2.0 w:1.4 h:1.4
+
+BED double @1.3 1.3 facing:south
+NIGHTSTAND standard @0.7 1.7
+NIGHTSTAND standard @2.8 1.7
+STORAGE wardrobe @2.7 0.1 facing:west
+DESK standard @1.3 0.1 facing:north
+LAMP floor @0.1 3.2`,
+
+  'studio': `-- Studio Apartment — 7m × 5m
+ROOM 7.0 5.0 2.7
+
+DOOR west @2.5 w:0.9
+WINDOW south @3.5 w:2.0 h:1.6
+WINDOW east @2.5 w:1.2 h:1.4
+
+SOFA 2seat @0.3 0.3 facing:north
+TABLE coffee @0.5 2.0
+TV 43 @0.1 3.8 wall:west
+BED single @5.6 3.0 facing:west
+TABLE dining-4 @3.0 0.8
+CHAIR dining @2.7 0.2 facing:north
+CHAIR dining @3.8 0.2 facing:north
+CHAIR dining @2.7 1.6 facing:south
+CHAIR dining @3.8 1.6 facing:south
+DESK standard @0.3 4.0 facing:south
+LAMP floor @5.0 4.5`,
+};
+
+// ── Three.js Setup ──────────────────────────────────────────────────
+
+const pane = document.getElementById('canvas-pane');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x13151f);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+pane.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(8, 6, 8);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+controls.target.set(2.5, 0, 2);
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.5));
+const dl = new THREE.DirectionalLight(0xffffff, 1.2);
+dl.position.set(8, 12, 6);
+dl.castShadow = true;
+dl.shadow.mapSize.set(2048, 2048);
+dl.shadow.camera.left = -10; dl.shadow.camera.right = 10;
+dl.shadow.camera.top = 10; dl.shadow.camera.bottom = -10;
+scene.add(dl);
+const fl = new THREE.DirectionalLight(0xffffff, 0.4);
+fl.position.set(-5, 8, -3);
+scene.add(fl);
+
+// GLTF loader
+const gltfLoader = new GLTFLoader();
+const modelCache = new Map();
+
+async function loadModel(assetName) {
+  if (modelCache.has(assetName)) return modelCache.get(assetName).clone();
+  return new Promise((resolve, reject) => {
+    gltfLoader.load('assets/' + assetName, (gltf) => {
+      const model = gltf.scene;
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      modelCache.set(assetName, model);
+      resolve(model.clone());
+    }, undefined, reject);
+  });
+}
+
+// ── Parser (simplified, matches parser.js) ──────────────────────────
+
+function parseScene(code) {
+  const result = { room: null, doors: [], windows: [], items: [], errors: [] };
+  const lines = code.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i].trim();
+    if (!raw || raw.startsWith('--')) continue;
+    const tokens = raw.split(/\s+/);
+    const cmd = tokens[0].toUpperCase();
+
+    try {
+      if (cmd === 'ROOM') {
+        result.room = { w: parseFloat(tokens[1]), d: parseFloat(tokens[2]), h: parseFloat(tokens[3]) };
+      } else if (cmd === 'DOOR') {
+        const wall = tokens[1].toLowerCase();
+        const pos = parseFloat(tokens[2].replace('@', ''));
+        const wMatch = raw.match(/w:([\d.]+)/);
+        result.doors.push({ wall, pos, width: wMatch ? parseFloat(wMatch[1]) : 0.9 });
+      } else if (cmd === 'WINDOW') {
+        const wall = tokens[1].toLowerCase();
+        const pos = parseFloat(tokens[2].replace('@', ''));
+        const wMatch = raw.match(/w:([\d.]+)/);
+        const hMatch = raw.match(/h:([\d.]+)/);
+        result.windows.push({ wall, pos, width: wMatch ? parseFloat(wMatch[1]) : 1.2, height: hMatch ? parseFloat(hMatch[1]) : 1.4 });
+      } else {
+        const type = cmd.toLowerCase();
+        const catType = CATALOG[type];
+        if (!catType) { result.errors.push(`Line ${i+1}: unknown type "${type}"`); continue; }
+        const variant = tokens[1]?.toLowerCase();
+        const def = catType[variant];
+        if (!def) { result.errors.push(`Line ${i+1}: unknown variant "${variant}"`); continue; }
+
+        let x = 0, z = 0, facing = 'north', wallMount = null;
+        for (let j = 2; j < tokens.length; j++) {
+          const t = tokens[j];
+          if (t.startsWith('@')) { x = parseFloat(t.slice(1)); if (j+1 < tokens.length && !tokens[j+1].includes(':')) { z = parseFloat(tokens[++j]); } }
+          else if (t.startsWith('facing:')) facing = t.split(':')[1].toLowerCase();
+          else if (t.startsWith('wall:')) wallMount = t.split(':')[1].toLowerCase();
+        }
+
+        result.items.push({ type, variant, x, z, facing, wallMount, def });
+      }
+    } catch (e) {
+      result.errors.push(`Line ${i+1}: ${e.message}`);
+    }
+  }
+  return result;
+}
+
+// ── Scene Builder ───────────────────────────────────────────────────
+
+const roomGroup = new THREE.Group();
+scene.add(roomGroup);
+
+async function buildScene(parsed) {
+  // Clear
+  while (roomGroup.children.length) roomGroup.remove(roomGroup.children[0]);
+
+  if (!parsed.room) return;
+  const { w, d, h } = parsed.room;
+
+  // Floor
+  const floorGeo = new THREE.PlaneGeometry(w, d);
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0xddd5c8, roughness: 0.8 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(w / 2, 0, d / 2);
+  floor.receiveShadow = true;
+  roomGroup.add(floor);
+
+  // Walls
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xe8e4de, roughness: 0.9, side: THREE.DoubleSide });
+  const wallTransparent = new THREE.MeshStandardMaterial({ color: 0xe8e4de, roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+
+  // South wall (z=0)
+  addWall(0, 0, w, h, 0, parsed.doors, parsed.windows, 'south', wallMat);
+  // North wall (z=d) — make transparent so we can see in
+  addWall(0, d, w, h, Math.PI, parsed.doors, parsed.windows, 'north', wallTransparent);
+  // West wall (x=0)
+  addWall(0, 0, d, h, Math.PI / 2, parsed.doors, parsed.windows, 'west', wallTransparent);
+  // East wall (x=w)
+  addWall(w, 0, d, h, -Math.PI / 2, parsed.doors, parsed.windows, 'east', wallMat);
+
+  // Update camera target
+  controls.target.set(w / 2, 0.5, d / 2);
+  camera.position.set(w + 3, h + 2, d + 3);
+  controls.update();
+
+  // Load furniture models
+  const loadPromises = parsed.items.map(async (item) => {
+    try {
+      const model = await loadModel(item.def.asset);
+      const result = placeModel(model, item);
+      // placeModel adds to roomGroup via pivot, only add raw model if not handled
+      if (result !== 'handled') roomGroup.add(model);
+    } catch (e) {
+      addFallbackBox(item);
+    }
+  });
+
+  await Promise.all(loadPromises);
+  updateInfo(parsed);
+}
+
+/**
+ * Place a GLTF model correctly in the scene.
+ *
+ * Kenney models use GLTF convention: Y-up, models face -Z.
+ * Their origins vary (some at corner, some offset).
+ *
+ * Strategy:
+ *   1. Wrap model in a pivot group
+ *   2. Shift model inside pivot so its bottom-center sits at (0,0,0)
+ *   3. Scale pivot to match real-world dimensions
+ *   4. Rotate pivot for facing direction
+ *   5. Translate pivot to final room position
+ *
+ * VOXI-Home coords: x=west→east, z=south→north, y=up.
+ * "facing:north" means the front of the furniture points toward +z.
+ * Kenney models face -Z by default, so facing:north needs 180° rotation.
+ */
+function placeModel(model, item) {
+  const bounds = MODEL_BOUNDS[item.def.asset];
+  if (!bounds) { return; }
+
+  // Use pre-measured bounds (reliable, not affected by clone issues)
+  const bMin = bounds.min;
+  const bMax = bounds.max;
+  const bW = bMax[0] - bMin[0];
+  const bH = bMax[1] - bMin[1];
+  const bD = Math.abs(bMax[2] - bMin[2]);
+
+  // 1. Reset model transform and shift so bottom-center is at origin
+  model.position.set(0, 0, 0);
+  model.rotation.set(0, 0, 0);
+  model.scale.set(1, 1, 1);
+
+  // Offset: move model so its center-bottom sits at (0, 0, 0)
+  const offsetX = -(bMin[0] + bMax[0]) / 2;
+  const offsetY = -bMin[1];
+  const offsetZ = -(bMin[2] + bMax[2]) / 2;
+
+  // Apply offset to all children instead of model root
+  const wrapper = new THREE.Group();
+  model.position.set(offsetX, offsetY, offsetZ);
+  wrapper.add(model);
+
+  // 2. Scale — use width as primary, keep proportions
+  const scale = item.def.w / bW;
+  wrapper.scale.setScalar(scale);
+
+  // 3. Wrap in pivot for rotation
+  const pivot = new THREE.Group();
+  pivot.add(wrapper);
+
+  // 4. Rotation — Kenney models face -Z = south in our system
+  const facingAngles = {
+    south: 0,
+    north: Math.PI,
+    east: Math.PI / 2,
+    west: -Math.PI / 2,
+  };
+  pivot.rotation.y = facingAngles[item.facing] || 0;
+
+  // 5. Position at center of the item's footprint
+  const scaledW = bW * scale;
+  const scaledD = bD * scale;
+  const rotated = item.facing === 'east' || item.facing === 'west';
+  const footW = rotated ? scaledD : scaledW;
+  const footD = rotated ? scaledW : scaledD;
+
+  pivot.position.set(
+    item.x + footW / 2,
+    0,
+    item.z + footD / 2
+  );
+
+  roomGroup.add(pivot);
+  return 'handled';
+}
+
+function addFallbackBox(item) {
+  const rotated = item.facing === 'east' || item.facing === 'west';
+  const bw = rotated ? item.def.d : item.def.w;
+  const bd = rotated ? item.def.w : item.def.d;
+
+  const colors = { sofa: 0x8855aa, table: 0xc4a882, chair: 0xdd8844, bed: 0x7a5c44,
+    tv: 0x222222, storage: 0x996633, desk: 0xc4a882, rug: 0x884444,
+    lamp: 0xddcc44, nightstand: 0x996633 };
+
+  const geo = new THREE.BoxGeometry(bw, item.def.h, bd);
+  const mat = new THREE.MeshStandardMaterial({ color: colors[item.type] || 0x888888 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(item.x + bw / 2, item.def.h / 2, item.z + bd / 2);
+  mesh.castShadow = true;
+  roomGroup.add(mesh);
+}
+
+function addWall(ox, oz, length, height, rotY, doors, windows, wallName, mat) {
+  // Simple wall as a plane
+  const geo = new THREE.PlaneGeometry(length, height);
+  const wall = new THREE.Mesh(geo, mat);
+  wall.position.set(ox, height / 2, oz);
+  wall.rotation.y = rotY;
+
+  // Adjust position based on wall orientation
+  if (wallName === 'south') { wall.position.x = length / 2; }
+  else if (wallName === 'north') { wall.position.x = length / 2; }
+  else if (wallName === 'west') { wall.position.z = length / 2; }
+  else if (wallName === 'east') { wall.position.z = length / 2; }
+
+  roomGroup.add(wall);
+
+  // Add window indicators (cyan rectangles on wall)
+  for (const win of windows) {
+    if (win.wall !== wallName) continue;
+    const wGeo = new THREE.PlaneGeometry(win.width, win.height);
+    const wMat = new THREE.MeshStandardMaterial({ color: 0x88ddff, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+    const wMesh = new THREE.Mesh(wGeo, wMat);
+    wMesh.position.copy(wall.position);
+    wMesh.rotation.y = rotY;
+
+    const sillHeight = 0.9;
+    wMesh.position.y = sillHeight + win.height / 2;
+
+    // Offset along wall
+    if (wallName === 'south' || wallName === 'north') {
+      wMesh.position.x = win.pos;
+    } else {
+      wMesh.position.z = win.pos;
+    }
+    // Push slightly out from wall
+    const offset = 0.02;
+    if (wallName === 'south') wMesh.position.z -= offset;
+    else if (wallName === 'north') wMesh.position.z += offset;
+    else if (wallName === 'west') wMesh.position.x -= offset;
+    else if (wallName === 'east') wMesh.position.x += offset;
+
+    roomGroup.add(wMesh);
+  }
+}
+
+function updateInfo(parsed) {
+  const r = parsed.room;
+  document.getElementById('info').textContent =
+    `${r.w}m × ${r.d}m · ${parsed.items.length} items · ${(r.w * r.d).toFixed(0)} m²`;
+
+  const status = document.getElementById('status');
+  if (parsed.errors.length) {
+    status.innerHTML = parsed.errors.map(e => `<span class="error">${e}</span>`).join(' · ');
+  } else {
+    status.innerHTML = `<span class="ok">Valid layout</span> · ${parsed.items.length} furniture items`;
+  }
+}
+
+// ── Controls ────────────────────────────────────────────────────────
+
+document.getElementById('btn-top').onclick = () => {
+  const r = parseScene(editor.value).room;
+  if (!r) return;
+  camera.position.set(r.w / 2, Math.max(r.w, r.d) * 1.2, r.d / 2);
+  controls.target.set(r.w / 2, 0, r.d / 2);
+  controls.update();
+};
+
+document.getElementById('btn-front').onclick = () => {
+  const r = parseScene(editor.value).room;
+  if (!r) return;
+  camera.position.set(r.w / 2, r.h / 2, -2);
+  controls.target.set(r.w / 2, r.h / 3, r.d / 2);
+  controls.update();
+};
+
+document.getElementById('btn-reset').onclick = () => {
+  const r = parseScene(editor.value).room;
+  if (!r) return;
+  camera.position.set(r.w + 3, r.h + 2, r.d + 3);
+  controls.target.set(r.w / 2, 0.5, r.d / 2);
+  controls.update();
+};
+
+// ── Editor ──────────────────────────────────────────────────────────
+
+const editor = document.getElementById('editor');
+let debounce;
+
+editor.addEventListener('input', () => {
+  clearTimeout(debounce);
+  debounce = setTimeout(() => {
+    const parsed = parseScene(editor.value);
+    if (parsed.room) buildScene(parsed);
+  }, 300);
+});
+
+document.getElementById('examples').addEventListener('change', (e) => {
+  if (e.target.value && EXAMPLES[e.target.value]) {
+    editor.value = EXAMPLES[e.target.value];
+    const parsed = parseScene(editor.value);
+    if (parsed.room) buildScene(parsed);
+    e.target.value = '';
+  }
+});
+
+// ── Resize ──────────────────────────────────────────────────────────
+
+function onResize() {
+  const w = pane.clientWidth, h = pane.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+window.addEventListener('resize', onResize);
+onResize();
+
+(function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+
+// ── Init ────────────────────────────────────────────────────────────
+
+editor.value = EXAMPLES['living-room'];
+const initParsed = parseScene(editor.value);
+if (initParsed.room) buildScene(initParsed);
+
+</script>
+</body>
+</html>

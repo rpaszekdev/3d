@@ -1,0 +1,36 @@
+V 32 16 48
+-- body
+B 11 3 16 10 5 18 2
+-- neck
+B 12 4 10 8 4 6 2
+-- head
+B 11 4 5 10 4 6 2
+-- upper snout
+B 12 3 2 8 3 8 2
+-- lower jaw
+B 13 2 1 6 2 9 c
+-- teeth upper
+B 13 3 2 1 2 1 8
+B 15 3 2 1 2 1 8
+B 17 3 2 1 2 1 8
+-- teeth lower
+B 14 2 1 1 2 1 8
+B 16 2 1 1 2 1 8
+-- eyes
+S 13 9 6 1 6
+S 19 9 6 1 6
+-- nostrils
+S 14 6 2 1 9
+S 17 6 2 1 9
+-- dorsal ridge
+B 14 8 14 4 2 20 c
+-- tail
+B 12 3 34 8 4 8 2
+B 13 2 42 6 3 4 c
+B 14 2 46 4 2 2 c
+-- front legs
+B 11 0 18 3 4 3 c
+B 18 0 18 3 4 3 c
+-- back legs
+B 11 0 28 3 4 3 c
+B 18 0 28 3 4 3 c

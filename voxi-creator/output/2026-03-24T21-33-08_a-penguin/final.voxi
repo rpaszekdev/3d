@@ -1,0 +1,66 @@
+V 32 32 32
+
+-- Feet (orange, spread out)
+B 11 0 12 4 2 5 7
+B 18 0 12 4 2 5 7
+
+-- Ankle connectors (navy)
+B 12 2 13 3 3 4 f
+B 19 2 13 3 3 4 f
+
+-- Tail (navy, behind body)
+B 13 2 19 7 4 4 f
+
+-- Main body (navy ellipsoid)
+E 16 12 15 8 11 7 f
+
+-- White belly (ellipsoid, inset)
+E 16 11 13 5 9 4 8
+
+-- Left wing (navy, flat)
+B 7 5 13 4 13 5 f
+B 6 6 13 2 11 5 f
+
+-- Right wing (navy, flat)
+B 22 5 13 4 13 5 f
+B 25 6 13 2 11 5 f
+
+-- Wing tips rounded
+B 8 5 13 1 2 4 f
+B 24 5 13 1 2 4 f
+
+-- Neck (navy)
+B 13 22 13 7 4 6 f
+
+-- Head (navy sphere-like)
+S 16 28 14 6 f
+
+-- White face patch (oval)
+E 16 27 12 4 5 3 8
+
+-- Eyes (white)
+B 13 28 12 3 3 2 8
+B 19 28 12 3 3 2 8
+
+-- Pupils (black)
+P 14 29 11 0
+P 20 29 11 0
+
+-- Eye glint
+P 13 30 11 8
+P 19 30 11 8
+
+-- Beak upper (orange)
+B 14 27 11 5 2 4 7
+
+-- Beak lower (darker orange)
+B 14 26 11 5 1 4 6
+
+-- Beak tip
+B 15 26 10 3 3 2 7
+
+-- Head top (navy, rounded)
+B 13 32 13 7 2 5 f
+
+-- Forehead bump
+B 14 31 12 5 2 4 f

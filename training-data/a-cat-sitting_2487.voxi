@@ -1,0 +1,43 @@
+V 24 24 24
+
+-- body
+E 12 8 12 4 5 3 d
+
+-- head
+S 12 16 12 4 d
+
+-- ears
+B 9 19 12 2 3 1 d
+B 13 19 12 2 3 1 d
+-- inner ears
+B 10 20 12 1 2 1 b
+
+-- eyes
+S 10 17 9 1 2
+S 14 17 9 1 2
+
+-- nose
+S 12 15 9 1 b
+
+-- mouth
+B 11 13 9 2 1 1 9
+
+-- tail
+C 17 4 14 1 6 6
+B 19 9 13 2 2 2 d
+
+-- front legs
+C 9 3 12 1 5 3
+C 14 3 12 1 5 3
+
+-- paws
+E 9 1 12 2 1 2 d
+E 14 1 12 2 1 2 d
+
+-- back haunches
+E 9 6 13 3 4 2 d
+E 15 6 13 3 4 2 d
+
+-- whiskers
+B 5 15 9 4 1 1 9
+B 15 15 9 4 1 1 9

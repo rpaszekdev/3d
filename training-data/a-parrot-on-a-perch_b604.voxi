@@ -1,0 +1,32 @@
+V 24 24 24
+
+-- perch (brown horizontal rod)
+B 3 9 11 18 2 2 a
+
+-- talons gripping perch
+B 10 9 11 2 1 2 7
+B 13 9 11 2 1 2 7
+
+-- body (green)
+E 12 14 12 3 4 2 2
+
+-- tail feathers (blue, extending back)
+B 10 10 14 4 5 3 3
+
+-- left wing (blue accent)
+B 8 13 12 2 4 2 3
+
+-- right wing (yellow accent)
+B 15 13 12 2 4 2 6
+
+-- head (green)
+S 12 18 12 2 2
+
+-- crest feather (magenta)
+B 12 20 12 1 2 1 5
+
+-- beak (yellow)
+B 11 17 9 2 2 1 6
+
+-- eye (black)
+S 11 18 10 1 0

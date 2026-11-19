@@ -1,0 +1,37 @@
+V 32 16 32
+
+-- outer hull (wood)
+E 16 2 16 5 3 13 a
+
+-- interior hollow
+E 16 4 16 3 2 11 0
+
+-- bow raised tip
+B 14 3 1 4 3 3 a
+
+-- stern raised tip
+B 14 3 28 4 3 3 a
+
+-- bow cap
+S 16 4 2 2 a
+
+-- stern cap
+S 16 4 30 2 a
+
+-- front thwart seat
+B 12 5 8 8 1 1 d
+
+-- mid thwart
+B 12 5 16 8 1 1 d
+
+-- rear thwart seat
+B 12 5 24 8 1 1 d
+
+-- left gunwale strip
+B 11 5 4 1 1 24 c
+
+-- right gunwale strip
+B 20 5 4 1 1 24 c
+
+-- keel line
+B 15 0 3 2 1 26 e

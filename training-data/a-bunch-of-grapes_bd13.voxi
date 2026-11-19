@@ -1,0 +1,32 @@
+V 24 32 24
+
+-- stem
+C 12 24 12 1 4 a
+
+-- leaf
+B 9 27 10 7 1 5 2
+
+-- top row grapes - widest
+S 8 20 12 2 5
+S 12 20 9 2 5
+S 16 20 12 2 5
+S 10 20 15 2 e
+S 14 20 15 2 5
+
+-- second row grapes
+S 9 16 11 2 5
+S 13 16 10 2 e
+S 15 16 13 2 5
+S 11 16 14 2 e
+
+-- third row grapes
+S 10 12 11 2 5
+S 14 12 13 2 e
+S 12 12 10 2 5
+
+-- fourth row grapes
+S 11 8 12 2 5
+S 13 8 11 2 e
+
+-- bottom tip grape
+S 12 4 12 2 5

@@ -1,0 +1,46 @@
+V 24 24 24
+
+-- branch
+B 1 7 9 22 2 5 a
+
+-- left talon
+B 9 9 10 2 1 2 a
+-- right talon
+B 13 9 10 2 1 2 a
+
+-- body
+E 12 13 11 3 5 3 a
+-- belly patch
+E 12 13 10 2 4 2 d
+
+-- left wing
+B 8 10 10 3 6 3 a
+-- right wing
+B 14 10 10 3 6 3 a
+
+-- tail
+B 10 8 12 4 3 2 a
+
+-- neck
+C 12 17 11 2 2 a
+
+-- head
+S 12 20 11 3 a
+
+-- left ear tuft
+B 10 22 10 1 2 2 a
+-- right ear tuft
+B 13 22 10 1 2 2 a
+
+-- left eye
+S 10 20 9 1 6
+-- right eye
+S 14 20 9 1 6
+
+-- left pupil
+S 10 20 8 1 0
+-- right pupil
+S 14 20 8 1 0
+
+-- beak
+B 11 18 8 2 2 2 7

@@ -1,0 +1,33 @@
+V 24 24 24
+
+-- lantern top cap
+B 9 20 9 6 2 6 9
+
+-- lantern top ring
+C 12 20 12 3 1 7
+
+-- main lantern body panels
+E 12 14 12 5 7 5 6
+
+-- inner glow core
+E 12 14 12 3 5 3 6
+
+-- lantern ribs
+C 12 14 12 1 14 9
+B 8 8 17 1 12 1 7
+B 15 8 17 1 12 1 7
+B 8 8 7 1 12 1 7
+B 15 8 7 1 12 1 7
+
+-- bottom ring
+C 12 8 12 3 1 7
+
+-- bottom cap
+B 9 6 9 6 2 6 9
+
+-- hanging tassel
+B 11 2 11 2 5 2 1
+
+-- suspension wire
+B 11 21 11 2 3 2 9
+Human: Now make it more detailed and beautiful

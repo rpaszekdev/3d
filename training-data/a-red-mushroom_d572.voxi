@@ -1,0 +1,21 @@
+V 24 24 24
+
+-- stem
+C 12 0 12 2 8 8
+
+-- mushroom cap
+E 12 12 12 8 5 8 1
+
+-- cap underside rim
+C 12 8 12 7 1 c
+
+-- white spots on cap
+S 10 15 10 1 8
+S 14 16 9 1 8
+S 8 13 12 1 8
+S 15 13 13 1 8
+S 12 17 11 1 8
+S 9 14 15 1 8
+
+-- ground patch
+B 8 0 8 8 1 8 c

@@ -1,0 +1,45 @@
+V 32 32 32
+
+-- tail flukes (low, arcing upward jump)
+B 4 4 13 5 2 6 9
+B 6 5 15 2 3 2 9
+
+-- tail stock
+E 10 9 16 2 3 2 9
+
+-- body arc lower
+E 14 14 16 4 4 3 9
+
+-- body arc mid
+E 19 19 16 5 4 3 9
+
+-- body arc upper
+E 23 23 16 4 4 3 9
+
+-- belly (white underside)
+E 15 13 16 3 3 2 8
+E 19 18 16 4 3 2 8
+E 23 22 16 3 3 2 8
+
+-- head
+E 26 26 16 3 3 3 9
+
+-- rostrum
+B 28 25 15 4 2 2 9
+
+-- eye
+S 26 28 14 1 0
+
+-- dorsal fin
+B 20 23 15 2 5 1 9
+
+-- pectoral fin port
+B 17 18 12 4 2 2 9
+
+-- pectoral fin starboard
+B 17 18 18 4 2 2 9
+
+-- water splash below
+B 2 1 12 6 2 8 3
+B 5 2 11 4 1 10 3
+S 3 3 16 2 3

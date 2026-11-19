@@ -1,0 +1,32 @@
+V 32 24 32
+
+-- left frame posts
+C 5 8 12 1 16 8
+C 5 8 20 1 16 8
+
+-- left frame brace
+B 4 7 12 2 2 8 9
+
+-- right frame posts
+C 27 8 12 1 16 8
+C 27 8 20 1 16 8
+
+-- right frame brace
+B 26 7 12 2 2 8 9
+
+-- top bar
+B 5 16 15 22 2 2 8
+
+-- left swing chains
+C 9 11 16 1 10 9
+C 11 11 16 1 10 9
+
+-- left swing seat
+B 8 6 15 4 1 3 6
+
+-- right swing chains
+C 21 11 16 1 10 9
+C 23 11 16 1 10 9
+
+-- right swing seat
+B 20 6 15 4 1 3 6

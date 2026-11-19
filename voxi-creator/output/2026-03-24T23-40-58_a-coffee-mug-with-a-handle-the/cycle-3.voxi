@@ -1,0 +1,16 @@
+V 32 32 32
+-- Mug outer body (white ceramic, center Y=8, height 16, sits Y=0..16)
+C 16 8 16 7 16 8
+-- Inner cavity (dark gray, same center, smaller radius, shorter = leaves floor+walls)
+C 16 8 16 5 14 9
+-- Coffee surface (brown disc inside near top rim)
+C 16 15 16 5 1 a
+-- Rim highlight (slightly raised top ring for definition)
+C 16 16 16 7 1 8
+-- Handle top arm: x=23..27, y=12..13, z=14..17
+B 23 12 14 5 2 4 8
+-- Handle bottom arm: x=23..27, y=4..5, z=14..17
+B 23 4 14 5 2 4 8
+-- Handle outer vertical bar: x=27..28, y=6..11, z=14..17
+B 27 6 14 2 6 4 8
+-- Hole is the open space at x=23..26, y=6..11, z=14..17 (6 voxels tall, clearly visible)

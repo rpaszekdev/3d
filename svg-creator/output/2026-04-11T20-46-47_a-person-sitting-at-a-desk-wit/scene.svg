@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="800" height="520">
+<style>
+  svg { background: #f8f8f8; }
+  * { vector-effect: non-scaling-stroke; }
+@keyframes anim-screen-ui-0 {
+  from { opacity: 0.25; }
+  to { opacity: 1; }
+}
+
+#screen-ui {
+  animation: anim-screen-ui-0 1.8s ease-in-out 0s infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes anim-monitor-1 {
+  from { opacity: 0.88; }
+  to { opacity: 1; }
+}
+
+#monitor {
+  animation: anim-monitor-1 3.2s ease-in-out 0s infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes entrance-desk-2 {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+#desk {
+  opacity: 0;
+  animation: entrance-desk-2 0.6s ease-out 0s 1 forwards;
+}
+
+@keyframes entrance-chair-3 {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#chair {
+  opacity: 0;
+  animation: entrance-chair-3 0.5s ease-out 0.15s 1 forwards;
+}
+
+@keyframes entrance-person-4 {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#person {
+  opacity: 0;
+  animation: entrance-person-4 0.7s ease-out 0.35s 1 forwards;
+}
+
+@keyframes entrance-monitor-5 {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+#monitor {
+  opacity: 0;
+  animation: entrance-monitor-5 0.55s ease-out 0.25s 1 forwards;
+}
+
+@keyframes entrance-keyboard-6 {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#keyboard {
+  opacity: 0;
+  animation: entrance-keyboard-6 0.4s ease-out 0.55s 1 forwards;
+}
+
+@keyframes entrance-screen-ui-7 {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#screen-ui {
+  opacity: 0;
+  animation: entrance-screen-ui-7 0.5s ease-out 0.8s 1 forwards;
+}
+</style>
+  <g id="desk" transform="translate(470, 365)">
+    <rect x="-255" y="-10" width="510" height="20" fill="none" stroke="#2c2c2c" stroke-width="2" rx="3"/>
+    <line x1="-235" y1="10" x2="-235" y2="155" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="235" y1="10" x2="235" y2="155" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-235" y1="165" x2="235" y2="165" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+  </g>
+  <g id="monitor" transform="translate(585, 235)">
+    <rect x="-82" y="-68" width="164" height="136" fill="none" stroke="#2c2c2c" stroke-width="2" rx="5"/>
+    <rect x="-5" y="68" width="10" height="47" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <rect x="-30" y="115" width="60" height="10" fill="none" stroke="#2c2c2c" stroke-width="2" rx="2"/>
+  </g>
+  <g id="screen-ui" transform="translate(585, 235)">
+    <line x1="-62" y1="-50" x2="62" y2="-50" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-62" y1="-33" x2="38" y2="-33" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-62" y1="-18" x2="52" y2="-18" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-62" y1="-4" x2="22" y2="-4" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <rect x="-62" y="12" width="85" height="22" fill="none" stroke="#2c2c2c" stroke-width="2" rx="2"/>
+    <rect x="-62" y="40" width="45" height="14" fill="none" stroke="#2c2c2c" stroke-width="2" rx="2"/>
+  </g>
+  <g id="keyboard" transform="translate(415, 357)">
+    <rect x="-72" y="-8" width="144" height="16" fill="none" stroke="#2c2c2c" stroke-width="2" rx="3"/>
+    <line x1="-52" y1="-1" x2="52" y2="-1" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-52" y1="5" x2="52" y2="5" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+  </g>
+  <g id="chair" transform="translate(235, 362)">
+    <rect x="-50" y="-6" width="105" height="18" fill="none" stroke="#2c2c2c" stroke-width="2" rx="2"/>
+    <line x1="-50" y1="-6" x2="-50" y2="-115" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-50" y1="-115" x2="12" y2="-115" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-50" y1="-65" x2="12" y2="-65" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-50" y1="-6" x2="-68" y2="82" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="55" y1="-6" x2="72" y2="82" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-30" y1="12" x2="-45" y2="82" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="75" y1="12" x2="72" y2="82" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+  </g>
+  <g id="person" transform="translate(272, 250)">
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="0" y1="20" x2="0" y2="30" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="0" y1="30" x2="0" y2="112" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <path d="M 0,48 Q 55,35 105,60" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <path d="M 0,48 Q -22,55 -38,72" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-5" y1="112" x2="-18" y2="155" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-18" y1="155" x2="-16" y2="215" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="-16" y1="215" x2="-30" y2="220" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="12" y1="112" x2="58" y2="118" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="58" y1="118" x2="55" y2="178" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+    <line x1="55" y1="178" x2="70" y2="182" fill="none" stroke="#2c2c2c" stroke-width="2"/>
+  </g>
+</svg>

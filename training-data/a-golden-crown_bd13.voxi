@@ -1,0 +1,23 @@
+V 24 24 24
+
+-- crown base band
+C 12 2 12 7 4 6
+
+-- 5 crown points
+B 10 4 5  4 7 2 6
+B 4  4 9  2 6 2 6
+B 18 4 9  2 6 2 6
+B 4  4 15 2 6 2 6
+B 18 4 15 2 6 2 6
+
+-- rubies on band
+S 12 2 5  1 1
+S 5  2 10 1 1
+S 19 2 10 1 1
+
+-- gold orb tips on each point
+S 12 11 5  1 6
+S 5  10 9  1 6
+S 19 10 9  1 6
+S 5  10 15 1 6
+S 19 10 15 1 6

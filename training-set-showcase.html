@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VOXI Training Set — Showcase</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: #0b0d14;
+    color: #e6e8f0;
+    font: 13px/1.5 ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  .app { display: grid; grid-template-rows: 56px 1fr; height: 100vh; }
+
+  header {
+    display: flex; align-items: center; gap: 20px;
+    padding: 0 24px;
+    background: linear-gradient(180deg, #161a28 0%, #11131c 100%);
+    border-bottom: 1px solid #232736;
+  }
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: 0.3px; }
+  header .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #6c8cff22;
+    color: #9db4ff;
+    border: 1px solid #6c8cff44;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-left: 8px;
+  }
+  header .spacer { flex: 1; }
+  header .stats { color: #7a829c; font-size: 12px; }
+  header input[type=search] {
+    background: #0b0d14;
+    border: 1px solid #2a2f42;
+    color: #e6e8f0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font: inherit;
+    width: 220px;
+    outline: none;
+  }
+  header input[type=search]:focus { border-color: #6c8cff; }
+
+  .main { display: grid; grid-template-columns: 300px 1fr 280px; overflow: hidden; }
+
+  .sidebar {
+    background: #0e111b;
+    border-right: 1px solid #1d2130;
+    overflow-y: auto;
+  }
+  .sidebar .group { border-bottom: 1px solid #161a28; }
+  .sidebar .group-head {
+    padding: 10px 14px 6px;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #6a7187;
+    background: #0a0c14;
+    position: sticky; top: 0;
+    z-index: 1;
+    border-bottom: 1px solid #161a28;
+  }
+  .sidebar .item {
+    padding: 8px 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    border-left: 3px solid transparent;
+    transition: background 0.12s;
+  }
+  .sidebar .item:hover { background: #151927; }
+  .sidebar .item.active {
+    background: #1b2138;
+    border-left-color: #6c8cff;
+    color: #b9ccff;
+  }
+  .sidebar .item .name { font-size: 12px; }
+  .sidebar .item .count {
+    font-size: 10px;
+    color: #4c5270;
+    background: #1a1e2d;
+    padding: 1px 6px;
+    border-radius: 8px;
+  }
+
+  .viewer { position: relative; background: radial-gradient(ellipse at center, #161a28 0%, #0a0c14 100%); }
+  .viewer canvas { display: block; width: 100%; height: 100%; }
+
+  .nameplate {
+    position: absolute; top: 16px; left: 16px;
+    background: rgba(11, 13, 20, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid #2a2f42;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 360px;
+  }
+  .nameplate .title { font-size: 14px; font-weight: 600; color: #b9ccff; }
+  .nameplate .sub { font-size: 11px; color: #7a829c; margin-top: 2px; }
+
+  .variants {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px;
+    background: rgba(11, 13, 20, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid #2a2f42;
+    padding: 6px;
+    border-radius: 10px;
+  }
+  .variants button {
+    background: #151927;
+    border: 1px solid #2a2f42;
+    color: #c6cadd;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    min-width: 64px;
+  }
+  .variants button:hover { background: #1d2338; border-color: #6c8cff66; }
+  .variants button.active {
+    background: #6c8cff;
+    border-color: #6c8cff;
+    color: white;
+  }
+
+  .controls-hint {
+    position: absolute; bottom: 16px; right: 16px;
+    font-size: 10px; color: #4c5270;
+    background: rgba(11, 13, 20, 0.6);
+    padding: 6px 10px; border-radius: 6px;
+  }
+  .controls-hint kbd {
+    background: #2a2f42; padding: 1px 5px; border-radius: 3px;
+    color: #c6cadd; font-family: inherit; font-size: 10px;
+  }
+
+  .code-panel {
+    background: #0e111b;
+    border-left: 1px solid #1d2130;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .code-panel .head {
+    padding: 10px 14px;
+    font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase;
+    color: #6a7187;
+    border-bottom: 1px solid #161a28;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .code-panel pre {
+    flex: 1;
+    overflow: auto;
+    padding: 12px 14px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #c6cadd;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-panel .kw { color: #6c8cff; font-weight: 600; }
+  .code-panel .cm { color: #5a6178; font-style: italic; }
+  .code-panel .nu { color: #d88c6a; }
+
+  .loading {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #7a829c;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>VOXI Training Set <span class="tag">846 samples · 174 concepts</span></h1>
+    <div class="spacer"></div>
+    <input type="search" id="filter" placeholder="Filter concepts…">
+    <span class="stats" id="stats">loading…</span>
+  </header>
+  <div class="main">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="viewer" id="viewer">
+      <div class="loading" id="loading">Loading training set…</div>
+      <div class="nameplate" id="nameplate" style="display:none">
+        <div class="title" id="np-title"></div>
+        <div class="sub" id="np-sub"></div>
+      </div>
+      <div class="variants" id="variants" style="display:none"></div>
+      <div class="controls-hint">
+        <kbd>←</kbd> <kbd>→</kbd> concept &nbsp; <kbd>1</kbd>–<kbd>5</kbd> variant &nbsp; <kbd>drag</kbd> orbit
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="head">
+        <span>VOXI Source</span>
+        <span id="code-stats" style="color:#4c5270"></span>
+      </div>
+      <pre id="code"></pre>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ─── Color palette (hex-digit indexed, sketch-style warm tones) ───
+const PALETTE = [
+  '#2c2c2c', '#c0392b', '#27864a', '#1a5fb4',
+  '#1a7a7a', '#7b2d8e', '#b8860b', '#d4740e',
+  '#555555', '#888888', '#8B7355', '#d98a7a',
+  '#5db874', '#c6a96b', '#8b1a1a', '#4a7fc9',
+];
+const colorIdx = (c) => {
+  if (c == null || c === '') return 9;
+  const s = String(c).toLowerCase();
+  const n = parseInt(s, 16);
+  return Number.isFinite(n) ? Math.min(Math.max(n, 0), 15) : 9;
+};
+
+// ─── VOXI parser → voxel grid (rasterizes primitives into unit cubes) ───
+function parseVoxi(code) {
+  let W = 32, H = 32, D = 32;
+  const vm = new Map();                               // "x,y,z" → colorIdx
+  const key = (x, y, z) => `${x},${y},${z}`;
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix < 0 || iy < 0 || iz < 0 || ix >= W || iy >= H || iz >= D) return;
+    vm.set(key(ix, iy, iz), c);
+  };
+  const addBox = (px, py, pz, w, h, d, c) => {
+    for (let x = px; x < px + w; x++)
+      for (let y = py; y < py + h; y++)
+        for (let z = pz; z < pz + d; z++) set(x, y, z, c);
+  };
+  const addSphere = (cx, cy, cz, r, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let y = cy - r; y <= cy + r; y++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2 <= r2) set(x, y, z, c);
+  };
+  const addCyl = (cx, cy, cz, r, h, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let z = cz - r; z <= cz + r; z++)
+        if ((x - cx) ** 2 + (z - cz) ** 2 <= r2)
+          for (let y = cy; y < cy + h; y++) set(x, y, z, c);
+  };
+  const addEllipsoid = (cx, cy, cz, rx, ry, rz, c) => {
+    for (let x = cx - rx; x <= cx + rx; x++)
+      for (let y = cy - ry; y <= cy + ry; y++)
+        for (let z = cz - rz; z <= cz + rz; z++)
+          if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2 <= 1)
+            set(x, y, z, c);
+  };
+
+  let primCount = 0;
+  for (const raw of code.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith('--') || line.startsWith('`')) continue;
+    const parts = line.split(/\s+/);
+    const cmd = parts[0];
+    const n = parts.slice(1).map(v => {
+      const h = parseInt(v, 16);
+      return Number.isFinite(Number(v)) ? Number(v) : (Number.isFinite(h) ? h : 0);
+    });
+    if (cmd === 'V' && parts.length >= 4) {
+      W = +parts[1]; H = +parts[2]; D = +parts[3];
+    } else if (cmd === 'B' && parts.length >= 7) {
+      addBox(n[0], n[1], n[2], n[3], n[4], n[5], colorIdx(parts[7])); primCount++;
+    } else if (cmd === 'E' && parts.length >= 7) {
+      addEllipsoid(n[0], n[1], n[2], n[3], n[4], n[5], colorIdx(parts[7])); primCount++;
+    } else if (cmd === 'S' && parts.length >= 5) {
+      addSphere(n[0], n[1], n[2], n[3], colorIdx(parts[5])); primCount++;
+    } else if (cmd === 'C' && parts.length >= 6) {
+      addCyl(n[0], n[1], n[2], n[3], n[4], colorIdx(parts[6])); primCount++;
+    }
+  }
+  return { W, H, D, vm, primCount };
+}
+
+// ─── Three.js setup ───
+const container = document.getElementById('viewer');
+const scene = new THREE.Scene();
+scene.background = null;
+
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 2000);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+container.insertBefore(renderer.domElement, container.firstChild);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 0.9);
+key.position.set(40, 60, 30);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x90a8ff, 0.35);
+rim.position.set(-30, 20, -40);
+scene.add(rim);
+scene.add(new THREE.HemisphereLight(0x9db4ff, 0x332211, 0.25));
+
+const modelRoot = new THREE.Group();
+scene.add(modelRoot);
+
+// Ground grid (sized per-model)
+let ground = null;
+
+function resize() {
+  const w = container.clientWidth, h = container.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+}
+window.addEventListener('resize', resize);
+resize();
+
+(function loop() {
+  requestAnimationFrame(loop);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+
+// Shared unit-cube geometry (slightly < 1 to expose voxel seams)
+const CUBE_GEO = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+const _dummy = new THREE.Object3D();
+
+function renderScene(parsed) {
+  while (modelRoot.children.length) {
+    const m = modelRoot.children.pop();
+    m.material?.dispose?.();
+  }
+  if (ground) { scene.remove(ground); ground.geometry.dispose(); ground.material.dispose(); ground = null; }
+
+  const { W, H, D, vm } = parsed;
+
+  // Bucket voxels by color → one InstancedMesh per color (≤16 draw calls)
+  const buckets = new Map();
+  vm.forEach((c, k) => {
+    if (!buckets.has(c)) buckets.set(c, []);
+    buckets.get(c).push(k);
+  });
+
+  buckets.forEach((keys, c) => {
+    const mat = new THREE.MeshLambertMaterial({ color: PALETTE[c] || '#888888' });
+    const inst = new THREE.InstancedMesh(CUBE_GEO, mat, keys.length);
+    for (let i = 0; i < keys.length; i++) {
+      const [x, y, z] = keys[i].split(',').map(Number);
+      _dummy.position.set(x + 0.5, y + 0.5, z + 0.5);
+      _dummy.updateMatrix();
+      inst.setMatrixAt(i, _dummy.matrix);
+    }
+    inst.instanceMatrix.needsUpdate = true;
+    modelRoot.add(inst);
+  });
+
+  const gridSize = Math.max(W, D);
+  const gridDiv = Math.min(gridSize, 48);
+  ground = new THREE.GridHelper(gridSize, gridDiv, 0x2a2f42, 0x1a1e2d);
+  ground.position.set(W / 2, 0, D / 2);
+  scene.add(ground);
+
+  const cx = W / 2, cy = H / 2, cz = D / 2;
+  const dist = Math.max(W, H, D) * 1.8;
+  camera.position.set(cx + dist * 0.9, cy + dist * 0.7, cz + dist * 0.9);
+  controls.target.set(cx, cy, cz);
+  controls.update();
+
+  return vm.size;
+}
+
+// ─── App state ───
+const state = {
+  manifest: [],
+  groups: [],      // [{ name, items: [{file, variant}, ...] }]
+  filtered: [],    // filtered groups
+  groupIdx: 0,
+  variantIdx: 0,
+  cache: new Map(),
+};
+
+async function boot() {
+  try {
+    const res = await fetch('training-data/manifest.json');
+    state.manifest = await res.json();
+  } catch (e) {
+    document.getElementById('loading').textContent = 'Error: manifest.json not found. Run from repo root with a local server.';
+    return;
+  }
+
+  const byName = new Map();
+  for (const it of state.manifest) {
+    if (!byName.has(it.name)) byName.set(it.name, []);
+    byName.get(it.name).push(it);
+  }
+  state.groups = [...byName.entries()]
+    .map(([name, items]) => ({ name, items: items.sort((a, b) => a.variant.localeCompare(b.variant)) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  state.filtered = state.groups;
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('stats').textContent = `${state.manifest.length} files`;
+  renderSidebar();
+  if (state.groups.length) selectGroup(0);
+}
+
+function displayName(rawName) {
+  return rawName.replace(/^a-/, '').replace(/-/g, ' ');
+}
+
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (!state.filtered.length) {
+    sb.innerHTML = '<div style="padding:20px;color:#4c5270">No matches</div>';
+    return;
+  }
+  // Group alphabetically by first letter
+  const buckets = new Map();
+  for (const g of state.filtered) {
+    const letter = g.name.replace(/^a-/, '')[0].toUpperCase();
+    if (!buckets.has(letter)) buckets.set(letter, []);
+    buckets.get(letter).push(g);
+  }
+  const html = [...buckets.entries()].map(([letter, groups]) => `
+    <div class="group">
+      <div class="group-head">${letter}</div>
+      ${groups.map((g) => {
+        const realIdx = state.groups.indexOf(g);
+        return `<div class="item ${realIdx === state.groupIdx ? 'active' : ''}" data-idx="${realIdx}">
+          <span class="name">${displayName(g.name)}</span>
+          <span class="count">${g.items.length}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+  sb.innerHTML = html;
+  sb.querySelectorAll('.item').forEach(el => {
+    el.addEventListener('click', () => selectGroup(+el.dataset.idx));
+  });
+  const active = sb.querySelector('.item.active');
+  if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+async function loadFile(file) {
+  if (state.cache.has(file)) return state.cache.get(file);
+  const res = await fetch(`training-data/${file}`);
+  const text = await res.text();
+  state.cache.set(file, text);
+  return text;
+}
+
+async function selectGroup(idx) {
+  state.groupIdx = idx;
+  state.variantIdx = 0;
+  renderSidebar();
+  renderVariantTabs();
+  await showVariant();
+}
+
+function renderVariantTabs() {
+  const g = state.groups[state.groupIdx];
+  const el = document.getElementById('variants');
+  el.style.display = 'flex';
+  el.innerHTML = g.items.map((v, i) =>
+    `<button data-i="${i}" class="${i === state.variantIdx ? 'active' : ''}">v${i + 1}</button>`
+  ).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => { state.variantIdx = +b.dataset.i; renderVariantTabs(); showVariant(); });
+  });
+}
+
+function highlightCode(code) {
+  return code
+    .split('\n')
+    .map(line => {
+      if (/^\s*--/.test(line) || /^\s*`/.test(line)) return `<span class="cm">${esc(line)}</span>`;
+      return line.replace(/^([A-Z])\b/, '<span class="kw">$1</span>')
+                 .replace(/\b(\d+)\b/g, '<span class="nu">$1</span>');
+    })
+    .join('\n');
+}
+function esc(s) { return s.replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])); }
+
+async function showVariant() {
+  const g = state.groups[state.groupIdx];
+  const v = g.items[state.variantIdx];
+  const code = await loadFile(v.file);
+  const parsed = parseVoxi(code);
+  const voxelCount = renderScene(parsed);
+
+  document.getElementById('nameplate').style.display = 'block';
+  document.getElementById('np-title').textContent = displayName(g.name);
+  document.getElementById('np-sub').textContent =
+    `variant ${state.variantIdx + 1}/${g.items.length} · seed ${v.variant} · ${parsed.W}×${parsed.H}×${parsed.D} · ${parsed.primCount} primitives → ${voxelCount.toLocaleString()} voxels`;
+
+  document.getElementById('code').innerHTML = highlightCode(code);
+  const nonEmpty = code.split('\n').filter(l => l.trim()).length;
+  document.getElementById('code-stats').textContent = `${nonEmpty} lines`;
+}
+
+// ─── Keyboard nav ───
+document.addEventListener('keydown', (e) => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight') selectGroup(Math.min(state.groupIdx + 1, state.groups.length - 1));
+  if (e.key === 'ArrowLeft') selectGroup(Math.max(state.groupIdx - 1, 0));
+  if (/^[1-5]$/.test(e.key)) {
+    const i = +e.key - 1;
+    const g = state.groups[state.groupIdx];
+    if (i < g.items.length) { state.variantIdx = i; renderVariantTabs(); showVariant(); }
+  }
+});
+
+// ─── Filter ───
+document.getElementById('filter').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  state.filtered = !q
+    ? state.groups
+    : state.groups.filter(g => g.name.toLowerCase().includes(q));
+  renderSidebar();
+});
+
+boot();
+</script>
+</body>
+</html>

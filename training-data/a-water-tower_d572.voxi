@@ -1,0 +1,33 @@
+V 32 40 32
+
+-- support legs (4 columns)
+C 10 0 10 1 18 7
+C 22 0 10 1 18 7
+C 10 0 22 1 18 7
+C 22 0 22 1 18 7
+
+-- cross braces mid-height
+B 10 9 15 13 1 2 7
+B 15 9 10 2 1 13 7
+
+-- upper braces near tank
+B 10 15 15 13 1 2 7
+B 15 15 10 2 1 13 7
+
+-- main tank body
+C 16 18 16 8 12 3
+
+-- catwalk ring around tank
+B 7 28 7 1 1 18 9
+B 24 28 7 1 1 18 9
+B 7 28 7 18 1 1 9
+B 7 28 24 18 1 1 9
+
+-- dome roof
+S 16 31 16 6 8
+
+-- vent pipe on top
+C 16 33 16 1 5 9
+
+-- access ladder (side strip)
+B 10 0 9 1 18 1 9

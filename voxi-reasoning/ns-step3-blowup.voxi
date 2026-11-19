@@ -1,0 +1,25 @@
+V 32 32 32
+-- POTENTIAL SINGULARITY: What blow-up would look like
+-- Energy concentrating into a single point
+-- If velocity → infinity at one point, solution "breaks"
+
+-- Surrounding calm fluid (gray, low velocity)
+B 0 0 0 32 32 32 9
+
+-- Energy cascade: large → medium → small → point
+-- Large-scale motion (blue, radius 12)
+S 16 16 16 12 3
+
+-- Medium-scale eddies (cyan, radius 8)
+S 16 16 16 8 4
+
+-- Small-scale vortices (yellow, radius 4)
+S 16 16 16 4 6
+
+-- Singularity point (red = infinite velocity?)
+S 16 16 16 1 1
+
+-- The QUESTION is: can this cascade reach a point?
+-- In 2D: NO — vorticity is conserved, can't concentrate
+-- In 3D: UNKNOWN — vortex stretching could amplify forever
+-- That's the Millennium Prize Problem

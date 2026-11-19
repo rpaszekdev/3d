@@ -1,0 +1,65 @@
+V 32 32 32
+
+-- counter base cabinet
+B 2 0 8 28 10 14 a
+
+-- counter top surface
+B 2 10 8 28 2 14 7
+
+-- counter top back edge trim
+B 2 12 21 28 1 1 9
+
+-- left cabinet door
+B 3 1 9 6 9 1 d
+-- right cabinet door
+B 13 1 9 6 9 1 d
+-- far right cabinet door
+B 22 1 9 6 9 1 d
+
+-- cabinet door handles left
+B 6 5 8 1 2 1 9
+-- cabinet door handles right
+B 16 5 8 1 2 1 9
+-- cabinet door handles far right
+B 25 5 8 1 2 1 9
+
+-- sink basin
+B 8 8 10 16 3 10 9
+
+-- sink inner basin (hollow)
+B 9 9 11 14 2 8 3
+
+-- sink divider
+B 15 8 11 2 3 8 7
+
+-- faucet base
+C 16 12 13 1 3 9
+
+-- faucet neck
+B 15 14 13 2 4 2 9
+
+-- faucet head
+B 13 18 12 6 1 3 9
+
+-- faucet handle left
+B 12 17 13 2 2 2 8
+-- faucet handle right
+B 19 17 13 2 2 2 8
+
+-- drain left
+C 12 8 15 1 1 3
+-- drain right
+C 20 8 15 1 1 3
+
+-- backsplash
+B 2 12 21 28 8 2 7
+
+-- backsplash tile pattern
+B 4 13 22 4 2 1 8
+B 10 13 22 4 2 1 8
+B 16 13 22 4 2 1 8
+B 22 13 22 4 2 1 8
+B 4 16 22 4 2 1 8
+B 10 16 22 4 2 1 8
+B 16 16 22 4 2 1 8
+B 22 16 22 4 2 1 8

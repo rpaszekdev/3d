@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSL V2.5 3D — Spatial Sketch Language (Three.js)</title>
+<style>
+/* =========================================================================
+   CSS — Dark theme split-pane IDE
+   ========================================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+  --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+  --accent: #6c8cff; --accent-dim: #4a5a8a;
+  --error-bg: #3a1820; --error-text: #ff6b7a;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* --- Header --- */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px; background: var(--surface);
+  border-bottom: 1px solid var(--border); flex-shrink: 0; height: 42px;
+}
+header h1 { font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+header h1 span { color: var(--accent); }
+.toolbar { display: flex; align-items: center; gap: 8px; }
+select, button {
+  font-family: inherit; font-size: 11px;
+  background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer; transition: border-color 0.15s;
+}
+select:hover, button:hover { border-color: var(--accent-dim); }
+button:active { background: var(--border); }
+button.active { border-color: var(--accent); color: var(--accent); }
+
+/* --- Main split pane --- */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* --- Left pane: editor --- */
+.editor-pane {
+  width: 38%; min-width: 280px; display: flex; flex-direction: column;
+  border-right: 1px solid var(--border); background: var(--surface);
+}
+.ref-bar {
+  padding: 6px 12px; font-size: 10px; line-height: 1.7;
+  border-bottom: 1px solid var(--border); color: var(--text-dim);
+  overflow-x: auto; white-space: nowrap; flex-shrink: 0;
+}
+.ref-bar b { color: var(--accent); margin-right: 4px; }
+.ref-bar .swatch {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 2px; vertical-align: middle; margin: 0 1px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.editor-wrap {
+  flex: 1; display: flex; overflow: hidden; position: relative;
+}
+.line-numbers {
+  width: 36px; padding: 8px 4px 8px 0; text-align: right;
+  font: 12px/1.6 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  color: var(--text-dim); background: var(--surface);
+  overflow: hidden; user-select: none; flex-shrink: 0;
+}
+textarea#editor {
+  flex: 1; resize: none; border: none; outline: none;
+  font: 12px/1.6 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  padding: 8px 12px; background: transparent; color: var(--text);
+  tab-size: 4; white-space: pre; overflow: auto;
+}
+.error-bar {
+  padding: 4px 12px; font-size: 11px;
+  background: var(--error-bg); color: var(--error-text);
+  border-top: 1px solid #5a2030; display: none; flex-shrink: 0;
+}
+
+/* --- Right pane: 3D canvas --- */
+.canvas-pane {
+  flex: 1; position: relative; background: #13151f; overflow: hidden;
+}
+#three-canvas {
+  width: 100% !important; height: 100% !important; display: block;
+}
+
+/* --- Status bar --- */
+.status-bar {
+  padding: 3px 16px; font-size: 10px; color: var(--text-dim);
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Header with toolbar -->
+<header>
+  <h1>SSL <span>V2.5 3D</span></h1>
+  <div class="toolbar">
+    <select id="examples"><option value="">Examples...</option></select>
+    <button id="btn-grid" class="active" title="Toggle grid">Grid</button>
+    <button id="btn-labels" class="active" title="Toggle labels">Labels</button>
+    <button id="btn-shadows" class="active" title="Toggle shadows">Shadows</button>
+    <span style="color:#555;margin:0 2px">|</span>
+    <button id="cam-iso" title="Isometric view">Iso</button>
+    <button id="cam-front" title="Front view">Front</button>
+    <button id="cam-side" title="Side view">Side</button>
+    <button id="cam-back" title="Back view">Back</button>
+    <button id="cam-top" title="Top-down view">Top</button>
+    <button id="cam-low" title="Low angle view">Low</button>
+    <span style="color:#555;margin:0 2px">|</span>
+    <button id="btn-reset" title="Reset camera view">Reset View</button>
+    <button id="btn-export" title="Export as PNG">Export PNG</button>
+    <button id="btn-multishot" title="Screenshot from 4 angles">4-Angle PNG</button>
+  </div>
+</header>
+
+<!-- Main content -->
+<div class="main">
+  <!-- Left pane: code editor -->
+  <div class="editor-pane">
+    <div class="ref-bar" id="ref-bar">
+      <b>Types</b> 0=box 1=sph 2=cyl 3=cone 4=pyr 5=tor 6=line 7=dot 8=txt 9=arc 10=wedge 11=sweep 12=hull &nbsp;
+      <b>Colors</b>
+      <span class="swatch" style="background:#1a1a1a"></span>0
+      <span class="swatch" style="background:#e53935"></span>1
+      <span class="swatch" style="background:#43a047"></span>2
+      <span class="swatch" style="background:#1e88e5"></span>3
+      <span class="swatch" style="background:#00bcd4"></span>4
+      <span class="swatch" style="background:#8e24aa"></span>5
+      <span class="swatch" style="background:#fdd835"></span>6
+      <span class="swatch" style="background:#fb8c00"></span>7
+      <span class="swatch" style="background:#ffffff"></span>8
+      <span class="swatch" style="background:#9e9e9e"></span>9 &nbsp;
+      <b>Rel</b> 10=on 11=under 12=left 13=right 14=front 15=back 16=in
+    </div>
+    <div class="editor-wrap">
+      <div class="line-numbers" id="line-numbers">1</div>
+      <textarea id="editor" spellcheck="false">P1
+1 200 0 200 35 35 0 8
+1 200 70 200 25 25 0 8 10 0
+1 200 120 200 18 18 0 8 10 1
+3 200 138 200 5 15 0 7 14 2
+7 191 120 183 3 3 0 0 12 2
+7 209 120 183 3 3 0 0 13 2</textarea>
+    </div>
+    <div class="error-bar" id="error-bar"></div>
+  </div>
+
+  <!-- Right pane: Three.js canvas -->
+  <div class="canvas-pane" id="canvas-pane">
+  </div>
+</div>
+
+<!-- Status bar -->
+<div class="status-bar">
+  <span id="status-left">Ready</span>
+  <span id="status-right">Three.js WebGL</span>
+</div>
+
+<!-- Three.js from CDN via ES module importmap -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// =============================================================================
+// CONSTANTS
+// =============================================================================
+
+const COLORS = [
+  '#1a1a1a', '#e53935', '#43a047', '#1e88e5', '#00bcd4',
+  '#8e24aa', '#fdd835', '#fb8c00', '#ffffff', '#9e9e9e'
+];
+const TYPES = ['box','sphere','cylinder','cone','pyramid','torus','line','dot','text','arc','wedge','sweep','hull'];
+const TYPE_NAMES = {
+  box:0, sph:1, ball:1, cyl:2, tube:2, cone:3, pyr:4,
+  tor:5, ring:5, line:6, dot:7, txt:8, text:8, arc:9,
+  wedge:10, wed:10, sweep:11, swp:11, hull:12, blob:12, ellipsoid:12
+};
+const COLOR_NAMES = {
+  blk:0, red:1, grn:2, blu:3, cyn:4, mag:5, yel:6, org:7, wht:8, gry:9,
+  black:0, green:2, blue:3, cyan:4, magenta:5, yellow:6, orange:7, white:8, gray:9, grey:9
+};
+const D2R = Math.PI / 180;
+
+function clamp(n) { return Math.max(0, Math.min(12, Math.round(n))); }
+function clampColor(n) { return Math.max(0, Math.min(9, Math.round(n))); }
+
+// =============================================================================
+// EXAMPLES
+// =============================================================================
+
+const EXAMPLES = {
+  snowman: `P1
+1 200 0 200 35 35 0 8
+1 200 70 200 25 25 0 8 10 0
+1 200 120 200 18 18 0 8 10 1
+3 200 138 200 5 15 0 7 14 2
+7 191 120 183 3 3 0 0 12 2
+7 209 120 183 3 3 0 0 13 2`,
+
+  house: `P1
+0 130 0 130 140 60 140 9
+4 200 60 200 170 50 0 1 10 0
+0 180 0 115 40 45 15 3 14 0
+0 270 60 160 20 40 20 1 10 0`,
+
+  chess: `P1
+2 200 0 200 45 15 0 8
+2 200 15 200 35 10 0 8 10 0
+2 200 25 200 18 65 0 8 10 1
+2 200 90 200 32 12 0 8 10 2
+1 200 102 200 25 25 0 8 10 3
+0 196 127 196 8 30 8 8 10 4
+0 190 157 190 20 8 20 8 10 5`,
+
+  table: `P1
+0 130 70 130 140 6 140 7
+0 135 0 135 10 70 10 7 11 0
+0 255 0 135 10 70 10 7 11 0
+0 135 0 255 10 70 10 7 11 0
+0 255 0 255 10 70 10 7 11 0
+2 175 76 175 12 30 0 4 10 0
+1 230 86 180 10 10 0 1 10 0
+0 185 76 235 55 8 35 3 10 0`,
+
+  rocket: `P1
+2 200 0 200 45 130 0 9
+3 200 130 200 45 55 0 1 10 0
+0 158 0 200 10 65 10 1 34 0
+0 242 0 200 10 65 10 1 31 2
+0 200 0 158 10 65 10 1 34 0
+0 200 0 242 10 65 10 1 31 4
+3 200 0 200 30 40 0 7 11 0
+1 200 5 200 12 12 0 6 16 6`,
+
+  tree: `P1
+2 200 0 200 12 80 0 7
+1 200 80 200 45 45 0 2 10 0
+1 200 120 200 35 35 0 2 10 1
+1 200 155 200 25 25 0 2 10 2`,
+
+  lamp: `P1
+2 200 0 200 25 8 0 9
+2 200 8 200 8 60 0 9 10 0
+3 200 68 200 35 30 0 6 10 1
+2 200 68 200 6 32 0 8 16 2`,
+
+  city: `P1
+0 50 0 200 40 200 40 3
+0 120 0 200 30 130 30 9
+0 170 0 200 55 80 50 7
+0 250 0 200 25 250 25 4
+0 300 0 200 60 60 55 1
+0 380 0 200 35 160 30 9`,
+
+  anchored: `P1
+0 150 0 150 100 5 100 7
+0 0 0 0 8 60 8 7 11 0
+0 0 0 0 8 60 8 7 11 0 40 2 92 0 0
+0 0 0 0 8 60 8 7 11 0 40 2 0 0 92
+2 0 0 0 10 25 0 4 10 0
+1 20 0 -10 8 8 0 1 10 0
+0 0 0 0 40 6 30 3 10 0`,
+
+  organic: `P1
+12 200 0 200 80 25 50 9
+12 200 30 200 60 20 40 8
+10 120 0 160 80 60 80 40 9
+10 280 0 160 80 60 80 40 9
+11 140 60 200 260 60 200 8 9
+11 160 0 200 240 0 200 5 9
+2 200 50 200 10 40 0 9
+1 200 90 200 15 15 0 6
+0 160 0 160 80 2 80 2`,
+
+  fence: `P1
+0 100 0 100 200 3 200 2
+0 100 0 100 3 40 3 7 40 10 22 0 0
+0 100 0 100 3 40 3 7 40 10 0 0 22
+0 100 0 300 3 40 3 7 40 10 22 0 0
+0 300 0 100 3 40 3 7 40 10 0 0 22
+0 100 40 100 200 3 3 7
+0 100 40 300 200 3 3 7
+0 100 40 100 3 3 200 7
+0 300 40 100 3 3 200 7`,
+
+  locomotive: `P1
+0 200 10 200 140 10 50 0
+0 200 20 200 130 10 40 1
+2 160 15 178 14 14 5 0 40 3 35 0 0
+2 160 15 222 14 14 5 0 40 3 35 0 0
+0 180 55 200 90 40 40 1
+2 135 55 200 42 42 10 0
+2 145 85 200 12 25 12 0
+0 255 65 200 50 80 55 1
+0 255 105 200 60 5 65 0
+2 245 95 200 4 10 4 7
+0 125 20 200 10 5 60 0
+10 115 15 185 12 15 40 4 7
+10 115 15 215 12 15 40 4 7
+0 150 3 200 2 2 60 0 40 10 20 0 0`,
+
+  cathedral: `P1
+0 170 0 110 60 110 190 8
+0 120 0 240 160 110 60 8
+0 165 0 90 35 170 35 8
+0 200 0 90 35 170 35 8
+3 190 110 260 22 130 0 9
+10 170 110 110 60 35 190 0 8
+0 185 0 88 30 55 10 8
+0 190 0 87 20 40 5 0
+1 200 95 89 18 18 2 4
+0 130 0 130 12 50 12 8 40 6 0 0 30
+0 258 0 130 12 50 12 8 40 6 0 0 30
+2 175 0 125 6 110 0 9 40 6 0 0 30
+2 225 0 125 6 110 0 9 40 6 0 0 30
+0 170 85 120 1 18 8 3 40 8 0 0 20
+0 230 85 120 1 18 8 3 40 8 0 0 20`,
+
+  robot: `P1
+0 180 85 185 40 60 30 9
+1 200 165 200 15 15 0 8 10 0
+2 200 145 200 4 15 4 0 10 0
+2 170 100 200 8 10 10 0 12 0
+2 230 100 200 8 10 10 0 13 0
+2 185 0 195 8 30 8 9 11 0
+2 215 0 195 8 30 8 9 11 0
+0 185 105 175 10 5 2 4 14 0`,
+
+  pirate_ship: `P1
+12 200 25 200 130 35 45 7
+0 200 50 200 260 5 80 7
+2 180 50 200 10 240 10 7
+2 280 50 200 8 180 8 7
+2 100 50 200 8 150 8 7
+0 0 140 0 2 70 110 8 10 2
+0 0 75 0 2 60 130 8 10 3
+0 0 85 0 2 60 80 8 10 4
+2 250 65 165 6 15 6 0 40 6 -30 0 0
+2 250 65 235 6 15 6 0 40 6 -30 0 0
+0 0 240 15 30 20 1 1 10 2`,
+
+  dragon: `P1
+12 200 10 200 90 20 90 9
+12 200 25 200 70 15 70 0
+11 200 75 235 200 120 270 12 1
+12 200 125 275 20 20 30 1
+2 180 30 225 10 45 10 1
+2 220 30 225 10 45 10 1
+2 175 25 185 15 40 15 1
+2 225 25 185 15 40 15 1
+11 200 50 170 200 25 100 12 1
+3 200 10 35 6 15 6 1`,
+
+  kitchen: `P1
+0 200 0 200 400 1 400 9
+0 50 45 30 100 90 60 8
+0 150 45 30 100 90 60 8
+0 240 45 30 80 90 60 0
+0 330 45 30 100 90 60 8
+0 375 110 35 50 220 65 8
+0 200 50 270 140 5 100 7
+0 -60 0 -40 5 50 5 9 11 6
+0 60 0 -40 5 50 5 9 11 6
+0 -60 0 40 5 50 5 9 11 6
+0 60 0 40 5 50 5 9 11 6`,
+
+  living_room: `P1
+0 200 0 200 400 2 400 9
+0 200 10 80 140 20 50 3
+0 0 25 0 140 30 10 3 15 3
+0 200 15 180 90 5 60 8
+0 80 0 180 60 180 30 7
+0 0 35 0 58 2 28 7 16 4
+0 0 70 0 58 2 28 7 16 4
+0 0 105 0 58 2 28 7 16 4
+0 200 10 330 120 20 40 0
+0 0 28 0 100 55 4 9 10 8
+2 320 0 100 18 6 18 0
+2 320 75 100 3 150 3 9
+3 320 150 100 35 30 35 6`
+};
+
+// =============================================================================
+// PARSER — reused from v25.html
+// =============================================================================
+
+function parse(source) {
+  const lines = source.split('\n');
+  const elements = [];
+  const connections = [];
+  const csgOps = [];
+  const errors = [];
+  let projection = null;
+
+  for (let li = 0; li < lines.length; li++) {
+    const raw = lines[li].trim();
+    if (!raw || raw.startsWith('--') || raw.startsWith('//')) continue;
+
+    // Projection mode line
+    if (/^P[0-3]\s*$/i.test(raw)) {
+      projection = raw[1] === '1' ? 'iso' : raw[1] === '2' ? 'persp' : raw[1] === '3' ? 'cabinet' : 'flat';
+      continue;
+    }
+
+    // CSG operation: U a b, I a b, S a b
+    if (/^[UIS]\s+\d/i.test(raw)) {
+      const p = raw.split(/\s+/);
+      const op = p[0].toUpperCase();
+      const a = parseInt(p[1]), b = parseInt(p[2]);
+      if (!isNaN(a) && !isNaN(b)) {
+        csgOps.push({ op, a, b, line: li });
+      }
+      continue;
+    }
+
+    // Extract quoted text for text elements
+    let text = null;
+    const tm = raw.match(/"([^"]*)"/);
+    if (tm) text = tm[1];
+    const numStr = raw.replace(/"[^"]*"/g, '').trim();
+
+    // Connection line: 0>1>2
+    if (/^\d+(\s*>\s*\d+)+\s*$/.test(numStr)) {
+      const parts = numStr.split('>').map(s => parseInt(s.trim()));
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!isNaN(parts[i]) && !isNaN(parts[i+1])) {
+          connections.push({ from: parts[i], to: parts[i+1], line: li });
+        }
+      }
+      continue;
+    }
+
+    // Element line: T X Y Z W H D C [R REF] [RX RY RZ]
+    const tokens = numStr.split(/\s+/).filter(s => s.length > 0);
+    const nums = tokens.map(t => {
+      const lo = t.toLowerCase();
+      if (TYPE_NAMES[lo] !== undefined) return TYPE_NAMES[lo];
+      if (COLOR_NAMES[lo] !== undefined) return COLOR_NAMES[lo];
+      const n = Number(t);
+      return isNaN(n) ? null : n;
+    }).filter(n => n !== null);
+
+    const typeNum = clamp(nums[0]);
+
+    if (nums.length < 8) {
+      if (nums.length > 0) {
+        errors.push({ line: li, msg: `Need T X Y Z W H D C (8 values), got ${nums.length}` });
+      }
+      continue;
+    }
+
+    const el = {
+      idx: elements.length,
+      line: li,
+      type: TYPES[typeNum] || 'box',
+      typeNum,
+      x: nums[1], y: nums[2], z: nums[3],
+      w: nums[4], h: nums[5], d: nums[6],
+      color: COLORS[clampColor(nums[7])] || COLORS[9],
+      colorIdx: clampColor(nums[7]),
+      rel: null, relRef: null,
+      rx: 0, ry: 0, rz: 0,
+      text
+    };
+
+    // WEDGE (type 10): 10 X Y Z W1 H D W2 C — W2 is in position 7, C moves to 8
+    if (typeNum === 10 && nums.length >= 9) {
+      el.w = nums[4];   // W1 (bottom width)
+      el.h = nums[5];   // H (height)
+      el.d = nums[6];   // D (depth)
+      el.w2 = nums[7];  // W2 (top width)
+      el.color = COLORS[clampColor(nums[8])] || COLORS[9];
+      el.colorIdx = clampColor(nums[8]);
+    }
+
+    // SWEEP (type 11): 11 X1 Y1 Z1 X2 Y2 Z2 R C — end point in W/H/D, R in pos 7
+    if (typeNum === 11 && nums.length >= 9) {
+      // x,y,z = start; w,h,d = end point; nums[7] = radius; nums[8] = color
+      el.w = nums[4];  // X2
+      el.h = nums[5];  // Y2
+      el.d = nums[6];  // Z2
+      el.sweepR = nums[7];
+      el.color = COLORS[clampColor(nums[8])] || COLORS[9];
+      el.colorIdx = clampColor(nums[8]);
+    }
+
+    // HULL (type 12): 12 X Y Z RX RY RZ C — three radii
+    if (typeNum === 12) {
+      // w=RX, h=RY, d=RZ already parsed correctly
+    }
+
+    // Parse remaining values: could be [R REF] [40 COUNT DX DY DZ] [RX RY RZ]
+    let cursor = (typeNum === 10 || typeNum === 11) ? 9 : 8;
+    let cloneCount = 0, cloneDX = 0, cloneDY = 0, cloneDZ = 0;
+
+    if (cursor < nums.length) {
+      const val = nums[cursor];
+      // Relation code (10-39)
+      if (val >= 10 && val <= 39 && val !== 40 && cursor + 1 < nums.length) {
+        el.rel = val;
+        el.relRef = nums[cursor + 1];
+        cursor += 2;
+      }
+    }
+
+    // Clone operator (40 COUNT DX DY DZ)
+    if (cursor < nums.length && nums[cursor] === 40 && cursor + 4 <= nums.length) {
+      cloneCount = nums[cursor + 1] || 0;
+      cloneDX = nums[cursor + 2] || 0;
+      cloneDY = nums[cursor + 3] || 0;
+      cloneDZ = nums[cursor + 4] || 0;
+      cursor += 5;
+    }
+
+    // Rotation angles (whatever remains)
+    if (cursor < nums.length) {
+      el.rx = nums[cursor] || 0;
+      el.ry = nums[cursor + 1] || 0;
+      el.rz = nums[cursor + 2] || 0;
+    }
+
+    elements.push(el);
+
+    // Generate clones
+    if (cloneCount > 1) {
+      for (let ci = 1; ci < cloneCount; ci++) {
+        elements.push({
+          ...el,
+          idx: elements.length,
+          x: el.x + cloneDX * ci,
+          y: el.y + cloneDY * ci,
+          z: el.z + cloneDZ * ci,
+          _isClone: true
+        });
+      }
+    }
+  }
+
+  // --- ANCHORED COMPOSITION: resolve positions from relations ---
+  resolveAnchors(elements);
+
+  return { elements, connections, csgOps, errors, projection };
+}
+
+// =============================================================================
+// ANCHORED COMPOSITION — compute positions from relation codes
+// =============================================================================
+
+/** Get bounding box of an element: { minX, maxX, minY, maxY, minZ, maxZ, cx, cy, cz } */
+function elementBBox(el) {
+  const t = el.type;
+  let minX, maxX, minY, maxY, minZ, maxZ;
+
+  if (t === 'box' || t === 'wedge') {
+    minX = el.x; maxX = el.x + el.w;
+    minY = el.y; maxY = el.y + el.h;
+    minZ = el.z; maxZ = el.z + el.d;
+  } else if (t === 'sphere') {
+    const r = el.w;
+    minX = el.x - r; maxX = el.x + r;
+    minY = el.y;     maxY = el.y + r * 2;
+    minZ = el.z - r; maxZ = el.z + r;
+  } else if (t === 'cylinder' || t === 'cone') {
+    const r = el.w / 2;
+    minX = el.x - r; maxX = el.x + r;
+    minY = el.y;     maxY = el.y + el.h;
+    minZ = el.z - r; maxZ = el.z + r;
+  } else if (t === 'pyramid') {
+    const hw = el.w / 2;
+    minX = el.x - hw; maxX = el.x + hw;
+    minY = el.y;      maxY = el.y + el.h;
+    minZ = el.z - hw;  maxZ = el.z + hw;
+  } else if (t === 'hull') {
+    minX = el.x - el.w; maxX = el.x + el.w;
+    minY = el.y;         maxY = el.y + el.h * 2;
+    minZ = el.z - el.d;  maxZ = el.z + el.d;
+  } else {
+    minX = el.x; maxX = el.x + (el.w || 10);
+    minY = el.y; maxY = el.y + (el.h || 10);
+    minZ = el.z; maxZ = el.z + (el.d || 10);
+  }
+
+  return {
+    minX, maxX, minY, maxY, minZ, maxZ,
+    cx: (minX + maxX) / 2,
+    cy: (minY + maxY) / 2,
+    cz: (minZ + maxZ) / 2,
+    w: maxX - minX,
+    h: maxY - minY,
+    d: maxZ - minZ
+  };
+}
+
+/** Get the dimensions of an element for self-sizing */
+function elementSize(el) {
+  const t = el.type;
+  if (t === 'box' || t === 'wedge') return { w: el.w, h: el.h, d: el.d };
+  if (t === 'sphere') return { w: el.w * 2, h: el.w * 2, d: el.w * 2 };
+  if (t === 'cylinder' || t === 'cone') return { w: el.w, h: el.h, d: el.w };
+  if (t === 'pyramid') return { w: el.w, h: el.h, d: el.w };
+  if (t === 'hull') return { w: el.w * 2, h: el.h * 2, d: el.d * 2 };
+  return { w: el.w || 10, h: el.h || 10, d: el.d || 10 };
+}
+
+/**
+ * Resolve anchored composition:
+ * Elements WITHOUT relations keep absolute positions (anchors).
+ * Elements WITH relations get positions COMPUTED from the reference element.
+ * X, Y, Z values on relational elements are treated as OFFSETS from computed position.
+ *
+ * Only activates if the element's coords look like offsets (all within -100..100 range)
+ * OR if all are exactly 0. This preserves backward compatibility with existing V2.5 code
+ * that has both absolute coords AND relations.
+ */
+function resolveAnchors(elements) {
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    if (el.rel === null || el.relRef === null) continue;
+
+    const refIdx = el.relRef;
+    if (refIdx < 0 || refIdx >= elements.length || refIdx === i) continue;
+
+    const ref = elements[refIdx];
+    const refBB = elementBBox(ref);
+    const selfSize = elementSize(el);
+
+    // Check if this element's coords look like offsets (small values or all zero)
+    const isOffset = Math.abs(el.x) <= 100 && Math.abs(el.y) <= 100 && Math.abs(el.z) <= 100;
+    if (!isOffset) continue; // Absolute coords — don't override
+
+    const ox = el.x, oy = el.y, oz = el.z; // offset values
+    let nx, ny, nz; // new computed position
+
+    switch (el.rel) {
+      case 10: // ON — place on top of ref, centered
+        nx = refBB.cx - selfSize.w / 2 + ox;
+        ny = refBB.maxY + oy;
+        nz = refBB.cz - selfSize.d / 2 + oz;
+        break;
+      case 11: // UNDER — place below ref, centered
+        nx = refBB.cx - selfSize.w / 2 + ox;
+        ny = refBB.minY - selfSize.h + oy;
+        nz = refBB.cz - selfSize.d / 2 + oz;
+        break;
+      case 12: // LEFT — place to the left of ref
+        nx = refBB.minX - selfSize.w + ox;
+        ny = refBB.minY + oy;
+        nz = refBB.cz - selfSize.d / 2 + oz;
+        break;
+      case 13: // RIGHT — place to the right of ref
+        nx = refBB.maxX + ox;
+        ny = refBB.minY + oy;
+        nz = refBB.cz - selfSize.d / 2 + oz;
+        break;
+      case 14: // FRONT — place in front of ref (-Z)
+        nx = refBB.cx - selfSize.w / 2 + ox;
+        ny = refBB.minY + oy;
+        nz = refBB.minZ - selfSize.d + oz;
+        break;
+      case 15: // BACK — place behind ref (+Z)
+        nx = refBB.cx - selfSize.w / 2 + ox;
+        ny = refBB.minY + oy;
+        nz = refBB.maxZ + oz;
+        break;
+      case 16: // IN — place at center of ref
+        nx = refBB.cx - selfSize.w / 2 + ox;
+        ny = refBB.cy - selfSize.h / 2 + oy;
+        nz = refBB.cz - selfSize.d / 2 + oz;
+        break;
+      case 17: // BESIDE — place to the right with a gap
+        nx = refBB.maxX + selfSize.w * 0.3 + ox;
+        ny = refBB.minY + oy;
+        nz = refBB.cz - selfSize.d / 2 + oz;
+        break;
+      default:
+        continue; // Unknown relation, keep absolute
+    }
+
+    // For box/wedge: position is bottom-left corner, already accounted for
+    // For sphere/cylinder/cone: position is center of base
+    if (el.type === 'sphere' || el.type === 'cylinder' || el.type === 'cone' || el.type === 'pyramid' || el.type === 'hull') {
+      nx += selfSize.w / 2;
+      nz += selfSize.d / 2;
+    }
+
+    el.x = nx;
+    el.y = ny;
+    el.z = nz;
+    el._anchored = true; // Mark as resolved
+  }
+}
+
+// =============================================================================
+// ELEMENT CENTER (3D) — for connections and labels
+// =============================================================================
+
+function elementCenter(el) {
+  const t = el.type;
+  if (t === 'line') {
+    return { x: (el.x + el.w) / 2, y: (el.y + el.h) / 2, z: (el.z + el.d) / 2 };
+  }
+  if (t === 'box') {
+    return { x: el.x + el.w / 2, y: el.y + el.h / 2, z: el.z + el.d / 2 };
+  }
+  if (t === 'sphere') {
+    return { x: el.x, y: el.y + el.w, z: el.z };
+  }
+  if (t === 'cylinder' || t === 'cone' || t === 'pyramid') {
+    return { x: el.x, y: el.y + el.h / 2, z: el.z };
+  }
+  if (t === 'torus') {
+    return { x: el.x, y: el.y + el.w, z: el.z };
+  }
+  if (t === 'dot') {
+    return { x: el.x, y: el.y, z: el.z };
+  }
+  if (t === 'wedge') {
+    return { x: el.x + el.w / 2, y: el.y + el.h / 2, z: el.z + el.d / 2 };
+  }
+  if (t === 'sweep') {
+    return { x: (el.x + el.w) / 2, y: (el.y + el.h) / 2, z: (el.z + el.d) / 2 };
+  }
+  if (t === 'hull') {
+    return { x: el.x, y: el.y + el.h, z: el.z };
+  }
+  // Default
+  return { x: el.x, y: el.y, z: el.z };
+}
+
+// =============================================================================
+// THREE.JS SETUP
+// =============================================================================
+
+const canvasPane = document.getElementById('canvas-pane');
+
+// Scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x13151f);
+
+// Camera — perspective, positioned for isometric-like view
+const camera = new THREE.PerspectiveCamera(45, 1, 1, 5000);
+const defaultCamPos = new THREE.Vector3(450, 300, -100);
+const defaultCamTarget = new THREE.Vector3(200, 60, 200);
+camera.position.copy(defaultCamPos);
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+canvasPane.appendChild(renderer.domElement);
+
+// OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.copy(defaultCamTarget);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 50;
+controls.maxDistance = 3000;
+controls.update();
+
+// --- Lights ---
+const ambientLight = new THREE.AmbientLight(0x404050, 1.0);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+dirLight.position.set(200, 400, 300);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.near = 1;
+dirLight.shadow.camera.far = 1500;
+dirLight.shadow.camera.left = -500;
+dirLight.shadow.camera.right = 500;
+dirLight.shadow.camera.top = 500;
+dirLight.shadow.camera.bottom = -500;
+dirLight.shadow.bias = -0.001;
+scene.add(dirLight);
+
+const hemiLight = new THREE.HemisphereLight(0x606080, 0x202030, 0.5);
+scene.add(hemiLight);
+
+// --- Ground plane ---
+const groundGrid = new THREE.GridHelper(800, 16, 0x2a2f40, 0x1a1e2a);
+groundGrid.material.opacity = 0.6;
+groundGrid.material.transparent = true;
+scene.add(groundGrid);
+
+// Shadow-receiving ground plane (invisible but receives shadows)
+const groundGeo = new THREE.PlaneGeometry(800, 800);
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
+const groundPlane = new THREE.Mesh(groundGeo, groundMat);
+groundPlane.rotation.x = -Math.PI / 2;
+groundPlane.position.y = -0.5;
+groundPlane.receiveShadow = true;
+scene.add(groundPlane);
+
+// =============================================================================
+// STATE
+// =============================================================================
+
+let showGrid = true;
+let showLabels = true;
+let showShadows = true;
+
+// Groups for scene objects (cleared on re-render)
+let sceneGroup = new THREE.Group();
+scene.add(sceneGroup);
+let labelSprites = []; // tracked separately for toggle
+
+// =============================================================================
+// DOM REFS
+// =============================================================================
+
+const editorEl = document.getElementById('editor');
+const lineNumEl = document.getElementById('line-numbers');
+const errorBarEl = document.getElementById('error-bar');
+const examplesEl = document.getElementById('examples');
+const statusLeft = document.getElementById('status-left');
+
+// =============================================================================
+// EDITOR — line numbers
+// =============================================================================
+
+function updateLineNumbers() {
+  const lines = editorEl.value.split('\n');
+  lineNumEl.textContent = lines.map((_, i) => i + 1).join('\n');
+}
+
+editorEl.addEventListener('scroll', () => {
+  lineNumEl.scrollTop = editorEl.scrollTop;
+});
+
+// =============================================================================
+// EXAMPLES DROPDOWN
+// =============================================================================
+
+Object.keys(EXAMPLES).forEach(name => {
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  examplesEl.appendChild(opt);
+});
+
+examplesEl.addEventListener('change', () => {
+  const name = examplesEl.value;
+  if (name && EXAMPLES[name]) {
+    editorEl.value = EXAMPLES[name];
+    updateLineNumbers();
+    renderScene();
+  }
+  examplesEl.value = '';
+});
+
+// =============================================================================
+// THREE.JS SHAPE CREATION
+// =============================================================================
+
+function createMaterial(colorHex, colorIdx) {
+  const color = new THREE.Color(colorHex);
+  const mat = new THREE.MeshStandardMaterial({
+    color: color,
+    roughness: 0.7,
+    metalness: 0.1
+  });
+  // For black color, add slight emissive so it's visible
+  if (colorIdx === 0) {
+    mat.emissive = new THREE.Color(0x222222);
+  }
+  return mat;
+}
+
+function createShape(el) {
+  let mesh = null;
+  const mat = createMaterial(el.color, el.colorIdx);
+
+  switch (el.type) {
+    case 'box': {
+      const geo = new THREE.BoxGeometry(el.w, el.h, el.d);
+      mesh = new THREE.Mesh(geo, mat);
+      // Position: bottom-left corner at (x,y,z), center at (x+w/2, y+h/2, z+d/2)
+      mesh.position.set(el.x + el.w / 2, el.y + el.h / 2, el.z + el.d / 2);
+      break;
+    }
+
+    case 'sphere': {
+      const radius = el.w;
+      const geo = new THREE.SphereGeometry(radius, 32, 32);
+      mesh = new THREE.Mesh(geo, mat);
+      // Sits on ground: center at y + radius
+      mesh.position.set(el.x, el.y + radius, el.z);
+      break;
+    }
+
+    case 'cylinder': {
+      const radius = el.w / 2;
+      const height = el.h;
+      const geo = new THREE.CylinderGeometry(radius, radius, height, 32);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y + height / 2, el.z);
+      break;
+    }
+
+    case 'cone': {
+      const radius = el.w / 2;
+      const height = el.h;
+      const geo = new THREE.ConeGeometry(radius, height, 32);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y + height / 2, el.z);
+      break;
+    }
+
+    case 'pyramid': {
+      const radius = el.w / 2;
+      const height = el.h;
+      const geo = new THREE.ConeGeometry(radius, height, 4);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y + height / 2, el.z);
+      // Rotate Y by 45 degrees so edges align with axes
+      mesh.rotation.y = 45 * D2R;
+      break;
+    }
+
+    case 'torus': {
+      const majorRadius = el.w;
+      const tubeRadius = el.h || el.w * 0.3;
+      const geo = new THREE.TorusGeometry(majorRadius, tubeRadius, 16, 32);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y + majorRadius, el.z);
+      // Torus is created in XY plane by default, rotate to lie in XZ plane
+      mesh.rotation.x = Math.PI / 2;
+      break;
+    }
+
+    case 'line': {
+      // Line from (x,y,z) to (w,h,d) — these are two 3D points
+      const points = [
+        new THREE.Vector3(el.x, el.y, el.z),
+        new THREE.Vector3(el.w, el.h, el.d)
+      ];
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const lineMat = new THREE.LineBasicMaterial({ color: new THREE.Color(el.color), linewidth: 2 });
+      mesh = new THREE.Line(geo, lineMat);
+      // Lines don't cast/receive shadows
+      return mesh;
+    }
+
+    case 'dot': {
+      const dotRadius = el.w || 3;
+      const geo = new THREE.SphereGeometry(dotRadius, 8, 8);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y, el.z);
+      break;
+    }
+
+    case 'text': {
+      // Render as a small colored dot/sprite placeholder
+      const dotR = el.w || 5;
+      const geo = new THREE.SphereGeometry(dotR, 8, 8);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y, el.z);
+      break;
+    }
+
+    case 'arc': {
+      // Render as a torus segment (half torus)
+      const arcRadius = el.w || 20;
+      const arcTube = el.h || arcRadius * 0.15;
+      const geo = new THREE.TorusGeometry(arcRadius, arcTube, 8, 32, Math.PI);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y + arcRadius, el.z);
+      mesh.rotation.x = Math.PI / 2;
+      break;
+    }
+
+    case 'wedge': {
+      // Tapered box: W1 at bottom, W2 at top
+      const w1 = el.w || 40, h = el.h || 40, d = el.d || 40;
+      const w2 = el.w2 !== undefined ? el.w2 : w1 * 0.5;
+      // Custom geometry: 8 vertices, bottom is w1 wide, top is w2 wide
+      const hw1 = w1 / 2, hw2 = w2 / 2, hd = d / 2;
+      const geo = new THREE.BufferGeometry();
+      const verts = new Float32Array([
+        // Bottom face (y=0)
+        -hw1, 0, -hd,   hw1, 0, -hd,   hw1, 0, hd,   -hw1, 0, hd,
+        // Top face (y=h)
+        -hw2, h, -hd,   hw2, h, -hd,   hw2, h, hd,   -hw2, h, hd
+      ]);
+      const indices = [
+        0,1,2, 0,2,3,  // bottom
+        4,6,5, 4,7,6,  // top
+        0,4,5, 0,5,1,  // front
+        2,6,7, 2,7,3,  // back
+        0,3,7, 0,7,4,  // left
+        1,5,6, 1,6,2   // right
+      ];
+      geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x + hw1, el.y, el.z + hd);
+      break;
+    }
+
+    case 'sweep': {
+      // Curved tube/arch from point 1 to point 2
+      const x1 = el.x, y1 = el.y, z1 = el.z;
+      const x2 = el.w, y2 = el.h, z2 = el.d;
+      const r = el.sweepR || 3;
+      // Create a quadratic bezier curve — midpoint rises above the line
+      const mid = new THREE.Vector3((x1+x2)/2, Math.max(y1,y2) + Math.abs(x2-x1+z2-z1)*0.3, (z1+z2)/2);
+      const curve = new THREE.QuadraticBezierCurve3(
+        new THREE.Vector3(x1, y1, z1),
+        mid,
+        new THREE.Vector3(x2, y2, z2)
+      );
+      const geo = new THREE.TubeGeometry(curve, 32, r, 12, false);
+      mesh = new THREE.Mesh(geo, mat);
+      break;
+    }
+
+    case 'hull': {
+      // Ellipsoid: independent X, Y, Z radii
+      const rx = el.w || 20, ry = el.h || 20, rz = el.d || 20;
+      const geo = new THREE.SphereGeometry(1, 32, 24);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.scale.set(rx, ry, rz);
+      mesh.position.set(el.x, el.y + ry, el.z);
+      break;
+    }
+
+    default: {
+      const geo = new THREE.BoxGeometry(el.w || 10, el.h || 10, el.d || 10);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(el.x, el.y, el.z);
+    }
+  }
+
+  if (mesh) {
+    // Apply Euler rotation (RX, RY, RZ) in degrees
+    if (el.rx || el.ry || el.rz) {
+      // For pyramid, preserve the 45-degree Y rotation and add user rotation
+      if (el.type === 'pyramid') {
+        mesh.rotation.x += el.rx * D2R;
+        mesh.rotation.y += el.ry * D2R;
+        mesh.rotation.z += el.rz * D2R;
+      } else if (el.type === 'torus' || el.type === 'arc') {
+        // Preserve the X rotation for torus alignment
+        mesh.rotation.x += el.rx * D2R;
+        mesh.rotation.y += el.ry * D2R;
+        mesh.rotation.z += el.rz * D2R;
+      } else {
+        mesh.rotation.set(el.rx * D2R, el.ry * D2R, el.rz * D2R);
+      }
+    }
+
+    // Shadows
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+  }
+
+  return mesh;
+}
+
+// =============================================================================
+// LABEL SPRITES — index labels above each shape
+// =============================================================================
+
+function createLabelSprite(text, position) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'rgba(108, 140, 255, 0.85)';
+  ctx.fillRect(0, 0, 64, 32);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 32, 16);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.position.copy(position);
+  sprite.position.y += 15; // offset above shape center
+  sprite.scale.set(16, 8, 1);
+  return sprite;
+}
+
+// =============================================================================
+// CONNECTION LINES — arrows between element centers
+// =============================================================================
+
+function createConnection(fromPos, toPos, color) {
+  const group = new THREE.Group();
+
+  // Line
+  const points = [
+    new THREE.Vector3(fromPos.x, fromPos.y, fromPos.z),
+    new THREE.Vector3(toPos.x, toPos.y, toPos.z)
+  ];
+  const geo = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineBasicMaterial({ color: 0x6c8cff, linewidth: 1 });
+  const line = new THREE.Line(geo, mat);
+  group.add(line);
+
+  // Arrow head — small cone at the target
+  const dir = new THREE.Vector3(toPos.x - fromPos.x, toPos.y - fromPos.y, toPos.z - fromPos.z);
+  const len = dir.length();
+  if (len > 0) {
+    dir.normalize();
+    const arrowGeo = new THREE.ConeGeometry(3, 10, 8);
+    const arrowMat = new THREE.MeshBasicMaterial({ color: 0x6c8cff });
+    const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+    // Position at target
+    arrow.position.set(toPos.x, toPos.y, toPos.z);
+    // Orient along direction
+    const up = new THREE.Vector3(0, 1, 0);
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromUnitVectors(up, dir);
+    arrow.quaternion.copy(quaternion);
+    group.add(arrow);
+  }
+
+  return group;
+}
+
+// =============================================================================
+// RENDER SCENE — main render function
+// =============================================================================
+
+function renderScene() {
+  // Remove old scene objects
+  scene.remove(sceneGroup);
+  sceneGroup = new THREE.Group();
+  labelSprites = [];
+
+  // Parse editor content
+  const source = editorEl.value;
+  const parsed = parse(source);
+
+  // Show errors
+  if (parsed.errors.length > 0) {
+    errorBarEl.style.display = 'block';
+    errorBarEl.textContent = parsed.errors.map(e => `Line ${e.line + 1}: ${e.msg}`).join(' | ');
+  } else {
+    errorBarEl.style.display = 'none';
+  }
+
+  // Update status
+  statusLeft.textContent = `${parsed.elements.length} elements, ${parsed.connections.length} connections`;
+
+  // Create meshes for each element
+  const meshes = [];
+  parsed.elements.forEach((el, i) => {
+    const mesh = createShape(el);
+    if (mesh) {
+      sceneGroup.add(mesh);
+      meshes.push({ mesh, el });
+
+      // Create label sprite
+      if (showLabels) {
+        const center = elementCenter(el);
+        const sprite = createLabelSprite(String(i), new THREE.Vector3(center.x, center.y, center.z));
+        sceneGroup.add(sprite);
+        labelSprites.push(sprite);
+      }
+    }
+  });
+
+  // Create connections
+  parsed.connections.forEach(conn => {
+    const fromEl = parsed.elements[conn.from];
+    const toEl = parsed.elements[conn.to];
+    if (fromEl && toEl) {
+      const fromCenter = elementCenter(fromEl);
+      const toCenter = elementCenter(toEl);
+      const connObj = createConnection(fromCenter, toCenter);
+      sceneGroup.add(connObj);
+    }
+  });
+
+  scene.add(sceneGroup);
+}
+
+// =============================================================================
+// ANIMATION LOOP
+// =============================================================================
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// =============================================================================
+// RESIZE HANDLER
+// =============================================================================
+
+function onResize() {
+  const w = canvasPane.clientWidth;
+  const h = canvasPane.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+
+window.addEventListener('resize', onResize);
+
+// Use ResizeObserver for split-pane resize
+const resizeObserver = new ResizeObserver(() => onResize());
+resizeObserver.observe(canvasPane);
+
+// =============================================================================
+// TOOLBAR HANDLERS
+// =============================================================================
+
+// Grid toggle
+const btnGrid = document.getElementById('btn-grid');
+btnGrid.addEventListener('click', () => {
+  showGrid = !showGrid;
+  btnGrid.classList.toggle('active', showGrid);
+  groundGrid.visible = showGrid;
+});
+
+// Labels toggle
+const btnLabels = document.getElementById('btn-labels');
+btnLabels.addEventListener('click', () => {
+  showLabels = !showLabels;
+  btnLabels.classList.toggle('active', showLabels);
+  renderScene();
+});
+
+// Shadows toggle
+const btnShadows = document.getElementById('btn-shadows');
+btnShadows.addEventListener('click', () => {
+  showShadows = !showShadows;
+  btnShadows.classList.toggle('active', showShadows);
+  renderer.shadowMap.enabled = showShadows;
+  groundPlane.visible = showShadows;
+  // Re-traverse to toggle shadow flags
+  sceneGroup.traverse(obj => {
+    if (obj.isMesh) {
+      obj.castShadow = showShadows;
+      obj.receiveShadow = showShadows;
+    }
+  });
+  // Need to mark materials as needing update
+  renderer.shadowMap.needsUpdate = true;
+});
+
+// Reset View
+const btnReset = document.getElementById('btn-reset');
+btnReset.addEventListener('click', () => {
+  camera.position.copy(defaultCamPos);
+  controls.target.copy(defaultCamTarget);
+  controls.update();
+});
+
+// --- Camera Preset Angles ---
+const CAM_PRESETS = {
+  iso:   { pos: [450, 300, -100],  target: [200, 60, 200] },
+  front: { pos: [200, 100, -200],  target: [200, 60, 200] },
+  side:  { pos: [600, 100, 200],   target: [200, 60, 200] },
+  back:  { pos: [200, 100, 600],   target: [200, 60, 200] },
+  top:   { pos: [200, 600, 190],   target: [200, 0, 200]  },
+  low:   { pos: [350, 30, -50],    target: [200, 60, 200] },
+};
+
+function setCameraPreset(name) {
+  const p = CAM_PRESETS[name];
+  if (!p) return;
+  camera.position.set(...p.pos);
+  controls.target.set(...p.target);
+  controls.update();
+}
+
+['iso', 'front', 'side', 'back', 'top', 'low'].forEach(name => {
+  document.getElementById('cam-' + name).addEventListener('click', () => setCameraPreset(name));
+});
+
+// Export PNG
+const btnExport = document.getElementById('btn-export');
+btnExport.addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const dataURL = renderer.domElement.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.download = 'ssl-3d-export.png';
+  link.href = dataURL;
+  link.click();
+});
+
+// 4-Angle multi-screenshot — downloads a zip-like set of 4 PNGs
+document.getElementById('btn-multishot').addEventListener('click', async () => {
+  const angles = ['iso', 'front', 'side', 'top'];
+  for (const name of angles) {
+    setCameraPreset(name);
+    renderer.render(scene, camera);
+    const dataURL = renderer.domElement.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `ssl-${name}.png`;
+    link.href = dataURL;
+    link.click();
+    await new Promise(r => setTimeout(r, 200)); // small delay between downloads
+  }
+  // Return to iso view
+  setCameraPreset('iso');
+});
+
+// =============================================================================
+// EDITOR EVENT — live re-render on keystroke
+// =============================================================================
+
+let renderTimeout = null;
+editorEl.addEventListener('input', () => {
+  updateLineNumbers();
+  // Debounce rendering to avoid jank on fast typing
+  clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(renderScene, 80);
+});
+
+// =============================================================================
+// GLOBAL API — for pipeline / Playwright
+// =============================================================================
+
+window.sslSetCode = function(code) {
+  editorEl.value = code;
+  updateLineNumbers();
+  renderScene();
+};
+
+/** Set camera to a named preset angle. For Playwright multi-angle screenshots. */
+window.sslSetCamera = function(name) {
+  setCameraPreset(name);
+  renderer.render(scene, camera);
+};
+
+// Expose internals for headless Playwright rendering
+window._renderer = renderer;
+window._scene = scene;
+window._camera = camera;
+
+/** Get available camera preset names */
+window.sslCameraPresets = function() {
+  return Object.keys(CAM_PRESETS);
+};
+
+window.sslPresentationMode = function(on) {
+  if (on) {
+    showGrid = false;
+    showLabels = false;
+    groundGrid.visible = false;
+    btnGrid.classList.remove('active');
+    btnLabels.classList.remove('active');
+    renderScene();
+  } else {
+    showGrid = true;
+    showLabels = true;
+    groundGrid.visible = true;
+    btnGrid.classList.add('active');
+    btnLabels.classList.add('active');
+    renderScene();
+  }
+};
+
+// =============================================================================
+// INIT
+// =============================================================================
+
+onResize();
+updateLineNumbers();
+renderScene();
+animate();
+
+</script>
+</body>
+</html>

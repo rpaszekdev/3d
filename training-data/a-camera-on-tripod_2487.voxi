@@ -1,0 +1,29 @@
+V 24 32 24
+-- tripod leg front-left lower
+B 6 0 16 2 8 2 9
+-- tripod leg front-left upper
+B 9 8 14 2 6 2 9
+-- tripod leg front-right lower
+B 16 0 16 2 8 2 9
+-- tripod leg front-right upper
+B 13 8 14 2 6 2 9
+-- tripod leg back lower
+B 11 0 5 2 8 2 9
+-- tripod leg back upper
+B 11 8 8 2 6 2 9
+-- center column
+C 12 14 12 1 5 9
+-- mounting plate
+B 9 19 10 6 1 4 9
+-- camera body
+B 8 20 9 8 5 6 0
+-- pentaprism hump
+B 10 25 10 4 2 3 9
+-- lens barrel
+C 12 22 8 3 3 9
+-- lens glass
+S 12 22 7 2 3
+-- camera grip
+B 15 20 10 2 4 4 a
+-- shutter button
+S 11 26 11 1 1

@@ -1,0 +1,43 @@
+V 32 20 16
+
+-- chassis
+B 2 1 3 28 2 10 9
+
+-- rear wheels
+E 8 3 3 3 3 1 1
+E 8 3 13 3 3 1 1
+-- front wheels
+E 26 3 3 3 3 1 1
+E 26 3 13 3 3 1 1
+
+-- truck bed floor
+B 2 3 4 10 1 9 7
+-- bed left rail
+B 2 3 3 10 3 1 7
+-- bed right rail
+B 2 3 13 10 3 1 7
+-- tailgate
+B 2 3 3 1 4 10 7
+
+-- cab body
+B 12 3 3 10 7 10 7
+-- cab roof
+B 13 9 4 8 2 8 9
+-- rear cab window
+B 12 7 4 1 3 8 3
+-- front windshield
+B 21 7 4 1 3 8 3
+-- side windows
+B 13 8 3 8 2 1 3
+B 13 8 13 8 2 1 3
+
+-- hood
+B 22 3 3 7 5 10 7
+
+-- front grille
+B 29 2 3 1 4 10 9
+-- headlights
+B 29 5 3 1 2 2 6
+B 29 5 11 1 2 2 6
+-- front bumper
+B 29 1 3 1 2 10 8

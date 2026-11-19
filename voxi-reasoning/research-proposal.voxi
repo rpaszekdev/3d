@@ -1,0 +1,274 @@
+CANVAS 595 3500 #ffffff
+
+-- ═══════════════════════════════════════════════
+-- TITLE PAGE
+-- ═══════════════════════════════════════════════
+
+-- Decorative top accent line
+RECT 0 0 595 4 0 #1a3a5c
+
+-- Title block (centered)
+TEXT 68 280 "LLMs Mind's Eye:" 22 1 #1a1a1a bold
+TEXT 42 312 "Text-Based Depth Representations" 22 1 #1a1a1a bold
+TEXT 68 344 "as Spatial Reasoning Scaffolds" 22 1 #1a1a1a bold
+
+-- Thin decorative rule
+LINE 220 390 375 390 1 #1a3a5c 2
+
+-- Author + institution
+TEXT 235 430 "Robert Paszek" 14 1 #333333
+TEXT 190 460 "Tilburg University" 12 1 #555555
+TEXT 107 480 "Department of Cognitive Science and Artificial Intelligence" 11 1 #555555
+
+-- Course + supervisor
+TEXT 207 530 "Research Workshop" 12 1 #555555
+TEXT 213 560 "Bruno Nicenboim" 12 1 #555555
+
+-- Date
+TEXT 218 610 "April 12, 2025" 12 1 #555555
+
+-- Page divider
+LINE 50 760 545 760 1 #cccccc 1
+
+
+-- ═══════════════════════════════════════════════
+-- PAGE 2: RESEARCH MOTIVATION
+-- ═══════════════════════════════════════════════
+
+TEXT 210 810 "Research Motivation" 14 1 #1a1a1a bold
+
+-- Para 1
+TEXT 80 850 "Large language models (LLMs) have achieved remarkable performance across" 10 1 #222222
+TEXT 50 866 "many reasoning tasks, yet they consistently fail at spatial reasoning. On the" 10 1 #222222
+TEXT 50 882 "ARC-AGI-2 benchmark, frontier models including Claude Opus and GPT-4o score" 10 1 #222222
+TEXT 50 898 "between 2% and 5%, while humans achieve over 80% (Chollet, 2025). Mental" 10 1 #222222
+TEXT 50 914 "rotation tasks reduce multimodal LLMs to random chance (Srivastava et al.," 10 1 #222222
+TEXT 50 930 "2025), and perspective-taking accuracy for GPT-4o is only 27.5% compared" 10 1 #222222
+TEXT 50 946 "to human intuitive performance (Yang et al., 2025). This gap persists despite" 10 1 #222222
+TEXT 50 962 "massive increases in model scale, multimodal training, and chain-of-thought" 10 1 #222222
+TEXT 50 978 "prompting." 10 1 #222222
+
+-- Para 2
+TEXT 80 1006 "From a societal perspective, spatial reasoning failures have real" 10 1 #222222
+TEXT 50 1022 "consequences: autonomous vehicle misclassifications have caused serious" 10 1 #222222
+TEXT 50 1038 "accidents, warehouse robots fail on 35% of manipulation tasks, and no Level" 10 1 #222222
+TEXT 50 1054 "4/5 autonomous surgery has been deployed due to spatial reasoning limitations" 10 1 #222222
+TEXT 50 1070 "in soft tissue (Yang et al., 2025). Scientifically, this failure is puzzling" 10 1 #222222
+TEXT 50 1086 "because LLMs excel at other forms of reasoning -- mathematical proofs, code" 10 1 #222222
+TEXT 50 1102 "generation, logical deduction -- but collapse when reasoning requires" 10 1 #222222
+TEXT 50 1118 "understanding 3D structure." 10 1 #222222
+
+-- Para 3
+TEXT 80 1146 "Current approaches to improving LLM spatial reasoning focus on adding" 10 1 #222222
+TEXT 50 1162 "vision modules: SpatialVLA embeds depth as features in vision-language" 10 1 #222222
+TEXT 50 1178 "models, and DepthVLA adds depth streams to multimodal architectures." 10 1 #222222
+TEXT 50 1194 "However, these approaches increase model complexity and remain tied to visual" 10 1 #222222
+TEXT 50 1210 "input. An alternative, under-explored hypothesis is that LLMs may already" 10 1 #222222
+TEXT 50 1226 "possess sufficient reasoning capability, but lack an appropriate" 10 1 #222222
+TEXT 50 1242 "representation format for spatial information. Larkin and Simon (1987)" 10 1 #222222
+TEXT 50 1258 "demonstrated formally that diagrams can make previously intractable problems" 10 1 #222222
+TEXT 50 1274 "trivially solvable -- not by adding new information, but by making spatial" 10 1 #222222
+TEXT 50 1290 "relationships computationally accessible." 10 1 #222222
+
+
+-- ═══════════════════════════════════════════════
+-- RESEARCH QUESTION
+-- ═══════════════════════════════════════════════
+
+TEXT 218 1330 "Research Question" 14 1 #1a1a1a bold
+
+-- RQ box with subtle background
+RECT 60 1360 475 60 0 #f0f4f8 4
+LINE 60 1360 60 1420 1 #1a3a5c 3
+
+TEXT 75 1370 "To what extent do text-based depth representations, generated from a" 10 1 #1a1a1a italic
+TEXT 75 1386 "voxel domain-specific language, improve large language model performance" 10 1 #1a1a1a italic
+TEXT 75 1402 "on spatial reasoning tasks where current models score below 50%?" 10 1 #1a1a1a italic
+
+
+-- ═══════════════════════════════════════════════
+-- BACKGROUND
+-- ═══════════════════════════════════════════════
+
+TEXT 248 1450 "Background" 14 1 #1a1a1a bold
+
+-- Para 1
+TEXT 80 1485 "The theoretical foundation for this work comes from Larkin and Simon" 10 1 #222222
+TEXT 50 1501 "(1987), who proved that the computational difference between sentential and" 10 1 #222222
+TEXT 50 1517 "diagrammatic representations is not informational but structural: diagrams" 10 1 #222222
+TEXT 50 1533 "group spatially related information together, enabling perceptual operations" 10 1 #222222
+TEXT 50 1549 "that are computationally expensive in text. This principle suggests that" 10 1 #222222
+TEXT 50 1565 "converting spatial problems into structured, spatially-organized text could" 10 1 #222222
+TEXT 50 1581 "provide similar benefits for LLMs." 10 1 #222222
+
+-- Para 2
+TEXT 80 1609 "Recent work has begun exploring spatial intermediates for LLM reasoning." 10 1 #222222
+TEXT 50 1625 "The Visualization-of-Thought (VoT) framework demonstrated that generating" 10 1 #222222
+TEXT 50 1641 "spatial intermediates (ASCII-like grids) during reasoning improved LLM" 10 1 #222222
+TEXT 50 1657 "performance on navigation and tiling tasks (Wei et al., 2024). The" 10 1 #222222
+TEXT 50 1673 "Whiteboard-of-Thought (WoT) paradigm showed that a draw-render-perceive" 10 1 #222222
+TEXT 50 1689 "loop -- where models generate visual code, render it, and interpret the" 10 1 #222222
+TEXT 50 1705 "output -- improved spatial accuracy over pure text reasoning (Xu et al.," 10 1 #222222
+TEXT 50 1721 "2024). VoxPoser used LLMs to generate Python code that filled 3D voxel grids" 10 1 #222222
+TEXT 50 1737 "with affordance values for robot planning, achieving zero-shot generalization" 10 1 #222222
+TEXT 50 1753 "(Huang et al., 2023)." 10 1 #222222
+
+-- Para 3
+TEXT 80 1781 "However, no existing system implements a complete closed loop where an" 10 1 #222222
+TEXT 50 1797 "LLM writes 3D spatial code, receives text-based depth feedback from a" 10 1 #222222
+TEXT 50 1813 "raycasting camera system, verifies its reasoning against the rendered output," 10 1 #222222
+TEXT 50 1829 "and iteratively revises -- all without any vision model. The Mind's Eye" 10 1 #222222
+TEXT 50 1845 "system, which this proposal aims to evaluate, implements precisely this" 10 1 #222222
+TEXT 50 1861 "architecture using VOXI, a voxel description language, paired with a" 10 1 #222222
+TEXT 50 1877 "text-based raycaster that produces ASCII depth maps (digits 0-9 representing" 10 1 #222222
+TEXT 50 1893 "distance from camera). Figure 1 shows the system architecture and Figure 2" 10 1 #222222
+TEXT 50 1909 "shows the 6-angle feedback mechanism." 10 1 #222222
+
+
+-- ═══════════════════════════════════════════════
+-- FIGURE 1 — Simplified representation
+-- ═══════════════════════════════════════════════
+
+-- Figure container
+RECT 40 1940 515 310 0 #fafafa 4
+LINE 40 1940 555 1940 1 #dddddd 1
+LINE 40 2250 555 2250 1 #dddddd 1
+
+TEXT 165 1950 "3D Render" 9 1 #666666 bold
+TEXT 310 1950 "Text Depth Map (what the LLM reads)" 9 1 #666666 bold
+
+-- Front view row
+IMG 55 1970 100 80 1 "FRONT 3D"
+RECT 170 1970 375 80 1 #f5f5f5
+TEXT 175 1972 "FRONT (->X, upY) 32x32  .=empty 0=near 9=far" 6 2 #444444
+TEXT 175 1982 " 0 . . . . . . . . . . . . 5 5 4 4 4 4 4 5 5 . . . . . . . . . . ." 5 2 #333333
+TEXT 175 1990 " 3 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 5 . . . . . . . . . ." 5 2 #333333
+TEXT 175 1998 " 9 . . . . . . . . . . . . . 4 4 4 4 4 4 6 . . . . . . . . . . . ." 5 2 #333333
+TEXT 175 2006 "12 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 5 . . 4 4 4 . . . . ." 5 2 #333333
+TEXT 175 2014 "18 . . . . . . 4 4 4 6 5 3 3 3 3 3 3 3 3 3 3 4 5 6 4 4 4 . . . . ." 5 2 #333333
+TEXT 175 2022 "27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . ." 5 2 #333333
+TEXT 175 2030 "31 . . . . . . . . . 4 4 4 4 4 4 . . . 4 4 4 4 4 4 . . . . . . . ." 5 2 #333333
+
+-- Right view row
+IMG 55 2060 100 80 1 "RIGHT 3D"
+RECT 170 2060 375 80 1 #f5f5f5
+TEXT 175 2062 "RIGHT (->Z, upY) 32x32  .=empty 0=near 9=far" 6 2 #444444
+TEXT 175 2072 " 0 . . . . . . . . . . . . . . 4 4 3 3 3 3 3 4 4 . . . . . . . . ." 5 2 #333333
+TEXT 175 2080 " 3 . . . . . . . 4 4 4 4 3 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . ." 5 2 #333333
+TEXT 175 2088 "12 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . ." 5 2 #333333
+TEXT 175 2096 "18 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 4 . . . . . ." 5 2 #333333
+TEXT 175 2104 "27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . . ." 5 2 #333333
+TEXT 175 2112 "31 . . . . . . . . . . . . . 2 2 2 2 2 2 2 2 . . . . . . . . . . ." 5 2 #333333
+
+-- Top view row
+IMG 55 2150 100 80 1 "TOP 3D"
+RECT 170 2150 375 80 1 #f5f5f5
+TEXT 175 2152 "TOP (->X, upZ) 32x32    .=empty 0=near 9=far" 6 2 #444444
+TEXT 175 2162 " 8 . . . . . . 3 3 3 . . 5 4 3 3 3 1 3 3 3 4 5 . . 3 3 3 . . . . ." 5 2 #333333
+TEXT 175 2170 " 9 . . . . . . 3 3 3 . 5 4 3 1 0 0 0 0 0 1 3 4 5 . 3 3 3 . . . . ." 5 2 #333333
+TEXT 175 2178 "11 . . . . . . 3 3 3 9 4 3 0 0 0 0 0 0 0 0 0 3 4 9 3 3 3 . . . . ." 5 2 #333333
+TEXT 175 2186 "15 . . . . . . 3 3 3 9 5 0 0 0 0 0 0 0 0 0 0 4 5 9 3 3 3 . . . . ." 5 2 #333333
+TEXT 175 2194 "17 . . . . . . . . . 9 9 0 0 0 0 0 0 0 0 0 0 9 9 9 . . . . . . . ." 5 2 #333333
+TEXT 175 2202 "21 . . . . . . . . . . . . . 1 1 1 1 1 . 1 . . . . . . . . . . . ." 5 2 #333333
+
+-- Figure caption
+TEXT 252 2256 "Figure 1" 10 1 #1a1a1a bold
+TEXT 50 2272 "The Mind's Eye feedback mechanism applied to a voxel penguin (32x32x32)." 9 1 #555555 italic
+TEXT 50 2286 "Left: 3D renders from five orthographic cameras. Right: text-based depth maps the" 9 1 #555555 italic
+TEXT 50 2300 "LLM reads. Each digit (0-9) encodes ray-traced distance. No vision model is used." 9 1 #555555 italic
+
+
+-- ═══════════════════════════════════════════════
+-- METHODS
+-- ═══════════════════════════════════════════════
+
+TEXT 262 2340 "Methods" 14 1 #1a1a1a bold
+
+-- Experimental Design
+TEXT 50 2370 "Experimental Design" 12 1 #1a1a1a bold
+
+TEXT 80 2396 "This study employs a 2x2 factorial design with two independent variables:" 10 1 #222222
+TEXT 50 2412 "(a) representation type (natural language only vs. natural language augmented" 10 1 #222222
+TEXT 50 2428 "with text-based depth matrices) and (b) model capability level (high-capability" 10 1 #222222
+TEXT 50 2444 "model: Claude Sonnet vs. lower-capability model: Claude Haiku). The dependent" 10 1 #222222
+TEXT 50 2460 "variable is task accuracy (percentage of correctly answered spatial reasoning" 10 1 #222222
+TEXT 50 2476 "questions)." 10 1 #222222
+
+-- Datasets
+TEXT 50 2510 "Datasets" 12 1 #1a1a1a bold
+
+TEXT 80 2536 "Three existing benchmarks will be used. First, the SpartQA dataset" 10 1 #222222
+TEXT 50 2552 "(Mirzaee et al., 2021), consisting of multi-hop spatial reasoning questions" 10 1 #222222
+TEXT 50 2568 "derived from natural language scene descriptions. Twenty tasks of varying" 10 1 #222222
+TEXT 50 2584 "difficulty will be sampled. Second, the CATER video benchmark (Girdhar &" 10 1 #222222
+TEXT 50 2600 "Ramanan, 2020), providing real-world video scenes requiring 3D spatial" 10 1 #222222
+TEXT 50 2616 "understanding; five tasks involving object counting, motion tracking, and" 10 1 #222222
+TEXT 50 2632 "occlusion detection will be used, with depth matrices extracted at 20x20" 10 1 #222222
+TEXT 50 2648 "resolution using Depth Anything V2. Third, thirty automatically generated" 10 1 #222222
+TEXT 50 2664 "VOXI scenes (16x16x16 grids, seed=42) with five question types: collision" 10 1 #222222
+TEXT 50 2680 "detection, relative position, motion direction, object count, and" 10 1 #222222
+TEXT 50 2696 "closer-to-camera judgments." 10 1 #222222
+
+-- Feature Extraction
+TEXT 50 2730 "Feature Extraction" 12 1 #1a1a1a bold
+
+TEXT 80 2756 "For the depth-matrix condition, the Mind's Eye system converts spatial" 10 1 #222222
+TEXT 50 2772 "information into structured text through orthographic raycasting. For each" 10 1 #222222
+TEXT 50 2788 "scene, six depth maps (front, back, left, right, top, bottom) are generated" 10 1 #222222
+TEXT 50 2804 "as character grids where each cell contains a digit 0-9 representing" 10 1 #222222
+TEXT 50 2820 "normalized depth. The control condition receives only the original natural" 10 1 #222222
+TEXT 50 2836 "language descriptions or VOXI source code without depth rendering." 10 1 #222222
+
+-- Procedure
+TEXT 50 2870 "Procedure" 12 1 #1a1a1a bold
+
+TEXT 80 2896 "Each model-condition combination will be tested on all tasks. For each" 10 1 #222222
+TEXT 50 2912 "task, the LLM receives the spatial problem description and (in the depth" 10 1 #222222
+TEXT 50 2928 "condition) the corresponding depth matrices. The model produces an answer," 10 1 #222222
+TEXT 50 2944 "which is compared against the ground truth. No iterative refinement is" 10 1 #222222
+TEXT 50 2960 "permitted during benchmarking -- each answer must be given in a single pass" 10 1 #222222
+TEXT 50 2976 "to ensure controlled comparison." 10 1 #222222
+
+-- Statistical Analysis
+TEXT 50 3010 "Statistical Analysis" 12 1 #1a1a1a bold
+
+TEXT 80 3036 "A two-way analysis of variance (ANOVA) will test the main effects of" 10 1 #222222
+TEXT 50 3052 "representation type and model capability, as well as their interaction." 10 1 #222222
+TEXT 50 3068 "Given preliminary results suggesting that the tool helps high-capability" 10 1 #222222
+TEXT 50 3084 "models but may hurt lower-capability ones, the interaction effect is of" 10 1 #222222
+TEXT 50 3100 "particular theoretical interest. Post-hoc comparisons using Tukey's HSD" 10 1 #222222
+TEXT 50 3116 "will identify significant pairwise differences. Effect sizes (Cohen's d)" 10 1 #222222
+TEXT 50 3132 "will be reported for all significant comparisons." 10 1 #222222
+
+
+-- ═══════════════════════════════════════════════
+-- REFERENCES
+-- ═══════════════════════════════════════════════
+
+LINE 50 3168 545 3168 1 #cccccc 1
+
+TEXT 245 3186 "References" 14 1 #1a1a1a bold
+
+TEXT 50 3220 "Chollet, F. (2025). ARC-AGI-2: A new benchmark for abstract reasoning." 9 1 #333333
+TEXT 70 3234 "ARC Prize Foundation. https://arcprize.org" 9 1 #333333 italic
+
+TEXT 50 3258 "Girdhar, R., & Ramanan, D. (2020). CATER: A diagnostic dataset for" 9 1 #333333
+TEXT 70 3272 "compositional actions and temporal reasoning. ICLR." 9 1 #333333 italic
+
+TEXT 50 3296 "Huang, W., et al. (2023). VoxPoser: Composable 3D value maps for robotic" 9 1 #333333
+TEXT 70 3310 "manipulation with language models. Conference on Robot Learning." 9 1 #333333 italic
+
+TEXT 50 3334 "Larkin, J. H., & Simon, H. A. (1987). Why a diagram is (sometimes) worth" 9 1 #333333
+TEXT 70 3348 "ten thousand words. Cognitive Science, 11(1), 65-100." 9 1 #333333 italic
+
+TEXT 50 3372 "Mirzaee, R., et al. (2021). SpartQA: A textual question answering benchmark" 9 1 #333333
+TEXT 70 3386 "for spatial reasoning. NAACL 2021." 9 1 #333333 italic
+
+TEXT 50 3410 "Srivastava, S., et al. (2025). Mind the gap: Evaluating spatial reasoning" 9 1 #333333
+TEXT 70 3424 "in large language models. arXiv preprint." 9 1 #333333 italic
+
+TEXT 50 3448 "Wei, J., et al. (2024). Visualization-of-thought elicits spatial reasoning" 9 1 #333333
+TEXT 70 3462 "in large language models. arXiv:2404.03622." 9 1 #333333 italic
+
+-- Bottom accent line
+RECT 0 3496 595 4 0 #1a3a5c

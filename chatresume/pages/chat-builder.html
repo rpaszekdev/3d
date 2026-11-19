@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatResume — Chat Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --brand: #1d4ed8;
+      --brand-light: #3b82f6;
+      --brand-dark: #1e3a8a;
+      --dark: #0f172a;
+      --dark-muted: #1e293b;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --surface: #ffffff;
+      --surface-warm: #fafaf9;
+      --surface-cool: #f8fafc;
+      --accent: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --radius-lg: 24px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background: var(--surface-cool);
+    }
+
+    /* Grain texture */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* Page wrapper */
+    #page-chat-builder {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--surface);
+      position: relative;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      background: var(--surface-cool);
+    }
+
+    .back-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .logo-text {
+      font-family: "Instrument Serif", serif;
+      font-size: 22px;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+    }
+
+    /* Chat area */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chat-area::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-area::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    /* Message rows */
+    .message-row {
+      display: flex;
+      gap: 10px;
+      max-width: 85%;
+      animation: messageIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .message-row.bot {
+      align-self: flex-start;
+      transform-origin: left center;
+    }
+
+    .message-row.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+      transform-origin: right center;
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .message-row.bot .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-light), var(--brand-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+      color: white;
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.2);
+      align-self: flex-end;
+    }
+
+    .bubble {
+      padding: 14px 18px;
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .message-row.bot .bubble {
+      background: var(--surface-cool);
+      border-radius: var(--radius) var(--radius) var(--radius) 6px;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .message-row.user .bubble {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      border-radius: var(--radius) var(--radius) 6px var(--radius);
+      color: #ffffff;
+      box-shadow: 0 2px 12px rgba(29, 78, 216, 0.25);
+    }
+
+    /* Timestamp */
+    .message-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding: 0 4px;
+      opacity: 0.7;
+    }
+
+    .message-row.user .message-time {
+      text-align: right;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 16px 20px;
+    }
+
+    .typing-indicator span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      opacity: 0.4;
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.16s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.32s;
+    }
+
+    @keyframes bounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+      30% {
+        transform: translateY(-6px);
+        opacity: 1;
+      }
+    }
+
+    /* Input bar */
+    .input-bar {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .input-wrapper input {
+      flex: 1;
+      padding: 14px 18px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--surface-cool);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .input-wrapper input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--brand-light);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(29, 78, 216, 0.3);
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(29, 78, 216, 0.4);
+    }
+
+    .send-btn:active {
+      transform: scale(0.95);
+    }
+
+    .send-btn svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    /* Progress section */
+    .progress-section {
+      padding: 12px 24px 20px;
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .progress-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      max-width: 240px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--brand-light));
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .skip-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--brand);
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: "DM Sans", sans-serif;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .skip-link:hover {
+      background: rgba(29, 78, 216, 0.06);
+      color: var(--brand-dark);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #page-chat-builder {
+        max-width: 100%;
+      }
+
+      .chat-area {
+        padding: 16px;
+      }
+
+      .message-row {
+        max-width: 90%;
+      }
+
+      .input-bar {
+        padding: 12px 16px;
+      }
+
+      .progress-section {
+        padding: 10px 16px 16px;
+      }
+
+      .top-bar {
+        padding: 14px 16px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .bubble {
+        font-size: 14px;
+        padding: 12px 14px;
+      }
+
+      .progress-label {
+        font-size: 12px;
+      }
+    }
+
+    /* Shadow on sides for wider screens */
+    @media (min-width: 721px) {
+      #page-chat-builder {
+        box-shadow: 0 0 40px rgba(15, 23, 42, 0.06);
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="page-chat-builder" class="page">
+
+    <!-- Top bar -->
+    <header class="top-bar">
+      <button class="back-btn" data-navigate="landing" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/>
+          <path d="M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Back</span>
+      </button>
+      <span class="logo-text">ChatResume</span>
+    </header>
+
+    <!-- Chat area -->
+    <div class="chat-area" id="chatArea">
+      <!-- Pre-populated demo conversation -->
+    </div>
+
+    <!-- Input bar -->
+    <div class="input-bar">
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Type your answer..."
+          autocomplete="off"
+        >
+        <button class="send-btn" id="sendBtn" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/>
+            <path d="M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-section">
+      <div class="progress-row">
+        <div class="progress-info">
+          <span class="progress-label" id="progressLabel">Progress: 60%</span>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 60%"></div>
+          </div>
+        </div>
+        <a href="#" class="skip-link" data-navigate="editor">Skip to CV</a>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const chatArea = document.getElementById("chatArea");
+      const chatInput = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("sendBtn");
+      const progressFill = document.getElementById("progressFill");
+      const progressLabel = document.getElementById("progressLabel");
+
+      let progress = 60;
+
+      // Bot icon SVG (small sparkle)
+      const BOT_AVATAR_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>`;
+
+      // Demo conversation
+      const demoMessages = [
+        {
+          role: "bot",
+          text: "Hi there! I'm going to help you build a standout CV. Let's start with the basics — what's your current or most recent job title?",
+          delay: 300,
+        },
+        {
+          role: "user",
+          text: "Senior Software Engineer at Acme Corp",
+          delay: 800,
+        },
+        {
+          role: "bot",
+          text: "Nice! Senior Software Engineer — that's a great title. What are 2\u20133 key achievements you're most proud of in that role?",
+          delay: 1200,
+        },
+        {
+          role: "user",
+          text: "Led the migration to microservices, reducing deploy time by 80%. Also mentored a team of 5 junior developers and launched an internal CLI tool that saved 10hrs/week for the team.",
+          delay: 1600,
+        },
+        {
+          role: "bot",
+          text: "Those are fantastic, very quantifiable results! Now, what are the top technical skills and tools you use daily?",
+          delay: 2000,
+        },
+      ];
+
+      // Follow-up responses the bot can give
+      const followUpResponses = [
+        "Great, thanks for sharing that! How many years of experience do you have overall in your field?",
+        "That's really helpful. What level of education have you completed? Any relevant certifications?",
+        "Perfect. Are there any specific industries or companies you're targeting with this CV?",
+        "Almost done! Is there anything else you'd like to highlight — awards, publications, or volunteer work?",
+        "Wonderful, I think I have everything I need. Let me put your CV together now!",
+      ];
+      let followUpIndex = 0;
+
+      function createMessageElement(role, content) {
+        const row = document.createElement("div");
+        row.className = `message-row ${role}`;
+
+        if (role === "bot") {
+          const avatar = document.createElement("div");
+          avatar.className = "avatar";
+          avatar.innerHTML = BOT_AVATAR_SVG;
+          row.appendChild(avatar);
+        }
+
+        const wrapper = document.createElement("div");
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = content;
+        wrapper.appendChild(bubble);
+
+        row.appendChild(wrapper);
+        return row;
+      }
+
+      function createTypingIndicator() {
+        const row = document.createElement("div");
+        row.className = "message-row bot";
+        row.id = "typingRow";
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.innerHTML = BOT_AVATAR_SVG;
+        row.appendChild(avatar);
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+
+        const indicator = document.createElement("div");
+        indicator.className = "typing-indicator";
+        indicator.innerHTML = "<span></span><span></span><span></span>";
+        bubble.appendChild(indicator);
+
+        row.appendChild(bubble);
+        return row;
+      }
+
+      function scrollToBottom() {
+        requestAnimationFrame(function () {
+          chatArea.scrollTop = chatArea.scrollHeight;
+        });
+      }
+
+      function addMessage(role, text) {
+        const msg = createMessageElement(role, text);
+        chatArea.appendChild(msg);
+        scrollToBottom();
+      }
+
+      function updateProgress(value) {
+        progress = Math.min(value, 100);
+        progressFill.style.width = progress + "%";
+        progressLabel.textContent = "Progress: " + progress + "%";
+      }
+
+      // Populate demo messages with staggered animation
+      function loadDemoMessages() {
+        demoMessages.forEach(function (msg, i) {
+          setTimeout(function () {
+            addMessage(msg.role, msg.text);
+          }, msg.delay);
+        });
+      }
+
+      // Send message handler
+      function handleSend() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        // Add user message
+        addMessage("user", text);
+        chatInput.value = "";
+
+        // Update progress
+        updateProgress(progress + 10);
+
+        // Show typing indicator after short pause
+        setTimeout(function () {
+          const typing = createTypingIndicator();
+          chatArea.appendChild(typing);
+          scrollToBottom();
+
+          // Replace with bot response
+          setTimeout(function () {
+            const typingEl = document.getElementById("typingRow");
+            if (typingEl) typingEl.remove();
+
+            const response = followUpIndex < followUpResponses.length
+              ? followUpResponses[followUpIndex]
+              : "Thanks! Let me process that. You can click \"Skip to CV\" whenever you're ready to see your generated CV.";
+            followUpIndex++;
+
+            addMessage("bot", response);
+            updateProgress(progress + 5);
+          }, 1200);
+        }, 500);
+      }
+
+      sendBtn.addEventListener("click", handleSend);
+
+      chatInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+
+      // Load demo on page load
+      loadDemoMessages();
+    })();
+  </script>
+</body>
+</html>

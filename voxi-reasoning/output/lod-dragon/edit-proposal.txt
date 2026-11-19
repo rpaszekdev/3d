@@ -1,0 +1,26 @@
+Looking at the analysis: mouth is at low-res **(20, 10, 7)** → high-res **(160, 80, 56)**, shooting in **+X direction**.
+
+STAMP origin: `[160, 70, 46]` so local **(0, 10, 10)** aligns with the mouth center in world space.
+
+`★ Insight ─────────────────────────────────────`
+**Color layering order is critical**: red first, orange over it, yellow last. Since each VOXI command overwrites voxels it occupies, writing yellow *last* makes it the visible core — even though the red boxes are larger. This is painter's algorithm in reverse: you define the largest shape first, then "carve" inward with brighter colors.
+`─────────────────────────────────────────────────`
+
+```json
+[
+  {
+    "action": "STAMP",
+    "name": "dragon_fire_breath",
+    "origin": [160, 70, 46],
+    "colorHint": "dragon fire breath — red base, orange middle, yellow core shooting in +X",
+    "voxi": "V 40 20 20\n-- Red outer layer (widest, drawn first)\nB 0 9 9 4 2 2 1\nB 4 7 7 8 6 6 1\nB 12 5 5 14 10 10 1\nB 26 4 4 12 12 12 1\n-- Orange middle (overwrites red center)\nB 0 9 9 4 2 2 7\nB 4 8 8 8 4 4 7\nB 12 6 6 14 8 8 7\nB 26 5 5 12 10 10 7\n-- Yellow core (drawn last, overwrites orange center)\nB 1 9 9 3 2 2 6\nB 4 9 9 7 2 2 6\nB 11 8 8 12 4 4 6\nB 23 7 7 10 6 6 6\n-- Scattered sparks at edges\nP 10 6 7 1\nP 16 13 9 7\nP 20 6 13 6\nP 26 4 8 1\nP 31 14 6 7\nP 36 5 14 1\nP 24 15 13 6\nP 18 14 5 7\nP 33 4 15 6\nP 15 4 5 1"
+  }
+]
+```
+
+The fire:
+- **Starts** 2×2 voxels wide at local X=0 (mouth, world ~160)
+- **Expands** to 6×6 by X=4–11, then 10×10 at X=12–25, then 12×12 at X=26–37
+- **Color core**: yellow overwrites orange overwrites red, giving a bright center fading to red edges
+- **10 sparks** scattered at irregular positions around the flame boundary
+- Extends ~40 voxels in +X (320 high-res units), proportional to the 126-unit long dragon body

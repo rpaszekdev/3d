@@ -1,0 +1,22 @@
+V 32 16 20
+-- legs
+B 3 0 4 2 2 2 a
+B 27 0 4 2 2 2 a
+B 3 0 15 2 2 2 a
+B 27 0 15 2 2 2 a
+-- seat base
+B 2 2 3 28 3 14 3
+-- left armrest
+B 2 2 3 3 7 14 3
+-- right armrest
+B 27 2 3 3 7 14 3
+-- back rest
+B 5 2 15 22 10 2 3
+-- left seat cushion
+B 6 5 4 9 3 9 4
+-- right seat cushion
+B 17 5 4 9 3 9 4
+-- left back cushion
+B 6 5 15 9 6 2 4
+-- right back cushion
+B 17 5 15 9 6 2 4

@@ -1,0 +1,171 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 6: Blueprint — Technical drawing aesthetic
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #1e3a5f
+
+-- ── Grid pattern (blueprint lines) ───────────────────────
+LINE 0 80 840 80 0 #264a73 1
+LINE 0 160 840 160 0 #264a73 1
+LINE 0 240 840 240 0 #264a73 1
+LINE 0 320 840 320 0 #264a73 1
+LINE 0 400 840 400 0 #264a73 1
+LINE 0 480 840 480 0 #264a73 1
+LINE 0 560 840 560 0 #264a73 1
+LINE 0 640 840 640 0 #264a73 1
+LINE 0 720 840 720 0 #264a73 1
+LINE 0 800 840 800 0 #264a73 1
+LINE 0 880 840 880 0 #264a73 1
+LINE 0 960 840 960 0 #264a73 1
+LINE 0 1040 840 1040 0 #264a73 1
+
+LINE 105 0 105 1120 0 #264a73 1
+LINE 210 0 210 1120 0 #264a73 1
+LINE 315 0 315 1120 0 #264a73 1
+LINE 420 0 420 1120 0 #264a73 1
+LINE 525 0 525 1120 0 #264a73 1
+LINE 630 0 630 1120 0 #264a73 1
+LINE 735 0 735 1120 0 #264a73 1
+
+-- ── Border frame ─────────────────────────────────────────
+RECT 20 20 800 1080 1 #4a90d9
+RECT 24 24 792 1072 2 #2a6ab0
+
+-- ── Title block (bottom-right, blueprint style) ──────────
+RECT 500 1040 316 52 3 #1e3a5f
+RECT 500 1040 316 52 4 #4a90d9
+LINE 500 1062 816 1062 4 #4a90d9 1
+LINE 660 1040 660 1092 4 #4a90d9 1
+TEXT 516 1048 "ROBERT PASZEK" 10 5 #8ec5fc bold
+TEXT 516 1072 "SOFTWARE ENGINEER" 8 5 #5a9fd4
+TEXT 672 1048 "REV 2024.03" 8 5 #5a9fd4
+TEXT 672 1072 "SCALE: 1:1" 8 5 #5a9fd4
+
+-- ── Header ───────────────────────────────────────────────
+TEXT 50 56 "ROBERT PASZEK" 30 3 #8ec5fc bold
+TEXT 50 90 "SOFTWARE ENGINEER — SPATIAL COMPUTING" 12 3 #5a9fd4
+LINE 50 108 790 108 3 #4a90d9 2
+
+-- ── Contact (spec block) ─────────────────────────────────
+RECT 50 120 300 50 3 #1a3050 4
+TEXT 60 130 "EMAIL:  robert@example.com" 9 4 #8ec5fc
+TEXT 60 146 "GIT:    github.com/robertpaszek" 9 4 #8ec5fc
+TEXT 60 162 "LOC:    London, UK" 9 4 #8ec5fc
+
+-- ── Profile ──────────────────────────────────────────────
+TEXT 50 198 "01. PROFILE" 11 3 #4a90d9 bold
+LINE 50 214 790 214 3 #2a6ab0 1
+TEXT 50 232 "Software engineer focused on spatial computing, DSL design," 10 3 #8ec5fc
+TEXT 50 248 "and creative tooling. Bridging human spatial intuition" 10 3 #8ec5fc
+TEXT 50 264 "and machine understanding through token-efficient DSLs." 10 3 #8ec5fc
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 50 298 "02. EXPERIENCE" 11 3 #4a90d9 bold
+LINE 50 314 790 314 3 #2a6ab0 1
+
+-- Dimension lines (blueprint detail)
+LINE 50 336 56 330 3 #5a9fd4 1
+LINE 50 336 56 342 3 #5a9fd4 1
+TEXT 66 332 "SENIOR SOFTWARE ENGINEER" 12 3 #ffffff bold
+TEXT 380 332 "Spatial Labs" 10 3 #5a9fd4
+TEXT 660 332 "2023 — PRESENT" 9 3 #4a90d9
+TEXT 66 354 "- Designed VOXI DSL for 3D voxel scene description" 9 3 #8ec5fc
+TEXT 66 370 "- Built real-time renderer with depth/shading modes" 9 3 #8ec5fc
+TEXT 66 386 "- Reduced LLM scene-generation tokens by 85%" 9 3 #8ec5fc
+
+LINE 50 406 56 400 3 #5a9fd4 1
+LINE 50 406 56 412 3 #5a9fd4 1
+TEXT 66 402 "FULL STACK DEVELOPER" 12 3 #ffffff bold
+TEXT 380 402 "TechFlow" 10 3 #5a9fd4
+TEXT 660 402 "2021 — 2023" 9 3 #4a90d9
+TEXT 66 424 "- Microservice arch serving 2M req/day" 9 3 #8ec5fc
+TEXT 66 440 "- Event-driven migration (Kafka), Next.js rebuild" 9 3 #8ec5fc
+
+LINE 50 460 56 454 3 #5a9fd4 1
+LINE 50 460 56 466 3 #5a9fd4 1
+TEXT 66 456 "JUNIOR DEVELOPER" 12 3 #ffffff bold
+TEXT 380 456 "DataPulse" 10 3 #5a9fd4
+TEXT 660 456 "2020 — 2021" 9 3 #4a90d9
+TEXT 66 478 "- ETL pipelines processing 500GB/day, React + D3 dashboard" 9 3 #8ec5fc
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 50 518 "03. PROJECTS" 11 3 #4a90d9 bold
+LINE 50 534 790 534 3 #2a6ab0 1
+
+RECT 50 548 360 100 3 #1a3050 4
+TEXT 60 556 "VOXI" 11 4 #ffffff bold
+TEXT 120 556 "Spatial Reasoning DSL" 9 4 #5a9fd4
+TEXT 60 576 "Voxel-based DSL for 3D scenes" 9 4 #8ec5fc
+TEXT 60 592 "in ~100 tokens. Used by LLMs" 9 4 #8ec5fc
+TEXT 60 608 "for spatial reasoning." 9 4 #8ec5fc
+TEXT 60 630 "[Python] [JS] [WebGL]" 8 4 #4a90d9
+
+RECT 430 548 360 100 3 #1a3050 4
+TEXT 440 556 "BRAIN CONVERTER" 11 4 #ffffff bold
+TEXT 440 576 "Natural language to structured" 9 4 #8ec5fc
+TEXT 440 592 "3D voxel scenes. Combines LLM" 9 4 #8ec5fc
+TEXT 440 608 "reasoning + DSL output." 9 4 #8ec5fc
+TEXT 440 630 "[FastAPI] [Claude AI] [React]" 8 4 #4a90d9
+
+RECT 50 662 360 100 3 #1a3050 4
+TEXT 60 670 "VIDEO DEPTH REASONING" 11 4 #ffffff bold
+TEXT 60 690 "Spatial structure from video" 9 4 #8ec5fc
+TEXT 60 706 "using monocular depth + LLM" 9 4 #8ec5fc
+TEXT 60 722 "temporal reasoning." 9 4 #8ec5fc
+TEXT 60 744 "[PyTorch] [DepthPro] [FFmpeg]" 8 4 #4a90d9
+
+RECT 430 662 360 100 3 #1a3050 4
+TEXT 440 670 "SKETCH-LANG" 11 4 #ffffff bold
+TEXT 440 690 "Minimal 2D vector drawing" 9 4 #8ec5fc
+TEXT 440 706 "language with vision matrix." 9 4 #8ec5fc
+TEXT 440 722 "Converts sketches to ASCII." 9 4 #8ec5fc
+TEXT 440 744 "[JavaScript] [Canvas] [DSL]" 8 4 #4a90d9
+
+-- ── Skills spec table ────────────────────────────────────
+TEXT 50 790 "04. SKILLS MATRIX" 11 3 #4a90d9 bold
+LINE 50 806 790 806 3 #2a6ab0 1
+
+RECT 50 816 740 80 3 #1a3050 4
+LINE 50 836 790 836 4 #264a73 1
+LINE 50 856 790 856 4 #264a73 1
+LINE 250 816 250 896 4 #264a73 1
+LINE 510 816 510 896 4 #264a73 1
+TEXT 60 822 "LANGUAGES" 8 5 #5a9fd4
+TEXT 260 822 "FRAMEWORKS" 8 5 #5a9fd4
+TEXT 520 822 "INFRASTRUCTURE" 8 5 #5a9fd4
+TEXT 60 842 "Python" 9 5 #8ec5fc
+TEXT 130 842 "JavaScript" 9 5 #8ec5fc
+TEXT 60 862 "TypeScript" 9 5 #8ec5fc
+TEXT 150 862 "Go" 9 5 #8ec5fc
+TEXT 180 862 "SQL" 9 5 #8ec5fc
+TEXT 260 842 "React" 9 5 #8ec5fc
+TEXT 320 842 "Next.js" 9 5 #8ec5fc
+TEXT 400 842 "FastAPI" 9 5 #8ec5fc
+TEXT 260 862 "Flask" 9 5 #8ec5fc
+TEXT 320 862 "Node" 9 5 #8ec5fc
+TEXT 380 862 "Django" 9 5 #8ec5fc
+TEXT 520 842 "Docker" 9 5 #8ec5fc
+TEXT 590 842 "Kubernetes" 9 5 #8ec5fc
+TEXT 690 842 "AWS" 9 5 #8ec5fc
+TEXT 520 862 "PostgreSQL" 9 5 #8ec5fc
+TEXT 610 862 "Redis" 9 5 #8ec5fc
+TEXT 680 862 "Firebase" 9 5 #8ec5fc
+
+-- ── Education ────────────────────────────────────────────
+TEXT 50 920 "05. EDUCATION" 11 3 #4a90d9 bold
+LINE 50 936 790 936 3 #2a6ab0 1
+
+TEXT 50 956 "MSc Computer Science" 11 3 #ffffff bold
+TEXT 300 956 "University College London" 10 3 #5a9fd4
+TEXT 660 956 "2018 — 2020" 9 3 #4a90d9
+
+TEXT 50 980 "BSc Mathematics" 11 3 #ffffff bold
+TEXT 300 980 "University of Warsaw" 10 3 #5a9fd4
+TEXT 660 980 "2014 — 2018" 9 3 #4a90d9
+
+-- ── Certs ────────────────────────────────────────────────
+TEXT 50 1012 "06. CERTIFICATIONS" 11 3 #4a90d9 bold
+LINE 50 1028 790 1028 3 #2a6ab0 1
+TEXT 50 1044 "AWS Solutions Architect" 9 3 #8ec5fc
+TEXT 300 1044 "GCP Data Engineer" 9 3 #8ec5fc
+TEXT 520 1044 "CKA Kubernetes" 9 3 #8ec5fc

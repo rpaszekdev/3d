@@ -1,0 +1,30 @@
+V 24 32 24
+
+-- nightstand legs
+B 7 0 7 2 2 2 a
+B 15 0 7 2 2 2 a
+B 7 0 15 2 2 2 a
+B 15 0 15 2 2 2 a
+
+-- nightstand body
+B 6 2 6 12 9 12 d
+
+-- drawer face
+B 8 4 6 8 4 1 8
+
+-- drawer handle
+B 11 5 6 2 2 1 9
+
+-- lamp base on top
+B 9 11 9 6 1 6 9
+
+-- lamp pole
+C 12 12 12 1 7 9
+
+-- lamp shade (layered for cone shape)
+B 8 19 8 8 1 8 6
+B 9 20 9 6 1 6 6
+B 10 21 10 4 2 4 6
+
+-- light bulb
+S 12 20 12 2 6

@@ -1,0 +1,39 @@
+V 24 36 16
+
+-- pointe shoes (pink satin)
+B 10 0 7 2 2 2 b
+B 14 0 7 2 2 2 b
+
+-- legs (white tights)
+B 10 2 7 2 9 2 8
+B 14 2 7 2 9 2 8
+
+-- tutu outer layer (pink)
+B 2 10 4 20 3 8 b
+
+-- tutu inner layer (magenta accent)
+B 5 12 5 14 3 6 5
+
+-- bodice leotard (pink)
+B 10 14 6 6 8 4 b
+
+-- neck
+B 11 22 7 2 3 2 d
+
+-- head (tan skin)
+S 12 26 8 3 d
+
+-- hair bun (brown)
+S 12 29 8 2 a
+
+-- left arm raised outward
+B 7 18 7 3 2 2 d
+B 4 20 7 2 6 2 d
+
+-- right arm raised outward
+B 15 18 7 3 2 2 d
+B 18 20 7 2 6 2 d
+
+-- hands (delicate)
+S 4 26 7 1 d
+S 19 26 7 1 d

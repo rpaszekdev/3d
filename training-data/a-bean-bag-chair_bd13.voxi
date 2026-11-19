@@ -1,0 +1,16 @@
+Copied and renderer opened — paste with Cmd+V.
+V 28 28 28
+
+-- bean bag main body (wide squashed ellipsoid)
+E 14 8 14 10 8 10 7
+
+-- upper seam / sitting depression
+E 14 14 14 7 3 7 1
+
+-- bottom contact patch
+B 5 0 5 18 1 18 e
+`★ Insight ─────────────────────────────────────`
+- Bean bags use two overlapping ellipsoids: a wide flat one for the body (radii 10,8,10) and a smaller squashed one at the top (radii 7,3,7) to simulate the sitting depression
+- The ellipsoid `E` primitive is ideal here — `S` (sphere) would look too rigid, while `E` lets you independently control X/Y/Z radii for organic shapes
+- The maroon (`e`) base patch grounds the object visually against the dark renderer background without using black (`0`)
+`─────────────────────────────────────────────────`

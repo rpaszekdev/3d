@@ -1,0 +1,22 @@
+V 24 48 24
+
+-- base
+C 12 2 12 4 2 9
+
+-- pole lower
+C 12 4 12 1 20 9
+
+-- pole upper
+C 12 24 12 1 12 9
+
+-- lamp shade outer
+E 12 38 12 6 4 6 6
+
+-- lamp shade inner (darker)
+E 12 37 12 4 3 4 e
+
+-- bulb glow
+S 12 35 12 2 8
+
+-- base weight ring
+C 12 1 12 5 1 7

@@ -1,0 +1,73 @@
+`★ Insight ─────────────────────────────────────`
+**Penguin anatomy in voxels:** Think in 3 vertical zones — feet/legs (Y=0–5), torso ellipsoid (Y=6–21), head sphere (Y=22–31). The white belly should be pushed toward Z-front (lower Z) to show on the face side. Orange feet (color 7) and beak are key recognition cues.
+`─────────────────────────────────────────────────`
+
+V 32 32 32
+
+-- Feet (orange, spread wide)
+B 10 0 12 6 2 6 7
+B 17 0 12 6 2 6 7
+
+-- Legs (short black stumps)
+B 12 2 14 4 5 4 0
+B 17 2 14 4 5 4 0
+
+-- Lower body fill (black)
+B 11 5 13 10 4 6 0
+
+-- Main body ellipsoid (black)
+E 16 14 15 8 10 7 0
+
+-- Belly patch (white, pushed front)
+E 16 13 13 5 8 4 8
+
+-- Left wing (flat flipper)
+B 7 7 13 3 11 5 0
+B 7 9 12 2 8 4 0
+
+-- Right wing (flat flipper)
+B 22 7 13 3 11 5 0
+B 23 9 12 2 8 4 0
+
+-- Neck (black)
+B 13 22 13 6 4 6 0
+
+-- Head (black sphere)
+S 16 28 15 5 0
+
+-- Head bulk fill
+B 12 25 13 8 5 5 0
+
+-- Face patch (white oval)
+E 16 27 13 3 4 3 8
+
+-- Left eye socket
+B 12 28 12 3 3 2 0
+-- Left eye white
+P 13 29 12 8
+P 12 29 12 8
+-- Left pupil
+P 13 28 11 0
+P 12 28 11 0
+
+-- Right eye socket
+B 18 28 12 3 3 2 0
+-- Right eye white
+P 18 29 12 8
+P 19 29 12 8
+-- Right pupil
+P 18 28 11 0
+P 19 28 11 0
+
+-- Beak upper (orange)
+B 14 26 10 4 3 5 7
+
+-- Beak lower tip (darker orange / tan)
+B 14 24 10 4 2 4 d
+
+-- Crown top of head
+B 13 31 13 6 2 5 0
+
+`★ Insight ─────────────────────────────────────`
+**Improvement over v1:** The feet now use orange (7) instead of white, the eyes have proper 2×2 sockets with highlight points for depth, the wings use two overlapping boxes to suggest a curved flipper shape, and the beak is larger (4-wide) for better visibility at small voxel scale.
+`─────────────────────────────────────────────────`

@@ -1,0 +1,34 @@
+V 40 16 50
+
+-- snout (long jaw)
+B 14 2 2 12 3 14 2
+-- lower teeth
+B 15 2 2 10 1 14 8
+-- head (wide, elevated)
+B 12 2 16 16 5 8 2
+-- neck
+B 13 2 24 14 4 4 c
+-- body (wide torso)
+B 10 2 28 20 5 12 2
+-- belly (tan underside, drawn over body base)
+B 12 2 16 16 1 24 d
+-- tail (tapering sections)
+B 13 3 40 14 4 6 c
+B 15 3 46 10 3 3 c
+B 17 3 49 6 2 1 c
+-- front legs
+B 10 0 22 4 3 5 c
+B 26 0 22 4 3 5 c
+-- back legs
+B 10 0 33 4 3 5 c
+B 26 0 33 4 3 5 c
+-- eyes (yellow, atop head)
+S 16 7 19 1 6
+S 24 7 19 1 6
+-- nostrils
+S 18 4 3 1 9
+S 22 4 3 1 9
+-- dorsal ridges (spine spines)
+B 17 7 29 6 2 2 c
+B 17 7 33 6 2 2 c
+B 17 7 37 6 2 2 c

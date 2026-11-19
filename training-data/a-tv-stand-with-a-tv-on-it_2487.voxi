@@ -1,0 +1,28 @@
+V 32 32 32
+
+-- TV stand body
+B 6 0 12 20 5 8 a
+
+-- Stand middle shelf
+B 7 2 12 18 1 7 d
+
+-- Stand feet
+B 7 0 12 2 1 2 0
+B 23 0 12 2 1 2 0
+B 7 0 17 2 1 2 0
+B 23 0 17 2 1 2 0
+
+-- TV neck mount
+B 15 5 13 2 2 2 9
+
+-- TV bezel (outer black frame)
+B 7 7 14 18 12 1 0
+
+-- TV screen (blue)
+B 8 8 14 16 10 1 3
+
+-- TV top speaker bar
+B 9 18 14 14 1 1 9
+
+-- TV power indicator
+B 22 8 14 1 1 1 1

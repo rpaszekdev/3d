@@ -1,0 +1,37 @@
+V 24 14 18
+
+-- legs
+B 2 0 3 2 2 2 a
+B 20 0 3 2 2 2 a
+B 2 0 13 2 2 2 a
+B 20 0 13 2 2 2 a
+
+-- base frame
+B 1 2 2 22 2 14 a
+
+-- left armrest
+B 1 2 2 3 7 14 a
+
+-- right armrest
+B 20 2 2 3 7 14 a
+
+-- backrest structure
+B 4 2 13 16 7 3 a
+
+-- seat cushion left
+B 4 4 3 4 3 9 d
+
+-- seat cushion center
+B 10 4 3 4 3 9 d
+
+-- seat cushion right
+B 16 4 3 4 3 9 d
+
+-- back cushion left
+B 4 4 13 4 5 2 3
+
+-- back cushion center
+B 10 4 13 4 5 2 3
+
+-- back cushion right
+B 16 4 13 4 5 2 3

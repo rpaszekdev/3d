@@ -1,0 +1,39 @@
+V 32 32 32
+
+-- wardrobe back panel
+B 8 0 15 16 24 1 a
+-- left side wall
+B 8 0 8 2 24 8 a
+-- right side wall
+B 22 0 8 2 24 8 a
+-- top panel
+B 8 23 8 16 1 8 a
+-- bottom panel
+B 8 0 8 16 2 8 a
+
+-- left door open (swung left)
+B 0 1 8 8 21 1 d
+-- right door open (swung right)
+B 24 1 8 8 21 1 d
+
+-- left door handle
+S 7 11 9 1 6
+-- right door handle
+S 25 11 9 1 6
+
+-- interior shelf
+B 9 12 9 13 1 6 a
+
+-- hanging rod
+C 16 19 12 6 1 9
+
+-- hanging shirt
+B 11 13 11 3 6 2 5
+-- hanging coat
+B 15 12 11 4 7 2 3
+-- hanging dress
+B 19 13 11 3 6 2 b
+
+-- feet
+B 9 0 9 2 2 2 9
+B 20 0 9 2 2 2 9

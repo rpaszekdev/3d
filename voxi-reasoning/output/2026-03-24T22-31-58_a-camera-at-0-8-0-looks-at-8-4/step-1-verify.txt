@@ -1,0 +1,42 @@
+**All 6 renders are completely black — nothing is visible.**
+
+This is a render failure, not a content error. The sketch logic itself cannot be verified visually. Here's the diagnosis:
+
+---
+
+## Render Failure Analysis
+
+**All angles:** `front-iso`, `front`, `right`, `back`, `left`, `top` — solid black, 1300×866px, zero visible geometry.
+
+This means the renderer either:
+1. **Crashed silently** — the VOXI scene compiled but the renderer output nothing (background default = black)
+2. **Camera/viewport issue** — the scene camera is outside the 16×16×16 grid looking away, so all geometry is behind the frustum or too far
+3. **Coordinate system mismatch** — the scene uses `V 16 16 16` but elements at `X=6..10, Y=0..8, Z=0..10` may exceed what the renderer expects, or Y=0 for the floor conflicts with Y-up conventions
+4. **`S` sphere syntax error** — if `S 0 8 0 1 6` is malformed, it might abort parsing of the whole scene
+
+---
+
+## Most Likely Cause
+
+The camera marker is at `(0, 8, 0)` with the sphere `S 0 8 0 1 6`. If the renderer places its default viewing cameras at positions like `(8,8,-8)` looking toward `(8,8,8)`, then a scene where all content sits in `X:[6,10], Z:[6,10]` at the far corner of a 16³ grid could be partially out of view — but wouldn't produce **all-black** across 6 orthographic angles.
+
+The all-black result across **all 6 canonical angles** (including top-down) strongly suggests a **parse/render error**, not just a bad camera position.
+
+---
+
+## What to Check Before Re-sketching
+
+1. Check the renderer logs/stderr for this run — look for parse errors near the `S` or `P` commands
+2. Verify `S x y z radius color` is the correct sphere syntax (radius=1 may be too small to render, try radius=2)
+3. Try a minimal test: `V 8 8 8 / B 2 0 2 4 4 4 7` — if that renders, the syntax is fine and the issue is in one of the other commands
+4. The `B 6 0 6 4 1 4 3` floor-at-Y=0 command places voxels at Y=0, which may be at/below the grid floor — try Y=1 for the occlusion markers
+
+---
+
+## What to Sketch Next (once render works)
+
+The spatial reasoning itself is **correct** — the three visible faces, the corner intersection, and the shadow footprint math all check out. Once rendering is fixed, the next sketch should:
+
+- Add a **line-of-sight arrow** more visibly (thicker point trail, or colored voxel column from `(0,8,0)` to `(6,5,6)`)
+- Sketch the **actual camera frustum boundary** — draw the 4 edge rays of the view cone hitting the floor to make the occluded/visible floor boundary explicit rather than inferring it from shadow overlap
+- Verify the asymmetric shadow: the blue occlusion region should be **larger toward +X and +Z** (away from camera), not symmetric — check the `B 10 0 6` and `B 6 0 10` blocks are the right shape

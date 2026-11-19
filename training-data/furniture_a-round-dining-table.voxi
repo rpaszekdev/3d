@@ -1,0 +1,10 @@
+V 16 16 16
+
+-- base / foot
+C 8 0 8 3 2 a
+
+-- central pedestal
+C 8 2 8 1 8 a
+
+-- tabletop (wide flat cylinder)
+C 8 10 8 6 1 d

@@ -1,0 +1,19 @@
+V 24 24 24
+
+-- pyramid base layer
+B 7 0 7 10 2 10 d
+
+-- second layer
+B 8 2 8 8 2 8 6
+
+-- third layer
+B 9 4 9 6 2 6 d
+
+-- fourth layer
+B 10 6 10 4 2 4 6
+
+-- fifth layer
+B 11 8 11 2 2 2 d
+
+-- capstone
+B 11 10 11 2 1 2 6

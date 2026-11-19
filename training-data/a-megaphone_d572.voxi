@@ -1,0 +1,33 @@
+V 24 24 24
+
+-- bell rim (wide opening, facing viewer)
+C 12 12 3 6 1 9
+
+-- bell body
+C 12 12 3 5 2 7
+
+-- cone section large
+C 12 12 7 4 3 7
+
+-- cone section medium
+C 12 12 11 3 3 7
+
+-- cone section narrow
+C 12 12 15 2 2 7
+
+-- mouthpiece tube
+C 12 12 18 1 2 6
+
+-- handle body
+B 9 6 8 6 2 4 8
+
+-- handle grip ridges
+B 10 6 9 1 2 1 9
+B 12 6 9 1 2 1 9
+B 14 6 9 1 2 1 9
+
+-- trigger button
+B 11 6 10 2 1 1 1
+
+-- strap mount
+B 9 9 10 1 2 2 a

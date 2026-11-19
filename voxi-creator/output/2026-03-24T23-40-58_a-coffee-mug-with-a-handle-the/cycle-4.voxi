@@ -1,0 +1,1 @@
+Key improvements to apply: (1) Scale handle height to span ~60% of mug body, (2) add explicit anchor blocks where handle meets mug wall, (3) hollow out the mug top with an inner cavity cylinder — since VOXI has no subtraction, we layer a dark inner cylinder on top to simulate depth.

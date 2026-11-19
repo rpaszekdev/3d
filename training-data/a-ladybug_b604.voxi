@@ -1,0 +1,36 @@
+V 24 24 24
+
+-- body shell (red)
+E 12 5 13 7 4 8 1
+
+-- head (black)
+S 12 5 4 3 0
+
+-- center dividing line
+B 11 6 6 2 6 14 0
+
+-- spots left wing
+S 9 9 10 2 0
+S 9 9 15 2 0
+S 8 9 19 1 0
+
+-- spots right wing
+S 15 9 10 2 0
+S 15 9 15 2 0
+S 16 9 19 1 0
+
+-- legs left
+B 4 1 9 4 1 1 0
+B 4 1 13 4 1 1 0
+B 4 1 17 4 1 1 0
+
+-- legs right
+B 16 1 9 4 1 1 0
+B 16 1 13 4 1 1 0
+B 16 1 17 4 1 1 0
+
+-- antennae
+B 10 8 2 1 4 1 0
+B 14 8 2 1 4 1 0
+S 10 12 2 1 0
+S 14 12 2 1 0

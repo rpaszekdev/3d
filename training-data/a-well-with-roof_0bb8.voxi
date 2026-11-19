@@ -1,0 +1,29 @@
+V 20 24 20
+
+-- stone well wall
+C 10 3 10 5 6 9
+-- water inside
+B 8 0 8 4 1 4 3
+
+-- wooden support posts
+C 7 7 7 1 14 a
+C 13 7 7 1 14 a
+C 7 7 13 1 14 a
+C 13 7 13 1 14 a
+
+-- crossbeam
+B 7 13 9 6 1 2 a
+-- winch roller
+C 10 14 10 1 2 4
+
+-- peaked roof layers
+B 5 15 5 10 1 10 1
+B 6 16 6 8 1 8 1
+B 7 17 7 6 1 6 1
+B 8 18 8 4 1 4 1
+B 9 19 9 2 1 2 1
+
+-- rope
+B 10 8 10 1 5 1 0
+-- bucket
+E 10 7 10 2 2 2 a

@@ -1,0 +1,22 @@
+V 16 24 16
+
+-- wooden handle
+C 8 6 8 1 12 a
+
+-- torch head binding
+B 6 12 6 4 3 4 d
+
+-- charred top
+B 7 14 7 2 2 2 0
+
+-- flame base (orange)
+S 8 16 8 2 7
+
+-- flame body (yellow)
+S 8 17 8 1 6
+
+-- flame wisp (red)
+S 8 19 8 1 1
+
+-- bright core
+B 7 15 7 2 2 2 6

@@ -1,0 +1,25 @@
+V 24 24 24
+
+-- main puffy body
+E 12 8 12 10 8 10 5
+
+-- bottom base flattened
+B 3 0 3 18 2 18 e
+
+-- top gather dome
+S 12 16 12 3 e
+
+-- top center button
+S 12 17 12 1 0
+
+-- vertical seam front
+B 11 2 2 2 13 1 9
+
+-- vertical seam back
+B 11 2 21 2 13 1 9
+
+-- vertical seam left
+B 2 2 11 1 13 2 9
+
+-- vertical seam right
+B 21 2 11 1 13 2 9

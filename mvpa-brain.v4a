@@ -1,0 +1,250 @@
+-- MULTI-VOXEL PATTERN ANALYSIS (MVPA)
+-- Visualizes: Brain → fMRI Voxels → Pattern Extraction → Classifier
+-- FILM-TITLE: "Multi-Voxel Pattern Analysis"
+-- FILM: 0 5 "The Brain" "A living brain — billions of neurons firing. But we can't see individual neurons with fMRI. We see **blood oxygen levels** averaged over tiny cubes called **voxels**."
+-- FILM: 5 11 "fMRI Scanning" "A scanner pulse sweeps through the brain. Each sweep captures a **3D snapshot** of activity — one number per voxel. The brain is now a grid of values, not tissue."
+-- FILM: 11 17 "Stimulus → Activation" "Two stimuli are shown: a **face** and a **house**. Each triggers a different spatial pattern of voxel activity. The patterns overlap — no single voxel tells you which stimulus was shown."
+-- FILM: 17 23 "Pattern Extraction" "MVPA reads the **entire pattern** across many voxels simultaneously. The face pattern (red) and house pattern (blue) are extracted as **feature vectors** — points in high-dimensional space."
+-- FILM: 23 30 "Classifier Decodes" "A classifier (SVM/LDA) learns the **decision boundary** between patterns. Given a new brain scan, it reads the voxel pattern and predicts: **face or house?** The brain's code is cracked."
+V 96 56 56
+DUR 30
+L 1
+
+-- ============================================================
+-- STAGE 1: THE BRAIN (T=0-5)
+-- Two hemispheres, cerebellum, stem, with pulse
+-- ============================================================
+
+-- Left hemisphere
+E 42*clamp(T*0.8,0,1) 28*clamp(T*0.8,0,1) 22*clamp(T*0.8,0,1) 16*clamp(T*0.8,0,1) 14*clamp(T*0.8,0,1) 12*clamp(T*0.8,0,1) b
+-- Right hemisphere
+E 54*clamp(T*0.8,0,1) 28*clamp(T*0.8,0,1) 22*clamp(T*0.8,0,1) 16*clamp(T*0.8,0,1) 14*clamp(T*0.8,0,1) 12*clamp(T*0.8,0,1) b
+
+-- Hemisphere folds (cortex wrinkles — darker ridges)
+E 42*clamp(T*0.7,0,1) 34*clamp(T*0.7,0,1) 22*clamp(T*0.7,0,1) 14*clamp(T*0.7,0,1) 4*clamp(T*0.7,0,1) 10*clamp(T*0.7,0,1) e
+E 54*clamp(T*0.7,0,1) 34*clamp(T*0.7,0,1) 22*clamp(T*0.7,0,1) 14*clamp(T*0.7,0,1) 4*clamp(T*0.7,0,1) 10*clamp(T*0.7,0,1) e
+E 42*clamp(T*0.7,0,1) 28*clamp(T*0.7,0,1) 13*clamp(T*0.7,0,1) 12*clamp(T*0.7,0,1) 10*clamp(T*0.7,0,1) 3*clamp(T*0.7,0,1) e
+E 54*clamp(T*0.7,0,1) 28*clamp(T*0.7,0,1) 13*clamp(T*0.7,0,1) 12*clamp(T*0.7,0,1) 10*clamp(T*0.7,0,1) 3*clamp(T*0.7,0,1) e
+
+-- Central fissure (gap between hemispheres)
+B 48*clamp(T*0.8,0,1) 28*clamp(T*0.8,0,1) 22*clamp(T*0.8,0,1) 1*clamp(T*0.8,0,1) 14*clamp(T*0.8,0,1) 12*clamp(T*0.8,0,1) e
+
+-- Cerebellum (back-bottom)
+E 48*clamp(T,0,1) 16*clamp(T,0,1) 32*clamp(T,0,1) 10*clamp(T,0,1) 6*clamp(T,0,1) 6*clamp(T,0,1) b
+
+-- Brain stem
+C 48*clamp(T,0,1) 6*clamp(T,0,1) 28*clamp(T,0,1) 3*clamp(T,0,1) 10*clamp(T,0,1) b
+
+-- Alive pulse (subtle expanding glow)
+S 48 28 22 14+bounce(T*2)*2 1
+
+-- ============================================================
+-- STAGE 2: fMRI SCANNING (T=5-11)
+-- Scanner pulse sweeps through brain, voxel grid appears
+-- ============================================================
+
+-- Scanner ring (appears and pulses)
+B 48*clamp(T-5,0,1) 28*clamp(T-5,0,1) lerp(10,34,clamp((T-5)/5,0,1))*clamp(T-5,0,1) 22*clamp(T-5,0,1)*clamp(11-T,0,1) 18*clamp(T-5,0,1)*clamp(11-T,0,1) 2*clamp(T-5,0,1)*clamp(11-T,0,1) 9
+-- Scanner beam (cyan, sweeping through Z)
+B 48*clamp(T-5,0,1) 28*clamp(T-5,0,1) lerp(10,34,clamp((T-5)/5,0,1))*clamp(T-5,0,1) 18*clamp(T-5,0,1)*clamp(11-T,0,1) 14*clamp(T-5,0,1)*clamp(11-T,0,1) 1*clamp(T-5,0,1)*clamp(11-T,0,1) 4
+
+-- Voxel grid emerging (wireframe boxes across brain)
+-- Layer 1 (front)
+B 36*clamp(T-6,0,1) 22*clamp(T-6,0,1) 16*clamp(T-6,0,1) 6*clamp(T-6,0,1) 6*clamp(T-6,0,1) 1*clamp(T-6,0,1) 9
+B 48*clamp(T-6.1,0,1) 22*clamp(T-6.1,0,1) 16*clamp(T-6.1,0,1) 6*clamp(T-6.1,0,1) 6*clamp(T-6.1,0,1) 1*clamp(T-6.1,0,1) 9
+B 60*clamp(T-6.2,0,1) 22*clamp(T-6.2,0,1) 16*clamp(T-6.2,0,1) 6*clamp(T-6.2,0,1) 6*clamp(T-6.2,0,1) 1*clamp(T-6.2,0,1) 9
+B 36*clamp(T-6.3,0,1) 30*clamp(T-6.3,0,1) 16*clamp(T-6.3,0,1) 6*clamp(T-6.3,0,1) 6*clamp(T-6.3,0,1) 1*clamp(T-6.3,0,1) 9
+B 48*clamp(T-6.4,0,1) 30*clamp(T-6.4,0,1) 16*clamp(T-6.4,0,1) 6*clamp(T-6.4,0,1) 6*clamp(T-6.4,0,1) 1*clamp(T-6.4,0,1) 9
+B 60*clamp(T-6.5,0,1) 30*clamp(T-6.5,0,1) 16*clamp(T-6.5,0,1) 6*clamp(T-6.5,0,1) 6*clamp(T-6.5,0,1) 1*clamp(T-6.5,0,1) 9
+B 36*clamp(T-6.6,0,1) 38*clamp(T-6.6,0,1) 16*clamp(T-6.6,0,1) 6*clamp(T-6.6,0,1) 4*clamp(T-6.6,0,1) 1*clamp(T-6.6,0,1) 9
+B 48*clamp(T-6.7,0,1) 38*clamp(T-6.7,0,1) 16*clamp(T-6.7,0,1) 6*clamp(T-6.7,0,1) 4*clamp(T-6.7,0,1) 1*clamp(T-6.7,0,1) 9
+B 60*clamp(T-6.8,0,1) 38*clamp(T-6.8,0,1) 16*clamp(T-6.8,0,1) 6*clamp(T-6.8,0,1) 4*clamp(T-6.8,0,1) 1*clamp(T-6.8,0,1) 9
+
+-- Layer 2 (middle)
+B 36*clamp(T-7,0,1) 22*clamp(T-7,0,1) 22*clamp(T-7,0,1) 6*clamp(T-7,0,1) 6*clamp(T-7,0,1) 1*clamp(T-7,0,1) 9
+B 48*clamp(T-7.1,0,1) 22*clamp(T-7.1,0,1) 22*clamp(T-7.1,0,1) 6*clamp(T-7.1,0,1) 6*clamp(T-7.1,0,1) 1*clamp(T-7.1,0,1) 9
+B 60*clamp(T-7.2,0,1) 22*clamp(T-7.2,0,1) 22*clamp(T-7.2,0,1) 6*clamp(T-7.2,0,1) 6*clamp(T-7.2,0,1) 1*clamp(T-7.2,0,1) 9
+B 36*clamp(T-7.3,0,1) 30*clamp(T-7.3,0,1) 22*clamp(T-7.3,0,1) 6*clamp(T-7.3,0,1) 6*clamp(T-7.3,0,1) 1*clamp(T-7.3,0,1) 9
+B 48*clamp(T-7.4,0,1) 30*clamp(T-7.4,0,1) 22*clamp(T-7.4,0,1) 6*clamp(T-7.4,0,1) 6*clamp(T-7.4,0,1) 1*clamp(T-7.4,0,1) 9
+B 60*clamp(T-7.5,0,1) 30*clamp(T-7.5,0,1) 22*clamp(T-7.5,0,1) 6*clamp(T-7.5,0,1) 6*clamp(T-7.5,0,1) 1*clamp(T-7.5,0,1) 9
+B 36*clamp(T-7.6,0,1) 38*clamp(T-7.6,0,1) 22*clamp(T-7.6,0,1) 6*clamp(T-7.6,0,1) 4*clamp(T-7.6,0,1) 1*clamp(T-7.6,0,1) 9
+B 48*clamp(T-7.7,0,1) 38*clamp(T-7.7,0,1) 22*clamp(T-7.7,0,1) 6*clamp(T-7.7,0,1) 4*clamp(T-7.7,0,1) 1*clamp(T-7.7,0,1) 9
+B 60*clamp(T-7.8,0,1) 38*clamp(T-7.8,0,1) 22*clamp(T-7.8,0,1) 6*clamp(T-7.8,0,1) 4*clamp(T-7.8,0,1) 1*clamp(T-7.8,0,1) 9
+
+-- Layer 3 (back)
+B 36*clamp(T-8,0,1) 22*clamp(T-8,0,1) 28*clamp(T-8,0,1) 6*clamp(T-8,0,1) 6*clamp(T-8,0,1) 1*clamp(T-8,0,1) 9
+B 48*clamp(T-8.1,0,1) 22*clamp(T-8.1,0,1) 28*clamp(T-8.1,0,1) 6*clamp(T-8.1,0,1) 6*clamp(T-8.1,0,1) 1*clamp(T-8.1,0,1) 9
+B 60*clamp(T-8.2,0,1) 22*clamp(T-8.2,0,1) 28*clamp(T-8.2,0,1) 6*clamp(T-8.2,0,1) 6*clamp(T-8.2,0,1) 1*clamp(T-8.2,0,1) 9
+B 36*clamp(T-8.3,0,1) 30*clamp(T-8.3,0,1) 28*clamp(T-8.3,0,1) 6*clamp(T-8.3,0,1) 6*clamp(T-8.3,0,1) 1*clamp(T-8.3,0,1) 9
+B 48*clamp(T-8.4,0,1) 30*clamp(T-8.4,0,1) 28*clamp(T-8.4,0,1) 6*clamp(T-8.4,0,1) 6*clamp(T-8.4,0,1) 1*clamp(T-8.4,0,1) 9
+B 60*clamp(T-8.5,0,1) 30*clamp(T-8.5,0,1) 28*clamp(T-8.5,0,1) 6*clamp(T-8.5,0,1) 6*clamp(T-8.5,0,1) 1*clamp(T-8.5,0,1) 9
+
+-- Scan data readout dots (values appearing in voxels)
+P 36*clamp(T-9,0,1) 22*clamp(T-9,0,1) 16*clamp(T-9,0,1) 2
+P 48*clamp(T-9.1,0,1) 30*clamp(T-9.1,0,1) 22*clamp(T-9.1,0,1) 6
+P 60*clamp(T-9.2,0,1) 22*clamp(T-9.2,0,1) 28*clamp(T-9.2,0,1) 4
+P 36*clamp(T-9.3,0,1) 38*clamp(T-9.3,0,1) 22*clamp(T-9.3,0,1) 1
+P 60*clamp(T-9.4,0,1) 30*clamp(T-9.4,0,1) 16*clamp(T-9.4,0,1) 5
+
+-- ============================================================
+-- STAGE 3: STIMULUS → ACTIVATION (T=11-17)
+-- Face and house stimuli trigger different voxel patterns
+-- ============================================================
+
+-- FACE stimulus card (left side, T=11-14)
+-- Card background
+B 10*clamp(T-11,0,1) 40*clamp(T-11,0,1) 6*clamp(T-11,0,1) 8*clamp(T-11,0,1)*clamp(14-T,0,1) 10*clamp(T-11,0,1)*clamp(14-T,0,1) 1*clamp(14-T,0,1) 8
+-- Face oval
+E 10*clamp(T-11,0,1) 42*clamp(T-11,0,1) 5*clamp(T-11,0,1) 4*clamp(T-11.2,0,1)*clamp(14-T,0,1) 5*clamp(T-11.2,0,1)*clamp(14-T,0,1) 1*clamp(14-T,0,1) d
+-- Eyes
+S 8*clamp(T-11.3,0,1) 44*clamp(T-11.3,0,1) 4*clamp(T-11.3,0,1) 1*clamp(T-11.3,0,1)*clamp(14-T,0,1) 0
+S 12*clamp(T-11.3,0,1) 44*clamp(T-11.3,0,1) 4*clamp(T-11.3,0,1) 1*clamp(T-11.3,0,1)*clamp(14-T,0,1) 0
+-- Mouth
+B 10*clamp(T-11.4,0,1) 38*clamp(T-11.4,0,1) 4*clamp(T-11.4,0,1) 3*clamp(T-11.4,0,1)*clamp(14-T,0,1) 1*clamp(T-11.4,0,1)*clamp(14-T,0,1) 1*clamp(14-T,0,1) 1
+
+-- Arrow from face to brain
+B 20*clamp(T-11.5,0,1)*clamp(14-T,0,1) 40*clamp(T-11.5,0,1)*clamp(14-T,0,1) 10*clamp(T-11.5,0,1)*clamp(14-T,0,1) 6*clamp(T-11.5,0,1)*clamp(14-T,0,1) 1*clamp(14-T,0,1) 1*clamp(14-T,0,1) 6
+K 28*clamp(T-11.7,0,1)*clamp(14-T,0,1) 40*clamp(T-11.7,0,1)*clamp(14-T,0,1) 10*clamp(T-11.7,0,1)*clamp(14-T,0,1) 2*clamp(T-11.7,0,1)*clamp(14-T,0,1) 3*clamp(14-T,0,1) 6
+
+-- FACE activation pattern (RED voxels in fusiform/temporal area — right hemisphere)
+S 56*clamp(T-12,0,1) 24*clamp(T-12,0,1) 18*clamp(T-12,0,1) 2*clamp(T-12,0,1)*clamp(14-T,0,1) 1
+S 60*clamp(T-12.1,0,1) 22*clamp(T-12.1,0,1) 20*clamp(T-12.1,0,1) 2*clamp(T-12.1,0,1)*clamp(14-T,0,1) 1
+S 52*clamp(T-12.2,0,1) 26*clamp(T-12.2,0,1) 18*clamp(T-12.2,0,1) 2*clamp(T-12.2,0,1)*clamp(14-T,0,1) 1
+S 58*clamp(T-12.3,0,1) 28*clamp(T-12.3,0,1) 22*clamp(T-12.3,0,1) 1*clamp(T-12.3,0,1)*clamp(14-T,0,1) 1
+S 54*clamp(T-12.4,0,1) 22*clamp(T-12.4,0,1) 24*clamp(T-12.4,0,1) 1*clamp(T-12.4,0,1)*clamp(14-T,0,1) 1
+-- Weaker face response in left hemisphere
+S 40*clamp(T-12.5,0,1) 24*clamp(T-12.5,0,1) 18*clamp(T-12.5,0,1) 1*clamp(T-12.5,0,1)*clamp(14-T,0,1) 7
+S 38*clamp(T-12.6,0,1) 22*clamp(T-12.6,0,1) 20*clamp(T-12.6,0,1) 1*clamp(T-12.6,0,1)*clamp(14-T,0,1) 7
+
+-- HOUSE stimulus card (left side, T=14-17)
+-- Card background
+B 10*clamp(T-14,0,1) 40*clamp(T-14,0,1) 6*clamp(T-14,0,1) 8*clamp(T-14,0,1)*clamp(17-T,0,1) 10*clamp(T-14,0,1)*clamp(17-T,0,1) 1*clamp(17-T,0,1) 8
+-- House body
+B 10*clamp(T-14.2,0,1) 38*clamp(T-14.2,0,1) 5*clamp(T-14.2,0,1) 5*clamp(T-14.2,0,1)*clamp(17-T,0,1) 5*clamp(T-14.2,0,1)*clamp(17-T,0,1) 1*clamp(17-T,0,1) d
+-- Roof
+K 10*clamp(T-14.3,0,1) 45*clamp(T-14.3,0,1) 5*clamp(T-14.3,0,1) 6*clamp(T-14.3,0,1)*clamp(17-T,0,1) 4*clamp(T-14.3,0,1)*clamp(17-T,0,1) 1
+-- Door
+B 10*clamp(T-14.4,0,1) 36*clamp(T-14.4,0,1) 4*clamp(T-14.4,0,1) 2*clamp(T-14.4,0,1)*clamp(17-T,0,1) 3*clamp(T-14.4,0,1)*clamp(17-T,0,1) 1*clamp(17-T,0,1) a
+-- Window
+B 13*clamp(T-14.4,0,1) 40*clamp(T-14.4,0,1) 4*clamp(T-14.4,0,1) 2*clamp(T-14.4,0,1)*clamp(17-T,0,1) 2*clamp(T-14.4,0,1)*clamp(17-T,0,1) 1*clamp(17-T,0,1) 4
+
+-- Arrow from house to brain
+B 20*clamp(T-14.5,0,1)*clamp(17-T,0,1) 40*clamp(T-14.5,0,1)*clamp(17-T,0,1) 10*clamp(T-14.5,0,1)*clamp(17-T,0,1) 6*clamp(T-14.5,0,1)*clamp(17-T,0,1) 1*clamp(17-T,0,1) 1*clamp(17-T,0,1) 6
+K 28*clamp(T-14.7,0,1)*clamp(17-T,0,1) 40*clamp(T-14.7,0,1)*clamp(17-T,0,1) 10*clamp(T-14.7,0,1)*clamp(17-T,0,1) 2*clamp(T-14.7,0,1)*clamp(17-T,0,1) 3*clamp(17-T,0,1) 6
+
+-- HOUSE activation pattern (BLUE voxels in parahippocampal area — medial)
+S 46*clamp(T-15,0,1) 20*clamp(T-15,0,1) 18*clamp(T-15,0,1) 2*clamp(T-15,0,1)*clamp(17-T,0,1) 3
+S 50*clamp(T-15.1,0,1) 18*clamp(T-15.1,0,1) 20*clamp(T-15.1,0,1) 2*clamp(T-15.1,0,1)*clamp(17-T,0,1) 3
+S 44*clamp(T-15.2,0,1) 22*clamp(T-15.2,0,1) 22*clamp(T-15.2,0,1) 2*clamp(T-15.2,0,1)*clamp(17-T,0,1) 3
+S 48*clamp(T-15.3,0,1) 20*clamp(T-15.3,0,1) 24*clamp(T-15.3,0,1) 1*clamp(T-15.3,0,1)*clamp(17-T,0,1) 3
+S 52*clamp(T-15.4,0,1) 22*clamp(T-15.4,0,1) 16*clamp(T-15.4,0,1) 1*clamp(T-15.4,0,1)*clamp(17-T,0,1) 3
+-- Weaker house response scattered
+S 40*clamp(T-15.5,0,1) 20*clamp(T-15.5,0,1) 22*clamp(T-15.5,0,1) 1*clamp(T-15.5,0,1)*clamp(17-T,0,1) 4
+S 56*clamp(T-15.6,0,1) 18*clamp(T-15.6,0,1) 24*clamp(T-15.6,0,1) 1*clamp(T-15.6,0,1)*clamp(17-T,0,1) 4
+
+-- ============================================================
+-- STAGE 4: PATTERN EXTRACTION (T=17-23)
+-- Voxel patterns fly out as feature vectors
+-- ============================================================
+
+-- Brain shrinks to left, patterns extract to right
+-- Shrunk brain (persistent from here)
+E 24*clamp(T-17,0,1) 28*clamp(T-17,0,1) 28*clamp(T-17,0,1) 10*clamp(T-17,0,1) 9*clamp(T-17,0,1) 8*clamp(T-17,0,1) b
+E 32*clamp(T-17,0,1) 28*clamp(T-17,0,1) 28*clamp(T-17,0,1) 10*clamp(T-17,0,1) 9*clamp(T-17,0,1) 8*clamp(T-17,0,1) b
+B 28*clamp(T-17,0,1) 28*clamp(T-17,0,1) 28*clamp(T-17,0,1) 1*clamp(T-17,0,1) 9*clamp(T-17,0,1) 8*clamp(T-17,0,1) e
+
+-- "FACE PATTERN" — red dots flying out to form a vector (right side)
+-- These lerp from brain positions to a vertical column at X=60
+P lerp(32,60,clamp((T-18)/2,0,1))*clamp(T-18,0,1) lerp(24,40,clamp((T-18)/2,0,1))*clamp(T-18,0,1) lerp(20,28,clamp((T-18)/2,0,1))*clamp(T-18,0,1) 1
+P lerp(36,60,clamp((T-18.1)/2,0,1))*clamp(T-18.1,0,1) lerp(22,37,clamp((T-18.1)/2,0,1))*clamp(T-18.1,0,1) lerp(22,28,clamp((T-18.1)/2,0,1))*clamp(T-18.1,0,1) 1
+P lerp(28,60,clamp((T-18.2)/2,0,1))*clamp(T-18.2,0,1) lerp(26,34,clamp((T-18.2)/2,0,1))*clamp(T-18.2,0,1) lerp(18,28,clamp((T-18.2)/2,0,1))*clamp(T-18.2,0,1) 1
+P lerp(34,60,clamp((T-18.3)/2,0,1))*clamp(T-18.3,0,1) lerp(28,31,clamp((T-18.3)/2,0,1))*clamp(T-18.3,0,1) lerp(24,28,clamp((T-18.3)/2,0,1))*clamp(T-18.3,0,1) 1
+P lerp(30,60,clamp((T-18.4)/2,0,1))*clamp(T-18.4,0,1) lerp(22,28,clamp((T-18.4)/2,0,1))*clamp(T-18.4,0,1) lerp(26,28,clamp((T-18.4)/2,0,1))*clamp(T-18.4,0,1) 1
+P lerp(26,60,clamp((T-18.5)/2,0,1))*clamp(T-18.5,0,1) lerp(24,25,clamp((T-18.5)/2,0,1))*clamp(T-18.5,0,1) lerp(20,28,clamp((T-18.5)/2,0,1))*clamp(T-18.5,0,1) 7
+P lerp(22,60,clamp((T-18.6)/2,0,1))*clamp(T-18.6,0,1) lerp(20,22,clamp((T-18.6)/2,0,1))*clamp(T-18.6,0,1) lerp(22,28,clamp((T-18.6)/2,0,1))*clamp(T-18.6,0,1) 7
+
+-- Face pattern vector bar (appears after dots arrive)
+B 60*clamp(T-20.5,0,1) 31*clamp(T-20.5,0,1) 28*clamp(T-20.5,0,1) 2*clamp(T-20.5,0,1) 12*clamp(T-20.5,0,1) 1 1
+-- Vector magnitude bars (different heights = activation levels)
+B 58*clamp(T-20.7,0,1) 22*clamp(T-20.7,0,1) 28*clamp(T-20.7,0,1) 1*clamp(T-20.7,0,1) 8*clamp(T-20.7,0,1) 1 1
+B 60*clamp(T-20.8,0,1) 22*clamp(T-20.8,0,1) 28*clamp(T-20.8,0,1) 1*clamp(T-20.8,0,1) 12*clamp(T-20.8,0,1) 1 1
+B 62*clamp(T-20.9,0,1) 22*clamp(T-20.9,0,1) 28*clamp(T-20.9,0,1) 1*clamp(T-20.9,0,1) 6*clamp(T-20.9,0,1) 1 1
+B 64*clamp(T-21,0,1) 22*clamp(T-21,0,1) 28*clamp(T-21,0,1) 1*clamp(T-21,0,1) 10*clamp(T-21,0,1) 1 1
+B 66*clamp(T-21.1,0,1) 22*clamp(T-21.1,0,1) 28*clamp(T-21.1,0,1) 1*clamp(T-21.1,0,1) 4*clamp(T-21.1,0,1) 1 1
+
+-- "HOUSE PATTERN" — blue dots flying out to a second column
+P lerp(26,74,clamp((T-19)/2,0,1))*clamp(T-19,0,1) lerp(20,40,clamp((T-19)/2,0,1))*clamp(T-19,0,1) lerp(18,28,clamp((T-19)/2,0,1))*clamp(T-19,0,1) 3
+P lerp(30,74,clamp((T-19.1)/2,0,1))*clamp(T-19.1,0,1) lerp(18,37,clamp((T-19.1)/2,0,1))*clamp(T-19.1,0,1) lerp(22,28,clamp((T-19.1)/2,0,1))*clamp(T-19.1,0,1) 3
+P lerp(24,74,clamp((T-19.2)/2,0,1))*clamp(T-19.2,0,1) lerp(22,34,clamp((T-19.2)/2,0,1))*clamp(T-19.2,0,1) lerp(24,28,clamp((T-19.2)/2,0,1))*clamp(T-19.2,0,1) 3
+P lerp(28,74,clamp((T-19.3)/2,0,1))*clamp(T-19.3,0,1) lerp(20,31,clamp((T-19.3)/2,0,1))*clamp(T-19.3,0,1) lerp(20,28,clamp((T-19.3)/2,0,1))*clamp(T-19.3,0,1) 3
+P lerp(32,74,clamp((T-19.4)/2,0,1))*clamp(T-19.4,0,1) lerp(22,28,clamp((T-19.4)/2,0,1))*clamp(T-19.4,0,1) lerp(16,28,clamp((T-19.4)/2,0,1))*clamp(T-19.4,0,1) 3
+P lerp(20,74,clamp((T-19.5)/2,0,1))*clamp(T-19.5,0,1) lerp(20,25,clamp((T-19.5)/2,0,1))*clamp(T-19.5,0,1) lerp(22,28,clamp((T-19.5)/2,0,1))*clamp(T-19.5,0,1) 4
+P lerp(36,74,clamp((T-19.6)/2,0,1))*clamp(T-19.6,0,1) lerp(18,22,clamp((T-19.6)/2,0,1))*clamp(T-19.6,0,1) lerp(24,28,clamp((T-19.6)/2,0,1))*clamp(T-19.6,0,1) 4
+
+-- House pattern vector bar
+B 74*clamp(T-21.5,0,1) 31*clamp(T-21.5,0,1) 28*clamp(T-21.5,0,1) 2*clamp(T-21.5,0,1) 12*clamp(T-21.5,0,1) 1 3
+-- Vector magnitude bars
+B 72*clamp(T-21.7,0,1) 22*clamp(T-21.7,0,1) 28*clamp(T-21.7,0,1) 1*clamp(T-21.7,0,1) 4*clamp(T-21.7,0,1) 1 3
+B 74*clamp(T-21.8,0,1) 22*clamp(T-21.8,0,1) 28*clamp(T-21.8,0,1) 1*clamp(T-21.8,0,1) 6*clamp(T-21.8,0,1) 1 3
+B 76*clamp(T-21.9,0,1) 22*clamp(T-21.9,0,1) 28*clamp(T-21.9,0,1) 1*clamp(T-21.9,0,1) 12*clamp(T-21.9,0,1) 1 3
+B 78*clamp(T-22,0,1) 22*clamp(T-22,0,1) 28*clamp(T-22,0,1) 1*clamp(T-22,0,1) 8*clamp(T-22,0,1) 1 3
+B 80*clamp(T-22.1,0,1) 22*clamp(T-22.1,0,1) 28*clamp(T-22.1,0,1) 1*clamp(T-22.1,0,1) 10*clamp(T-22.1,0,1) 1 3
+
+-- Connecting lines from brain to both vectors
+B 40*clamp(T-20,0,1) 28*clamp(T-20,0,1) 28*clamp(T-20,0,1) 14*clamp(T-20,0,1) 1*clamp(T-20,0,1) 1 9
+
+-- ============================================================
+-- STAGE 5: CLASSIFIER (T=23-30)
+-- SVM decision boundary separating face vs house patterns
+-- ============================================================
+
+-- 2D classification space (large flat plane)
+B 60*clamp(T-23,0,1) 20*clamp(T-23,0,1) 28*clamp(T-23,0,1) 20*clamp(T-23,0,1) 1*clamp(T-23,0,1) 16*clamp(T-23,0,1) 9
+
+-- Decision boundary (diagonal yellow plane)
+B 60*clamp(T-24,0,1) 28*clamp(T-24,0,1) 28*clamp(T-24,0,1) 1*clamp(T-24,0,1) 14*clamp(T-24,0,1) 14*clamp(T-24,0,1) 6
+
+-- Face data points (red spheres, one side of boundary)
+S 52*clamp(T-24.5,0,1) 30*clamp(T-24.5,0,1) 20*clamp(T-24.5,0,1) 2*clamp(T-24.5,0,1) 1
+S 50*clamp(T-24.6,0,1) 34*clamp(T-24.6,0,1) 22*clamp(T-24.6,0,1) 2*clamp(T-24.6,0,1) 1
+S 54*clamp(T-24.7,0,1) 26*clamp(T-24.7,0,1) 18*clamp(T-24.7,0,1) 2*clamp(T-24.7,0,1) 1
+S 48*clamp(T-24.8,0,1) 32*clamp(T-24.8,0,1) 24*clamp(T-24.8,0,1) 2*clamp(T-24.8,0,1) 1
+S 56*clamp(T-24.9,0,1) 28*clamp(T-24.9,0,1) 20*clamp(T-24.9,0,1) 2*clamp(T-24.9,0,1) 1
+
+-- House data points (blue spheres, other side of boundary)
+S 66*clamp(T-25,0,1) 28*clamp(T-25,0,1) 34*clamp(T-25,0,1) 2*clamp(T-25,0,1) 3
+S 68*clamp(T-25.1,0,1) 32*clamp(T-25.1,0,1) 36*clamp(T-25.1,0,1) 2*clamp(T-25.1,0,1) 3
+S 70*clamp(T-25.2,0,1) 26*clamp(T-25.2,0,1) 38*clamp(T-25.2,0,1) 2*clamp(T-25.2,0,1) 3
+S 64*clamp(T-25.3,0,1) 30*clamp(T-25.3,0,1) 32*clamp(T-25.3,0,1) 2*clamp(T-25.3,0,1) 3
+S 72*clamp(T-25.4,0,1) 34*clamp(T-25.4,0,1) 36*clamp(T-25.4,0,1) 2*clamp(T-25.4,0,1) 3
+
+-- NEW unknown test point (white, arrives and moves toward boundary)
+S lerp(60,54,clamp((T-26)/2,0,1))*clamp(T-26,0,1) lerp(40,30,clamp((T-26)/2,0,1))*clamp(T-26,0,1) lerp(28,22,clamp((T-26)/2,0,1))*clamp(T-26,0,1) 3*clamp(T-26,0,1) 8
+
+-- Question mark above test point (white dots)
+P lerp(60,54,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) lerp(44,36,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) lerp(28,22,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) 8
+P lerp(60,54,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) lerp(46,38,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) lerp(28,22,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) 8
+P lerp(61,55,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) lerp(47,39,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) lerp(28,22,clamp((T-26)/2,0,1))*clamp(T-26,0,1)*clamp(28-T,0,1) 8
+
+-- Test point turns RED (classified as face!) at T=28
+S 54*clamp(T-28,0,1) 30*clamp(T-28,0,1) 22*clamp(T-28,0,1) 3*clamp(T-28,0,1) 1
+
+-- Victory sparkles around classified point
+S (54+sin(T*5)*6)*clamp(T-28.5,0,1) (30+cos(T*4)*6)*clamp(T-28.5,0,1) (22+sin(T*3)*6)*clamp(T-28.5,0,1) 1*clamp(T-28.5,0,1) 6
+S (54+cos(T*4)*6)*clamp(T-28.5,0,1) (30+sin(T*5)*6)*clamp(T-28.5,0,1) (22+cos(T*4)*6)*clamp(T-28.5,0,1) 1*clamp(T-28.5,0,1) 4
+S (54+sin(T*6)*6)*clamp(T-28.7,0,1) (30+cos(T*3)*6)*clamp(T-28.7,0,1) (22+sin(T*5)*6)*clamp(T-28.7,0,1) 1*clamp(T-28.7,0,1) 5
+S (54+cos(T*3)*6)*clamp(T-28.7,0,1) (30+sin(T*6)*6)*clamp(T-28.7,0,1) (22+cos(T*3)*6)*clamp(T-28.7,0,1) 1*clamp(T-28.7,0,1) 8
+
+-- Label: FACE text indicator (red bar below classifier)
+B 52*clamp(T-28.5,0,1) 16*clamp(T-28.5,0,1) 22*clamp(T-28.5,0,1) 6*clamp(T-28.5,0,1) 2*clamp(T-28.5,0,1) 1 1
+-- Label: HOUSE text indicator (blue bar)
+B 68*clamp(T-25,0,1) 16*clamp(T-25,0,1) 36*clamp(T-25,0,1) 6*clamp(T-25,0,1) 2*clamp(T-25,0,1) 1 3
+
+-- ============================================================
+-- PROGRESS INDICATORS (bottom)
+-- ============================================================
+B 10 2 4 clamp(T*0.4,0,1)*4 1 4 b
+B 28 2 4 clamp(T-5,0,6)*0.7 1 4 4
+B 48 2 4 clamp(T-11,0,6)*0.7 1 4 5
+B 64 2 4 clamp(T-17,0,6)*0.7 1 4 6
+B 80 2 4 clamp(T-23,0,7)*0.6 1 4 1

@@ -1,0 +1,28 @@
+V 24 22 6
+
+-- left loop
+B 3 16 1 8 2 4 a
+B 3 10 1 8 2 4 a
+B 3 10 1 2 8 4 a
+B 9 10 1 2 8 4 a
+
+-- right loop
+B 13 16 1 8 2 4 a
+B 13 10 1 8 2 4 a
+B 13 10 1 2 8 4 a
+B 19 10 1 2 8 4 a
+
+-- crossing center
+B 8 8 1 8 3 4 a
+B 10 5 3 4 4 2 7
+
+-- left arm
+B 3 1 1 5 8 4 a
+
+-- right arm
+B 16 1 1 5 8 4 a
+
+-- salt crystals
+S 7 18 3 1 8
+S 17 18 3 1 8
+S 12 9 3 1 8

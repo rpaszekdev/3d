@@ -1,0 +1,25 @@
+`★ Insight ─────────────────────────────────────`
+**Render visibility is a critical pipeline concern in voxel art.** When the dominant body color (`f` = navy) is near-black and the renderer uses a dark/black background, the model becomes entirely invisible — a problem compounded when secondary colors (white belly, orange feet) are too small relative to the body mass. This is a "dark-on-dark" failure mode that affects scoring even before artistic merit is evaluated.
+`─────────────────────────────────────────────────`
+
+---
+
+**EVALUATION — "A Penguin" (Cycle 3)**
+
+All 6 render shots (front-iso, front, right, back, left, top) return **completely black frames**. The model is invisible from every angle. Based on the VOXI code from the session context, the cause is diagnosable:
+
+- The body uses color `f` (navy) — a near-black dark blue — against what appears to be a black/very dark renderer background
+- The orange feet (`7`) and white belly are either buried or too small to register at render resolution
+
+---
+
+SCORE: 1
+STRENGTHS: The structural intent is there — separate feet, body, and belly are all defined, and the color vocabulary (navy body, white belly, orange feet) correctly maps to real penguin anatomy.
+ISSUES:
+- **Complete render invisibility**: The navy body (`f`) is visually indistinguishable from the black background in all 6 shots. Fix: Change the primary body color to black (`0`) which actually reads as a solid dark form with proper voxel shading, OR ensure the renderer uses a light-grey or off-white background. Navy looks invisible; true black voxels have shaded edges that read clearly.
+- **Head is missing**: The VOXI code in the session summary shows no head primitive at all — there is no `S` (sphere) or `B` for a head above the body. A penguin without a head is unrecognizable. Fix: Add `S 16 22 14 4 0` for a black spherical head on top of the body, with `S 16 22 11 2 6` for a yellow/orange beak protruding forward.
+- **Wings/flippers absent**: The body is a plain rectangular box with no side appendages. Penguins are defined by their flat flipper-wings. Fix: Add two thin flat boxes on the sides of the body, e.g., `B 9 6 13 2 10 3 0` (left wing) and `B 21 6 13 2 10 3 0` (right wing) in black.
+- **Body proportions too boxy**: A 10×18×8 body is reasonable in height but lacks the rounded, egg-like silhouette of a penguin. Fix: Consider using an `E` (ellipsoid) for the body instead of `B`, e.g., `E 16 11 14 5 9 4 f` to give organic roundness.
+- **White belly too shallow**: The belly (`B 13 3 11 6 14 …`) appears truncated in the code and may not be rendering. Fix: Ensure the white belly box is `B 13 3 10 6 14 2 8` (white = `8`) and verify it slightly protrudes forward (lower Z value) from the navy body.
+
+PRIORITY_FIX: **Add a head** — without it the silhouette cannot be read as a penguin at all. A single `S 16 22 14 4 0` sphere in black immediately makes the form recognizable, even before fixing the dark-body visibility issue.

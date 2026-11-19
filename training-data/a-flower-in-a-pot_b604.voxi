@@ -1,0 +1,33 @@
+V 24 32 24
+
+-- pot base
+B 10 0 10 4 2 4 a
+-- pot body
+B 9 2 9 6 5 6 a
+-- pot rim
+B 8 7 8 8 2 8 a
+-- soil
+B 9 9 9 6 1 6 9
+
+-- stem
+C 12 13 12 1 8 2
+
+-- leaf left
+E 8 13 12 3 1 2 2
+-- leaf right
+E 16 13 12 3 1 2 2
+
+-- petals cardinal
+S 8 17 12 2 1
+S 16 17 12 2 1
+S 12 17 8 2 1
+S 12 17 16 2 1
+
+-- petals diagonal
+S 9 17 9 2 5
+S 15 17 9 2 5
+S 9 17 15 2 5
+S 15 17 15 2 5
+
+-- flower center
+S 12 17 12 2 6

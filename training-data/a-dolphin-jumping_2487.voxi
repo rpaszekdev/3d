@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- water surface
+B 0 2 0 32 1 32 3
+
+-- water splash at entry point
+S 22 3 16 3 6
+
+-- tail flukes
+B 19 4 13 6 2 6 9
+-- tail stock
+E 19 7 16 2 4 2 9
+
+-- lower body
+E 17 11 16 3 5 3 9
+-- belly highlight lower
+E 17 11 17 1 3 1 8
+
+-- mid body
+E 15 15 16 3 5 3 9
+-- belly highlight mid
+E 15 15 17 1 3 1 8
+
+-- upper body
+E 13 19 16 3 4 3 9
+-- belly highlight upper
+E 13 19 17 1 2 1 8
+
+-- dorsal fin
+B 14 16 17 2 6 1 9
+
+-- pectoral fin left
+B 10 18 18 4 2 1 9
+-- pectoral fin right
+B 10 18 13 4 2 1 9
+
+-- head
+S 11 22 16 3 9
+
+-- melon forehead
+E 10 24 16 2 2 2 9
+
+-- snout / rostrum
+E 7 26 16 3 2 2 9
+
+-- eye left
+S 10 23 14 1 0
+-- eye right
+S 10 23 18 1 0
+
+-- mouth line
+B 6 25 15 4 1 2 0

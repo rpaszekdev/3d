@@ -1,0 +1,56 @@
+V 32 48 16
+
+-- hooves (black)
+B 9 0 4 3 2 3 0
+B 18 0 4 3 2 3 0
+B 9 0 10 3 2 3 0
+B 18 0 10 3 2 3 0
+
+-- legs (tan)
+C 11 2 6 2 12 d
+C 20 2 6 2 12 d
+C 11 2 11 2 12 d
+C 20 2 11 2 12 d
+
+-- body (yellow)
+E 15 17 8 9 5 5 6
+
+-- body spots (brown)
+B 10 15 6 3 4 3 a
+B 16 16 6 4 3 3 a
+B 13 19 7 2 3 2 a
+
+-- neck (tan)
+C 16 22 6 2 14 d
+
+-- mane (brown strip down neck)
+B 15 22 4 1 14 1 a
+
+-- neck markings
+B 14 24 4 2 3 1 a
+B 15 29 4 2 3 1 a
+
+-- head (tan)
+B 12 36 3 8 5 5 d
+
+-- snout (yellow)
+B 13 36 2 6 3 3 6
+
+-- eyes (black)
+B 12 39 3 1 1 1 0
+B 19 39 3 1 1 1 0
+
+-- nostrils
+B 14 36 2 1 1 1 0
+B 18 36 2 1 1 1 0
+
+-- ears (tan)
+B 10 39 5 3 3 2 d
+B 20 39 5 3 3 2 d
+
+-- ossicones (brown)
+C 14 41 6 1 3 a
+C 19 41 6 1 3 a
+
+-- tail (brown)
+B 20 13 13 1 6 1 a

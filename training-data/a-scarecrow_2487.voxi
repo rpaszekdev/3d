@@ -1,0 +1,36 @@
+V 24 30 16
+
+-- wooden stake
+C 12 0 8 1 26 a
+
+-- straw legs
+B 9 2 6 3 8 4 6
+B 13 2 6 3 8 4 6
+
+-- stuffed shirt torso
+B 7 9 5 10 9 6 1
+
+-- left arm
+B 1 14 6 7 2 3 1
+-- right arm
+B 17 14 6 7 2 3 1
+
+-- straw at left hand
+B 1 13 6 2 4 3 6
+-- straw at right hand
+B 22 13 6 2 4 3 6
+
+-- burlap head
+S 12 21 8 3 d
+
+-- hat brim
+B 7 23 6 10 1 5 0
+-- hat crown
+B 9 24 6 6 4 4 0
+
+-- button eyes
+B 11 21 5 1 1 1 0
+B 13 21 5 1 1 1 0
+
+-- stitched mouth
+B 10 19 5 4 1 1 a

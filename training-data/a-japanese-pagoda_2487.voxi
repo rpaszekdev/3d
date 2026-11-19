@@ -1,0 +1,34 @@
+V 32 48 32
+
+-- stone foundation
+B 4 0 4 24 2 24 9
+
+-- first story walls
+B 9 2 9 14 8 14 a
+
+-- first story roof flared eaves
+B 5 10 5 22 1 22 e
+B 7 11 7 18 1 18 e
+B 9 12 9 14 1 14 e
+
+-- second story walls
+B 11 13 11 10 6 10 a
+
+-- second story roof flared eaves
+B 8 19 8 16 1 16 e
+B 10 20 10 12 1 12 e
+B 12 21 12 8 1 8 e
+
+-- third story walls
+B 13 22 13 6 5 6 a
+
+-- third story roof flared eaves
+B 10 27 10 12 1 12 e
+B 12 28 12 8 1 8 e
+B 14 29 14 4 1 4 e
+
+-- spire pole
+C 16 30 16 1 8 6
+
+-- finial orb
+S 16 36 16 2 6

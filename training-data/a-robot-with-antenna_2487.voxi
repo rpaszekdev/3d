@@ -1,0 +1,48 @@
+V 24 32 24
+
+-- feet
+B 7 0 9 4 2 4 9
+B 13 0 9 4 2 4 9
+
+-- legs
+B 8 2 10 3 5 3 9
+B 13 2 10 3 5 3 9
+
+-- torso
+B 6 7 9 12 8 6 3
+
+-- chest panel
+B 8 9 8 8 4 1 4
+
+-- chest light
+S 12 12 8 1 1
+
+-- left arm
+B 3 7 10 3 7 3 9
+
+-- right arm
+B 18 7 10 3 7 3 9
+
+-- left hand
+S 4 6 12 2 9
+
+-- right hand
+S 20 6 12 2 9
+
+-- head
+S 12 18 12 3 8
+
+-- left eye
+B 10 18 9 2 1 1 4
+
+-- right eye
+B 14 18 9 2 1 1 4
+
+-- mouth
+B 10 16 9 4 1 1 1
+
+-- antenna pole
+C 12 23 12 1 4 6
+
+-- antenna tip
+S 12 26 12 1 1

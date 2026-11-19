@@ -1,0 +1,26 @@
+V 24 20 16
+
+-- front legs (brown wood)
+B 3 0 5 2 6 2 a
+B 18 0 5 2 6 2 a
+
+-- back legs extending into backrest posts
+B 3 0 9 2 14 2 a
+B 18 0 9 2 14 2 a
+
+-- lower support beam (structural)
+B 3 3 7 18 1 1 a
+
+-- seat slats (tan wood)
+B 3 6 5 18 1 1 d
+B 3 6 7 18 1 1 d
+B 3 6 9 18 1 1 d
+
+-- back slats
+B 3 8 10 18 1 1 d
+B 3 10 10 18 1 1 d
+B 3 12 10 18 1 1 d
+
+-- arm rests
+B 3 12 5 2 1 5 d
+B 18 12 5 2 1 5 d

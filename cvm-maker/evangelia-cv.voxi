@@ -1,0 +1,116 @@
+CANVAS 595 842 #ffffff
+
+-- ── Left Sidebar ─────────────────────────────────
+RECT 0 0 210 842 0 #2d3a4a
+
+-- Profile Photo (circular, centered in sidebar)
+PHOTO 55 30 100 1 #ffffff 4
+
+-- ── OBJECTIVE ──────────────────────────────────────
+TEXT 30 150 "OBJECTIVE" 16 1 #ffffff bold
+DIVIDER 30 170 190 170 1 #4a5a6a
+
+TEXT 30 184 "Motivated and reliable university" 9 1 #c8d0d8
+TEXT 30 198 "student seeking part-time work" 9 1 #c8d0d8
+TEXT 30 212 "in retail, hospitality, or" 9 1 #c8d0d8
+TEXT 30 226 "customer service. Bringing" 9 1 #c8d0d8
+TEXT 30 240 "hands-on supermarket experience," 9 1 #c8d0d8
+TEXT 30 254 "strong communication skills, and" 9 1 #c8d0d8
+TEXT 30 268 "a customer-first approach to" 9 1 #c8d0d8
+TEXT 30 282 "every task." 9 1 #c8d0d8
+
+-- ── SKILLS Section ───────────────────────────────
+TEXT 30 332 "SKILLS" 16 1 #ffffff bold
+DIVIDER 30 352 190 352 1 #4a5a6a
+
+TEXT 42 368 "•  Customer Service" 9 1 #c8d0d8
+TEXT 42 384 "•  Cash Register / POS Systems" 9 1 #c8d0d8
+TEXT 42 400 "•  Stock Management" 9 1 #c8d0d8
+TEXT 42 416 "•  Shelf Stocking & Displays" 9 1 #c8d0d8
+TEXT 42 432 "•  Communication" 9 1 #c8d0d8
+TEXT 42 448 "•  Problem-Solving" 9 1 #c8d0d8
+TEXT 42 464 "•  Teamwork" 9 1 #c8d0d8
+TEXT 42 480 "•  Time Management" 9 1 #c8d0d8
+
+-- ── LANGUAGES ────────────────────────────────────
+TEXT 30 516 "LANGUAGES" 16 1 #ffffff bold
+DIVIDER 30 536 190 536 1 #4a5a6a
+
+TEXT 42 552 "•  Greek (native)" 9 1 #c8d0d8
+TEXT 42 568 "•  English (fluent)" 9 1 #c8d0d8
+TEXT 42 584 "•  Dutch (beginner)" 9 1 #c8d0d8
+TEXT 42 600 "•  Spanish (beginner)" 9 1 #c8d0d8
+
+-- ── INTERESTS AND HOBBIES ────────────────────────
+TEXT 30 636 "INTERESTS" 16 1 #ffffff bold
+DIVIDER 30 656 190 656 1 #4a5a6a
+
+TEXT 42 672 "Reading books" 9 1 #c8d0d8
+TEXT 42 688 "Photography" 9 1 #c8d0d8
+TEXT 42 704 "Cooking" 9 1 #c8d0d8
+TEXT 42 720 "Krav Maga" 9 1 #c8d0d8
+
+
+-- ═════════════════════════════════════════════════
+-- RIGHT COLUMN
+-- ═════════════════════════════════════════════════
+
+-- Name Header
+TEXT 232 40 "Evangelia" 36 1 #2d3a4a bold
+TEXT 232 82 "Mamou" 34 1 #6b7d8e
+
+-- Contact Row
+CONTACT 232 128 1 #4a5a6a phone "(+30) 6940072733"
+CONTACT 390 128 1 #4a5a6a email "mamoueva38@gmail.com"
+CONTACT 232 148 1 #4a5a6a location "Tilburg, Netherlands"
+
+DIVIDER 232 170 575 170 1 #d0d4d8
+
+-- ── WORK EXPERIENCE ──────────────────────────────
+TEXT 232 182 "WORK EXPERIENCE" 16 1 #2d3a4a bold
+DIVIDER 232 202 575 202 1 #2d3a4a
+
+TEXT 232 214 "Sales Associate / Cashier" 11 1 #2d3a4a bold
+TEXT 232 230 "Lidl — Tilburg, Netherlands" 9 1 #666666
+TEXT 536 214 "2025" 9 1 #999999
+TEXT 240 250 "•  Operated cash register and processed payments" 9 1 #333333
+TEXT 240 266 "•  Assisted customers with product inquiries and" 9 1 #333333
+TEXT 248 280 "store navigation" 9 1 #333333
+TEXT 240 296 "•  Stocked shelves, organized displays, and" 9 1 #333333
+TEXT 248 310 "maintained store cleanliness" 9 1 #333333
+TEXT 240 326 "•  Worked efficiently in a fast-paced, high-volume" 9 1 #333333
+TEXT 248 340 "environment" 9 1 #333333
+
+-- ── EDUCATION ────────────────────────────────────
+TEXT 232 388 "EDUCATION" 16 1 #2d3a4a bold
+DIVIDER 232 408 575 408 1 #2d3a4a
+
+TEXT 232 420 "BSc Psychology" 11 1 #2d3a4a bold
+TEXT 232 436 "Tilburg University — Netherlands" 9 1 #666666
+TEXT 480 420 "2024 — Present" 9 1 #999999
+
+TEXT 232 462 "European Baccalaureate" 11 1 #2d3a4a bold
+TEXT 232 478 "School of European Education Heraklion (SEEH)" 9 1 #666666
+TEXT 480 462 "Obtained 2024" 9 1 #999999
+
+-- ── VOLUNTEER EXPERIENCE ─────────────────────────
+TEXT 232 510 "VOLUNTEER EXPERIENCE" 16 1 #2d3a4a bold
+DIVIDER 232 530 575 530 1 #2d3a4a
+
+TEXT 232 542 "Event Volunteer" 11 1 #2d3a4a bold
+TEXT 232 558 "Mediterranean Beach Games — Heraklion" 9 1 #666666
+TEXT 530 542 "2023" 9 1 #999999
+TEXT 240 576 "•  Assisted in event coordination and athlete support" 9 1 #333333
+TEXT 240 592 "•  Ensured seamless experience for participants and visitors" 9 1 #333333
+
+TEXT 232 616 "Event Volunteer" 11 1 #2d3a4a bold
+TEXT 232 632 "Cliff Diving Festival — Heraklion" 9 1 #666666
+TEXT 530 616 "2023" 9 1 #999999
+TEXT 240 650 "•  Assisted with facilities management and participant care" 9 1 #333333
+TEXT 240 666 "•  Supported event safety coordination" 9 1 #333333
+
+TEXT 232 690 "Environmental Team Member" 11 1 #2d3a4a bold
+TEXT 232 706 "School of European Education Heraklion" 9 1 #666666
+TEXT 470 690 "2021 — 2023" 9 1 #999999
+TEXT 240 724 "•  Led recycling initiatives and neighborhood cleanups" 9 1 #333333
+TEXT 240 740 "•  Organized animal welfare drives and donation campaigns" 9 1 #333333

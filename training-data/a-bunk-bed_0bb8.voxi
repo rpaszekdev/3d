@@ -1,0 +1,39 @@
+V 24 32 20
+
+-- corner posts (wood)
+B 3 0 3 2 28 2 a
+B 19 0 3 2 28 2 a
+B 3 0 15 2 28 2 a
+B 19 0 15 2 28 2 a
+
+-- bottom bunk frame
+B 3 5 3 18 2 14 a
+
+-- bottom mattress (blue)
+B 4 7 4 16 2 12 3
+
+-- bottom pillow
+B 5 9 4 5 1 4 8
+
+-- top bunk frame
+B 3 16 3 18 2 14 a
+
+-- top mattress (red)
+B 4 18 4 16 2 12 1
+
+-- top pillow
+B 5 20 4 5 1 4 8
+
+-- top bunk guard rails
+B 3 20 3 18 2 1 a
+B 3 20 15 18 2 1 a
+
+-- ladder rungs (right side)
+B 21 7 9 2 1 2 a
+B 21 10 9 2 1 2 a
+B 21 13 9 2 1 2 a
+B 21 16 9 2 1 2 a
+
+-- ladder side rails
+B 21 5 9 1 14 1 a
+B 22 5 9 1 14 1 a

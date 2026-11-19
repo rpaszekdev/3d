@@ -1,0 +1,45 @@
+V 24 32 24
+
+-- tripod feet
+B 5 0 13 3 1 3 9
+B 16 0 13 3 1 3 9
+B 10 0 5 4 1 3 9
+
+-- left leg ascending to center
+B 7 1 13 1 3 1 9
+B 8 4 12 2 4 1 9
+B 10 8 12 1 2 1 9
+
+-- right leg ascending to center
+B 16 1 13 1 3 1 9
+B 14 4 12 2 4 1 9
+B 13 8 12 1 2 1 9
+
+-- back leg ascending to center
+B 11 1 7 2 3 1 9
+B 11 4 8 2 4 2 9
+B 11 8 10 2 2 2 9
+
+-- center column
+C 12 10 12 1 8 9
+
+-- pan-tilt head
+B 10 18 10 4 2 4 9
+
+-- camera body
+B 8 19 9 8 5 6 0
+
+-- pentaprism hump
+B 10 24 10 4 3 4 9
+
+-- lens barrel
+B 10 20 6 4 3 3 9
+
+-- lens glass
+S 12 21 6 2 4
+
+-- shutter button
+S 15 24 9 1 1
+
+-- back LCD panel
+B 9 20 15 6 4 1 3

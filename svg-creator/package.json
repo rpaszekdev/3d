@@ -1,0 +1,13 @@
+{
+  "name": "svg-creator",
+  "version": "1.0.0",
+  "description": "AI-powered SVG illustration creator using SSL (SVG Sketch Language)",
+  "type": "module",
+  "scripts": {
+    "server": "node server.js",
+    "create": "node create.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

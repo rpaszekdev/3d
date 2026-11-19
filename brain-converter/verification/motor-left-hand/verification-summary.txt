@@ -1,0 +1,39 @@
+Verification: Motor Left Hand
+NIfTI: /Users/robertpaszek/nilearn_data/brainomics_localizer/brainomics_data/S01/tmaps_LeftAuditoryClick.nii.gz
+Shape: (53, 63, 46), Threshold: 3.0
+Clusters found: 19
+
+Cluster Details:
+--------------------------------------------------------------------------------
+  # Region                    MNI (x,y,z)            Size   Peak t
+--------------------------------------------------------------------------------
+  1 unknown                   (-12,-21,-27)           674      6.8
+  2 unknown                   (-27,-18,81)            622      8.0
+  3 R-SPL                     (27,-24,69)             416      5.3
+  4 R-IFG                     (36,-3,21)              220      5.3
+  5 R-NAcc                    (21,-3,-9)               34      4.5
+  6 unknown                   (30,-57,30)              25      3.8
+  7 unknown                   (-3,6,-30)               19      4.2
+  8 unknown                   (-3,51,63)               16      4.4
+  9 unknown                   (-6,-24,69)              16      4.1
+ 10 unknown                   (-21,-99,3)              15     -3.7
+ 11 unknown                   (12,42,-6)               13      4.0
+ 12 unknown                   (-12,21,84)              13      3.6
+ 13 unknown                   (-3,-24,90)              13      4.0
+ 14 L-OFC                     (-18,24,-3)              12      3.8
+ 15 unknown                   (-42,-93,51)             12      3.5
+ 16 unknown                   (-21,24,-15)             11      3.6
+ 17 R-cerebellum              (30,-48,6)               11      4.1
+ 18 unknown                   (15,-3,33)               10      3.6
+ 19 unknown                   (-30,21,75)              10      3.8
+
+Files generated:
+  1-ground-truth-ortho.png   — Standard nilearn stat map (reference)
+  2-glass-brain.png          — 3D glass brain projection
+  3-axial-slices.png         — Axial slice montage
+  4-cluster-verification.png — Each VOXI cluster at its MNI peak
+  5-atlas-overlay.png        — Clusters with atlas labels
+
+To verify: Compare cluster locations in plot 4 against the VOXI output.
+Each row shows the activation at the exact MNI coordinate the converter reported.
+If the crosshair sits on a bright activation blob, the conversion is correct.

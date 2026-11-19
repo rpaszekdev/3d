@@ -1,0 +1,60 @@
+V 40 20 40
+
+-- chassis/frame
+B 8 0 4 24 3 33 9
+
+-- hood
+B 8 3 4 24 5 7 7
+
+-- cab body
+B 8 3 10 24 9 14 7
+
+-- cab roof
+B 9 12 10 22 3 14 d
+
+-- windshield front
+B 8 9 10 24 3 1 4
+
+-- rear cab window
+B 8 9 23 24 3 1 4
+
+-- side windows
+B 8 9 12 2 3 10 4
+B 30 9 12 2 3 10 4
+
+-- bed left wall
+B 8 3 24 2 6 12 7
+
+-- bed right wall
+B 30 3 24 2 6 12 7
+
+-- bed rear wall
+B 8 3 35 24 6 2 7
+
+-- bed floor
+B 8 2 24 24 2 11 d
+
+-- front bumper
+B 7 1 4 26 3 2 8
+
+-- rear bumper
+B 7 1 35 26 3 2 8
+
+-- grille
+B 11 4 4 18 3 2 9
+
+-- headlights
+B 8 4 4 2 2 2 6
+B 30 4 4 2 2 2 6
+
+-- taillights
+B 8 4 35 2 2 2 1
+B 30 4 35 2 2 2 1
+
+-- front wheels
+S 8 3 9 3 0
+S 32 3 9 3 0
+
+-- rear wheels
+S 8 3 29 3 0
+S 32 3 29 3 0

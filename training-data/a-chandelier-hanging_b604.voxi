@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- ceiling mount
+B 13 29 13 6 2 6 9
+
+-- hanging rod
+C 16 21 16 1 9 9
+
+-- main hub body
+S 16 20 16 3 6
+
+-- decorative band ring
+C 16 18 16 4 2 d
+
+-- arm +X
+B 17 19 15 7 1 2 6
+
+-- arm -X
+B 8 19 15 7 1 2 6
+
+-- arm +Z
+B 15 19 17 2 1 7 6
+
+-- arm -Z
+B 15 19 8 2 1 7 6
+
+-- candle +X
+C 24 20 16 1 4 8
+
+-- candle -X
+C 8 20 16 1 4 8
+
+-- candle +Z
+C 16 20 24 1 4 8
+
+-- candle -Z
+C 16 20 8 1 4 8
+
+-- flame +X
+S 24 24 16 1 6
+
+-- flame -X
+S 8 24 16 1 6
+
+-- flame +Z
+S 16 24 24 1 6
+
+-- flame -Z
+S 16 24 8 1 6
+
+-- crystal pendant drop
+S 16 15 16 2 3

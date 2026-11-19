@@ -1,0 +1,43 @@
+V 24 40 24
+
+-- right leg
+C 10 6 12 1 12 d
+
+-- left leg
+C 14 6 12 1 12 d
+
+-- right knee
+S 10 12 12 2 d
+
+-- left knee
+S 14 12 12 2 d
+
+-- body
+E 12 17 12 4 3 3 b
+
+-- tail feathers
+B 11 15 13 3 4 2 b
+
+-- wing left
+B 8 17 12 2 3 1 5
+
+-- wing right
+B 15 17 12 2 3 1 5
+
+-- neck lower
+C 12 21 12 1 4 b
+
+-- neck upper curving forward
+C 12 25 11 1 4 b
+
+-- head
+S 12 28 10 2 b
+
+-- beak upper
+B 10 28 8 4 1 1 7
+
+-- beak lower
+B 10 27 8 4 1 1 6
+
+-- eye
+B 11 29 9 1 1 1 0

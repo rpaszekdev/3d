@@ -1,0 +1,50 @@
+V 32 32 32
+
+-- trunk
+C 16 0 16 2 12 a
+
+-- wooden platform
+B 10 12 10 12 1 12 d
+
+-- house back wall
+B 10 13 10 12 4 1 a
+
+-- house left wall
+B 10 13 10 1 4 12 a
+
+-- house right wall
+B 21 13 10 1 4 12 a
+
+-- house front wall with door gap
+B 10 13 21 4 4 1 a
+B 17 13 21 5 4 1 a
+B 14 16 21 3 1 1 a
+
+-- door
+B 14 13 21 3 3 1 0
+
+-- window
+B 21 14 14 1 2 3 4
+
+-- roof with overhang
+B 9 17 9 14 1 14 1
+
+-- ladder posts
+B 14 8 22 1 4 1 a
+B 16 8 22 1 4 1 a
+
+-- ladder rungs
+B 14 9 22 3 1 1 d
+B 14 11 22 3 1 1 d
+
+-- lower canopy
+S 16 22 16 6 2
+
+-- corner foliage clusters
+S 11 19 11 4 c
+S 21 19 11 4 2
+S 11 19 21 4 2
+S 21 19 21 4 c
+
+-- upper canopy peak
+S 16 27 16 5 c

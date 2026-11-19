@@ -1,0 +1,24 @@
+V 32 32 32
+-- mug body outer wall (tan ceramic)
+B 8 0 8 16 18 16 d
+-- mug interior hollow (remove fill by overwriting with void-like dark)
+-- inner cavity - darker interior
+B 10 1 10 12 17 12 9
+-- rim ring top (tan)
+B 8 18 8 16 2 16 d
+-- inner rim dark
+B 10 18 10 12 2 12 9
+-- base bottom
+B 8 0 8 16 1 16 d
+-- handle outer structure - right side, 4 voxels deep in Z
+-- handle top bar
+B 24 13 12 4 2 4 d
+-- handle bottom bar (Y=1 base level)
+B 24 1 12 4 2 4 d
+-- handle right vertical bar - outer
+B 24 1 12 4 14 4 d
+-- handle inner gap - leave empty between Y=3 and Y=13
+-- handle left connection top (attaches to mug at Y=13)
+B 22 13 12 2 2 4 d
+-- handle left connection bottom (attaches to mug at Y=1)
+B 22 1 12 2 2 4 d

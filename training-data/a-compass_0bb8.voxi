@@ -1,0 +1,28 @@
+V 24 12 24
+
+-- outer bezel
+C 12 0 12 11 3 9
+
+-- compass face
+C 12 2 12 10 2 d
+
+-- north needle (red, points toward viewer)
+B 11 3 3 2 1 9 1
+
+-- south needle (white, points away)
+B 11 3 12 2 1 9 8
+
+-- east bar (yellow)
+B 13 3 11 8 1 2 6
+
+-- west bar (yellow)
+B 3 3 11 8 1 2 6
+
+-- center pivot
+S 12 4 12 1 0
+
+-- north marker dot
+S 12 3 2 1 e
+
+-- south marker dot
+S 12 3 22 1 3

@@ -1,0 +1,4794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXI UI Sketch — 2D Layout with Depth</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+    --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #6c8cff; --canvas-bg: #13151f;
+    --highlight: rgba(108, 140, 255, 0.3);
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); height: 100vh; overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    height: 40px; display: flex; align-items: center; gap: 10px;
+    padding: 0 12px; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .header h1 { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .header h1 .accent { color: var(--accent); }
+  .header select, .header button {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text); padding: 4px 10px; font-size: 11px; cursor: pointer;
+  }
+  .header select:hover, .header button:hover { border-color: var(--accent); }
+  .header .spacer { flex: 1; }
+  .header .info { font-size: 11px; color: var(--text-dim); }
+  .header label { font-size: 11px; color: var(--text-dim); }
+  .mode-btn { font-size: 11px !important; }
+  .mode-btn.active { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+  /* Layout */
+  .split { display: flex; height: calc(100vh - 40px); }
+
+  /* Editor */
+  .editor-pane {
+    width: 420px; min-width: 300px; display: flex; flex-direction: column;
+    border-right: 1px solid var(--border); background: var(--surface);
+  }
+  .editor-wrap { flex: 1; position: relative; overflow: hidden; }
+  .line-numbers {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 32px;
+    background: var(--surface2); color: var(--text-dim); font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; padding: 8px 4px; text-align: right; overflow: hidden;
+    user-select: none; border-right: 1px solid var(--border);
+  }
+  .line-numbers .hl { background: var(--highlight); color: var(--accent); }
+  textarea {
+    position: absolute; left: 32px; top: 0; right: 0; bottom: 0;
+    background: transparent; color: var(--text); border: none; resize: none;
+    font-size: 12px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; padding: 8px; outline: none; tab-size: 4;
+    white-space: pre; overflow: auto;
+  }
+  textarea::placeholder { color: var(--text-dim); }
+
+  .format-ref {
+    padding: 6px 8px; border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--text-dim); line-height: 1.7;
+    background: var(--surface2);
+  }
+  .format-ref code { color: var(--accent); }
+  .status {
+    height: 24px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 11px; color: var(--text-dim); border-top: 1px solid var(--border);
+  }
+  .status .ok { color: #4caf50; }
+  .status .spacer { flex: 1; }
+
+  /* Canvas */
+  .canvas-pane {
+    flex: 1; background: var(--canvas-bg); overflow: auto;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .canvas-wrap {
+    position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  #main-canvas { display: block; }
+
+  /* Layer list */
+  .layer-panel {
+    width: 200px; border-left: 1px solid var(--border); background: var(--surface);
+    display: flex; flex-direction: column;
+  }
+  .layer-panel-title {
+    font-size: 11px; font-weight: 600; padding: 8px; color: var(--text-dim);
+    border-bottom: 1px solid var(--border); background: var(--surface2);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .layer-list {
+    flex: 1; overflow-y: auto; font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .layer-item {
+    padding: 4px 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .layer-item:hover { background: var(--surface2); }
+  .layer-item.selected { background: var(--highlight); }
+  .layer-swatch {
+    width: 12px; height: 12px; border-radius: 2px;
+    border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .layer-z {
+    font-size: 9px; color: var(--text-dim); margin-left: auto;
+    background: var(--surface2); padding: 1px 4px; border-radius: 3px;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VOXI <span class="accent">UI Sketch</span></h1>
+  <select id="examples"><option value="">— examples —</option></select>
+  <label>Zoom:</label>
+  <select id="zoom">
+    <option value="0.25">25%</option>
+    <option value="0.5" selected>50%</option>
+    <option value="0.75">75%</option>
+    <option value="1">100%</option>
+  </select>
+  <label>Mode:</label>
+  <button class="mode-btn active" data-mode="flat">Flat</button>
+  <button class="mode-btn" data-mode="depth">Depth</button>
+  <button class="mode-btn" data-mode="shaded">Shaded</button>
+  <button class="mode-btn" data-mode="layers">Layers</button>
+  <div class="spacer"></div>
+  <button id="btn-export">Export PNG</button>
+  <span class="info" id="info"></span>
+</div>
+
+<div class="split">
+  <div class="editor-pane">
+    <div class="editor-wrap">
+      <div class="line-numbers" id="line-numbers"></div>
+      <textarea id="editor" spellcheck="false" placeholder="CANVAS 1440 900 #1a1a1a&#10;RECT 0 0 1440 60 3 #333&#10;TEXT 20 20 &quot;Hello&quot; 24 3 #fff"></textarea>
+    </div>
+    <div class="format-ref">
+      <code>CANVAS w h [bg]</code> &middot;
+      <code>RECT x y w h z color [r]</code> &middot;
+      <code>TEXT x y "str" size z color [bold]</code><br>
+      <code>IMG x y w h z [label]</code> &middot;
+      <code>LINE x1 y1 x2 y2 z color [w]</code> &middot;
+      <code>ELLIPSE cx cy rx ry z color</code><br>
+      <code>VOXI x y w h z yaw pitch</code>...<code>/VOXI</code> 3D scene &middot;
+      z = depth layer (0=back, higher=front) &middot; <code>--</code> comment
+    </div>
+    <div class="status">
+      <span id="status-text" class="ok">Ready</span>
+      <span class="spacer"></span>
+      <span id="el-count"></span>
+    </div>
+  </div>
+
+  <div class="canvas-pane" id="canvas-pane">
+    <div class="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="layer-panel">
+    <div class="layer-panel-title">Layers</div>
+    <div class="layer-list" id="layer-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ── VOXI 3D Engine (embedded from text-view.js) ───────────────────
+
+const VOXI_COLORS = [
+  0x111111, 0xe53935, 0x43a047, 0x1e88e5,
+  0x00bcd4, 0xab47bc, 0xfdd835, 0xff9800,
+  0xeeeeee, 0x9e9e9e, 0x8d6e4a, 0xff9eb5,
+  0x2e7d32, 0xd4b896, 0x8b1a1a, 0x1a3a6b,
+];
+const VOXI_CKEYS = '0123456789abcdef';
+
+function parseVoxi(code) {
+  let W = 32, H = 32, D = 32;
+  const vm = new Map();
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix >= 0 && ix < W && iy >= 0 && iy < H && iz >= 0 && iz < D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c || 9, 0), 15));
+  };
+  const addBox = (px, py, pz, w, h, d, c) => {
+    for (let x = px; x < px + w; x++)
+      for (let y = py; y < py + h; y++)
+        for (let z = pz; z < pz + d; z++) set(x, y, z, c);
+  };
+  const addSphere = (cx, cy, cz, r, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let y = cy - r; y <= cy + r; y++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2 <= r2) set(x, y, z, c);
+  };
+  const addCyl = (cx, cy, cz, r, h, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let z = cz - r; z <= cz + r; z++)
+        if ((x - cx) ** 2 + (z - cz) ** 2 <= r2)
+          for (let y = cy; y < cy + h; y++) set(x, y, z, c);
+  };
+  const addCone = (cx, cy, cz, r, h, c) => {
+    for (let y = 0; y < h; y++) {
+      const rr = r * (1 - y / h), rr2 = rr * rr;
+      for (let x = cx - r; x <= cx + r; x++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x - cx) ** 2 + (z - cz) ** 2 <= rr2) set(cx + (x - cx), cy + y, cz + (z - cz), c);
+    }
+  };
+  const addEllipsoid = (cx, cy, cz, rx, ry, rz, c) => {
+    for (let x = cx - rx; x <= cx + rx; x++)
+      for (let y = cy - ry; y <= cy + ry; y++)
+        for (let z = cz - rz; z <= cz + rz; z++)
+          if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2 <= 1)
+            set(x, y, z, c);
+  };
+  const addDome = (px, py, pz, w, h, d, c) => {
+    const rx = w / 2, ry = h, rz = d / 2, cx = px + rx, cz = pz + rz;
+    for (let x = px; x < px + w; x++)
+      for (let y = py; y < py + h; y++)
+        for (let z = pz; z < pz + d; z++)
+          if (((x - cx + .5) / rx) ** 2 + ((y - py) / ry) ** 2 + ((z - cz + .5) / rz) ** 2 <= 1)
+            set(x, y, z, c);
+  };
+  const groups = {};
+  let currentGroup = null, currentGroupName = null, scale = 1;
+
+  function scaled(cmd, n) {
+    if (scale === 1) return n;
+    const s = [...n];
+    switch (cmd) {
+      case 'B': case 'D':
+        s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); s[4]=Math.max(1,Math.round(s[4]*scale)); s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+      case 'S':
+        s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); break;
+      case 'C': case 'K':
+        s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); s[4]=Math.max(1,Math.round(s[4]*scale)); break;
+      case 'P':
+        s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale); break;
+      case 'E':
+        s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); s[4]=Math.max(1,Math.round(s[4]*scale)); s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+    }
+    return s;
+  }
+  function execCmd(cmd, n) {
+    const sn = scaled(cmd, n);
+    switch (cmd) {
+      case 'B': addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'S': addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]); break;
+      case 'C': addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'K': addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'P': set(sn[0],sn[1],sn[2],sn[3]); break;
+      case 'E': addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'D': addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      default: return false;
+    }
+    return true;
+  }
+  function placeGroup(name, ox, oy, oz) {
+    const g = groups[name]; if (!g) return;
+    const sox=Math.round(ox*scale), soy=Math.round(oy*scale), soz=Math.round(oz*scale);
+    for (const entry of g) {
+      const sn = scaled(entry.cmd, entry.args);
+      sn[0]+=sox; sn[1]+=soy; sn[2]+=soz;
+      execCmd(entry.cmd, sn);
+    }
+  }
+
+  const allLines = code.split('\n');
+  for (let i = 0; i < allLines.length; i++) {
+    const line = allLines[i].trim();
+    if (!line || line.startsWith('--') || line.startsWith('//')) continue;
+    const p = line.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+    if (cmd === 'G') { currentGroupName = p[1]||`g${i}`; currentGroup = []; continue; }
+    if (cmd === '/G') { if (currentGroup && currentGroupName) groups[currentGroupName]=currentGroup; currentGroup=null; currentGroupName=null; continue; }
+    if (cmd === '@') { placeGroup(p[1], Number(p[2])||0, Number(p[3])||0, Number(p[4])||0); continue; }
+    if (cmd === 'V') { W=Number(p[1])||32; H=Number(p[2])||32; D=Number(p[3])||32; continue; }
+    if (cmd === 'R') { scale=Number(p[1])||1; continue; }
+    const parseArg = (s, isColor) => {
+      if (isColor && /^[a-f]$/i.test(s)) return VOXI_CKEYS.indexOf(s.toLowerCase());
+      return Number(s);
+    };
+    const rawArgs = p.slice(1);
+    const n = rawArgs.map((s, idx) => parseArg(s, idx === rawArgs.length - 1));
+    execCmd(cmd, n);
+    if (currentGroup) currentGroup.push({ cmd, args: n });
+  }
+  return { W, H, D, vm };
+}
+
+/**
+ * Render VOXI scene with rotated orthographic projection.
+ * Returns an ImageData-like pixel buffer { data: Uint8Array, width, height }
+ * with depth info per pixel.
+ *
+ * yaw/pitch in degrees. yaw rotates around Y axis, pitch around X axis.
+ */
+function renderVoxiRotated(voxiCode, outW, outH, yaw, pitch) {
+  const { W, H, D, vm } = parseVoxi(voxiCode);
+  if (vm.size === 0) return null;
+
+  const yr = yaw * Math.PI / 180;
+  const pr = pitch * Math.PI / 180;
+  const cosY = Math.cos(yr), sinY = Math.sin(yr);
+  const cosP = Math.cos(pr), sinP = Math.sin(pr);
+
+  // Center of voxel grid
+  const cx = W / 2, cy = H / 2, cz = D / 2;
+
+  // Rotate point around center: yaw (Y) then pitch (X)
+  function rotate(x, y, z) {
+    let dx = x - cx, dy = y - cy, dz = z - cz;
+    // Yaw (around Y)
+    const rx = dx * cosY + dz * sinY;
+    const rz = -dx * sinY + dz * cosY;
+    dx = rx;
+    dz = rz;
+    // Pitch (around X)
+    const ry = dy * cosP - dz * sinP;
+    const rz2 = dy * sinP + dz * cosP;
+    return [dx, ry, rz2];
+  }
+
+  // Find bounding box of rotated scene
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  let minZ = Infinity, maxZ = -Infinity;
+  for (const corner of [[0,0,0],[W,0,0],[0,H,0],[0,0,D],[W,H,0],[W,0,D],[0,H,D],[W,H,D]]) {
+    const [rx, ry, rz] = rotate(corner[0], corner[1], corner[2]);
+    minX = Math.min(minX, rx); maxX = Math.max(maxX, rx);
+    minY = Math.min(minY, ry); maxY = Math.max(maxY, ry);
+    minZ = Math.min(minZ, rz); maxZ = Math.max(maxZ, rz);
+  }
+
+  const sceneW = maxX - minX || 1;
+  const sceneH = maxY - minY || 1;
+  const scaleF = Math.min(outW / sceneW, outH / sceneH) * 0.92;
+
+  // Z-buffer
+  const zbuf = new Float32Array(outW * outH).fill(Infinity);
+  const colorBuf = new Int8Array(outW * outH).fill(-1);
+  const depthBuf = new Float32Array(outW * outH).fill(0);
+
+  for (const [k, c] of vm) {
+    const [vx, vy, vz] = k.split(',').map(Number);
+    // Rotate voxel center
+    const [rx, ry, rz] = rotate(vx + 0.5, vy + 0.5, vz + 0.5);
+
+    // Project to screen (orthographic, Y flipped)
+    const sx = Math.round((rx - minX) * scaleF + (outW - sceneW * scaleF) / 2);
+    const sy = Math.round((maxY - ry) * scaleF + (outH - sceneH * scaleF) / 2);
+
+    // Fill a block of pixels per voxel (based on scale)
+    const voxSize = Math.max(1, Math.round(scaleF));
+    for (let dy = 0; dy < voxSize; dy++) {
+      for (let dx = 0; dx < voxSize; dx++) {
+        const px = sx + dx, py = sy + dy;
+        if (px < 0 || px >= outW || py < 0 || py >= outH) continue;
+        const idx = py * outW + px;
+        if (rz < zbuf[idx]) {
+          zbuf[idx] = rz;
+          colorBuf[idx] = c;
+          depthBuf[idx] = (rz - minZ) / (maxZ - minZ || 1);
+        }
+      }
+    }
+  }
+
+  return { colorBuf, depthBuf, width: outW, height: outH, voxelCount: vm.size };
+}
+
+
+// ── Parser ─────────────────────────────────────────────────────────
+
+function parseUI(code) {
+  let canvasW = 1440, canvasH = 900, canvasBg = '#1a1a1a';
+  const elements = [];
+
+  const lines = code.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
+    if (!trimmed || trimmed.startsWith('--') || trimmed.startsWith('//')) continue;
+
+    // Tokenize respecting quoted strings
+    const tokens = [];
+    let j = 0;
+    while (j < trimmed.length) {
+      if (trimmed[j] === ' ' || trimmed[j] === '\t') { j++; continue; }
+      if (trimmed[j] === '"') {
+        const end = trimmed.indexOf('"', j + 1);
+        if (end === -1) { tokens.push(trimmed.slice(j + 1)); j = trimmed.length; }
+        else { tokens.push(trimmed.slice(j + 1, end)); j = end + 1; }
+      } else {
+        const end = trimmed.indexOf(' ', j);
+        if (end === -1) { tokens.push(trimmed.slice(j)); j = trimmed.length; }
+        else { tokens.push(trimmed.slice(j, end)); j = end + 1; }
+      }
+    }
+
+    const cmd = tokens[0].toUpperCase();
+
+    if (cmd === 'CANVAS' || cmd === 'C') {
+      canvasW = Number(tokens[1]) || 1440;
+      canvasH = Number(tokens[2]) || 900;
+      canvasBg = tokens[3] || '#1a1a1a';
+      continue;
+    }
+
+    if (cmd === 'RECT' || cmd === 'R') {
+      elements.push({
+        type: 'rect', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        w: Number(tokens[3]) || 100, h: Number(tokens[4]) || 50,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#888',
+        radius: Number(tokens[7]) || 0,
+      });
+    } else if (cmd === 'TEXT' || cmd === 'T') {
+      elements.push({
+        type: 'text', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        content: tokens[3] || '', size: Number(tokens[4]) || 16,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#fff',
+        weight: (tokens[7] || 'normal').toLowerCase(),
+      });
+    } else if (cmd === 'IMG' || cmd === 'I') {
+      elements.push({
+        type: 'img', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        w: Number(tokens[3]) || 200, h: Number(tokens[4]) || 150,
+        z: Number(tokens[5]) || 0, label: tokens[6] || 'image',
+      });
+    } else if (cmd === 'LINE' || cmd === 'L') {
+      elements.push({
+        type: 'line', line: i,
+        x1: Number(tokens[1]) || 0, y1: Number(tokens[2]) || 0,
+        x2: Number(tokens[3]) || 100, y2: Number(tokens[4]) || 0,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#fff',
+        width: Number(tokens[7]) || 1,
+      });
+    } else if (cmd === 'ELLIPSE' || cmd === 'E') {
+      elements.push({
+        type: 'ellipse', line: i,
+        cx: Number(tokens[1]) || 0, cy: Number(tokens[2]) || 0,
+        rx: Number(tokens[3]) || 50, ry: Number(tokens[4]) || 50,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#888',
+      });
+    } else if (cmd === 'VOXI') {
+      // VOXI x y w h z yaw pitch
+      // ... voxi code lines ...
+      // /VOXI
+      const vx = Number(tokens[1]) || 0, vy = Number(tokens[2]) || 0;
+      const vw = Number(tokens[3]) || 200, vh = Number(tokens[4]) || 200;
+      const vz = Number(tokens[5]) || 0;
+      const vyaw = Number(tokens[6]) || 35, vpitch = Number(tokens[7]) || 25;
+      // Collect lines until /VOXI
+      const voxiLines = [];
+      const startLine = i;
+      i++;
+      while (i < lines.length) {
+        const vl = lines[i].trim();
+        if (vl.toUpperCase() === '/VOXI') break;
+        voxiLines.push(lines[i]);
+        i++;
+      }
+      elements.push({
+        type: 'voxi', line: startLine,
+        x: vx, y: vy, w: vw, h: vh, z: vz,
+        yaw: vyaw, pitch: vpitch,
+        voxiCode: voxiLines.join('\n'),
+        _cachedRender: null,
+      });
+    }
+  }
+
+  // Sort by z (painter's algorithm: low z drawn first)
+  elements.sort((a, b) => a.z - b.z);
+
+  return { canvasW, canvasH, canvasBg, elements };
+}
+
+
+// ── Renderers ──────────────────────────────────────────────────────
+
+function drawElement(ctx, el, mode, maxZ, highlight) {
+  const z01 = maxZ <= 0 ? 0 : el.z / maxZ; // normalized depth 0..1
+
+  function getColor() {
+    if (mode === 'depth') {
+      const v = Math.round(40 + 215 * z01);
+      return `rgb(${v},${v},${v})`;
+    }
+    if (mode === 'shaded') {
+      // Parse color, darken by inverse depth (far = dark)
+      const shade = 0.3 + 0.7 * z01;
+      return shadeColor(el.color || '#888', shade);
+    }
+    return el.color || '#888';
+  }
+
+  ctx.save();
+
+  // Layers mode: offset each layer vertically + add subtle border
+  if (mode === 'layers') {
+    const offsetY = -z01 * 60;
+    const offsetX = z01 * 20;
+    ctx.translate(offsetX, offsetY);
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+  }
+
+  if (highlight) {
+    ctx.shadowColor = '#6c8cff';
+    ctx.shadowBlur = 12;
+  }
+
+  switch (el.type) {
+    case 'rect': {
+      const c = getColor();
+      ctx.fillStyle = c;
+      if (el.radius > 0) {
+        roundRect(ctx, el.x, el.y, el.w, el.h, el.radius);
+        ctx.fill();
+      } else {
+        ctx.fillRect(el.x, el.y, el.w, el.h);
+      }
+      if (mode === 'layers') {
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        if (el.radius > 0) {
+          roundRect(ctx, el.x, el.y, el.w, el.h, el.radius);
+          ctx.stroke();
+        } else {
+          ctx.strokeRect(el.x, el.y, el.w, el.h);
+        }
+      }
+      if (highlight) {
+        ctx.strokeStyle = '#6c8cff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(el.x - 1, el.y - 1, el.w + 2, el.h + 2);
+      }
+      break;
+    }
+    case 'text': {
+      const c = mode === 'depth'
+        ? getColor()
+        : mode === 'shaded'
+          ? shadeColor(el.color || '#fff', 0.3 + 0.7 * z01)
+          : el.color || '#fff';
+      const weight = el.weight === 'bold' ? 'bold ' : '';
+      ctx.font = `${weight}${el.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
+      ctx.fillStyle = c;
+      ctx.textBaseline = 'top';
+      ctx.fillText(el.content, el.x, el.y);
+      if (highlight) {
+        const m = ctx.measureText(el.content);
+        ctx.strokeStyle = '#6c8cff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(el.x - 2, el.y - 2, m.width + 4, el.size + 4);
+      }
+      break;
+    }
+    case 'img': {
+      // Placeholder with cross
+      const c = mode === 'depth' ? getColor() : (mode === 'shaded' ? shadeColor('#555', 0.3 + 0.7 * z01) : '#2a2a2a');
+      ctx.fillStyle = c;
+      ctx.fillRect(el.x, el.y, el.w, el.h);
+      ctx.strokeStyle = mode === 'depth' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(el.x, el.y, el.w, el.h);
+      // Cross
+      ctx.beginPath();
+      ctx.moveTo(el.x, el.y); ctx.lineTo(el.x + el.w, el.y + el.h);
+      ctx.moveTo(el.x + el.w, el.y); ctx.lineTo(el.x, el.y + el.h);
+      ctx.stroke();
+      // Label
+      if (mode !== 'depth') {
+        ctx.font = '12px -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(el.label || 'image', el.x + el.w / 2, el.y + el.h / 2);
+        ctx.textAlign = 'start';
+      }
+      if (highlight) {
+        ctx.strokeStyle = '#6c8cff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(el.x - 1, el.y - 1, el.w + 2, el.h + 2);
+      }
+      break;
+    }
+    case 'line': {
+      const c = mode === 'depth' ? getColor() : (mode === 'shaded' ? shadeColor(el.color, 0.3 + 0.7 * z01) : el.color);
+      ctx.strokeStyle = c;
+      ctx.lineWidth = el.width || 1;
+      ctx.beginPath();
+      ctx.moveTo(el.x1, el.y1);
+      ctx.lineTo(el.x2, el.y2);
+      ctx.stroke();
+      break;
+    }
+    case 'ellipse': {
+      const c = getColor();
+      ctx.fillStyle = c;
+      ctx.beginPath();
+      ctx.ellipse(el.cx, el.cy, el.rx, el.ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      if (highlight) {
+        ctx.strokeStyle = '#6c8cff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      break;
+    }
+    case 'voxi': {
+      // Render 3D VOXI scene into the 2D layout
+      if (!el._cachedRender || el._cachedRender._code !== el.voxiCode ||
+          el._cachedRender._yaw !== el.yaw || el._cachedRender._pitch !== el.pitch) {
+        el._cachedRender = renderVoxiRotated(el.voxiCode, el.w, el.h, el.yaw, el.pitch);
+        if (el._cachedRender) {
+          el._cachedRender._code = el.voxiCode;
+          el._cachedRender._yaw = el.yaw;
+          el._cachedRender._pitch = el.pitch;
+        }
+      }
+      const vr = el._cachedRender;
+      if (!vr) break;
+
+      const imgData = ctx.createImageData(vr.width, vr.height);
+      const d = imgData.data;
+      for (let pi = 0; pi < vr.width * vr.height; pi++) {
+        const ci = vr.colorBuf[pi];
+        if (ci < 0) continue; // transparent — leave as 0,0,0,0
+        let r, g, b;
+        if (mode === 'depth') {
+          const v = Math.round(40 + 215 * (1 - vr.depthBuf[pi]));
+          r = g = b = v;
+        } else if (mode === 'shaded') {
+          const shade = 0.35 + 0.65 * (1 - vr.depthBuf[pi]);
+          const hex = VOXI_COLORS[ci];
+          r = Math.round(((hex >> 16) & 0xff) * shade);
+          g = Math.round(((hex >> 8) & 0xff) * shade);
+          b = Math.round((hex & 0xff) * shade);
+        } else {
+          const hex = VOXI_COLORS[ci];
+          r = (hex >> 16) & 0xff;
+          g = (hex >> 8) & 0xff;
+          b = hex & 0xff;
+        }
+        const idx = pi * 4;
+        d[idx] = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = 255;
+      }
+
+      // Draw to an offscreen canvas first (so we can position it)
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = vr.width;
+      offCanvas.height = vr.height;
+      offCanvas.getContext('2d').putImageData(imgData, 0, 0);
+      ctx.drawImage(offCanvas, el.x, el.y);
+
+      if (highlight) {
+        ctx.strokeStyle = '#6c8cff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(el.x - 1, el.y - 1, el.w + 2, el.h + 2);
+      }
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function shadeColor(hex, factor) {
+  // Parse hex or named color → shade by factor (0=black, 1=full)
+  let r, g, b;
+  if (hex.startsWith('#')) {
+    const h = hex.slice(1);
+    if (h.length === 3) {
+      r = parseInt(h[0]+h[0], 16); g = parseInt(h[1]+h[1], 16); b = parseInt(h[2]+h[2], 16);
+    } else {
+      r = parseInt(h.slice(0,2), 16); g = parseInt(h.slice(2,4), 16); b = parseInt(h.slice(4,6), 16);
+    }
+  } else {
+    // fallback
+    r = g = b = 128;
+  }
+  r = Math.round(r * factor); g = Math.round(g * factor); b = Math.round(b * factor);
+  return `rgb(${r},${g},${b})`;
+}
+
+
+// ── Main Render ────────────────────────────────────────────────────
+
+const canvas = document.getElementById('main-canvas');
+const ctx = canvas.getContext('2d');
+let currentMode = 'flat';
+let currentZoom = 0.5;
+let selectedLine = -1;
+let parsedElements = [];
+
+function render() {
+  const code = editor.value;
+  if (!code.trim()) {
+    statusText.textContent = 'Empty';
+    elCount.textContent = '';
+    return;
+  }
+
+  try {
+    const { canvasW, canvasH, canvasBg, elements } = parseUI(code);
+    parsedElements = elements;
+
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    canvas.style.width = (canvasW * currentZoom) + 'px';
+    canvas.style.height = (canvasH * currentZoom) + 'px';
+
+    // Background
+    ctx.fillStyle = currentMode === 'depth' ? '#000' : canvasBg;
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    const maxZ = elements.reduce((m, e) => Math.max(m, e.z), 0);
+
+    // Draw all elements
+    for (const el of elements) {
+      drawElement(ctx, el, currentMode, maxZ, el.line === selectedLine);
+    }
+
+    // Depth legend for depth mode
+    if (currentMode === 'depth' && maxZ > 0) {
+      const lw = 120, lh = 16, lx = canvasW - lw - 12, ly = canvasH - lh - 12;
+      for (let i = 0; i < lw; i++) {
+        const t = i / lw;
+        const v = Math.round(40 + 215 * t);
+        ctx.fillStyle = `rgb(${v},${v},${v})`;
+        ctx.fillRect(lx + i, ly, 1, lh);
+      }
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#888';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('z=0', lx, ly - 2);
+      ctx.textAlign = 'right';
+      ctx.fillText(`z=${maxZ}`, lx + lw, ly - 2);
+      ctx.textAlign = 'start';
+    }
+
+    statusText.className = 'ok';
+    statusText.textContent = `${canvasW}×${canvasH}`;
+    elCount.textContent = `${elements.length} elements · z 0–${maxZ}`;
+    info.textContent = `${canvasW}×${canvasH} · ${currentMode}`;
+
+    // Update layer panel
+    updateLayers(elements);
+
+  } catch (e) {
+    statusText.className = '';
+    statusText.textContent = 'Error: ' + e.message;
+    console.error(e);
+  }
+}
+
+
+// ── Layer Panel ────────────────────────────────────────────────────
+
+function updateLayers(elements) {
+  const list = document.getElementById('layer-list');
+  // Show in reverse z order (top layer first)
+  const sorted = [...elements].reverse();
+  list.innerHTML = sorted.map(el => {
+    const label = el.type === 'text' ? `"${el.content}"` :
+                  el.type === 'img' ? `IMG ${el.label}` :
+                  el.type === 'line' ? 'LINE' :
+                  el.type === 'ellipse' ? 'ELLIPSE' :
+                  el.type === 'voxi' ? `VOXI 3D ${el.w}×${el.h}` :
+                  `RECT ${el.w}×${el.h}`;
+    const sColor = el.color || (el.type === 'img' ? '#555' : '#888');
+    const sel = el.line === selectedLine ? ' selected' : '';
+    return `<div class="layer-item${sel}" data-line="${el.line}">
+      <span class="layer-swatch" style="background:${sColor}"></span>
+      <span>${label}</span>
+      <span class="layer-z">z${el.z}</span>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.layer-item').forEach(item => {
+    item.addEventListener('click', () => {
+      selectedLine = Number(item.dataset.line);
+      render();
+      highlightEditorLine(selectedLine);
+    });
+  });
+}
+
+function highlightEditorLine(lineIdx) {
+  // Scroll editor to show the line
+  const lines = editor.value.split('\n');
+  let charPos = 0;
+  for (let i = 0; i < lineIdx && i < lines.length; i++) {
+    charPos += lines[i].length + 1;
+  }
+  editor.focus();
+  editor.setSelectionRange(charPos, charPos + (lines[lineIdx] || '').length);
+
+  // Update line number highlights
+  updateLineNumbers();
+}
+
+
+
+
+// ── Canvas Click → Select Element ──────────────────────────────────
+
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) / currentZoom;
+  const my = (e.clientY - rect.top) / currentZoom;
+
+  // Hit test in reverse z order (topmost first)
+  const reversed = [...parsedElements].reverse();
+  let hit = null;
+  for (const el of reversed) {
+    if (hitTest(el, mx, my)) { hit = el; break; }
+  }
+
+  selectedLine = hit ? hit.line : -1;
+  render();
+  if (hit) highlightEditorLine(hit.line);
+});
+
+function hitTest(el, mx, my) {
+  switch (el.type) {
+    case 'rect': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h;
+    case 'img': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h;
+    case 'text': return mx >= el.x && mx <= el.x + 300 && my >= el.y && my <= el.y + el.size;
+    case 'voxi': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h;
+    case 'ellipse': return ((mx-el.cx)/el.rx)**2 + ((my-el.cy)/el.ry)**2 <= 1;
+    case 'line': {
+      const dx = el.x2 - el.x1, dy = el.y2 - el.y1;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      if (len === 0) return false;
+      const t = Math.max(0, Math.min(1, ((mx-el.x1)*dx + (my-el.y1)*dy) / (len*len)));
+      const px = el.x1 + t*dx, py = el.y1 + t*dy;
+      return Math.sqrt((mx-px)**2 + (my-py)**2) < 6;
+    }
+  }
+  return false;
+}
+
+
+// ── Editor ─────────────────────────────────────────────────────────
+
+const editor = document.getElementById('editor');
+const lineNumbersEl = document.getElementById('line-numbers');
+const statusText = document.getElementById('status-text');
+const elCount = document.getElementById('el-count');
+const info = document.getElementById('info');
+
+function updateLineNumbers() {
+  const lines = editor.value.split('\n');
+  lineNumbersEl.innerHTML = lines.map((_, i) => {
+    const cls = i === selectedLine ? ' class="hl"' : '';
+    return `<div${cls}>${i + 1}</div>`;
+  }).join('');
+}
+
+editor.addEventListener('scroll', () => { lineNumbersEl.scrollTop = editor.scrollTop; });
+
+let renderTimer = null;
+editor.addEventListener('input', () => {
+  updateLineNumbers();
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(render, 120);
+});
+
+// Click in editor → deselect
+editor.addEventListener('click', () => {
+  // Figure out which line the cursor is on
+  const pos = editor.selectionStart;
+  const textBefore = editor.value.slice(0, pos);
+  const lineIdx = textBefore.split('\n').length - 1;
+
+  // Check if this line corresponds to an element
+  const el = parsedElements.find(e => e.line === lineIdx);
+  selectedLine = el ? lineIdx : -1;
+  render();
+});
+
+
+// ── Mode buttons ───────────────────────────────────────────────────
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    render();
+  });
+});
+
+document.getElementById('zoom').addEventListener('change', e => {
+  currentZoom = Number(e.target.value);
+  render();
+});
+
+
+// ── Export ──────────────────────────────────────────────────────────
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'ui-sketch.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+
+// ── Examples ───────────────────────────────────────────────────────
+
+const EXAMPLES = {
+
+'Shed Agency': `CANVAS 1440 900 #1a1a1a
+-- Background photo
+IMG 0 100 1440 800 0 "Interior photo — colorful bathroom"
+
+-- Dark top bar
+RECT 0 0 1440 80 3 #222
+
+-- Red accent banner
+RECT 0 80 1440 36 4 #c62828
+TEXT 200 88 "building brands through experience for more than 25 years  •  Building brands through experience" 13 4 #fff
+
+-- Red accent line
+RECT 0 116 1440 3 5 #e53935
+
+-- Giant hero text
+TEXT 30 140 "THIS IS SHED" 160 6 #ffffff bold
+
+-- Logo top-left
+TEXT 24 28 "Shed." 22 7 #ffffff bold
+
+-- Menu top-right
+TEXT 1340 28 "+ MENU" 14 7 #ffffff bold
+
+-- Scroll indicator bottom-right
+RECT 1320 850 80 30 8 rgba(0,0,0,0)
+TEXT 1328 856 "SCROLL" 11 8 #aaa
+
+-- Thumbnail bottom-left
+RECT 16 810 80 70 8 #333 8
+ELLIPSE 56 845 36 31 7 #2a1a4a`,
+
+'Dashboard': `CANVAS 1440 900 #0f1117
+-- Sidebar
+RECT 0 0 240 900 0 #1a1d27
+
+-- Sidebar logo
+TEXT 24 24 "Acme" 20 1 #6c8cff bold
+LINE 0 60 240 60 1 #2d3244
+
+-- Sidebar nav items
+TEXT 24 80 "Dashboard" 14 1 #e0e0e8 bold
+TEXT 24 112 "Analytics" 14 1 #8888a0
+TEXT 24 144 "Users" 14 1 #8888a0
+TEXT 24 176 "Settings" 14 1 #8888a0
+
+-- Active indicator
+RECT 0 72 3 32 2 #6c8cff
+
+-- Top bar
+RECT 240 0 1200 60 1 #1a1d27
+TEXT 264 18 "Dashboard" 18 2 #e0e0e8 bold
+LINE 240 60 1440 60 1 #2d3244
+
+-- Stat cards row
+RECT 272 88 260 120 2 #1e2130 12
+TEXT 296 108 "Revenue" 12 3 #8888a0
+TEXT 296 132 "$48,200" 28 3 #e0e0e8 bold
+TEXT 296 172 "+12.5% from last month" 11 3 #4caf50
+
+RECT 556 88 260 120 2 #1e2130 12
+TEXT 580 108 "Users" 12 3 #8888a0
+TEXT 580 132 "2,847" 28 3 #e0e0e8 bold
+TEXT 580 172 "+5.2% from last month" 11 3 #4caf50
+
+RECT 840 88 260 120 2 #1e2130 12
+TEXT 864 108 "Orders" 12 3 #8888a0
+TEXT 864 132 "1,024" 28 3 #e0e0e8 bold
+TEXT 864 172 "-2.1% from last month" 11 3 #e53935
+
+RECT 1124 88 260 120 2 #1e2130 12
+TEXT 1148 108 "Conversion" 12 3 #8888a0
+TEXT 1148 132 "3.6%" 28 3 #e0e0e8 bold
+TEXT 1148 172 "+0.8% from last month" 11 3 #4caf50
+
+-- Main chart area
+RECT 272 232 840 380 2 #1e2130 12
+TEXT 296 252 "Revenue Over Time" 14 3 #e0e0e8 bold
+IMG 296 280 792 310 2 "Line chart"
+
+-- Right panel — recent activity
+RECT 1136 232 260 380 2 #1e2130 12
+TEXT 1160 252 "Recent Activity" 14 3 #e0e0e8 bold
+LINE 1136 280 1396 280 3 #2d3244
+TEXT 1160 296 "New signup — john@…" 11 3 #8888a0
+LINE 1136 320 1396 320 3 #2d3244
+TEXT 1160 336 "Order #1042 placed" 11 3 #8888a0
+LINE 1136 360 1396 360 3 #2d3244
+TEXT 1160 376 "Payment received" 11 3 #4caf50
+LINE 1136 400 1396 400 3 #2d3244
+TEXT 1160 416 "User upgraded plan" 11 3 #6c8cff
+
+-- Bottom table
+RECT 272 636 1124 240 2 #1e2130 12
+TEXT 296 656 "Recent Orders" 14 3 #e0e0e8 bold
+LINE 272 680 1396 680 3 #2d3244
+TEXT 296 692 "#1042" 12 3 #8888a0
+TEXT 500 692 "John Smith" 12 3 #e0e0e8
+TEXT 800 692 "$240.00" 12 3 #e0e0e8
+TEXT 1050 692 "Completed" 12 3 #4caf50
+LINE 272 716 1396 716 3 #2d3244
+TEXT 296 728 "#1041" 12 3 #8888a0
+TEXT 500 728 "Jane Doe" 12 3 #e0e0e8
+TEXT 800 728 "$180.00" 12 3 #e0e0e8
+TEXT 1050 728 "Pending" 12 3 #ff9800`,
+
+'Landing Page': `CANVAS 1440 900 #ffffff
+-- Navigation
+RECT 0 0 1440 72 5 #ffffff
+TEXT 48 24 "Startup" 20 6 #111 bold
+TEXT 800 26 "Features" 14 6 #666
+TEXT 900 26 "Pricing" 14 6 #666
+TEXT 1000 26 "About" 14 6 #666
+RECT 1300 18 100 36 6 #111 18
+TEXT 1320 26 "Sign Up" 13 7 #fff bold
+LINE 0 72 1440 72 5 #eee
+
+-- Hero section
+TEXT 120 180 "Build faster." 64 3 #111 bold
+TEXT 120 260 "Ship smarter." 64 3 #111 bold
+TEXT 120 340 "Scale everything." 64 3 #6c8cff bold
+TEXT 120 430 "The platform that grows with your team." 18 3 #888
+TEXT 120 470 "From prototype to production in minutes." 18 3 #888
+
+-- CTA buttons
+RECT 120 530 160 48 4 #111 24
+TEXT 152 544 "Get Started" 15 5 #fff bold
+RECT 300 530 140 48 4 #fff 24
+TEXT 330 544 "Watch Demo" 15 5 #111
+
+-- Hero image
+IMG 780 140 580 460 2 "Product screenshot"
+
+-- Trusted by logos
+LINE 0 660 1440 660 2 #eee
+TEXT 600 680 "TRUSTED BY" 11 3 #bbb
+RECT 200 710 120 40 3 #f5f5f5 6
+TEXT 230 722 "Acme" 14 3 #999
+RECT 360 710 120 40 3 #f5f5f5 6
+TEXT 388 722 "Globex" 14 3 #999
+RECT 520 710 120 40 3 #f5f5f5 6
+TEXT 548 722 "Initech" 14 3 #999
+RECT 680 710 120 40 3 #f5f5f5 6
+TEXT 710 722 "Hooli" 14 3 #999
+RECT 840 710 120 40 3 #f5f5f5 6
+TEXT 868 722 "Wonka" 14 3 #999
+RECT 1000 710 120 40 3 #f5f5f5 6
+TEXT 1028 722 "Stark" 14 3 #999`,
+
+'Mobile App': `CANVAS 390 844 #f8f8f8
+-- Status bar
+RECT 0 0 390 44 10 #fff
+TEXT 24 14 "9:41" 14 10 #111 bold
+TEXT 340 14 "100%" 12 10 #111
+
+-- Header
+RECT 0 44 390 56 8 #fff
+TEXT 24 62 "Explore" 22 9 #111 bold
+ELLIPSE 356 72 16 16 9 #ddd
+LINE 0 100 390 100 8 #eee
+
+-- Search bar
+RECT 16 112 358 44 6 #f0f0f0 22
+TEXT 40 126 "Search restaurants, dishes…" 14 7 #aaa
+
+-- Category chips
+RECT 16 172 70 32 5 #111 16
+TEXT 30 180 "All" 13 6 #fff bold
+RECT 96 172 90 32 5 #f0f0f0 16
+TEXT 118 180 "Pizza" 13 6 #666
+RECT 196 172 80 32 5 #f0f0f0 16
+TEXT 214 180 "Sushi" 13 6 #666
+RECT 286 172 90 32 5 #f0f0f0 16
+TEXT 306 180 "Burger" 13 6 #666
+
+-- Featured card
+RECT 16 224 358 200 3 #fff 16
+IMG 16 224 358 140 2 "Restaurant photo"
+TEXT 32 378 "Bella Italia" 16 4 #111 bold
+TEXT 32 400 "Italian • $$ • 4.8 ★" 13 4 #888
+
+-- List item 1
+RECT 16 444 358 80 3 #fff 12
+RECT 24 452 64 64 2 #eee 8
+TEXT 104 460 "Sakura Garden" 15 4 #111 bold
+TEXT 104 482 "Japanese • $$$ • 4.6 ★" 12 4 #888
+TEXT 104 500 "25–35 min" 11 4 #4caf50
+
+-- List item 2
+RECT 16 536 358 80 3 #fff 12
+RECT 24 544 64 64 2 #eee 8
+TEXT 104 552 "Burger Lab" 15 4 #111 bold
+TEXT 104 574 "American • $ • 4.3 ★" 12 4 #888
+TEXT 104 592 "15–20 min" 11 4 #4caf50
+
+-- List item 3
+RECT 16 628 358 80 3 #fff 12
+RECT 24 636 64 64 2 #eee 8
+TEXT 104 644 "Taco Fiesta" 15 4 #111 bold
+TEXT 104 666 "Mexican • $ • 4.5 ★" 12 4 #888
+TEXT 104 684 "20–30 min" 11 4 #4caf50
+
+-- Tab bar
+RECT 0 764 390 80 9 #fff
+LINE 0 764 390 764 9 #eee
+TEXT 50 784 "Home" 10 10 #6c8cff
+TEXT 140 784 "Search" 10 10 #aaa
+TEXT 230 784 "Orders" 10 10 #aaa
+TEXT 320 784 "Profile" 10 10 #aaa
+
+-- Home indicator
+RECT 128 826 134 5 10 #111 3`,
+
+'3D Product': `CANVAS 1440 900 #0a0a0a
+-- Ambient gradient background
+RECT 0 0 1440 900 0 #0a0a0a
+RECT 0 200 1440 500 1 #111118
+
+-- 3D product (shoe) placeholder
+IMG 400 150 640 520 3 "3D rotating shoe model"
+
+-- Floating UI panels at different depths
+RECT 80 200 280 340 5 #161620 16
+TEXT 104 224 "SPECIFICATIONS" 11 6 #6c8cff
+LINE 104 246 336 246 6 #2d3244
+TEXT 104 264 "Material" 13 6 #888
+TEXT 260 264 "Mesh" 13 6 #e0e0e8
+TEXT 104 292 "Weight" 13 6 #888
+TEXT 260 292 "280g" 13 6 #e0e0e8
+TEXT 104 320 "Sole" 13 6 #888
+TEXT 260 320 "Foam" 13 6 #e0e0e8
+TEXT 104 348 "Colors" 13 6 #888
+ELLIPSE 268 354 8 8 6 #e53935
+ELLIPSE 292 354 8 8 6 #1e88e5
+ELLIPSE 316 354 8 8 6 #111
+TEXT 104 400 "Size" 13 6 #888
+RECT 200 390 32 28 6 #2d3244 6
+TEXT 209 398 "9" 13 7 #fff
+RECT 240 390 32 28 6 #1e2130 6
+TEXT 245 398 "10" 13 7 #888
+RECT 280 390 32 28 6 #1e2130 6
+TEXT 285 398 "11" 13 7 #888
+
+-- Right floating panel
+RECT 1080 260 280 200 5 #161620 16
+TEXT 1104 284 "AIR MAX PULSE" 18 6 #fff bold
+TEXT 1104 316 "Next-gen comfort meets" 13 6 #888
+TEXT 1104 336 "bold street style." 13 6 #888
+TEXT 1104 376 "$149.99" 24 6 #fff bold
+RECT 1104 416 228 40 7 #e0e0e8 20
+TEXT 1170 428 "ADD TO CART" 12 8 #111 bold
+
+-- Top nav
+RECT 0 0 1440 56 8 #0a0a0a
+TEXT 48 18 "BRAND" 16 9 #fff bold
+TEXT 640 20 "Men" 13 9 #888
+TEXT 720 20 "Women" 13 9 #888
+TEXT 800 20 "New" 13 9 #e53935
+TEXT 1320 20 "Cart (2)" 13 9 #888
+
+-- Bottom bar
+TEXT 680 860 "DRAG TO ROTATE" 11 8 #444
+LINE 620 870 820 870 8 #333`,
+
+'Unseen Studio': `CANVAS 1440 870 #141414
+-- ASCII matrix texture background
+IMG 0 40 1440 830 1 "Matrix ASCII character texture — scattered U N S E E + glyphs"
+
+-- Dark vignette center (text backdrop)
+RECT 250 260 800 370 2 #0a0a0a
+RECT 150 300 400 280 2 #0c0c0c
+RECT 900 320 400 260 2 #0c0c0c
+
+-- Top nav
+RECT 0 0 1440 40 5 #1a1a1a
+TEXT 32 14 "[U_S_25]" 12 6 #666
+TEXT 640 12 "Unseen Studio®" 14 6 #ddd bold
+TEXT 1220 14 "[X]  [IG]  [LI]" 12 6 #666
+
+-- Year in Review — decorative serif header
+TEXT 330 170 "YEAR IN REVIEW" 64 4 #d4a017
+
+-- Decorative swash lines around header
+LINE 340 200 520 200 4 #d4a017 1
+LINE 920 200 1100 200 4 #d4a017 1
+
+-- TWENTY (first, top-left, large)
+TEXT 60 270 "TWENTY" 140 3 #d9a820 bold
+
+-- TWENTY (second, offset down-right)
+TEXT 190 430 "TWENTY" 140 3 #d9a820 bold
+
+-- [2025] small label
+TEXT 400 545 "[2025]" 16 5 #d9a820
+
+-- FIVE (right side, large)
+TEXT 970 340 "FIVE" 160 3 #d9a820 bold
+
+-- [WRAPPED] label next to FIVE
+TEXT 1190 500 "[WRAPPED]" 14 5 #888
+
+-- Bottom left CTA
+TEXT 28 836 "[START A PROJECT WITH US]" 13 6 #d9a820
+
+-- Bottom right scroll block
+TEXT 1180 790 "[SCROLL]" 12 6 #666
+TEXT 1140 812 "This way" 14 6 #d9a820
+LINE 1230 820 1380 820 6 #d9a820 1
+TEXT 1140 834 "To see the things we made." 12 6 #d9a820`,
+
+'FW Portfolio': `CANVAS 1440 860 #0a0a0a
+-- Giant "FW" letterforms (behind cube, bleeding off bottom)
+TEXT -30 440 "F" 600 1 #e8430a bold
+TEXT 260 440 "W" 600 1 #e8430a bold
+
+-- 3D photo cube — hi-res 40³, muted photo colors
+VOXI 390 130 560 580 2 38 22
+V 40 40 40
+-- Front face — 4x4 photo panels with grid dividers
+-- Row 4 (top)
+B 0 30 0 9 9 1 0
+B 10 30 0 9 9 1 9
+B 20 30 0 9 9 1 a
+B 30 30 0 9 9 1 0
+-- Row 3
+B 0 20 0 9 9 1 9
+B 10 20 0 9 9 1 0
+B 20 20 0 9 9 1 d
+B 30 20 0 9 9 1 8
+-- Row 2
+B 0 10 0 9 9 1 0
+B 10 10 0 9 9 1 9
+B 20 10 0 9 9 1 0
+B 30 10 0 9 9 1 d
+-- Row 1 (bottom)
+B 0 0 0 9 9 1 9
+B 10 0 0 9 9 1 0
+B 20 0 0 9 9 1 7
+B 30 0 0 9 9 1 9
+-- Front grid dividers (dark lines between panels)
+B 9 0 0 1 40 1 0
+B 19 0 0 1 40 1 0
+B 29 0 0 1 40 1 0
+B 0 9 0 40 1 1 0
+B 0 19 0 40 1 1 0
+B 0 29 0 40 1 1 0
+-- Right face — 4x4 panels
+B 39 30 0 1 9 9 d
+B 39 30 10 1 9 9 0
+B 39 30 20 1 9 9 9
+B 39 30 30 1 9 9 a
+B 39 20 0 1 9 9 0
+B 39 20 10 1 9 9 d
+B 39 20 20 1 9 9 0
+B 39 20 30 1 9 9 9
+B 39 10 0 1 9 9 9
+B 39 10 10 1 9 9 8
+B 39 10 20 1 9 9 0
+B 39 10 30 1 9 9 d
+B 39 0 0 1 9 9 0
+B 39 0 10 1 9 9 9
+B 39 0 20 1 9 9 a
+B 39 0 30 1 9 9 0
+-- Right grid dividers
+B 39 9 0 1 1 40 0
+B 39 19 0 1 1 40 0
+B 39 29 0 1 1 40 0
+B 39 0 9 1 40 1 0
+B 39 0 19 1 40 1 0
+B 39 0 29 1 40 1 0
+-- Top face — 4x4 panels
+B 0 39 0 9 1 9 9
+B 10 39 0 9 1 9 0
+B 20 39 0 9 1 9 d
+B 30 39 0 9 1 9 9
+B 0 39 10 9 1 9 0
+B 10 39 10 9 1 9 a
+B 20 39 10 9 1 9 9
+B 30 39 10 9 1 9 0
+B 0 39 20 9 1 9 9
+B 10 39 20 9 1 9 0
+B 20 39 20 9 1 9 0
+B 30 39 20 9 1 9 d
+B 0 39 30 9 1 9 0
+B 10 39 30 9 1 9 9
+B 20 39 30 9 1 9 a
+B 30 39 30 9 1 9 0
+-- Top grid dividers
+B 9 39 0 1 1 40 0
+B 19 39 0 1 1 40 0
+B 29 39 0 1 1 40 0
+B 0 39 9 40 1 1 0
+B 0 39 19 40 1 1 0
+B 0 39 29 40 1 1 0
+-- Subtle orange edge accents (thin)
+B 0 0 0 40 1 1 7
+B 0 39 0 40 1 1 7
+B 0 0 0 1 40 1 7
+B 39 0 0 1 40 1 7
+B 39 0 0 1 1 40 7
+B 39 39 0 1 1 40 7
+B 0 39 0 1 1 40 7
+B 0 0 39 1 40 1 7
+/VOXI
+
+-- Ruler bar across full width
+RECT 0 58 1440 1 4 #333
+TEXT 8 64 "0" 9 4 #555
+TEXT 95 64 "100" 9 4 #555
+TEXT 192 64 "200" 9 4 #555
+TEXT 289 64 "300" 9 4 #555
+TEXT 386 64 "400" 9 4 #555
+TEXT 483 64 "500" 9 4 #555
+TEXT 580 64 "600" 9 4 #555
+TEXT 677 64 "700" 9 4 #555
+TEXT 774 64 "800" 9 4 #555
+TEXT 871 64 "900" 9 4 #555
+TEXT 960 64 "1000" 9 4 #555
+TEXT 1150 64 "1200" 9 4 #555
+TEXT 1340 64 "1400" 9 4 #555
+-- Ruler tick marks
+LINE 97 56 97 62 4 #444 1
+LINE 194 56 194 62 4 #444 1
+LINE 291 56 291 62 4 #444 1
+LINE 388 56 388 62 4 #444 1
+LINE 485 56 485 62 4 #444 1
+LINE 582 56 582 62 4 #444 1
+LINE 679 56 679 62 4 #444 1
+LINE 776 56 776 62 4 #444 1
+LINE 873 56 873 62 4 #444 1
+LINE 1067 56 1067 62 4 #444 1
+LINE 1164 56 1164 62 4 #444 1
+LINE 1261 56 1261 62 4 #444 1
+LINE 1358 56 1358 62 4 #444 1
+
+-- Vertical measurement guides (left edge, faint)
+LINE 8 80 8 850 3 #1a1a1a 1
+LINE 8 170 14 170 3 #333 1
+LINE 8 280 14 280 3 #333 1
+LINE 8 390 14 390 3 #333 1
+LINE 8 500 14 500 3 #333 1
+LINE 8 610 14 610 3 #333 1
+LINE 8 720 14 720 3 #333 1
+
+-- Dimension label
+TEXT 40 100 "1440px × 810px" 12 5 #555
+
+-- Navigation center-right
+TEXT 620 100 "Featured Works," 14 5 #ddd bold
+TEXT 748 100 "Archive," 14 5 #555
+TEXT 810 100 "About" 14 5 #555
+
+-- Available date top-right
+TEXT 1260 100 "Available April 2026" 12 5 #444
+
+-- Left side credits
+TEXT 44 420 "Corentin Bernadou" 13 5 #777
+TEXT 44 438 "Freelance Developer" 12 5 #555
+TEXT 260 420 "Issue N°003 / Coll. 2026" 12 5 #777
+TEXT 260 438 "Ref. EDI-032026-R02" 11 5 #555
+
+-- Right side — scrolling project list (dimmer text)
+TEXT 1030 90 "Ruby Campbell" 13 6 #666
+TEXT 1030 113 "Shaped by Earth" 13 6 #666
+TEXT 1030 136 "Echoes in Light" 13 6 #666
+TEXT 1030 159 "Moving Portraits" 13 6 #666
+TEXT 1030 182 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 205 "Studies in Motion" 13 6 #666
+TEXT 1030 228 "Ruby Campbell" 13 6 #666
+TEXT 1030 251 "Shaped by Earth" 13 6 #666
+TEXT 1030 274 "Echoes in Light" 13 6 #666
+TEXT 1030 297 "Moving Portraits" 13 6 #666
+TEXT 1030 320 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 343 "Studies in Motion" 13 6 #666
+TEXT 1030 366 "Ruby Campbell" 13 6 #666
+TEXT 1030 389 "Shaped by Earth" 13 6 #666
+TEXT 1030 412 "Echoes in Light" 13 6 #666
+TEXT 1030 435 "Moving Portraits" 13 6 #666
+TEXT 1030 458 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 481 "Studies in Motion" 13 6 #666
+TEXT 1030 504 "Ruby Campbell" 13 6 #666
+TEXT 1030 527 "Shaped by Earth" 13 6 #666
+TEXT 1030 550 "Echoes in Light" 13 6 #666
+TEXT 1030 573 "Moving Portraits" 13 6 #666
+TEXT 1030 596 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 619 "Studies in Motion" 13 6 #666
+TEXT 1030 642 "Ruby Campbell" 13 6 #666
+TEXT 1030 665 "Shaped by Earth" 13 6 #666
+TEXT 1030 688 "Echoes in Light" 13 6 #666
+TEXT 1030 711 "Moving Portraits" 13 6 #666
+TEXT 1030 734 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 757 "Studies in Motion" 13 6 #666
+TEXT 1030 780 "Ruby Campbell" 13 6 #666
+TEXT 1030 803 "Shaped by Earth" 13 6 #666
+TEXT 1030 826 "Echoes in Light" 13 6 #666
+TEXT 1030 849 "Moving Portraits" 13 6 #666`,
+
+'E-Commerce Product Page': `CANVAS 1440 900 #ffffff
+RECT 0 0 1440 64 5 #fff
+TEXT 40 20 "SHOPIFY" 18 6 #111 bold
+TEXT 600 22 "Men" 14 6 #666
+TEXT 680 22 "Women" 14 6 #666
+TEXT 760 22 "Sale" 14 6 #e53935
+TEXT 1300 22 "Cart (3)" 14 6 #111
+LINE 0 64 1440 64 5 #eee 1
+RECT 40 100 600 700 2 #f5f5f5 12
+IMG 60 120 560 500 1 "Product photo — white sneaker"
+IMG 60 640 120 120 1 "Thumb 1"
+IMG 200 640 120 120 1 "Thumb 2"
+IMG 340 640 120 120 1 "Thumb 3"
+TEXT 700 110 "AIR MAX PULSE" 32 3 #111 bold
+TEXT 700 155 "Men's Shoes" 16 3 #888
+TEXT 700 200 "$149.99" 28 3 #111 bold
+TEXT 700 250 "Color: White/Black" 14 3 #666
+RECT 700 290 40 40 3 #111 20
+RECT 750 290 40 40 3 #fff 20
+RECT 800 290 40 40 3 #e53935 20
+TEXT 700 360 "Size" 14 3 #666
+RECT 700 385 60 40 3 #f0f0f0 8
+TEXT 716 395 "8" 14 4 #333
+RECT 770 385 60 40 3 #111 8
+TEXT 786 395 "9" 14 4 #fff
+RECT 840 385 60 40 3 #f0f0f0 8
+TEXT 852 395 "10" 14 4 #333
+RECT 910 385 60 40 3 #f0f0f0 8
+TEXT 922 395 "11" 14 4 #333
+RECT 700 460 360 52 4 #111 26
+TEXT 820 474 "ADD TO BAG" 14 5 #fff bold
+RECT 700 530 360 52 4 #fff 26
+TEXT 830 544 "FAVORITE" 14 5 #111
+TEXT 700 620 "Free delivery on orders over $50" 13 3 #4caf50
+TEXT 700 650 "Free 30-day returns" 13 3 #4caf50`,
+
+'Music Player (Mobile)': `CANVAS 390 844 #111
+RECT 0 0 390 44 5 #111
+TEXT 24 14 "9:41" 14 5 #fff bold
+RECT 0 44 390 200 2 #1a1a2e
+IMG 95 64 200 200 1 "Album art — gradient abstract"
+TEXT 120 280 "Midnight City" 22 3 #fff bold
+TEXT 140 310 "M83 — Hurry Up" 14 3 #888
+RECT 40 360 310 4 2 #333 2
+RECT 40 360 180 4 3 #6c8cff 2
+ELLIPSE 220 362 6 6 4 #fff
+TEXT 40 375 "2:34" 11 3 #888
+TEXT 320 375 "4:07" 11 3 #888
+ELLIPSE 130 430 24 24 3 #333
+ELLIPSE 195 430 32 32 3 #fff
+ELLIPSE 260 430 24 24 3 #333
+TEXT 122 422 "⏮" 16 4 #fff
+TEXT 186 420 "▶" 20 4 #111
+TEXT 252 422 "⏭" 16 4 #fff
+TEXT 60 430 "🔀" 14 3 #666
+TEXT 310 430 "🔁" 14 3 #666
+LINE 0 500 390 500 3 #222 1
+TEXT 24 520 "Up Next" 16 4 #fff bold
+RECT 24 550 342 60 3 #1a1a2e 8
+TEXT 44 562 "Intro" 14 4 #fff
+TEXT 44 580 "The xx" 12 4 #666
+RECT 24 620 342 60 3 #1a1a2e 8
+TEXT 44 632 "Somebody Else" 14 4 #fff
+TEXT 44 650 "The 1975" 12 4 #666
+RECT 24 690 342 60 3 #1a1a2e 8
+TEXT 44 702 "Retrograde" 14 4 #fff
+TEXT 44 720 "James Blake" 12 4 #666
+RECT 0 764 390 80 5 #1a1a2e
+LINE 0 764 390 764 5 #333 1
+TEXT 50 784 "Home" 10 6 #888
+TEXT 170 784 "Search" 10 6 #fff
+TEXT 290 784 "Library" 10 6 #888`,
+
+'Weather Dashboard': `CANVAS 1440 900 #0a1628
+TEXT 40 30 "Weather" 24 5 #fff bold
+TEXT 1300 34 "Settings" 14 5 #556
+RECT 40 80 400 300 2 #112240 16
+TEXT 60 100 "San Francisco" 20 3 #fff bold
+TEXT 60 130 "Partly Cloudy" 14 3 #8899bb
+TEXT 60 180 "21°" 96 3 #fff bold
+TEXT 250 220 "C" 24 3 #556
+TEXT 60 310 "H: 24°" 14 3 #fff
+TEXT 160 310 "L: 16°" 14 3 #556
+RECT 60 340 120 40 3 #1a3058 8
+TEXT 80 350 "Feels 19°" 12 4 #8899bb
+RECT 200 340 120 40 3 #1a3058 8
+TEXT 220 350 "Wind 12km" 12 4 #8899bb
+RECT 480 80 920 300 2 #112240 16
+TEXT 500 100 "7-Day Forecast" 16 3 #fff bold
+LINE 480 130 1400 130 3 #1a3058 1
+TEXT 520 150 "Mon" 12 3 #556
+TEXT 520 175 "22°" 18 3 #fff bold
+TEXT 520 200 "16°" 14 3 #556
+TEXT 660 150 "Tue" 12 3 #556
+TEXT 660 175 "19°" 18 3 #fff bold
+TEXT 660 200 "14°" 14 3 #556
+TEXT 800 150 "Wed" 12 3 #556
+TEXT 800 175 "25°" 18 3 #fff bold
+TEXT 800 200 "18°" 14 3 #556
+TEXT 940 150 "Thu" 12 3 #556
+TEXT 940 175 "20°" 18 3 #fff bold
+TEXT 940 200 "15°" 14 3 #556
+TEXT 1080 150 "Fri" 12 3 #556
+TEXT 1080 175 "23°" 18 3 #fff bold
+TEXT 1080 200 "17°" 14 3 #556
+TEXT 1220 150 "Sat" 12 3 #556
+TEXT 1220 175 "21°" 18 3 #fff bold
+TEXT 1220 200 "16°" 14 3 #556
+RECT 40 420 660 440 2 #112240 16
+TEXT 60 440 "Hourly" 16 3 #fff bold
+IMG 60 470 620 370 1 "Temperature line chart"
+RECT 740 420 660 440 2 #112240 16
+TEXT 760 440 "Precipitation Map" 16 3 #fff bold
+IMG 760 470 620 370 1 "Radar map overlay"`,
+
+'Email Client': `CANVAS 1440 900 #f5f5f5
+RECT 0 0 1440 56 5 #fff
+TEXT 20 16 "Mail" 20 6 #111 bold
+TEXT 600 18 "Search mail..." 14 6 #999
+RECT 560 12 400 32 5 #f0f0f0 16
+TEXT 1340 18 "Compose" 13 6 #1e88e5 bold
+LINE 0 56 1440 56 5 #ddd 1
+RECT 0 56 240 844 3 #fff
+TEXT 20 76 "Inbox (12)" 14 4 #111 bold
+TEXT 20 104 "Starred" 14 4 #666
+TEXT 20 132 "Sent" 14 4 #666
+TEXT 20 160 "Drafts (2)" 14 4 #666
+TEXT 20 188 "Trash" 14 4 #666
+LINE 0 220 240 220 4 #eee 1
+TEXT 20 236 "Labels" 11 4 #999
+TEXT 20 260 "Work" 14 4 #666
+TEXT 20 288 "Personal" 14 4 #666
+RECT 240 56 400 844 2 #fff
+LINE 640 56 640 900 3 #eee 1
+RECT 240 56 400 80 3 #e3f2fd
+TEXT 260 72 "Design Review — Q2" 14 4 #111 bold
+TEXT 260 92 "Sarah Chen — Please review the..." 12 4 #666
+TEXT 560 72 "10:32 AM" 10 4 #999
+RECT 240 136 400 80 2 #fff
+TEXT 260 152 "Sprint Planning Notes" 14 3 #111
+TEXT 260 172 "Mike — Here are the notes from..." 12 3 #888
+TEXT 560 152 "9:15 AM" 10 3 #999
+RECT 240 216 400 80 2 #fff
+TEXT 260 232 "Invoice #4021" 14 3 #111
+TEXT 260 252 "Billing — Your invoice is ready" 12 3 #888
+TEXT 560 232 "Yesterday" 10 3 #999
+RECT 240 296 400 80 2 #fff
+TEXT 260 312 "Weekly Standup" 14 3 #111
+TEXT 260 332 "Team — Reminder: standup at 10" 12 3 #888
+TEXT 560 312 "Yesterday" 10 3 #999
+RECT 640 56 800 844 1 #fff
+TEXT 680 80 "Design Review — Q2 Campaign" 22 3 #111 bold
+TEXT 680 115 "Sarah Chen <sarah@studio.co>" 13 3 #1e88e5
+TEXT 680 138 "to me, design-team" 12 3 #999
+TEXT 680 170 "Hi team," 14 2 #333
+TEXT 680 200 "Please review the attached mockups for the Q2" 14 2 #333
+TEXT 680 224 "campaign. Key changes from last round:" 14 2 #333
+TEXT 700 260 "1. Updated hero section with new photography" 14 2 #333
+TEXT 700 284 "2. Revised color palette (see brand guide)" 14 2 #333
+TEXT 700 308 "3. New CTA placement above the fold" 14 2 #333
+TEXT 680 350 "Let me know your thoughts by EOD Friday." 14 2 #333
+RECT 680 400 140 36 3 #1e88e5 8
+TEXT 710 410 "Reply" 13 4 #fff bold
+RECT 840 400 140 36 3 #f0f0f0 8
+TEXT 862 410 "Forward" 13 4 #333`,
+
+'Social Media Feed (Mobile)': `CANVAS 390 844 #fafafa
+RECT 0 0 390 56 5 #fff
+TEXT 20 18 "Instagram" 20 6 #111 bold
+TEXT 330 18 "DM" 16 6 #111
+LINE 0 56 390 56 5 #eee 1
+RECT 0 56 390 100 3 #fff
+RECT 16 66 56 56 3 #ddd 28
+RECT 82 66 56 56 3 #ddd 28
+RECT 148 66 56 56 3 #ddd 28
+RECT 214 66 56 56 3 #ddd 28
+RECT 280 66 56 56 3 #ddd 28
+TEXT 24 128 "You" 10 4 #666
+TEXT 88 128 "alice" 10 4 #666
+TEXT 154 128 "bob" 10 4 #666
+TEXT 218 128 "carol" 10 4 #666
+TEXT 284 128 "dave" 10 4 #666
+LINE 0 156 390 156 3 #eee 1
+RECT 0 156 390 480 2 #fff
+RECT 12 168 36 36 3 #ddd 18
+TEXT 60 172 "alice_designs" 13 3 #111 bold
+TEXT 60 190 "San Francisco" 11 3 #888
+IMG 0 216 390 320 1 "Photo — colorful street mural"
+TEXT 16 548 "♡  💬  ➤" 18 3 #111
+TEXT 16 578 "2,847 likes" 13 3 #111 bold
+TEXT 16 598 "alice_designs Working on something..." 12 3 #333
+TEXT 16 616 "View all 42 comments" 12 3 #888`,
+
+'Calendar App': `CANVAS 1440 900 #fff
+RECT 0 0 1440 60 5 #fff
+TEXT 40 18 "Calendar" 20 6 #111 bold
+TEXT 600 20 "< March 2026 >" 16 6 #111
+TEXT 1300 18 "+ New Event" 13 6 #1e88e5 bold
+LINE 0 60 1440 60 5 #eee 1
+RECT 0 60 200 840 3 #fafafa
+TEXT 20 80 "Calendars" 14 4 #111 bold
+TEXT 20 110 "Personal" 13 4 #4caf50
+TEXT 20 134 "Work" 13 4 #1e88e5
+TEXT 20 158 "Birthdays" 13 4 #ff9800
+LINE 200 60 200 900 3 #eee 1
+TEXT 260 80 "Mon" 12 4 #888
+TEXT 440 80 "Tue" 12 4 #888
+TEXT 620 80 "Wed" 12 4 #888
+TEXT 800 80 "Thu" 12 4 #888
+TEXT 980 80 "Fri" 12 4 #888
+TEXT 1160 80 "Sat" 12 4 #888
+TEXT 1310 80 "Sun" 12 4 #aaa
+LINE 200 100 1440 100 4 #eee 1
+LINE 200 260 1440 260 3 #eee 1
+LINE 200 420 1440 420 3 #eee 1
+LINE 200 580 1440 580 3 #eee 1
+LINE 200 740 1440 740 3 #eee 1
+LINE 380 60 380 900 3 #eee 1
+LINE 560 60 560 900 3 #eee 1
+LINE 740 60 740 900 3 #eee 1
+LINE 920 60 920 900 3 #eee 1
+LINE 1100 60 1100 900 3 #eee 1
+LINE 1280 60 1280 900 3 #eee 1
+TEXT 210 110 "23" 14 3 #888
+TEXT 390 110 "24" 14 3 #888
+TEXT 570 110 "25" 14 3 #1e88e5 bold
+TEXT 750 110 "26" 14 3 #888
+TEXT 930 110 "27" 14 3 #888
+TEXT 1110 110 "28" 14 3 #aaa
+TEXT 1290 110 "1" 14 3 #aaa
+RECT 560 140 170 40 3 #e3f2fd 6
+TEXT 570 150 "Design Review" 11 4 #1e88e5
+RECT 560 185 170 40 3 #fff3e0 6
+TEXT 570 195 "Team Lunch" 11 4 #ff9800
+RECT 920 140 170 60 3 #e8f5e9 6
+TEXT 930 150 "Sprint Demo" 11 4 #4caf50
+TEXT 930 168 "2:00 - 3:30 PM" 10 4 #888`,
+
+'Restaurant Menu': `CANVAS 800 1200 #1a1a1a
+RECT 0 0 800 200 2 #111
+TEXT 280 40 "NOMA" 48 3 #d4a017 bold
+TEXT 240 100 "TASTING MENU" 24 3 #888
+LINE 200 140 600 140 3 #333 1
+TEXT 300 160 "Spring 2026" 14 3 #666
+TEXT 40 240 "FIRST" 12 4 #d4a017
+LINE 40 260 760 260 3 #222 1
+TEXT 40 280 "Tartare of Beef" 20 3 #fff
+TEXT 40 310 "Horseradish cream, capers, rye" 13 3 #888
+TEXT 700 280 "$38" 16 3 #d4a017
+TEXT 40 360 "Burrata" 20 3 #fff
+TEXT 40 390 "Heirloom tomato, basil oil, fleur de sel" 13 3 #888
+TEXT 700 360 "$32" 16 3 #d4a017
+TEXT 40 450 "SECOND" 12 4 #d4a017
+LINE 40 470 760 470 3 #222 1
+TEXT 40 490 "Duck Breast" 20 3 #fff
+TEXT 40 520 "Cherry jus, roasted root vegetables" 13 3 #888
+TEXT 700 490 "$56" 16 3 #d4a017
+TEXT 40 570 "Turbot" 20 3 #fff
+TEXT 40 600 "Beurre blanc, sea herbs, samphire" 13 3 #888
+TEXT 700 570 "$62" 16 3 #d4a017
+TEXT 40 660 "DESSERT" 12 4 #d4a017
+LINE 40 680 760 680 3 #222 1
+TEXT 40 700 "Chocolate Fondant" 20 3 #fff
+TEXT 40 730 "Vanilla bean ice cream, cocoa tuile" 13 3 #888
+TEXT 700 700 "$28" 16 3 #d4a017
+LINE 200 800 600 800 3 #333 1
+TEXT 200 830 "Service charge included" 12 3 #555
+TEXT 200 860 "Please inform us of any allergies" 12 3 #555`,
+
+'Flight Booking': `CANVAS 1440 900 #f0f4f8
+RECT 0 0 1440 64 5 #fff
+TEXT 40 18 "SkyBook" 22 6 #1a3a6b bold
+TEXT 1280 20 "My Trips" 14 6 #1a3a6b
+LINE 0 64 1440 64 5 #ddd 1
+RECT 120 100 1200 160 3 #fff 12
+TEXT 160 120 "From" 11 4 #999
+TEXT 160 140 "SFO — San Francisco" 16 4 #111 bold
+LINE 450 110 450 240 4 #eee 1
+TEXT 500 120 "To" 11 4 #999
+TEXT 500 140 "NRT — Tokyo Narita" 16 4 #111 bold
+LINE 790 110 790 240 4 #eee 1
+TEXT 840 120 "Depart" 11 4 #999
+TEXT 840 140 "Apr 15, 2026" 16 4 #111 bold
+TEXT 840 165 "Return: Apr 28" 13 4 #888
+LINE 1050 110 1050 240 4 #eee 1
+TEXT 1090 120 "Passengers" 11 4 #999
+TEXT 1090 140 "2 Adults" 16 4 #111 bold
+RECT 120 290 1200 140 3 #fff 12
+RECT 140 300 60 60 2 #f0f4f8 8
+TEXT 220 310 "United Airlines — UA 837" 16 3 #111 bold
+TEXT 220 335 "SFO 11:05 AM → NRT 3:20 PM +1" 14 3 #666
+TEXT 220 358 "11h 15m · Nonstop · Boeing 787" 12 3 #999
+TEXT 1000 310 "$1,240" 24 3 #111 bold
+TEXT 1000 340 "per person" 11 3 #999
+RECT 1100 310 140 40 3 #1a3a6b 20
+TEXT 1130 320 "Select" 14 4 #fff bold
+RECT 120 450 1200 140 3 #fff 12
+RECT 140 460 60 60 2 #f0f4f8 8
+TEXT 220 470 "ANA — NH 7" 16 3 #111 bold
+TEXT 220 495 "SFO 1:30 PM → NRT 5:45 PM +1" 14 3 #666
+TEXT 220 518 "11h 15m · Nonstop · Boeing 777" 12 3 #999
+TEXT 1000 470 "$1,180" 24 3 #111 bold
+TEXT 1000 500 "per person" 11 3 #999
+RECT 1100 470 140 40 3 #1a3a6b 20
+TEXT 1130 480 "Select" 14 4 #fff bold
+RECT 120 610 1200 140 3 #fff 12
+RECT 140 620 60 60 2 #f0f4f8 8
+TEXT 220 630 "JAL — JL 1" 16 3 #111 bold
+TEXT 220 655 "SFO 6:00 PM → NRT 10:25 PM +1" 14 3 #666
+TEXT 220 678 "11h 25m · Nonstop · Airbus A350" 12 3 #999
+TEXT 1000 630 "$1,420" 24 3 #111 bold
+TEXT 1000 660 "per person" 11 3 #999
+RECT 1100 630 140 40 3 #1a3a6b 20
+TEXT 1130 640 "Select" 14 4 #fff bold`,
+
+'Chat Messenger': `CANVAS 390 844 #fff
+RECT 0 0 390 56 5 #f8f8f8
+TEXT 60 18 "Alice Chen" 16 6 #111 bold
+TEXT 60 36 "Online" 11 6 #4caf50
+RECT 16 12 36 36 5 #ddd 18
+TEXT 350 20 "•••" 16 6 #888
+LINE 0 56 390 56 5 #eee 1
+RECT 30 80 220 50 2 #f0f0f0 16
+TEXT 46 96 "Hey! How's the project?" 13 3 #333
+TEXT 30 135 "10:32 AM" 9 3 #bbb
+RECT 140 170 220 70 2 #1e88e5 16
+TEXT 156 182 "Going well! Just pushed" 13 3 #fff
+TEXT 156 200 "the new design system" 13 3 #fff
+TEXT 316 245 "10:33 AM" 9 3 #bbb
+RECT 30 270 240 50 2 #f0f0f0 16
+TEXT 46 286 "Nice! Can I see a preview?" 13 3 #333
+TEXT 30 325 "10:34 AM" 9 3 #bbb
+RECT 100 360 260 200 2 #1e88e5 16
+IMG 110 370 240 140 1 "Screenshot — design preview"
+TEXT 116 522 "Here you go ↑" 13 3 #fff
+TEXT 316 575 "10:35 AM" 9 3 #bbb
+RECT 30 600 200 50 2 #f0f0f0 16
+TEXT 46 616 "This looks amazing! 🎉" 13 3 #333
+TEXT 30 655 "10:36 AM" 9 3 #bbb
+RECT 0 770 390 74 5 #fff
+LINE 0 770 390 770 5 #eee 1
+RECT 16 782 310 44 4 #f5f5f5 22
+TEXT 32 796 "Type a message..." 13 5 #bbb
+RECT 336 782 40 44 4 #1e88e5 22
+TEXT 348 796 "➤" 16 5 #fff`,
+
+'Stock Trading': `CANVAS 1440 900 #0a0f1a
+RECT 0 0 1440 50 5 #0d1525
+TEXT 20 14 "TradeView" 18 6 #4caf50 bold
+TEXT 500 16 "AAPL" 14 6 #fff bold
+TEXT 560 16 "189.42" 14 6 #4caf50 bold
+TEXT 640 16 "+2.34 (1.25%)" 12 6 #4caf50
+TEXT 800 16 "GOOGL" 14 6 #fff bold
+TEXT 870 16 "178.90" 14 6 #e53935 bold
+TEXT 950 16 "-1.12 (0.62%)" 12 6 #e53935
+RECT 20 70 980 480 2 #0d1525 8
+TEXT 40 86 "AAPL — Apple Inc." 18 3 #fff bold
+TEXT 40 112 "$189.42" 36 3 #4caf50 bold
+TEXT 250 128 "+$2.34 (1.25%)" 14 3 #4caf50
+TEXT 900 86 "1D" 12 3 #4caf50
+TEXT 930 86 "1W" 12 3 #556
+TEXT 960 86 "1M" 12 3 #556
+IMG 40 160 940 370 1 "Candlestick chart — AAPL uptrend"
+RECT 1020 70 400 240 2 #0d1525 8
+TEXT 1040 86 "Order Book" 14 3 #fff bold
+LINE 1020 110 1420 110 3 #1a2744 1
+TEXT 1040 125 "189.50" 12 3 #e53935
+RECT 1120 120 180 16 2 #2a1520 4
+TEXT 1040 145 "189.48" 12 3 #e53935
+RECT 1120 140 140 16 2 #2a1520 4
+TEXT 1040 165 "189.45" 12 3 #e53935
+RECT 1120 160 200 16 2 #2a1520 4
+LINE 1020 185 1420 185 3 #1a2744 1
+TEXT 1040 200 "189.40" 12 3 #4caf50
+RECT 1120 195 160 16 2 #152a20 4
+TEXT 1040 220 "189.38" 12 3 #4caf50
+RECT 1120 215 120 16 2 #152a20 4
+TEXT 1040 240 "189.35" 12 3 #4caf50
+RECT 1120 235 220 16 2 #152a20 4
+RECT 1020 330 400 220 2 #0d1525 8
+TEXT 1040 346 "Quick Trade" 14 3 #fff bold
+RECT 1040 375 180 40 3 #152a20 8
+TEXT 1090 385 "BUY" 16 4 #4caf50 bold
+RECT 1240 375 160 40 3 #2a1520 8
+TEXT 1280 385 "SELL" 16 4 #e53935 bold
+TEXT 1040 435 "Shares" 12 3 #556
+RECT 1040 455 360 36 3 #1a2744 8
+TEXT 1060 465 "100" 14 4 #fff
+RECT 1040 510 360 40 4 #4caf50 8
+TEXT 1160 520 "Place Order" 14 5 #fff bold`,
+
+'Fitness Tracker': `CANVAS 390 844 #111
+RECT 0 0 390 44 5 #111
+TEXT 24 14 "9:41" 14 5 #fff bold
+TEXT 140 14 "FitTrack" 18 5 #4caf50 bold
+TEXT 24 64 "Today" 28 4 #fff bold
+TEXT 24 100 "March 25, 2026" 14 4 #666
+ELLIPSE 195 240 80 80 2 #1a2e1a
+ELLIPSE 195 240 70 70 3 #4caf50
+TEXT 165 220 "8,420" 28 3 #fff bold
+TEXT 172 255 "steps" 14 3 #888
+TEXT 60 350 "2.4 km" 18 3 #fff bold
+TEXT 60 375 "Distance" 12 3 #666
+TEXT 170 350 "340" 18 3 #ff9800 bold
+TEXT 170 375 "Calories" 12 3 #666
+TEXT 280 350 "42" 18 3 #1e88e5 bold
+TEXT 280 375 "Minutes" 12 3 #666
+RECT 24 420 342 180 2 #1a1a2e 12
+TEXT 44 440 "Heart Rate" 14 3 #e53935 bold
+TEXT 280 440 "72 BPM" 14 3 #fff
+IMG 44 470 300 110 1 "Heart rate line chart"
+RECT 24 620 342 100 2 #1a1a2e 12
+TEXT 44 640 "Sleep" 14 3 #6c8cff bold
+TEXT 44 665 "7h 23m" 22 3 #fff bold
+TEXT 200 665 "Deep: 2h 10m" 12 3 #888
+TEXT 200 685 "Light: 4h 50m" 12 3 #888
+RECT 0 764 390 80 5 #1a1a1a
+TEXT 50 784 "Today" 10 6 #4caf50
+TEXT 170 784 "History" 10 6 #888
+TEXT 290 784 "Profile" 10 6 #888`,
+
+'Smart Home': `CANVAS 1440 900 #0f1117
+TEXT 40 30 "Home" 28 5 #fff bold
+TEXT 40 65 "3 devices active" 14 5 #888
+TEXT 1300 40 "All Rooms" 14 5 #6c8cff
+RECT 40 110 320 200 2 #1a1d27 16
+TEXT 60 130 "Living Room" 16 3 #fff bold
+TEXT 60 155 "3 devices" 12 3 #888
+ELLIPSE 300 140 24 24 3 #4caf50
+TEXT 60 200 "Lights" 13 3 #888
+TEXT 250 200 "72%" 13 3 #fdd835
+RECT 60 220 280 6 2 #333 3
+RECT 60 220 200 6 3 #fdd835 3
+TEXT 60 250 "24°C" 24 3 #fff bold
+TEXT 160 258 "Thermostat" 12 3 #888
+RECT 400 110 320 200 2 #1a1d27 16
+TEXT 420 130 "Bedroom" 16 3 #fff bold
+TEXT 420 155 "2 devices" 12 3 #888
+ELLIPSE 660 140 24 24 3 #333
+TEXT 420 200 "Lights" 13 3 #888
+TEXT 610 200 "Off" 13 3 #666
+TEXT 420 250 "21°C" 24 3 #fff bold
+TEXT 520 258 "Thermostat" 12 3 #888
+RECT 760 110 320 200 2 #1a1d27 16
+TEXT 780 130 "Kitchen" 16 3 #fff bold
+TEXT 780 155 "1 device" 12 3 #888
+ELLIPSE 1020 140 24 24 3 #4caf50
+TEXT 780 200 "Lights" 13 3 #888
+TEXT 970 200 "100%" 13 3 #fdd835
+RECT 780 220 280 6 2 #333 3
+RECT 780 220 280 6 3 #fdd835 3
+RECT 40 350 1040 500 2 #1a1d27 16
+TEXT 60 370 "Energy Usage" 18 3 #fff bold
+TEXT 60 400 "Today: 12.4 kWh" 14 3 #888
+IMG 60 430 1000 400 1 "Bar chart — hourly energy consumption"
+RECT 1120 350 280 240 2 #1a1d27 16
+TEXT 1140 370 "Scenes" 16 3 #fff bold
+RECT 1140 400 240 50 3 #2a2d37 12
+TEXT 1160 416 "🌅 Good Morning" 14 4 #fff
+RECT 1140 460 240 50 3 #2a2d37 12
+TEXT 1160 476 "🌙 Good Night" 14 4 #fff
+RECT 1140 520 240 50 3 #2a2d37 12
+TEXT 1160 536 "🎬 Movie Time" 14 4 #fff`,
+
+'Recipe App': `CANVAS 390 844 #fff
+RECT 0 0 390 56 5 #fff
+TEXT 20 18 "< Back" 14 6 #1e88e5
+TEXT 300 18 "Save" 14 6 #e53935
+IMG 0 56 390 260 1 "Photo — pasta carbonara closeup"
+TEXT 24 336 "Pasta Carbonara" 24 3 #111 bold
+TEXT 24 368 "Classic Roman Recipe" 14 3 #888
+TEXT 24 400 "⏱ 25 min" 13 3 #666
+TEXT 120 400 "👤 4 servings" 13 3 #666
+TEXT 240 400 "⭐ 4.8" 13 3 #ff9800
+LINE 24 430 366 430 3 #eee 1
+TEXT 24 448 "INGREDIENTS" 12 4 #888
+TEXT 24 476 "• 400g spaghetti" 14 3 #333
+TEXT 24 500 "• 200g guanciale" 14 3 #333
+TEXT 24 524 "• 4 egg yolks" 14 3 #333
+TEXT 24 548 "• 100g Pecorino Romano" 14 3 #333
+TEXT 24 572 "• Black pepper" 14 3 #333
+LINE 24 600 366 600 3 #eee 1
+TEXT 24 618 "INSTRUCTIONS" 12 4 #888
+TEXT 24 646 "1. Cook pasta in salted water" 14 3 #333
+TEXT 24 676 "2. Crisp guanciale in a pan until" 14 3 #333
+TEXT 40 696 "golden (8 min)" 14 3 #333
+TEXT 24 726 "3. Mix yolks, cheese, and pepper" 14 3 #333
+TEXT 24 756 "4. Toss hot pasta with guanciale," 14 3 #333
+TEXT 40 776 "then stir in egg mixture off heat" 14 3 #333`,
+
+'News Article': `CANVAS 800 1200 #fff
+RECT 0 0 800 60 5 #fff
+TEXT 40 18 "The Chronicle" 24 6 #111 bold
+TEXT 600 22 "Subscribe" 13 6 #1e88e5
+LINE 0 60 800 60 5 #eee 1
+TEXT 40 90 "TECHNOLOGY" 11 5 #e53935
+TEXT 40 120 "The Rise of Spatial Computing:" 32 3 #111 bold
+TEXT 40 165 "How Text-Native Design Tools" 32 3 #111 bold
+TEXT 40 210 "Are Changing Everything" 32 3 #111 bold
+TEXT 40 270 "By Sarah Chen · March 25, 2026 · 8 min read" 13 3 #888
+IMG 40 310 720 400 1 "Photo — developer using spatial interface"
+TEXT 40 730 "A new generation of design tools is emerging that" 16 2 #333
+TEXT 40 758 "treats visual layouts as structured text — enabling AI" 16 2 #333
+TEXT 40 786 "to read, write, and reason about spatial compositions" 16 2 #333
+TEXT 40 814 "without requiring vision models." 16 2 #333
+TEXT 40 860 "Unlike traditional design tools that store layouts as" 16 2 #333
+TEXT 40 888 "binary blobs or complex JSON trees, these new formats" 16 2 #333
+TEXT 40 916 "encode position, depth, and color in human-readable" 16 2 #333
+TEXT 40 944 "lines — one element per line, fully editable." 16 2 #333
+RECT 40 990 720 100 2 #f5f5f5 8
+TEXT 60 1010 "Related: How LLMs are learning to sketch" 14 3 #1e88e5
+TEXT 60 1034 "See also: The future of wireframing tools" 14 3 #1e88e5
+TEXT 60 1058 "Analysis: ASCII vs pixel-based prototyping" 14 3 #1e88e5`,
+
+'Video Player': `CANVAS 1440 900 #000
+IMG 0 0 1440 810 0 "Video frame — nature documentary"
+RECT 0 750 1440 60 3 #000
+RECT 0 760 1440 4 2 #333 2
+RECT 0 760 600 4 3 #e53935 2
+ELLIPSE 600 762 6 6 4 #e53935
+TEXT 20 780 "▶" 20 4 #fff
+TEXT 60 784 "12:34 / 45:20" 12 4 #fff
+TEXT 1240 784 "CC" 12 4 #fff
+TEXT 1290 784 "⚙" 14 4 #fff
+TEXT 1340 784 "⛶" 14 4 #fff
+RECT 0 810 1440 90 2 #111
+TEXT 20 826 "Planet Earth III — Episode 4" 18 3 #fff bold
+TEXT 20 852 "BBC Natural History" 13 3 #888
+TEXT 20 874 "The deep ocean reveals secrets..." 13 3 #666
+RECT 1200 830 200 40 3 #e53935 20
+TEXT 1250 840 "Subscribe" 13 4 #fff bold`,
+
+'Map Navigation': `CANVAS 1440 900 #e8e0d8
+IMG 0 0 1440 900 0 "Map — city streets, parks, water"
+RECT 20 20 400 56 4 #fff 28
+TEXT 60 38 "Search places..." 15 5 #999
+RECT 20 90 400 300 3 #fff 12
+TEXT 40 110 "Directions" 18 4 #111 bold
+RECT 40 145 340 36 3 #f0f0f0 8
+TEXT 60 155 "📍 Current Location" 13 4 #4caf50
+RECT 40 190 340 36 3 #f0f0f0 8
+TEXT 60 200 "📍 Golden Gate Bridge" 13 4 #111
+LINE 40 245 380 245 4 #eee 1
+TEXT 40 260 "🚗 22 min — 8.2 mi" 14 4 #111 bold
+TEXT 40 284 "via US-101 N" 12 4 #888
+TEXT 40 310 "🚶 2h 45m — 8.2 mi" 14 4 #666
+TEXT 40 334 "🚲 48 min — 7.8 mi" 14 4 #666
+RECT 40 360 340 44 4 #1e88e5 22
+TEXT 160 372 "Start" 16 5 #fff bold
+RECT 1340 400 80 80 3 #fff 12
+TEXT 1360 420 "+" 24 4 #333
+TEXT 1360 450 "−" 24 4 #333`,
+
+'Photo Gallery': `CANVAS 1440 900 #111
+RECT 0 0 1440 60 5 #1a1a1a
+TEXT 40 18 "Gallery" 20 6 #fff bold
+TEXT 600 20 "All" 14 6 #fff bold
+TEXT 660 20 "Portraits" 14 6 #888
+TEXT 740 20 "Landscape" 14 6 #888
+TEXT 840 20 "Street" 14 6 #888
+LINE 0 60 1440 60 5 #333 1
+IMG 20 80 350 260 1 "Photo 1 — portrait"
+IMG 380 80 350 260 1 "Photo 2 — landscape"
+IMG 740 80 350 260 1 "Photo 3 — street"
+IMG 1100 80 320 260 1 "Photo 4 — abstract"
+IMG 20 350 350 300 1 "Photo 5 — architecture"
+IMG 380 350 690 300 1 "Photo 6 — panorama wide"
+IMG 1100 350 320 300 1 "Photo 7 — macro"
+IMG 20 660 520 220 1 "Photo 8 — nature wide"
+IMG 550 660 300 220 1 "Photo 9 — night"
+IMG 860 660 280 220 1 "Photo 10 — portrait"
+IMG 1150 660 270 220 1 "Photo 11 — travel"`,
+
+'Kanban Board': `CANVAS 1440 900 #f5f5f5
+RECT 0 0 1440 56 5 #fff
+TEXT 40 16 "Project Board" 20 6 #111 bold
+TEXT 1260 18 "+ Add Column" 13 6 #1e88e5
+LINE 0 56 1440 56 5 #ddd 1
+RECT 20 76 340 800 2 #f0f0f0 12
+TEXT 40 96 "TO DO" 13 3 #888
+TEXT 300 96 "4" 13 3 #888
+RECT 36 125 308 90 3 #fff 8
+TEXT 52 140 "Update brand guidelines" 14 4 #111
+TEXT 52 164 "Design · High" 11 4 #e53935
+RECT 36 225 308 90 3 #fff 8
+TEXT 52 240 "Fix checkout flow" 14 4 #111
+TEXT 52 264 "Engineering · Medium" 11 4 #ff9800
+RECT 36 325 308 90 3 #fff 8
+TEXT 52 340 "Write API docs" 14 4 #111
+TEXT 52 364 "Docs · Low" 11 4 #4caf50
+RECT 36 425 308 70 3 #fff 8
+TEXT 52 440 "Review PR #421" 14 4 #111
+TEXT 52 464 "Engineering · High" 11 4 #e53935
+RECT 380 76 340 800 2 #f0f0f0 12
+TEXT 400 96 "IN PROGRESS" 13 3 #1e88e5
+TEXT 660 96 "2" 13 3 #888
+RECT 396 125 308 90 3 #fff 8
+RECT 396 125 308 4 3 #1e88e5 0
+TEXT 412 145 "Design system v2" 14 4 #111
+TEXT 412 169 "Design · Alice" 11 4 #888
+RECT 396 225 308 90 3 #fff 8
+RECT 396 225 308 4 3 #1e88e5 0
+TEXT 412 245 "Auth middleware" 14 4 #111
+TEXT 412 269 "Engineering · Bob" 11 4 #888
+RECT 740 76 340 800 2 #f0f0f0 12
+TEXT 760 96 "REVIEW" 13 3 #ff9800
+TEXT 1020 96 "1" 13 3 #888
+RECT 756 125 308 90 3 #fff 8
+RECT 756 125 308 4 3 #ff9800 0
+TEXT 772 145 "Landing page redesign" 14 4 #111
+TEXT 772 169 "Design · Carol" 11 4 #888
+RECT 1100 76 340 800 2 #f0f0f0 12
+TEXT 1120 96 "DONE" 13 3 #4caf50
+TEXT 1380 96 "3" 13 3 #888
+RECT 1116 125 308 90 3 #fff 8
+TEXT 1132 140 "Setup CI/CD pipeline" 14 4 #111
+TEXT 1132 164 "DevOps · Completed" 11 4 #4caf50
+RECT 1116 225 308 90 3 #fff 8
+TEXT 1132 240 "User interviews" 14 4 #111
+TEXT 1132 264 "Research · Completed" 11 4 #4caf50`,
+
+'Login Page': `CANVAS 1440 900 #f8f9fa
+RECT 470 120 500 660 3 #fff 16
+TEXT 620 160 "Welcome back" 28 4 #111 bold
+TEXT 580 200 "Sign in to your account" 14 4 #888
+TEXT 520 270 "Email" 13 4 #333
+RECT 520 290 400 44 4 #fff 8
+TEXT 536 302 "john@example.com" 14 5 #bbb
+TEXT 520 360 "Password" 13 4 #333
+RECT 520 380 400 44 4 #fff 8
+TEXT 536 392 "••••••••" 14 5 #bbb
+TEXT 520 440 "Forgot password?" 13 4 #1e88e5
+RECT 520 490 400 48 5 #111 24
+TEXT 670 504 "Sign In" 16 6 #fff bold
+LINE 520 560 920 560 4 #eee 1
+TEXT 680 548 "OR" 12 4 #bbb
+RECT 520 590 400 44 4 #fff 8
+TEXT 620 602 "Continue with Google" 14 5 #333
+RECT 520 644 400 44 4 #fff 8
+TEXT 620 656 "Continue with GitHub" 14 5 #333
+TEXT 580 720 "Don't have an account?" 13 4 #888
+TEXT 770 720 "Sign up" 13 4 #1e88e5 bold`,
+
+'Analytics Dashboard with 3D': `CANVAS 1440 900 #0f1117
+RECT 0 0 60 900 3 #1a1d27
+RECT 16 16 28 28 4 #6c8cff 6
+RECT 16 60 28 28 4 #2d3244 6
+RECT 16 104 28 28 4 #2d3244 6
+RECT 16 148 28 28 4 #2d3244 6
+TEXT 90 20 "Analytics Overview" 20 5 #fff bold
+TEXT 90 50 "March 25, 2026" 13 5 #888
+RECT 90 80 400 180 2 #1a1d27 12
+TEXT 110 100 "Total Revenue" 13 3 #888
+TEXT 110 125 "$142,384" 32 3 #fff bold
+TEXT 310 135 "+18.2%" 14 3 #4caf50
+IMG 110 170 360 70 1 "Sparkline — revenue trend up"
+RECT 510 80 400 180 2 #1a1d27 12
+TEXT 530 100 "Active Users" 13 3 #888
+TEXT 530 125 "28,491" 32 3 #fff bold
+TEXT 730 135 "+5.7%" 14 3 #4caf50
+IMG 530 170 360 70 1 "Sparkline — users trend"
+RECT 930 80 480 180 2 #1a1d27 12
+TEXT 950 100 "Conversion Rate" 13 3 #888
+TEXT 950 125 "3.42%" 32 3 #fff bold
+TEXT 1130 135 "-0.3%" 14 3 #e53935
+IMG 950 170 440 70 1 "Sparkline — conversion flat"
+RECT 90 280 820 580 2 #1a1d27 12
+TEXT 110 300 "Revenue by Channel" 16 3 #fff bold
+IMG 110 330 780 510 1 "Stacked area chart"
+VOXI 960 300 440 400 2 35 25
+V 20 20 20
+-- 3D bar chart
+B 2 0 2 3 12 3 3
+B 7 0 2 3 8 3 4
+B 12 0 2 3 15 3 6
+B 17 0 2 3 10 3 5
+B 2 0 7 3 6 3 3
+B 7 0 7 3 14 3 4
+B 12 0 7 3 9 3 6
+B 17 0 7 3 11 3 5
+B 2 0 12 3 10 3 3
+B 7 0 12 3 7 3 4
+B 12 0 12 3 18 3 6
+B 17 0 12 3 5 3 5
+B 2 0 17 3 4 3 3
+B 7 0 17 3 11 3 4
+B 12 0 17 3 13 3 6
+B 17 0 17 3 9 3 5
+-- Floor
+B 0 0 0 20 1 20 9
+/VOXI
+TEXT 980 720 "3D Revenue Matrix" 14 3 #fff bold
+TEXT 980 745 "Q1 by Region × Product" 12 3 #888`,
+
+'Brain Anatomy': `CANVAS 800 600 #f8f4ef
+TEXT 300 20 "The Human Brain" 24 5 #333 bold
+TEXT 280 50 "Major Structures" 14 5 #888
+
+-- Brain outline (side view, left-facing)
+ELLIPSE 380 280 220 180 1 #e8d8c8
+ELLIPSE 360 260 200 160 2 #f0e0d0
+
+-- Frontal lobe
+ELLIPSE 240 240 100 120 3 #ffccbc
+TEXT 190 220 "Frontal" 14 4 #d84315 bold
+TEXT 200 240 "Lobe" 14 4 #d84315 bold
+TEXT 180 268 "Planning" 10 4 #888
+TEXT 180 282 "Decision-making" 10 4 #888
+
+-- Parietal lobe
+ELLIPSE 380 200 90 80 3 #c8e6c9
+TEXT 340 185 "Parietal" 14 4 #2e7d32 bold
+TEXT 348 205 "Lobe" 14 4 #2e7d32 bold
+TEXT 338 228 "Sensation" 10 4 #888
+
+-- Temporal lobe
+ELLIPSE 300 340 100 60 3 #bbdefb
+TEXT 258 325 "Temporal" 14 4 #1565c0 bold
+TEXT 270 345 "Lobe" 14 4 #1565c0 bold
+TEXT 252 368 "Memory, Hearing" 10 4 #888
+
+-- Occipital lobe
+ELLIPSE 520 260 70 90 3 #e1bee7
+TEXT 486 242 "Occipital" 13 4 #6a1b9a bold
+TEXT 498 262 "Lobe" 13 4 #6a1b9a bold
+TEXT 488 286 "Vision" 10 4 #888
+
+-- Cerebellum
+ELLIPSE 530 360 60 50 3 #fff9c4
+TEXT 500 348 "Cerebellum" 11 4 #f57f17 bold
+TEXT 502 366 "Balance" 10 4 #888
+
+-- Brain stem
+RECT 440 380 40 80 3 #d7ccc8 8
+TEXT 420 400 "Brain" 10 4 #5d4037 bold
+TEXT 422 414 "Stem" 10 4 #5d4037 bold
+
+-- Labels with lines
+LINE 190 260 160 310 4 #d84315 1
+LINE 340 228 310 260 4 #2e7d32 1
+LINE 488 286 480 310 4 #6a1b9a 1
+
+-- Legend
+RECT 30 450 200 130 2 #fff 8
+TEXT 45 465 "Legend:" 12 3 #333 bold
+RECT 45 488 12 12 3 #ffccbc 0
+TEXT 65 488 "Frontal" 11 3 #666
+RECT 45 508 12 12 3 #c8e6c9 0
+TEXT 65 508 "Parietal" 11 3 #666
+RECT 45 528 12 12 3 #bbdefb 0
+TEXT 65 528 "Temporal" 11 3 #666
+RECT 45 548 12 12 3 #e1bee7 0
+TEXT 65 548 "Occipital" 11 3 #666
+
+TEXT 250 570 "Biology 101 — Sarah M. — March 2026" 11 5 #bbb`,
+
+'Mountain Landscape': `CANVAS 1000 600 #87ceeb
+-- Sky gradient layers
+RECT 0 0 1000 200 0 #6bb3d9
+RECT 0 200 1000 100 0 #87ceeb
+
+-- Sun
+ELLIPSE 780 100 40 40 1 #fff59d
+ELLIPSE 780 100 50 50 0 #fff9c4
+
+-- Far mountains (pale blue)
+ELLIPSE 200 360 300 140 1 #90a4ae
+ELLIPSE 600 340 350 160 1 #78909c
+ELLIPSE 900 370 250 130 1 #90a4ae
+
+-- Snow caps
+ELLIPSE 200 310 60 30 2 #ffffff
+ELLIPSE 580 300 70 30 2 #ffffff
+ELLIPSE 650 310 50 25 2 #ffffff
+
+-- Mid mountains (dark green)
+ELLIPSE 100 420 250 120 2 #4a6741
+ELLIPSE 450 400 300 140 2 #3e5a35
+ELLIPSE 800 430 280 110 2 #4a6741
+
+-- Pine tree silhouettes (foreground)
+RECT 80 370 6 60 3 #2d4a22
+ELLIPSE 83 360 16 30 3 #2d4a22
+RECT 150 380 5 50 3 #33522a
+ELLIPSE 152 372 14 26 3 #33522a
+RECT 220 385 5 45 3 #2d4a22
+ELLIPSE 222 378 12 22 3 #2d4a22
+RECT 680 375 6 55 3 #2d4a22
+ELLIPSE 683 366 16 28 3 #2d4a22
+RECT 750 390 5 40 3 #33522a
+ELLIPSE 752 384 12 22 3 #33522a
+RECT 850 380 6 50 3 #2d4a22
+ELLIPSE 853 372 14 26 3 #2d4a22
+
+-- Lake
+ELLIPSE 500 500 350 60 2 #5c9dc4
+ELLIPSE 500 500 340 50 3 #6bb3d9
+
+-- Foreground grass
+RECT 0 480 1000 120 3 #5a8a4a
+RECT 0 520 1000 80 3 #4a7a3a
+
+-- Path
+ELLIPSE 500 560 40 60 4 #c8b89a
+ELLIPSE 500 520 30 40 4 #c8b89a
+
+TEXT 20 570 "Mountain Lake — Watercolor Study" 12 5 #2d4a22`,
+
+'Solar System': `CANVAS 1200 500 #0a0a1a
+TEXT 500 15 "The Solar System" 24 5 #fff bold
+TEXT 460 45 "Not to scale — for reference" 12 5 #556
+
+-- Sun (partial, left edge)
+ELLIPSE 40 250 80 80 1 #fdd835
+ELLIPSE 40 250 70 70 2 #ffee58
+
+-- Orbits (ellipses)
+ELLIPSE 40 250 140 100 0 #1a1a3a
+ELLIPSE 40 250 200 130 0 #1a1a3a
+ELLIPSE 40 250 280 160 0 #1a1a3a
+ELLIPSE 40 250 380 180 0 #1a1a3a
+ELLIPSE 40 250 520 200 0 #1a1a3a
+ELLIPSE 40 250 680 210 0 #1a1a3a
+ELLIPSE 40 250 860 215 0 #1a1a3a
+ELLIPSE 40 250 1060 220 0 #1a1a3a
+
+-- Planets
+ELLIPSE 170 210 4 4 3 #9e9e9e
+TEXT 160 190 "Mercury" 9 4 #888
+
+ELLIPSE 230 310 7 7 3 #ffcc80
+TEXT 218 330 "Venus" 9 4 #888
+
+ELLIPSE 320 180 8 8 3 #4fc3f7
+TEXT 310 160 "Earth" 9 4 #4fc3f7
+ELLIPSE 328 178 3 3 3 #bdbdbd
+
+ELLIPSE 410 300 6 6 3 #e57373
+TEXT 398 318 "Mars" 9 4 #888
+
+ELLIPSE 550 190 22 22 3 #ffb74d
+ELLIPSE 550 190 18 18 3 #ffa726
+TEXT 535 160 "Jupiter" 10 4 #ffb74d
+
+ELLIPSE 720 280 18 18 3 #e0c088
+ELLIPSE 720 280 28 8 2 #c8a870
+TEXT 706 308 "Saturn" 10 4 #e0c088
+
+ELLIPSE 900 220 12 12 3 #80cbc4
+TEXT 888 200 "Uranus" 9 4 #888
+
+ELLIPSE 1090 260 11 11 3 #5c6bc0
+TEXT 1076 240 "Neptune" 9 4 #888
+
+-- Scale note
+TEXT 400 470 "Distances: Mercury 0.4 AU · Earth 1 AU · Neptune 30 AU" 10 5 #444`,
+
+'Cell Biology': `CANVAS 800 700 #fff
+TEXT 250 20 "Animal Cell Diagram" 24 5 #333 bold
+TEXT 300 50 "Biology — Chapter 4" 13 5 #888
+
+-- Cell membrane (outer boundary)
+ELLIPSE 400 370 280 240 1 #e8f5e9
+ELLIPSE 400 370 270 230 2 #c8e6c9
+
+-- Nucleus
+ELLIPSE 350 350 80 70 3 #bbdefb
+ELLIPSE 350 350 70 60 3 #90caf9
+TEXT 315 340 "Nucleus" 13 4 #1565c0 bold
+TEXT 305 360 "Contains DNA" 10 4 #1565c0
+
+-- Nucleolus
+ELLIPSE 360 340 20 18 4 #64b5f6
+TEXT 345 370 "Nucleolus" 8 4 #1565c0
+
+-- Mitochondria (bean shapes)
+ELLIPSE 530 300 30 14 3 #fff3e0
+ELLIPSE 530 300 25 10 3 #ffe0b2
+TEXT 510 322 "Mitochondria" 9 4 #e65100
+TEXT 508 336 "Energy production" 8 4 #888
+
+ELLIPSE 250 430 25 12 3 #fff3e0
+ELLIPSE 250 430 20 8 3 #ffe0b2
+
+-- Endoplasmic Reticulum (wavy lines)
+LINE 420 300 460 280 3 #ce93d8 1
+LINE 460 280 440 260 3 #ce93d8 1
+LINE 440 260 480 240 3 #ce93d8 1
+LINE 420 310 460 290 3 #ce93d8 1
+TEXT 465 248 "ER" 10 4 #7b1fa2
+
+-- Golgi apparatus
+ELLIPSE 300 260 40 10 3 #fff9c4
+ELLIPSE 300 272 35 8 3 #fff59d
+ELLIPSE 300 282 30 6 3 #ffee58
+TEXT 268 300 "Golgi Body" 9 4 #f57f17
+TEXT 255 314 "Packaging proteins" 8 4 #888
+
+-- Ribosomes (dots)
+ELLIPSE 480 380 3 3 3 #ef9a9a
+ELLIPSE 500 390 3 3 3 #ef9a9a
+ELLIPSE 460 400 3 3 3 #ef9a9a
+ELLIPSE 490 410 3 3 3 #ef9a9a
+ELLIPSE 470 420 3 3 3 #ef9a9a
+TEXT 500 404 "Ribosomes" 9 4 #c62828
+TEXT 498 418 "Make proteins" 8 4 #888
+
+-- Lysosomes
+ELLIPSE 530 430 15 15 3 #e1bee7
+TEXT 514 452 "Lysosome" 9 4 #6a1b9a
+TEXT 510 466 "Waste disposal" 8 4 #888
+
+-- Vacuole
+ELLIPSE 260 350 35 30 3 #e0f7fa
+TEXT 236 380 "Vacuole" 9 4 #00838f
+TEXT 230 394 "Storage" 8 4 #888
+
+-- Cell membrane label
+LINE 650 370 680 370 4 #333 1
+TEXT 685 365 "Cell Membrane" 10 4 #333 bold
+TEXT 685 380 "Controls what" 8 4 #888
+TEXT 685 394 "enters/exits" 8 4 #888
+
+TEXT 240 660 "Drawn by: Alex P. — Period 3 — Mrs. Johnson" 11 5 #bbb`,
+
+'Music Theory — Circle of Fifths': `CANVAS 700 700 #1a1a2e
+TEXT 220 20 "Circle of Fifths" 28 5 #fff bold
+TEXT 250 55 "Music Theory Reference" 13 5 #888
+
+-- Outer ring (major keys)
+ELLIPSE 350 370 250 250 1 #1e2744
+ELLIPSE 350 370 240 240 2 #232f52
+
+-- Inner ring (minor keys)
+ELLIPSE 350 370 160 160 2 #1a2040
+ELLIPSE 350 370 150 150 3 #1e2848
+
+-- Major keys (outer circle, 12 positions)
+TEXT 338 105 "C" 22 4 #fdd835 bold
+TEXT 460 120 "G" 20 4 #fff
+TEXT 555 185 "D" 20 4 #fff
+TEXT 590 280 "A" 20 4 #fff
+TEXT 565 390 "E" 20 4 #fff
+TEXT 480 480 "B" 20 4 #fff
+TEXT 340 510 "F#" 18 4 #888
+TEXT 210 480 "Db" 18 4 #888
+TEXT 120 390 "Ab" 18 4 #888
+TEXT 90 280 "Eb" 18 4 #fff
+TEXT 120 185 "Bb" 18 4 #fff
+TEXT 218 120 "F" 20 4 #fff
+
+-- Minor keys (inner circle)
+TEXT 338 200 "Am" 14 4 #6c8cff
+TEXT 420 210 "Em" 12 4 #6c8cff
+TEXT 465 260 "Bm" 12 4 #6c8cff
+TEXT 475 340 "F#m" 11 4 #6c8cff
+TEXT 445 400 "C#m" 11 4 #6c8cff
+TEXT 380 440 "G#m" 11 4 #6c8cff
+TEXT 310 440 "Ebm" 11 4 #556
+TEXT 240 400 "Bbm" 11 4 #556
+TEXT 210 340 "Fm" 12 4 #6c8cff
+TEXT 210 260 "Cm" 12 4 #6c8cff
+TEXT 240 210 "Gm" 12 4 #6c8cff
+TEXT 300 200 "Dm" 12 4 #6c8cff
+
+-- Sharps/Flats labels
+TEXT 500 80 "← Sharps" 12 5 #4caf50
+TEXT 140 80 "Flats →" 12 5 #e53935
+
+-- Legend
+TEXT 180 620 "Major keys = outer" 11 5 #fff
+TEXT 180 640 "Minor keys = inner" 11 5 #6c8cff
+TEXT 400 620 "Each step clockwise" 11 5 #888
+TEXT 400 640 "= up a perfect 5th" 11 5 #888`,
+
+'Room Floor Plan': `CANVAS 800 600 #fff
+TEXT 260 15 "Apartment Layout" 22 5 #333 bold
+TEXT 300 42 "Scale: 1 unit = 1 foot" 11 5 #888
+
+-- Outer walls
+RECT 50 80 700 460 1 #eee
+RECT 50 80 700 460 2 #333
+
+-- Living room
+RECT 50 80 380 280 2 #f5f5f5
+TEXT 180 90 "Living Room" 14 3 #333 bold
+TEXT 190 110 "16' × 12'" 11 3 #888
+-- Couch
+RECT 80 280 160 40 3 #bbdefb 4
+TEXT 120 290 "Sofa" 10 4 #666
+-- TV
+RECT 80 110 6 60 3 #333 2
+TEXT 92 130 "TV" 10 4 #666
+-- Coffee table
+RECT 150 200 80 40 3 #d7ccc8 4
+-- Window
+RECT 200 80 120 6 4 #64b5f6 0
+
+-- Kitchen
+RECT 430 80 320 200 2 #fff3e0
+TEXT 540 90 "Kitchen" 14 3 #333 bold
+TEXT 550 110 "13' × 8'" 11 3 #888
+-- Counter
+RECT 440 140 300 12 3 #bcaaa4 2
+-- Sink
+RECT 540 140 40 12 4 #90caf9 2
+-- Stove
+RECT 640 140 40 12 4 #ef9a9a 2
+TEXT 544 160 "Sink" 9 4 #666
+TEXT 642 160 "Stove" 9 4 #666
+-- Table
+RECT 500 200 80 50 3 #d7ccc8 4
+TEXT 512 218 "Table" 10 4 #666
+
+-- Bedroom
+RECT 430 280 320 260 2 #e8eaf6
+TEXT 540 290 "Bedroom" 14 3 #333 bold
+TEXT 548 310 "13' × 11'" 11 3 #888
+-- Bed
+RECT 530 370 140 120 3 #c5cae9 6
+TEXT 572 420 "Bed" 12 4 #666
+-- Dresser
+RECT 700 370 40 80 3 #bcaaa4 4
+TEXT 704 404 "Dr" 9 4 #666
+-- Window
+RECT 600 534 100 6 4 #64b5f6 0
+
+-- Bathroom
+RECT 50 360 200 180 2 #e0f7fa
+TEXT 100 370 "Bathroom" 14 3 #333 bold
+TEXT 112 390 "8' × 7'" 11 3 #888
+-- Toilet
+RECT 80 460 30 40 3 #e0e0e0 6
+TEXT 82 474 "WC" 8 4 #888
+-- Shower
+RECT 160 430 70 70 3 #b2ebf2 4
+TEXT 170 460 "Shower" 9 4 #666
+
+-- Hallway
+RECT 250 360 180 120 2 #fafafa
+TEXT 290 410 "Hallway" 12 3 #888
+
+-- Doors (gaps in walls)
+RECT 310 356 50 8 4 #fff 0
+RECT 426 160 8 50 4 #fff 0
+RECT 426 380 8 60 4 #fff 0
+RECT 246 420 8 40 4 #fff 0
+
+-- Compass
+TEXT 720 520 "N" 14 5 #333 bold
+TEXT 730 540 "↑" 16 5 #333
+
+TEXT 200 560 "Apt 4B — 850 sq ft — Drawn: March 2026" 11 5 #bbb`,
+
+'Chemistry — Water Molecule': `CANVAS 700 500 #fff
+TEXT 200 20 "Water Molecule (H₂O)" 24 5 #333 bold
+TEXT 220 50 "Molecular Geometry" 14 5 #888
+
+-- Oxygen atom (center)
+ELLIPSE 350 260 60 60 2 #ef9a9a
+ELLIPSE 350 260 50 50 3 #e57373
+TEXT 336 250 "O" 28 4 #fff bold
+TEXT 318 280 "8 protons" 9 4 #fff
+
+-- Hydrogen atom (left)
+ELLIPSE 200 360 35 35 2 #bbdefb
+ELLIPSE 200 360 28 28 3 #90caf9
+TEXT 192 352 "H" 22 4 #fff bold
+
+-- Hydrogen atom (right)
+ELLIPSE 500 360 35 35 2 #bbdefb
+ELLIPSE 500 360 28 28 3 #90caf9
+TEXT 492 352 "H" 22 4 #fff bold
+
+-- Bonds
+LINE 290 300 230 340 3 #666 3
+LINE 410 300 470 340 3 #666 3
+
+-- Bond angle
+LINE 280 310 350 310 4 #ff9800 1
+LINE 350 310 420 310 4 #ff9800 1
+TEXT 330 295 "104.5°" 12 4 #ff9800 bold
+
+-- Electron pairs (lone pairs on oxygen)
+ELLIPSE 330 195 8 8 3 #e0e0e0
+ELLIPSE 370 195 8 8 3 #e0e0e0
+TEXT 310 175 "Lone pairs" 10 4 #888
+
+-- Properties box
+RECT 50 420 250 60 2 #f5f5f5 8
+TEXT 65 432 "Bond length: 0.96 Å" 11 3 #333
+TEXT 65 450 "Molecular mass: 18.015 g/mol" 11 3 #333
+TEXT 65 468 "Shape: Bent / Angular" 11 3 #333
+
+RECT 400 420 250 60 2 #e3f2fd 8
+TEXT 415 432 "Polarity: Polar molecule" 11 3 #1565c0
+TEXT 415 450 "Boiling point: 100°C" 11 3 #1565c0
+TEXT 415 468 "Freezing point: 0°C" 11 3 #1565c0`,
+
+'Guitar Chord Chart': `CANVAS 800 600 #f8f4ef
+TEXT 240 20 "Essential Guitar Chords" 24 5 #333 bold
+TEXT 290 50 "Beginner Reference Sheet" 13 5 #888
+
+-- Chord: C Major
+TEXT 80 90 "C Major" 14 4 #333 bold
+RECT 60 115 120 120 2 #fff 4
+-- Frets (horizontal)
+LINE 60 115 180 115 3 #333 2
+LINE 60 145 180 145 3 #999 1
+LINE 60 175 180 175 3 #999 1
+LINE 60 205 180 205 3 #999 1
+LINE 60 235 180 235 3 #999 1
+-- Strings (vertical)
+LINE 60 115 60 235 3 #888 1
+LINE 84 115 84 235 3 #888 1
+LINE 108 115 108 235 3 #888 1
+LINE 132 115 132 235 3 #888 1
+LINE 156 115 156 235 3 #888 1
+LINE 180 115 180 235 3 #888 1
+-- Finger dots
+ELLIPSE 84 160 6 6 4 #333
+ELLIPSE 132 145 6 6 4 #333
+ELLIPSE 60 175 6 6 4 #333
+
+-- Chord: G Major
+TEXT 280 90 "G Major" 14 4 #333 bold
+RECT 260 115 120 120 2 #fff 4
+LINE 260 115 380 115 3 #333 2
+LINE 260 145 380 145 3 #999 1
+LINE 260 175 380 175 3 #999 1
+LINE 260 205 380 205 3 #999 1
+LINE 260 235 380 235 3 #999 1
+LINE 260 115 260 235 3 #888 1
+LINE 284 115 284 235 3 #888 1
+LINE 308 115 308 235 3 #888 1
+LINE 332 115 332 235 3 #888 1
+LINE 356 115 356 235 3 #888 1
+LINE 380 115 380 235 3 #888 1
+ELLIPSE 284 175 6 6 4 #333
+ELLIPSE 260 145 6 6 4 #333
+ELLIPSE 380 175 6 6 4 #333
+
+-- Chord: D Major
+TEXT 480 90 "D Major" 14 4 #333 bold
+RECT 460 115 120 120 2 #fff 4
+LINE 460 115 580 115 3 #333 2
+LINE 460 145 580 145 3 #999 1
+LINE 460 175 580 175 3 #999 1
+LINE 460 205 580 205 3 #999 1
+LINE 460 235 580 235 3 #999 1
+LINE 460 115 460 235 3 #888 1
+LINE 484 115 484 235 3 #888 1
+LINE 508 115 508 235 3 #888 1
+LINE 532 115 532 235 3 #888 1
+LINE 556 115 556 235 3 #888 1
+LINE 580 115 580 235 3 #888 1
+ELLIPSE 508 145 6 6 4 #333
+ELLIPSE 556 175 6 6 4 #333
+ELLIPSE 532 160 6 6 4 #333
+
+-- Chord: Am
+TEXT 80 310 "A Minor" 14 4 #333 bold
+RECT 60 335 120 120 2 #fff 4
+LINE 60 335 180 335 3 #333 2
+LINE 60 365 180 365 3 #999 1
+LINE 60 395 180 395 3 #999 1
+LINE 60 425 180 425 3 #999 1
+LINE 60 455 180 455 3 #999 1
+LINE 60 335 60 455 3 #888 1
+LINE 84 335 84 455 3 #888 1
+LINE 108 335 108 455 3 #888 1
+LINE 132 335 132 455 3 #888 1
+LINE 156 335 156 455 3 #888 1
+LINE 180 335 180 455 3 #888 1
+ELLIPSE 84 365 6 6 4 #333
+ELLIPSE 132 365 6 6 4 #333
+ELLIPSE 108 350 6 6 4 #333
+
+-- Chord: Em
+TEXT 280 310 "E Minor" 14 4 #333 bold
+RECT 260 335 120 120 2 #fff 4
+LINE 260 335 380 335 3 #333 2
+LINE 260 365 380 365 3 #999 1
+LINE 260 395 380 395 3 #999 1
+LINE 260 425 380 425 3 #999 1
+LINE 260 455 380 455 3 #999 1
+LINE 260 335 260 455 3 #888 1
+LINE 284 335 284 455 3 #888 1
+LINE 308 335 308 455 3 #888 1
+LINE 332 335 332 455 3 #888 1
+LINE 356 335 356 455 3 #888 1
+LINE 380 335 380 455 3 #888 1
+ELLIPSE 284 365 6 6 4 #333
+ELLIPSE 308 365 6 6 4 #333
+
+-- Tips
+RECT 460 310 290 150 2 #fff9c4 8
+TEXT 475 325 "Tips:" 13 3 #333 bold
+TEXT 475 348 "• Press strings firmly" 12 3 #555
+TEXT 475 368 "• Keep fingers arched" 12 3 #555
+TEXT 475 388 "• Strum slowly at first" 12 3 #555
+TEXT 475 408 "• Check each string rings" 12 3 #555
+TEXT 475 428 "• Practice transitions!" 12 3 #555
+
+TEXT 220 560 "Practice Sheet — Week 3 — Guitar I" 12 5 #bbb`,
+
+'History Timeline': `CANVAS 1200 500 #fafaf5
+TEXT 340 15 "The Space Race (1957–1969)" 24 5 #333 bold
+TEXT 420 45 "Key Milestones" 13 5 #888
+
+-- Timeline bar
+RECT 60 240 1080 4 1 #333
+
+-- Tick marks and dates
+LINE 100 230 100 254 2 #333 2
+TEXT 72 264 "1957" 11 3 #333
+LINE 280 230 280 254 2 #333 2
+TEXT 252 264 "1958" 11 3 #333
+LINE 460 230 460 254 2 #333 2
+TEXT 432 264 "1961" 11 3 #333
+LINE 640 230 640 254 2 #333 2
+TEXT 612 264 "1963" 11 3 #333
+LINE 820 230 820 254 2 #333 2
+TEXT 792 264 "1965" 11 3 #333
+LINE 1000 230 1000 254 2 #333 2
+TEXT 972 264 "1969" 11 3 #333
+
+-- Events (alternating above/below)
+LINE 100 230 100 150 3 #e53935 1
+RECT 40 100 140 50 3 #ffebee 8
+TEXT 52 110 "Sputnik 1" 12 4 #e53935 bold
+TEXT 52 128 "First satellite" 10 4 #888
+
+LINE 280 254 280 310 3 #1e88e5 1
+RECT 210 310 140 50 3 #e3f2fd 8
+TEXT 222 320 "NASA Founded" 12 4 #1e88e5 bold
+TEXT 222 338 "US space agency" 10 4 #888
+
+LINE 460 230 460 130 3 #e53935 1
+RECT 390 80 140 50 3 #ffebee 8
+TEXT 402 90 "Gagarin" 12 4 #e53935 bold
+TEXT 402 108 "First human" 10 4 #888
+
+LINE 540 254 540 330 3 #1e88e5 1
+RECT 470 330 150 50 3 #e3f2fd 8
+TEXT 482 340 "Glenn Orbits" 12 4 #1e88e5 bold
+TEXT 482 358 "US astronaut" 10 4 #888
+
+LINE 820 230 820 140 3 #1e88e5 1
+RECT 750 90 140 50 3 #e3f2fd 8
+TEXT 762 100 "Gemini EVA" 12 4 #1e88e5 bold
+TEXT 762 118 "First spacewalk" 10 4 #888
+
+LINE 1000 254 1000 320 3 #1e88e5 1
+RECT 930 320 160 60 3 #e3f2fd 8
+TEXT 942 330 "Apollo 11" 14 4 #1e88e5 bold
+TEXT 942 350 "Moon Landing!" 12 4 #1e88e5
+TEXT 942 368 "July 20, 1969" 10 4 #888
+
+-- Legend
+RECT 30 430 120 40 2 #ffebee 6
+TEXT 42 442 "USSR" 12 3 #e53935
+RECT 170 430 120 40 2 #e3f2fd 6
+TEXT 182 442 "USA" 12 3 #1e88e5
+
+TEXT 400 470 "World History — Period 5 — Mr. Rodriguez" 11 5 #bbb`,
+
+'Workout Plan': `CANVAS 500 800 #111
+TEXT 140 30 "Push Day" 28 4 #fff bold
+TEXT 170 65 "Week 4 — Monday" 14 4 #888
+LINE 40 90 460 90 3 #222 1
+
+RECT 30 110 440 90 2 #1a1d27 12
+TEXT 50 125 "1. Bench Press" 16 3 #fff bold
+TEXT 50 148 "4 × 8 reps" 14 3 #4caf50
+TEXT 50 170 "135 lbs → 145 lbs" 12 3 #888
+RECT 380 130 60 28 3 #2d3244 8
+TEXT 392 138 "Done" 11 4 #4caf50
+
+RECT 30 215 440 90 2 #1a1d27 12
+TEXT 50 230 "2. Overhead Press" 16 3 #fff bold
+TEXT 50 253 "3 × 10 reps" 14 3 #4caf50
+TEXT 50 275 "85 lbs" 12 3 #888
+RECT 380 235 60 28 3 #2d3244 8
+TEXT 392 243 "Done" 11 4 #4caf50
+
+RECT 30 320 440 90 2 #1a1d27 12
+TEXT 50 335 "3. Incline Dumbbell" 16 3 #fff bold
+TEXT 50 358 "3 × 12 reps" 14 3 #ff9800
+TEXT 50 380 "40 lbs each" 12 3 #888
+RECT 380 340 60 28 3 #2d3244 8
+TEXT 398 348 "..." 11 4 #ff9800
+
+RECT 30 425 440 90 2 #1a1d27 12
+TEXT 50 440 "4. Lateral Raises" 16 3 #fff bold
+TEXT 50 463 "3 × 15 reps" 14 3 #888
+TEXT 50 485 "15 lbs each" 12 3 #888
+RECT 380 445 60 28 3 #2d3244 8
+TEXT 400 453 "—" 11 4 #666
+
+RECT 30 530 440 90 2 #1a1d27 12
+TEXT 50 545 "5. Tricep Pushdown" 16 3 #fff bold
+TEXT 50 568 "3 × 12 reps" 14 3 #888
+TEXT 50 590 "40 lbs" 12 3 #888
+RECT 380 550 60 28 3 #2d3244 8
+TEXT 400 558 "—" 11 4 #666
+
+LINE 40 640 460 640 3 #222 1
+TEXT 50 660 "Progress" 14 4 #fff bold
+RECT 50 690 150 16 2 #2d3244 8
+RECT 50 690 90 16 3 #4caf50 8
+TEXT 210 690 "2/5 complete" 12 4 #888
+
+TEXT 120 760 "Personal Training Log" 12 5 #444`,
+
+'Cluster — Original': `CANVAS 1440 860 #1a1a1a
+-- Sidebar
+RECT 0 0 270 860 1 #222222
+TEXT 60 24 "Cluster" 18 3 #e0e0e0 bold
+TEXT 230 24 "+" 18 3 #888
+RECT 8 60 254 36 2 #333333 8
+TEXT 60 70 "Text" 14 3 #e0e0e0 bold
+TEXT 60 110 "Photos" 14 3 #888
+TEXT 60 150 "Video" 14 3 #888
+LINE 24 190 246 190 2 #333 1
+TEXT 24 210 "THIS WEEK" 10 3 #d4a017
+TEXT 24 240 "Something like, hi there i am..." 13 2 #ccc
+TEXT 24 268 "Search for most famous barbora" 13 2 #ccc
+LINE 24 300 246 300 2 #333 1
+TEXT 24 320 "OLDER" 10 3 #d4a017
+TEXT 24 350 "who is the most famous Robert?" 13 2 #999
+TEXT 24 378 "Something like, hi there i am..." 13 2 #999
+TEXT 24 406 "Cognitive Neuroscience Study H..." 13 2 #999
+TEXT 24 434 "Let's talk how to make an atom..." 13 2 #999
+TEXT 24 462 "gtae" 13 2 #999
+TEXT 24 490 "how to build a bomb?" 13 2 #999
+LINE 24 800 246 800 2 #333 1
+TEXT 60 820 "Settings" 13 3 #888
+-- App icons cluster (center)
+ELLIPSE 790 268 18 18 2 #4caf50
+ELLIPSE 900 282 16 16 2 #1e88e5
+ELLIPSE 725 322 16 16 2 #ab47bc
+ELLIPSE 810 318 18 18 2 #6c8cff
+ELLIPSE 835 322 14 14 2 #1e88e5
+ELLIPSE 725 385 18 18 2 #4caf50
+ELLIPSE 770 390 14 14 2 #e53935
+ELLIPSE 870 400 22 22 2 #00bcd4
+ELLIPSE 920 365 16 16 2 #1e88e5
+ELLIPSE 955 370 18 18 2 #ab47bc
+ELLIPSE 870 440 14 14 2 #e53935
+ELLIPSE 750 460 16 16 2 #1e88e5
+ELLIPSE 805 465 20 20 2 #9e9e9e
+ELLIPSE 840 492 14 14 2 #ff9800
+ELLIPSE 920 465 16 16 2 #6c8cff
+-- Particles
+ELLIPSE 340 170 2 2 1 #444
+ELLIPSE 550 160 2 2 1 #444
+ELLIPSE 700 210 2 2 1 #444
+ELLIPSE 420 310 2 2 1 #444
+ELLIPSE 590 350 2 2 1 #444
+ELLIPSE 420 445 2 2 1 #444
+ELLIPSE 1010 355 2 2 1 #444
+ELLIPSE 1280 175 2 2 1 #444
+ELLIPSE 700 695 2 2 1 #444
+ELLIPSE 280 780 2 2 1 #444
+ELLIPSE 1100 780 2 2 1 #444
+-- Input bar
+RECT 600 615 460 50 3 #2a2a2a 25
+TEXT 640 632 "Ask anything..." 15 4 #888
+TEXT 990 632 "→" 18 4 #d4a017`,
+
+'Cluster — Top Bar': `CANVAS 1440 860 #1a1a1a
+-- Top bar with mode tabs
+RECT 0 0 1440 56 3 #222222
+TEXT 24 16 "Cluster" 18 4 #e0e0e0 bold
+TEXT 200 20 "Text" 13 4 #e0e0e0 bold
+RECT 186 14 60 28 4 #333 14
+TEXT 280 20 "Photos" 13 4 #666
+TEXT 370 20 "Video" 13 4 #666
+TEXT 1300 20 "+" 16 4 #888
+TEXT 1370 20 "Settings" 12 4 #666
+LINE 0 56 1440 56 3 #333 1
+-- History as horizontal pills below bar
+RECT 24 72 240 32 2 #2a2a2a 16
+TEXT 40 80 "Something like, hi there..." 11 3 #999
+RECT 280 72 220 32 2 #2a2a2a 16
+TEXT 296 80 "Search for most famous..." 11 3 #999
+RECT 516 72 200 32 2 #2a2a2a 16
+TEXT 532 80 "Cognitive Neuro..." 11 3 #999
+RECT 732 72 180 32 2 #2a2a2a 16
+TEXT 748 80 "who is the most..." 11 3 #999
+RECT 928 72 160 32 2 #2a2a2a 16
+TEXT 944 80 "how to build..." 11 3 #999
+-- App icons cluster (larger, more centered)
+ELLIPSE 680 320 22 22 2 #4caf50
+ELLIPSE 810 290 20 20 2 #1e88e5
+ELLIPSE 620 380 18 18 2 #ab47bc
+ELLIPSE 720 370 22 22 2 #6c8cff
+ELLIPSE 760 350 16 16 2 #1e88e5
+ELLIPSE 640 440 20 20 2 #4caf50
+ELLIPSE 700 430 16 16 2 #e53935
+ELLIPSE 800 420 26 26 2 #00bcd4
+ELLIPSE 860 380 18 18 2 #1e88e5
+ELLIPSE 900 400 20 20 2 #ab47bc
+ELLIPSE 780 470 16 16 2 #e53935
+ELLIPSE 660 490 18 18 2 #1e88e5
+ELLIPSE 740 500 22 22 2 #9e9e9e
+ELLIPSE 820 510 16 16 2 #ff9800
+ELLIPSE 880 480 18 18 2 #6c8cff
+-- Particles
+ELLIPSE 300 200 2 2 1 #444
+ELLIPSE 500 250 2 2 1 #444
+ELLIPSE 1100 300 2 2 1 #444
+ELLIPSE 400 500 2 2 1 #444
+ELLIPSE 1000 520 2 2 1 #444
+ELLIPSE 200 600 2 2 1 #444
+ELLIPSE 1200 200 2 2 1 #444
+ELLIPSE 350 700 2 2 1 #444
+-- Input bar (wider, more prominent)
+RECT 400 650 640 54 3 #2a2a2a 27
+TEXT 440 668 "Ask anything..." 16 4 #888
+TEXT 990 668 "→" 20 4 #d4a017`,
+
+'Cluster — Split View': `CANVAS 1440 860 #1a1a1a
+-- Left panel — conversation history
+RECT 0 0 480 860 1 #1e1e1e
+TEXT 24 24 "Cluster" 18 3 #e0e0e0 bold
+TEXT 440 24 "+" 16 3 #888
+-- Tabs
+TEXT 24 70 "Text" 13 2 #e0e0e0 bold
+TEXT 100 70 "Photos" 13 2 #666
+TEXT 180 70 "Video" 13 2 #666
+LINE 24 92 456 92 2 #333 1
+-- Search
+RECT 24 108 432 36 2 #2a2a2a 18
+TEXT 44 118 "Search conversations..." 12 3 #666
+-- History items with preview
+RECT 24 160 432 70 2 #2a2a2a 8
+TEXT 40 172 "Something like, hi there i am..." 13 3 #ccc
+TEXT 40 194 "Just now · Text" 10 3 #666
+RECT 24 240 432 70 2 #272727 8
+TEXT 40 252 "Search for most famous barbora" 13 3 #999
+TEXT 40 274 "2 hours ago · Text" 10 3 #666
+RECT 24 320 432 70 2 #272727 8
+TEXT 40 332 "Cognitive Neuroscience Study" 13 3 #999
+TEXT 40 354 "Yesterday · Text" 10 3 #666
+RECT 24 400 432 70 2 #272727 8
+TEXT 40 412 "who is the most famous Robert?" 13 3 #999
+TEXT 40 434 "3 days ago · Text" 10 3 #666
+RECT 24 480 432 70 2 #272727 8
+TEXT 40 492 "Let's talk how to make an atom" 13 3 #999
+TEXT 40 514 "Last week · Text" 10 3 #666
+-- Settings
+LINE 24 800 456 800 2 #333 1
+TEXT 24 820 "Settings" 13 3 #666
+-- Right panel — icons + input
+LINE 480 0 480 860 2 #333 1
+-- App icons cluster (right side)
+ELLIPSE 880 280 20 20 2 #4caf50
+ELLIPSE 990 300 18 18 2 #1e88e5
+ELLIPSE 820 340 16 16 2 #ab47bc
+ELLIPSE 910 330 20 20 2 #6c8cff
+ELLIPSE 945 340 14 14 2 #1e88e5
+ELLIPSE 830 400 18 18 2 #4caf50
+ELLIPSE 870 410 14 14 2 #e53935
+ELLIPSE 960 420 24 24 2 #00bcd4
+ELLIPSE 1020 390 16 16 2 #1e88e5
+ELLIPSE 1060 400 18 18 2 #ab47bc
+ELLIPSE 960 460 14 14 2 #e53935
+ELLIPSE 850 470 16 16 2 #1e88e5
+ELLIPSE 910 480 20 20 2 #9e9e9e
+ELLIPSE 940 510 14 14 2 #ff9800
+ELLIPSE 1020 480 16 16 2 #6c8cff
+-- Particles
+ELLIPSE 600 200 2 2 1 #444
+ELLIPSE 1200 250 2 2 1 #444
+ELLIPSE 700 500 2 2 1 #444
+ELLIPSE 1300 400 2 2 1 #444
+ELLIPSE 580 650 2 2 1 #444
+ELLIPSE 1150 700 2 2 1 #444
+-- Input bar
+RECT 560 650 560 50 3 #2a2a2a 25
+TEXT 600 668 "Ask anything..." 15 4 #888
+TEXT 1075 668 "→" 18 4 #d4a017`,
+
+'Cluster — Floating Orb': `CANVAS 1440 860 #111111
+-- No sidebar — full immersive
+-- Cluster logo centered top
+TEXT 670 20 "Cluster" 16 3 #888
+-- Mode pills centered
+RECT 580 56 80 28 2 #2a2a2a 14
+TEXT 596 62 "Text" 12 3 #e0e0e0 bold
+RECT 670 56 90 28 2 #1e1e1e 14
+TEXT 686 62 "Photos" 12 3 #555
+RECT 770 56 80 28 2 #1e1e1e 14
+TEXT 786 62 "Video" 12 3 #555
+-- Giant glowing orb (the cluster itself)
+ELLIPSE 720 380 180 180 1 #1a1a2a
+ELLIPSE 720 380 160 160 1 #1e2035
+ELLIPSE 720 380 130 130 1 #222544
+-- App icons ON the orb surface
+ELLIPSE 680 280 16 16 2 #4caf50
+ELLIPSE 770 300 14 14 2 #1e88e5
+ELLIPSE 640 330 14 14 2 #ab47bc
+ELLIPSE 720 320 16 16 2 #6c8cff
+ELLIPSE 760 340 12 12 2 #1e88e5
+ELLIPSE 650 380 16 16 2 #4caf50
+ELLIPSE 700 390 12 12 2 #e53935
+ELLIPSE 780 400 20 20 2 #00bcd4
+ELLIPSE 820 370 14 14 2 #1e88e5
+ELLIPSE 850 390 16 16 2 #ab47bc
+ELLIPSE 770 430 12 12 2 #e53935
+ELLIPSE 660 440 14 14 2 #1e88e5
+ELLIPSE 720 460 18 18 2 #9e9e9e
+ELLIPSE 760 480 12 12 2 #ff9800
+ELLIPSE 810 450 14 14 2 #6c8cff
+-- Orbital ring
+ELLIPSE 720 380 200 60 1 #333333
+-- Particles (more, like a field)
+ELLIPSE 200 150 2 2 1 #333
+ELLIPSE 400 100 2 2 1 #333
+ELLIPSE 1100 120 2 2 1 #333
+ELLIPSE 300 400 2 2 1 #333
+ELLIPSE 1200 350 2 2 1 #333
+ELLIPSE 150 600 2 2 1 #333
+ELLIPSE 1300 550 2 2 1 #333
+ELLIPSE 500 700 2 2 1 #333
+ELLIPSE 1000 680 2 2 1 #333
+ELLIPSE 350 250 2 2 1 #333
+ELLIPSE 1050 200 2 2 1 #333
+ELLIPSE 250 750 2 2 1 #333
+ELLIPSE 900 750 2 2 1 #333
+ELLIPSE 600 180 2 2 1 #333
+ELLIPSE 850 130 2 2 1 #333
+-- Input bar (floating, prominent)
+RECT 480 680 480 50 3 #2a2a2a 25
+TEXT 520 698 "Ask anything..." 15 4 #888
+TEXT 915 698 "→" 18 4 #d4a017
+-- History as faint labels below orb
+TEXT 520 760 "Something like, hi there..." 11 2 #444
+TEXT 520 780 "Search for most famous..." 11 2 #444
+TEXT 520 800 "Cognitive Neuroscience..." 11 2 #444
+TEXT 520 820 "who is the most famous..." 11 2 #444`,
+
+'CVM App — Dark Studio': `CANVAS 1440 900 #0f1117
+-- ── Top Bar ──────────────────────────────────────
+RECT 0 0 1440 44 10 #1a1d27
+TEXT 14 13 "CVM" 16 11 #e8804a bold
+TEXT 52 15 "CV Maker" 13 11 #8888a0
+-- Toolbar buttons
+RECT 140 8 80 28 11 #232733 5
+TEXT 152 15 "Templates" 11 11 #c0c0cc
+RECT 228 8 60 28 11 #232733 5
+TEXT 240 15 "A4 ▾" 11 11 #c0c0cc
+RECT 296 8 50 28 11 #232733 5
+TEXT 308 15 "75%" 11 11 #c0c0cc
+RECT 360 8 90 28 11 #2a3a2a 5
+TEXT 372 15 "Load Photo" 11 11 #6a9a6a
+-- Right export buttons
+RECT 1240 8 52 28 11 #232733 5
+TEXT 1252 15 "PNG" 11 11 #c0c0cc
+RECT 1298 8 48 28 11 #232733 5
+TEXT 1310 15 "JPG" 11 11 #c0c0cc
+RECT 1352 8 48 28 11 #e8804a 5
+TEXT 1364 15 "PDF" 11 11 #ffffff bold
+-- User info
+TEXT 1106 15 "evangelia-cv.cvm" 10 11 #555566
+
+-- ── Left Panel: Code Editor ──────────────────────
+RECT 0 44 380 856 5 #1a1d27
+-- Line numbers
+RECT 0 44 36 856 6 #15171f
+TEXT 8 54 "1" 10 7 #555566
+TEXT 8 70 "2" 10 7 #555566
+TEXT 8 86 "3" 10 7 #e8804a
+TEXT 8 102 "4" 10 7 #555566
+TEXT 8 118 "5" 10 7 #555566
+TEXT 8 134 "6" 10 7 #555566
+TEXT 8 150 "7" 10 7 #555566
+TEXT 8 166 "8" 10 7 #555566
+TEXT 8 182 "9" 10 7 #555566
+TEXT 4 198 "10" 10 7 #555566
+TEXT 4 214 "11" 10 7 #555566
+TEXT 4 230 "12" 10 7 #555566
+TEXT 4 246 "13" 10 7 #555566
+TEXT 4 262 "14" 10 7 #555566
+TEXT 4 278 "15" 10 7 #555566
+TEXT 4 294 "16" 10 7 #555566
+TEXT 4 310 "17" 10 7 #555566
+TEXT 4 326 "18" 10 7 #555566
+TEXT 4 342 "19" 10 7 #555566
+TEXT 4 358 "20" 10 7 #555566
+-- Highlight bar on line 3
+RECT 36 82 344 16 6 rgba(232,128,74,0.12)
+-- Code content
+TEXT 44 54 "CANVAS 595 842 #ffffff" 11 7 #e0e0e8
+TEXT 44 70 "" 11 7 #555566
+TEXT 44 86 "RECT 0 0 210 842 0 #2d3a4a" 11 7 #e8804a
+TEXT 44 102 "" 11 7 #555566
+TEXT 44 118 "PHOTO 55 30 100 1 #fff 4" 11 7 #e0e0e8
+TEXT 44 134 "" 11 7 #555566
+TEXT 44 150 "TEXT 30 150 \"PROFILE\" 16 1 #fff bold" 11 7 #e0e0e8
+TEXT 44 166 "DIVIDER 30 170 190 170 1 #4a5a6a" 11 7 #e0e0e8
+TEXT 44 182 "" 11 7 #555566
+TEXT 44 198 "TEXT 30 184 \"Psychology student\" 9 1 #c8d" 11 7 #e0e0e8
+TEXT 44 214 "TEXT 30 198 \"at Tilburg University\" 9 1 #c8d" 11 7 #e0e0e8
+TEXT 44 230 "TEXT 30 212 \"with retail experience\" 9 1 #c8d" 11 7 #e0e0e8
+TEXT 44 246 "" 11 7 #555566
+TEXT 44 262 "TEXT 30 346 \"SKILLS\" 16 1 #fff bold" 11 7 #e0e0e8
+TEXT 44 278 "DIVIDER 30 366 190 366 1 #4a5a6a" 11 7 #e0e0e8
+TEXT 44 294 "" 11 7 #555566
+TEXT 44 310 "PILL 22 382 1 #3b82f6 #fff \"Customer\"" 11 7 #e0e0e8
+TEXT 44 326 "PILL 98 382 1 #3b82f6 #fff \"Cash Reg\"" 11 7 #e0e0e8
+TEXT 44 342 "PILL 22 410 1 #3b82f6 #fff \"Teamwork\"" 11 7 #e0e0e8
+TEXT 44 358 "" 11 7 #555566
+
+-- Format reference bar
+RECT 0 720 380 36 8 #15171f
+TEXT 8 726 "CANVAS" 9 8 #e8804a
+TEXT 52 726 "RECT" 9 8 #e8804a
+TEXT 82 726 "TEXT" 9 8 #e8804a
+TEXT 110 726 "PHOTO" 9 8 #e8804a
+TEXT 146 726 "SECTION" 9 8 #e8804a
+TEXT 194 726 "PILL" 9 8 #e8804a
+TEXT 222 726 "SKILL-BAR" 9 8 #e8804a
+TEXT 280 726 "CONTACT" 9 8 #e8804a
+TEXT 330 726 "DIVIDER" 9 8 #e8804a
+TEXT 8 740 "RATING" 9 8 #e8804a
+TEXT 52 740 "TIMELINE" 9 8 #e8804a
+TEXT 110 740 "LINE" 9 8 #e8804a
+TEXT 140 740 "ELLIPSE" 9 8 #e8804a
+TEXT 190 740 "IMG" 9 8 #e8804a
+TEXT 216 740 "ICON" 9 8 #e8804a
+TEXT 250 740 "-- comment" 9 8 #555566
+-- Status bar
+RECT 0 756 380 24 8 #1a1d27
+TEXT 8 762 "595×842" 10 9 #4caf50
+TEXT 290 762 "87 elements · z 0–2" 10 9 #555566
+
+-- ── Center: CV Preview ───────────────────────────
+RECT 380 44 860 856 3 #13151f
+-- Shadow around CV
+RECT 530 70 400 560 4 rgba(0,0,0,0.3)
+-- CV page (white A4 preview scaled)
+RECT 524 64 400 560 5 #ffffff
+-- Dark sidebar on CV
+RECT 524 64 140 560 6 #2d3a4a
+-- Photo circle
+ELLIPSE 594 108 28 28 7 #8090a0
+-- Sidebar text blocks
+RECT 544 150 100 8 7 #ffffff
+RECT 544 166 80 4 7 #4a5a6a
+RECT 544 180 96 4 7 #aabbcc
+RECT 544 188 90 4 7 #aabbcc
+RECT 544 196 94 4 7 #aabbcc
+RECT 544 204 70 4 7 #aabbcc
+RECT 544 220 60 8 7 #ffffff
+RECT 544 236 80 4 7 #4a5a6a
+RECT 544 250 50 12 7 #3b82f6 6
+RECT 600 250 50 12 7 #3b82f6 6
+RECT 544 268 56 12 7 #0ea5e9 6
+RECT 606 268 44 12 7 #0ea5e9 6
+-- Right column of CV
+TEXT 674 76 "Evangelia" 18 7 #2d3a4a bold
+TEXT 674 98 "Mamou" 16 7 #8899aa
+-- Contact icons placeholder
+RECT 674 122 12 4 7 #667788
+RECT 694 122 60 4 7 #667788
+RECT 770 122 12 4 7 #667788
+RECT 790 122 60 4 7 #667788
+LINE 674 134 910 134 7 #dddddd 1
+-- Section blocks
+RECT 674 144 100 8 7 #2d3a4a
+LINE 674 156 910 156 7 #2d3a4a 1
+RECT 674 166 80 5 7 #333333
+RECT 674 176 100 4 7 #888888
+RECT 680 188 180 4 7 #555555
+RECT 680 196 190 4 7 #555555
+RECT 680 204 170 4 7 #555555
+RECT 674 222 80 5 7 #333333
+RECT 674 232 90 4 7 #888888
+RECT 680 244 170 4 7 #555555
+RECT 680 252 180 4 7 #555555
+-- More sections
+RECT 674 276 80 8 7 #2d3a4a
+LINE 674 288 910 288 7 #2d3a4a 1
+RECT 674 298 100 5 7 #333333
+RECT 674 308 120 4 7 #888888
+RECT 674 324 90 5 7 #333333
+RECT 674 334 110 4 7 #888888
+
+-- ── Right Panel: Layers ──────────────────────────
+RECT 1240 44 200 856 5 #1a1d27
+TEXT 1252 54 "LAYERS" 10 8 #555566 bold
+LINE 1240 72 1440 72 8 #2d3244 1
+-- Layer items
+RECT 1248 80 184 24 8 #232733
+RECT 1252 86 10 10 9 #2d3a4a
+TEXT 1268 84 "RECT 210×842" 10 9 #c0c0cc
+TEXT 1412 84 "z0" 9 9 #555566
+RECT 1248 108 184 24 8 #232733
+RECT 1252 114 10 10 9 #ffffff
+TEXT 1268 112 "PHOTO 100px" 10 9 #c0c0cc
+TEXT 1412 112 "z1" 9 9 #555566
+RECT 1248 136 184 24 8 rgba(232,128,74,0.2)
+RECT 1252 142 10 10 9 #3b82f6
+TEXT 1268 140 "PILL \"Customer\"" 10 9 #e8804a
+TEXT 1412 140 "z1" 9 9 #555566
+RECT 1248 164 184 24 8 #232733
+RECT 1252 170 10 10 9 #2d3a4a
+TEXT 1268 168 "§ Experience" 10 9 #c0c0cc
+TEXT 1412 168 "z1" 9 9 #555566
+RECT 1248 192 184 24 8 #232733
+RECT 1252 198 10 10 9 #2d3a4a
+TEXT 1268 196 "§ Education" 10 9 #c0c0cc
+TEXT 1412 196 "z1" 9 9 #555566
+RECT 1248 220 184 24 8 #232733
+RECT 1252 226 10 10 9 #666666
+TEXT 1268 224 "CONTACT email" 10 9 #c0c0cc
+TEXT 1412 224 "z1" 9 9 #555566`,
+
+'CVM App — Light Mode': `CANVAS 1440 900 #f0f0f0
+-- ── Top Bar ──────────────────────────────────────
+RECT 0 0 1440 48 10 #ffffff
+LINE 0 48 1440 48 10 #e0e0e0 1
+-- Logo
+RECT 14 10 32 28 11 #e8804a 6
+TEXT 19 16 "CV" 13 12 #ffffff bold
+TEXT 54 16 "CVM Maker" 14 11 #333333 bold
+-- Nav items
+TEXT 180 18 "Templates" 12 11 #888888
+TEXT 270 18 "Page Size" 12 11 #888888
+TEXT 360 18 "Export" 12 11 #888888
+-- Right side
+RECT 1300 10 120 28 11 #e8804a 14
+TEXT 1324 16 "Export PDF" 12 12 #ffffff bold
+RECT 1180 10 100 28 11 #ffffff 14
+LINE 1180 10 1280 10 11 #e8804a 1
+LINE 1180 38 1280 38 11 #e8804a 1
+LINE 1180 10 1180 38 11 #e8804a 1
+LINE 1280 10 1280 38 11 #e8804a 1
+TEXT 1202 16 "Load Photo" 11 12 #e8804a
+
+-- ── Left Panel: Template Gallery ─────────────────
+RECT 0 48 320 852 5 #ffffff
+LINE 320 48 320 900 5 #e0e0e0 1
+TEXT 20 68 "TEMPLATES" 10 8 #999999 bold
+
+-- Template card 1 (selected)
+RECT 16 92 136 170 6 #ffffff 8
+LINE 16 92 152 92 7 #e8804a 3
+RECT 16 92 136 170 7 #e8804a
+RECT 20 96 128 162 8 #ffffff 6
+-- Mini CV preview
+RECT 20 96 44 162 8 #2d3a4a
+ELLIPSE 42 118 10 10 9 #8090a0
+RECT 28 136 28 3 9 #ffffff
+RECT 28 144 24 2 9 #7788aa
+RECT 28 150 26 2 9 #7788aa
+RECT 72 100 72 6 9 #333333
+RECT 72 112 50 3 9 #888888
+RECT 72 122 60 2 9 #cccccc
+RECT 72 128 58 2 9 #cccccc
+RECT 72 140 44 4 9 #333333
+RECT 72 150 56 2 9 #cccccc
+RECT 72 156 60 2 9 #cccccc
+TEXT 36 268 "Modern Dark" 10 8 #e8804a bold
+
+-- Template card 2
+RECT 168 92 136 170 6 #ffffff 8
+RECT 168 92 136 170 7 #e0e0e0
+RECT 172 96 128 162 8 #ffffff 6
+ELLIPSE 236 120 12 12 9 #dddddd
+RECT 208 140 56 5 9 #333333
+RECT 214 150 44 3 9 #aaaaaa
+RECT 186 166 100 2 9 #eeeeee
+RECT 186 176 70 3 9 #333333
+RECT 186 186 90 2 9 #cccccc
+RECT 186 192 86 2 9 #cccccc
+TEXT 196 268 "Classic" 10 8 #666666
+
+-- Template card 3
+RECT 16 290 136 170 6 #ffffff 8
+RECT 16 290 136 170 7 #e0e0e0
+RECT 20 294 128 162 8 #0a0a0a 6
+RECT 28 300 40 4 9 #00ff41
+RECT 28 310 80 3 9 #00aa2a
+RECT 28 324 60 2 9 #444444
+RECT 28 330 70 2 9 #00ff41
+RECT 28 338 66 2 9 #00ff41
+RECT 28 354 80 60 9 #111111 4
+TEXT 48 466 "Hacker" 10 8 #666666
+
+-- Template card 4
+RECT 168 290 136 170 6 #ffffff 8
+RECT 168 290 136 170 7 #e0e0e0
+RECT 172 294 128 162 8 #fafafa 6
+RECT 260 294 40 162 9 #1a1a2e
+RECT 180 300 50 8 9 #1a1a2e
+RECT 180 312 40 6 9 #f97066
+RECT 180 326 64 2 9 #cccccc
+RECT 180 334 58 2 9 #cccccc
+RECT 266 302 26 26 9 #334455
+TEXT 196 466 "Coral Accent" 10 8 #666666
+
+-- ── Center: CV Preview ───────────────────────────
+RECT 320 48 920 852 3 #f5f5f5
+-- CV shadow
+RECT 484 84 380 534 4 rgba(0,0,0,0.08)
+-- CV page
+RECT 478 78 380 534 5 #ffffff
+-- Dark sidebar
+RECT 478 78 134 534 6 #2d3a4a
+-- Photo
+ELLIPSE 545 118 26 26 7 #8090a0
+-- Sidebar content
+RECT 498 154 94 6 7 #ffffff
+RECT 498 168 80 3 7 #7788aa
+RECT 498 176 86 3 7 #7788aa
+RECT 498 184 78 3 7 #7788aa
+RECT 498 198 50 6 7 #ffffff
+RECT 498 212 44 10 7 #3b82f6 5
+RECT 548 212 44 10 7 #3b82f6 5
+RECT 498 228 50 10 7 #0ea5e9 5
+RECT 554 228 38 10 7 #0ea5e9 5
+-- Right column
+TEXT 624 88 "Evangelia" 16 7 #2d3a4a bold
+TEXT 624 108 "Mamou" 14 7 #8899aa
+RECT 624 130 8 4 7 #666666
+RECT 638 130 50 4 7 #666666
+RECT 700 130 8 4 7 #666666
+RECT 714 130 50 4 7 #666666
+LINE 624 140 844 140 7 #eeeeee 1
+RECT 624 150 80 6 7 #2d3a4a
+LINE 624 160 844 160 7 #2d3a4a 1
+RECT 624 170 70 4 7 #333333
+RECT 624 178 90 3 7 #999999
+RECT 630 188 160 3 7 #555555
+RECT 630 194 170 3 7 #555555
+RECT 624 210 70 4 7 #333333
+RECT 624 218 80 3 7 #999999
+RECT 630 228 150 3 7 #555555
+RECT 624 250 70 6 7 #2d3a4a
+LINE 624 260 844 260 7 #2d3a4a 1
+RECT 624 270 90 4 7 #333333
+RECT 624 278 110 3 7 #999999
+
+-- ── Bottom: Properties ───────────────────────────
+RECT 320 650 920 60 8 #ffffff
+LINE 320 650 1240 650 8 #e0e0e0 1
+TEXT 340 664 "Selected:" 10 9 #999999
+TEXT 400 664 "RECT 0 0 210 842 0 #2d3a4a" 11 9 #333333 bold
+TEXT 700 664 "x: 0" 10 9 #888888
+TEXT 740 664 "y: 0" 10 9 #888888
+TEXT 780 664 "w: 210" 10 9 #888888
+TEXT 830 664 "h: 842" 10 9 #888888
+TEXT 880 664 "z: 0" 10 9 #888888`,
+
+'CVM App — Split AI': `CANVAS 1440 900 #0f1117
+-- ── Top Bar ──────────────────────────────────────
+RECT 0 0 1440 44 10 #1a1d27
+TEXT 14 13 "CVM" 16 11 #e8804a bold
+TEXT 52 15 "CV Maker" 13 11 #8888a0
+RECT 160 8 24 28 11 #232733 5
+TEXT 166 14 "AI" 11 11 #a78bfa bold
+-- Tab bar
+RECT 220 8 70 28 11 #e8804a 5
+TEXT 234 15 "Editor" 11 12 #ffffff bold
+RECT 296 8 100 28 11 #232733 5
+TEXT 310 15 "AI Tailoring" 11 11 #a78bfa
+RECT 402 8 70 28 11 #232733 5
+TEXT 416 15 "Export" 11 11 #c0c0cc
+-- Right
+RECT 1340 8 80 28 11 #e8804a 5
+TEXT 1352 15 "Export PDF" 11 12 #ffffff bold
+
+-- ── Left: AI Panel ───────────────────────────────
+RECT 0 44 400 856 5 #13151f
+TEXT 16 60 "AI CV TAILORING" 11 8 #a78bfa bold
+LINE 16 78 384 78 8 #2d3244 1
+
+-- Job description input
+TEXT 16 92 "Paste Job Description" 10 8 #8888a0
+RECT 16 108 368 180 6 #1a1d27 6
+TEXT 24 116 "We are looking for a motivated Sales" 10 7 #c0c0cc
+TEXT 24 132 "Associate to join our team. The ideal" 10 7 #c0c0cc
+TEXT 24 148 "candidate has experience in retail," 10 7 #c0c0cc
+TEXT 24 164 "strong customer service skills, and" 10 7 #c0c0cc
+TEXT 24 180 "the ability to work in a fast-paced" 10 7 #c0c0cc
+TEXT 24 196 "environment. Dutch language is a" 10 7 #c0c0cc
+TEXT 24 212 "plus. Part-time positions available." 10 7 #c0c0cc
+TEXT 24 244 "— Albert Heijn, Tilburg" 10 7 #555566 italic
+
+-- Match analysis
+RECT 16 300 368 28 8 #a78bfa 6
+TEXT 28 306 "Analyze & Tailor CV" 12 9 #ffffff bold
+TEXT 300 306 "→" 14 9 #ffffff bold
+
+-- Results panel
+RECT 16 344 368 40 6 #1a2a1a 6
+TEXT 24 350 "Match Score" 10 7 #4caf50
+TEXT 300 348 "78%" 18 7 #4caf50 bold
+
+TEXT 16 400 "KEYWORD MATCHES" 9 8 #666688
+RECT 16 416 80 20 7 #1a3a1a 10
+TEXT 24 420 "retail ✓" 9 8 #4caf50
+RECT 104 416 110 20 7 #1a3a1a 10
+TEXT 112 420 "customer svc ✓" 9 8 #4caf50
+RECT 222 416 80 20 7 #1a3a1a 10
+TEXT 230 420 "cash reg ✓" 9 8 #4caf50
+RECT 16 442 80 20 7 #3a1a1a 10
+TEXT 24 446 "Dutch ✗" 9 8 #ef4444
+RECT 104 442 90 20 7 #1a3a1a 10
+TEXT 112 446 "teamwork ✓" 9 8 #4caf50
+RECT 202 442 90 20 7 #1a3a1a 10
+TEXT 210 446 "fast-paced ✓" 9 8 #4caf50
+
+TEXT 16 480 "AI SUGGESTIONS" 9 8 #666688
+RECT 16 496 368 60 7 #1a1d27 6
+RECT 20 500 4 52 8 #a78bfa
+TEXT 32 500 "Add 'Dutch (beginner)' to languages" 10 8 #c0c0cc
+TEXT 32 516 "to match language requirement." 10 8 #888899
+RECT 340 504 30 16 8 #a78bfa 4
+TEXT 344 507 "Apply" 8 9 #ffffff
+
+RECT 16 566 368 60 7 #1a1d27 6
+RECT 20 570 4 52 8 #a78bfa
+TEXT 32 570 "Reword Lidl experience to emphasize" 10 8 #c0c0cc
+TEXT 32 586 "'fast-paced retail environment'." 10 8 #888899
+RECT 340 574 30 16 8 #a78bfa 4
+TEXT 344 577 "Apply" 8 9 #ffffff
+
+RECT 16 636 368 60 7 #1a1d27 6
+RECT 20 640 4 52 8 #a78bfa
+TEXT 32 640 "Move Work Experience above" 10 8 #c0c0cc
+TEXT 32 656 "Education for job relevance." 10 8 #888899
+RECT 340 644 30 16 8 #a78bfa 4
+TEXT 344 647 "Apply" 8 9 #ffffff
+
+-- ── Center: CV Preview ───────────────────────────
+RECT 400 44 840 856 3 #0f1117
+-- CV page
+RECT 545 70 380 534 5 #ffffff
+-- Sidebar
+RECT 545 70 134 534 6 #2d3a4a
+ELLIPSE 612 110 26 26 7 #8090a0
+RECT 565 146 94 6 7 #ffffff
+RECT 565 160 80 3 7 #7788aa
+RECT 565 168 86 3 7 #7788aa
+RECT 565 190 50 6 7 #ffffff
+RECT 565 204 44 10 7 #3b82f6 5
+RECT 615 204 44 10 7 #3b82f6 5
+RECT 565 220 50 10 7 #0ea5e9 5
+-- Right column
+TEXT 690 80 "Evangelia" 16 7 #2d3a4a bold
+TEXT 690 100 "Mamou" 14 7 #8899aa
+LINE 690 118 910 118 7 #eeeeee 1
+-- Highlighted section (AI changed)
+RECT 686 126 226 56 7 rgba(167,139,250,0.1)
+RECT 684 126 2 56 8 #a78bfa
+RECT 690 130 80 6 7 #2d3a4a
+LINE 690 140 910 140 7 #2d3a4a 1
+RECT 690 148 70 4 7 #333333
+RECT 690 156 90 3 7 #999999
+RECT 696 166 160 3 7 #555555
+RECT 696 172 170 3 7 #555555
+-- Normal sections
+RECT 690 196 70 6 7 #2d3a4a
+LINE 690 206 910 206 7 #2d3a4a 1
+RECT 690 216 90 4 7 #333333
+RECT 690 224 110 3 7 #999999
+
+-- ── Right: Layer Panel ───────────────────────────
+RECT 1240 44 200 856 5 #1a1d27
+TEXT 1252 54 "LAYERS" 10 8 #555566 bold
+LINE 1240 72 1440 72 8 #2d3244 1
+RECT 1248 80 184 22 8 #232733
+TEXT 1268 84 "RECT sidebar" 10 9 #c0c0cc
+RECT 1248 106 184 22 8 #232733
+TEXT 1268 110 "PHOTO 100px" 10 9 #c0c0cc
+RECT 1248 132 184 22 8 rgba(167,139,250,0.2)
+TEXT 1268 136 "§ Work Experience" 10 9 #a78bfa
+RECT 1248 158 184 22 8 #232733
+TEXT 1268 162 "§ Education" 10 9 #c0c0cc
+RECT 1248 184 184 22 8 #232733
+TEXT 1268 188 "CONTACT email" 10 9 #c0c0cc`,
+
+'CVM App — Minimal Zen': `CANVAS 1440 900 #fafaf8
+-- ── Thin Top Bar ─────────────────────────────────
+RECT 0 0 1440 36 10 #ffffff
+LINE 0 36 1440 36 10 #eeeee8 1
+TEXT 16 10 "CVM" 14 11 #e8804a bold
+TEXT 52 12 "·" 12 11 #cccccc
+TEXT 66 12 "evangelia-cv" 11 11 #999999
+-- Minimal right buttons
+TEXT 1160 12 "PNG" 10 11 #999999
+TEXT 1200 12 "JPG" 10 11 #999999
+RECT 1240 6 60 24 11 #2d3a4a 12
+TEXT 1252 12 "PDF ↓" 10 12 #ffffff
+
+-- ── Left Panel: Outline ──────────────────────────
+RECT 0 36 280 864 5 #ffffff
+LINE 280 36 280 900 5 #eeeee8 1
+TEXT 20 52 "OUTLINE" 10 8 #bbbbaa bold
+
+-- Tree view
+TEXT 32 76 "▼ Sidebar" 11 8 #555555
+TEXT 48 96 "├ PHOTO" 10 8 #999999
+TEXT 48 114 "├ Profile text" 10 8 #999999
+TEXT 48 132 "├ Skills" 10 8 #999999
+TEXT 48 150 "└ Languages" 10 8 #999999
+
+TEXT 32 178 "▼ Main Content" 11 8 #555555
+TEXT 48 198 "├ Name header" 10 8 #999999
+TEXT 48 216 "├ Contact row" 10 8 #999999
+TEXT 48 234 "├ Work Experience" 10 8 #e8804a bold
+TEXT 48 252 "│  ├ Lidl" 10 8 #cccccc
+TEXT 48 270 "│  └ bullet points ×5" 10 8 #cccccc
+TEXT 48 288 "├ Education" 10 8 #999999
+TEXT 48 306 "│  ├ Tilburg Univ." 10 8 #cccccc
+TEXT 48 324 "│  ├ SEEH" 10 8 #cccccc
+TEXT 48 342 "│  └ Primary School" 10 8 #cccccc
+TEXT 48 360 "└ Volunteer" 10 8 #999999
+
+LINE 20 390 260 390 8 #eeeee8 1
+
+-- Quick actions
+TEXT 20 406 "QUICK ACTIONS" 10 8 #bbbbaa bold
+RECT 20 428 120 32 8 #f5f0eb 8
+TEXT 36 438 "Load Photo" 10 9 #886644
+RECT 148 428 120 32 8 #f5f0eb 8
+TEXT 168 438 "AI Tailor ✦" 10 9 #886644
+RECT 20 468 120 32 8 #f5f0eb 8
+TEXT 36 478 "Change Style" 10 9 #886644
+RECT 148 468 120 32 8 #f5f0eb 8
+TEXT 162 478 "Add Section" 10 9 #886644
+
+LINE 20 518 260 518 8 #eeeee8 1
+
+-- Style selector
+TEXT 20 534 "STYLE" 10 8 #bbbbaa bold
+-- Mini style thumbnails
+RECT 20 554 56 70 8 #ffffff 4
+RECT 20 554 56 70 8 #e8804a
+RECT 24 558 48 62 9 #ffffff 2
+RECT 24 558 16 62 9 #2d3a4a
+TEXT 28 630 "Modern" 8 8 #e8804a
+
+RECT 84 554 56 70 8 #ffffff 4
+RECT 84 554 56 70 8 #dddddd
+RECT 88 558 48 62 9 #ffffff 2
+ELLIPSE 112 576 8 8 9 #eeeeee
+TEXT 92 630 "Classic" 8 8 #999999
+
+RECT 148 554 56 70 8 #ffffff 4
+RECT 148 554 56 70 8 #dddddd
+RECT 152 558 48 62 9 #0a0a0a 2
+TEXT 152 630 "Hacker" 8 8 #999999
+
+RECT 212 554 56 70 8 #ffffff 4
+RECT 212 554 56 70 8 #dddddd
+RECT 216 558 48 62 9 #fafafa 2
+RECT 248 558 16 62 9 #1a1a2e
+TEXT 220 630 "Coral" 8 8 #999999
+
+-- ── Center: Large CV Preview ─────────────────────
+-- Centered on light bg
+RECT 280 36 1160 864 3 #f0ede8
+
+-- Soft shadow
+RECT 486 80 470 680 4 rgba(0,0,0,0.06)
+
+-- CV page (large, dominant)
+RECT 480 74 470 680 5 #ffffff
+
+-- Dark sidebar
+RECT 480 74 166 680 6 #2d3a4a
+
+-- Photo
+ELLIPSE 563 120 32 32 7 #8090a0
+RECT 563 120 0 0 8 #ffffff
+
+-- Sidebar text placeholders
+RECT 504 170 118 8 7 #ffffff
+RECT 504 186 100 4 7 #7788aa
+RECT 504 194 106 4 7 #7788aa
+RECT 504 202 90 4 7 #7788aa
+RECT 504 210 96 4 7 #7788aa
+RECT 504 218 80 4 7 #7788aa
+
+RECT 504 242 70 8 7 #ffffff
+RECT 504 258 100 4 7 #4a5a6a
+RECT 504 270 54 14 7 #3b82f6 7
+RECT 564 270 54 14 7 #3b82f6 7
+RECT 504 290 62 14 7 #0ea5e9 7
+RECT 572 290 44 14 7 #0ea5e9 7
+
+RECT 504 318 64 14 7 #8b5cf6 7
+RECT 574 318 44 14 7 #8b5cf6 7
+
+RECT 504 350 80 8 7 #ffffff
+RECT 504 366 100 4 7 #4a5a6a
+RECT 504 380 94 4 7 #7788aa
+RECT 504 390 80 4 7 #7788aa
+RECT 504 400 88 4 7 #7788aa
+
+-- Right column content
+TEXT 660 86 "Evangelia" 22 7 #2d3a4a bold
+TEXT 660 114 "Mamou" 20 7 #8899aa
+
+RECT 660 146 10 5 7 #667788
+RECT 676 146 70 5 7 #888888
+RECT 760 146 10 5 7 #667788
+RECT 776 146 80 5 7 #888888
+LINE 660 160 936 160 7 #eeeeee 1
+
+-- Work Experience
+RECT 660 172 120 8 7 #2d3a4a
+LINE 660 184 936 184 7 #2d3a4a 1
+RECT 660 196 100 5 7 #333333
+RECT 660 206 120 4 7 #999999
+TEXT 936 196 "2023-24" 7 7 #bbbbbb
+RECT 666 218 220 4 7 #555555
+RECT 666 226 240 4 7 #555555
+RECT 666 234 200 4 7 #555555
+RECT 666 242 230 4 7 #555555
+RECT 666 250 180 4 7 #555555
+
+-- Education
+RECT 660 272 80 8 7 #2d3a4a
+LINE 660 284 936 284 7 #2d3a4a 1
+RECT 660 296 80 5 7 #333333
+RECT 660 306 160 4 7 #999999
+RECT 660 320 120 5 7 #333333
+RECT 660 330 200 4 7 #999999
+RECT 660 344 100 5 7 #333333
+RECT 660 354 140 4 7 #999999
+
+-- Volunteer
+RECT 660 380 140 8 7 #2d3a4a
+LINE 660 392 936 392 7 #2d3a4a 1
+RECT 660 404 80 5 7 #333333
+RECT 660 414 170 4 7 #999999
+RECT 666 426 220 4 7 #555555
+RECT 666 434 210 4 7 #555555`,
+
+'CV — Dark Sidebar': `CANVAS 840 1120 #f5f5f0
+-- Left Sidebar
+RECT 0 0 260 1120 0 #1e293b
+ELLIPSE 130 90 52 52 1 #334155
+TEXT 112 88 "RP" 28 2 #94a3b8 bold
+TEXT 30 165 "Robert Paszek" 22 1 #f1f5f9 bold
+TEXT 30 192 "Software Engineer" 13 1 #94a3b8
+LINE 30 212 230 212 1 #334155 1
+TEXT 30 238 "CONTACT" 10 1 #64748b bold
+TEXT 30 262 "robert@example.com" 11 1 #cbd5e1
+TEXT 30 282 "github.com/robertpaszek" 11 1 #cbd5e1
+TEXT 30 302 "linkedin.com/in/rpaszek" 11 1 #cbd5e1
+TEXT 30 322 "London, UK" 11 1 #cbd5e1
+LINE 30 346 230 346 1 #334155 1
+TEXT 30 372 "SKILLS" 10 1 #64748b bold
+TEXT 30 398 "Languages" 10 1 #94a3b8 bold
+RECT 30 414 60 20 1 #3b82f6 10
+TEXT 36 419 "Python" 9 2 #ffffff
+RECT 96 414 72 20 1 #3b82f6 10
+TEXT 102 419 "JavaScript" 9 2 #ffffff
+RECT 174 414 42 20 1 #3b82f6 10
+TEXT 180 419 "Go" 9 2 #ffffff
+RECT 30 440 36 20 1 #3b82f6 10
+TEXT 36 445 "SQL" 9 2 #ffffff
+RECT 72 440 64 20 1 #3b82f6 10
+TEXT 78 445 "TypeScript" 9 2 #ffffff
+RECT 142 440 48 20 1 #3b82f6 10
+TEXT 148 445 "Rust" 9 2 #ffffff
+TEXT 30 478 "Frameworks" 10 1 #94a3b8 bold
+RECT 30 494 52 20 1 #0ea5e9 10
+TEXT 36 499 "React" 9 2 #ffffff
+RECT 88 494 56 20 1 #0ea5e9 10
+TEXT 94 499 "Next.js" 9 2 #ffffff
+RECT 150 494 56 20 1 #0ea5e9 10
+TEXT 156 499 "FastAPI" 9 2 #ffffff
+RECT 30 520 48 20 1 #0ea5e9 10
+TEXT 36 525 "Flask" 9 2 #ffffff
+RECT 84 520 50 20 1 #0ea5e9 10
+TEXT 90 525 "Node" 9 2 #ffffff
+RECT 140 520 60 20 1 #0ea5e9 10
+TEXT 146 525 "Django" 9 2 #ffffff
+TEXT 30 558 "Tools & Infra" 10 1 #94a3b8 bold
+RECT 30 574 52 20 1 #8b5cf6 10
+TEXT 36 579 "Docker" 9 2 #ffffff
+RECT 88 574 68 20 1 #8b5cf6 10
+TEXT 94 579 "Kubernetes" 9 2 #ffffff
+RECT 162 574 46 20 1 #8b5cf6 10
+TEXT 168 579 "AWS" 9 2 #ffffff
+RECT 30 600 76 20 1 #8b5cf6 10
+TEXT 36 605 "PostgreSQL" 9 2 #ffffff
+RECT 112 600 48 20 1 #8b5cf6 10
+TEXT 118 605 "Redis" 9 2 #ffffff
+RECT 166 600 56 20 1 #8b5cf6 10
+TEXT 172 605 "Firebase" 9 2 #ffffff
+LINE 30 636 230 636 1 #334155 1
+TEXT 30 660 "EDUCATION" 10 1 #64748b bold
+TEXT 30 686 "MSc Computer Science" 11 1 #f1f5f9 bold
+TEXT 30 704 "University College London" 10 1 #cbd5e1
+TEXT 30 722 "2018 — 2020" 9 1 #64748b
+TEXT 30 752 "BSc Mathematics" 11 1 #f1f5f9 bold
+TEXT 30 770 "University of Warsaw" 10 1 #cbd5e1
+TEXT 30 788 "2014 — 2018" 9 1 #64748b
+LINE 30 812 230 812 1 #334155 1
+TEXT 30 836 "INTERESTS" 10 1 #64748b bold
+TEXT 30 860 "Spatial computing" 10 1 #cbd5e1
+TEXT 30 878 "Computer graphics" 10 1 #cbd5e1
+TEXT 30 896 "Language design" 10 1 #cbd5e1
+TEXT 30 914 "Generative AI" 10 1 #cbd5e1
+TEXT 30 932 "Snowboarding" 10 1 #cbd5e1
+-- Right Column
+TEXT 290 42 "PROFILE" 11 1 #1e293b bold
+LINE 290 58 810 58 1 #d4d4d4 1
+TEXT 290 78 "Software engineer with a focus on spatial computing," 11 1 #334155
+TEXT 290 96 "domain-specific languages, and creative tooling. Building" 11 1 #334155
+TEXT 290 114 "the bridge between human spatial intuition and machine" 11 1 #334155
+TEXT 290 132 "understanding through compact, token-efficient DSLs." 11 1 #334155
+TEXT 290 172 "EXPERIENCE" 11 1 #1e293b bold
+LINE 290 188 810 188 1 #d4d4d4 1
+RECT 290 202 4 80 0 #3b82f6
+TEXT 306 206 "Senior Software Engineer" 13 1 #1e293b bold
+TEXT 306 226 "Spatial Labs — London" 11 1 #64748b
+TEXT 720 206 "2023 — Present" 9 1 #94a3b8
+TEXT 306 250 "• Designed VOXI DSL for 3D voxel scene description" 10 1 #475569
+TEXT 306 268 "• Built real-time renderer with depth/shading modes" 10 1 #475569
+TEXT 306 286 "• Reduced LLM scene-generation tokens by 85%" 10 1 #475569
+RECT 290 310 4 80 0 #3b82f6
+TEXT 306 314 "Full Stack Developer" 13 1 #1e293b bold
+TEXT 306 334 "TechFlow — Remote" 11 1 #64748b
+TEXT 720 314 "2021 — 2023" 9 1 #94a3b8
+TEXT 306 358 "• Built microservice architecture serving 2M req/day" 10 1 #475569
+TEXT 306 376 "• Migrated monolith to event-driven system (Kafka)" 10 1 #475569
+TEXT 306 394 "• Led frontend rebuild in Next.js, reduced bundle 60%" 10 1 #475569
+RECT 290 418 4 62 0 #3b82f6
+TEXT 306 422 "Junior Developer" 13 1 #1e293b bold
+TEXT 306 442 "DataPulse — Warsaw" 11 1 #64748b
+TEXT 720 422 "2020 — 2021" 9 1 #94a3b8
+TEXT 306 466 "• Built ETL pipelines processing 500GB daily" 10 1 #475569
+TEXT 306 484 "• Created internal dashboard with React + D3.js" 10 1 #475569
+TEXT 290 524 "PROJECTS" 11 1 #1e293b bold
+LINE 290 540 810 540 1 #d4d4d4 1
+RECT 290 554 250 130 0 #ffffff 8
+RECT 290 554 250 32 1 #1e293b 8
+TEXT 300 564 "VOXI — Spatial Reasoning DSL" 10 2 #f1f5f9 bold
+TEXT 300 598 "Voxel-based DSL for describing" 9 1 #475569
+TEXT 300 614 "3D scenes in ~100 tokens. Used" 9 1 #475569
+TEXT 300 630 "by LLMs for spatial reasoning" 9 1 #475569
+TEXT 300 646 "and scene generation." 9 1 #475569
+RECT 300 664 48 16 1 #dbeafe 8
+TEXT 306 667 "Python" 8 2 #3b82f6
+RECT 354 664 36 16 1 #dbeafe 8
+TEXT 360 667 "JS" 8 2 #3b82f6
+RECT 396 664 46 16 1 #dbeafe 8
+TEXT 402 667 "WebGL" 8 2 #3b82f6
+RECT 555 554 250 130 0 #ffffff 8
+RECT 555 554 250 32 1 #1e293b 8
+TEXT 565 564 "Brain Converter" 10 2 #f1f5f9 bold
+TEXT 565 598 "Translates natural language" 9 1 #475569
+TEXT 565 614 "descriptions into structured" 9 1 #475569
+TEXT 565 630 "3D voxel scenes. Combines" 9 1 #475569
+TEXT 565 646 "LLM reasoning + DSL output." 9 1 #475569
+RECT 565 664 56 16 1 #fef3c7 8
+TEXT 571 667 "FastAPI" 8 2 #d97706
+RECT 627 664 62 16 1 #fef3c7 8
+TEXT 633 667 "Claude AI" 8 2 #d97706
+RECT 695 664 48 16 1 #fef3c7 8
+TEXT 701 667 "React" 8 2 #d97706
+RECT 290 700 250 130 0 #ffffff 8
+RECT 290 700 250 32 1 #1e293b 8
+TEXT 300 710 "Video Depth Reasoning" 10 2 #f1f5f9 bold
+TEXT 300 744 "Extracts spatial structure" 9 1 #475569
+TEXT 300 760 "from video using monocular" 9 1 #475569
+TEXT 300 776 "depth estimation + temporal" 9 1 #475569
+TEXT 300 792 "reasoning with LLMs." 9 1 #475569
+RECT 300 810 56 16 1 #dcfce7 8
+TEXT 306 813 "PyTorch" 8 2 #16a34a
+RECT 362 810 70 16 1 #dcfce7 8
+TEXT 368 813 "DepthPro" 8 2 #16a34a
+RECT 438 810 50 16 1 #dcfce7 8
+TEXT 444 813 "FFmpeg" 8 2 #16a34a
+RECT 555 700 250 130 0 #ffffff 8
+RECT 555 700 250 32 1 #1e293b 8
+TEXT 565 710 "Sketch-Lang" 10 2 #f1f5f9 bold
+TEXT 565 744 "Minimal 2D vector drawing" 9 1 #475569
+TEXT 565 760 "language with vision matrix" 9 1 #475569
+TEXT 565 776 "output. Converts sketches" 9 1 #475569
+TEXT 565 792 "to ASCII for LLM input." 9 1 #475569
+RECT 565 810 68 16 1 #f3e8ff 8
+TEXT 571 813 "JavaScript" 8 2 #7c3aed
+RECT 639 810 56 16 1 #f3e8ff 8
+TEXT 645 813 "Canvas" 8 2 #7c3aed
+RECT 701 810 40 16 1 #f3e8ff 8
+TEXT 707 813 "DSL" 8 2 #7c3aed
+TEXT 290 860 "CERTIFICATIONS" 11 1 #1e293b bold
+LINE 290 876 810 876 1 #d4d4d4 1
+RECT 294 890 10 10 1 #3b82f6
+TEXT 312 888 "AWS Solutions Architect Associate" 10 1 #334155
+TEXT 660 888 "2023" 9 1 #94a3b8
+RECT 294 912 10 10 1 #3b82f6
+TEXT 312 910 "Google Cloud Professional Data Engineer" 10 1 #334155
+TEXT 660 910 "2022" 9 1 #94a3b8
+RECT 294 934 10 10 1 #3b82f6
+TEXT 312 932 "Certified Kubernetes Administrator (CKA)" 10 1 #334155
+TEXT 660 932 "2022" 9 1 #94a3b8
+LINE 290 970 810 970 1 #e5e5e5 1
+TEXT 460 988 "Generated with VOXI DSL" 9 1 #c4c4c4`,
+
+'CV — Minimal White': `CANVAS 840 1120 #ffffff
+TEXT 60 60 "ROBERT" 36 1 #111111 bold
+TEXT 60 100 "PASZEK" 36 1 #111111 bold
+LINE 60 120 260 120 1 #111111 3
+TEXT 60 148 "Software Engineer" 14 1 #888888
+TEXT 500 68 "robert@example.com" 10 1 #888888
+TEXT 500 86 "github.com/robertpaszek" 10 1 #888888
+TEXT 500 104 "London, UK" 10 1 #888888
+LINE 60 180 780 180 1 #e0e0e0 1
+TEXT 60 210 "Software engineer focused on spatial computing, DSL design," 11 1 #444444
+TEXT 60 228 "and creative tooling. Building bridges between human spatial" 11 1 #444444
+TEXT 60 246 "intuition and machine understanding." 11 1 #444444
+LINE 60 276 780 276 1 #e0e0e0 1
+TEXT 60 306 "EXPERIENCE" 10 1 #111111 bold
+TEXT 60 340 "Senior Software Engineer" 13 1 #111111 bold
+TEXT 60 360 "Spatial Labs" 11 1 #888888
+TEXT 660 340 "2023 — Present" 10 1 #aaaaaa
+TEXT 60 384 "Designed VOXI DSL for 3D voxel scene description." 10 1 #444444
+TEXT 60 400 "Built real-time renderer. Reduced LLM tokens by 85%." 10 1 #444444
+TEXT 60 436 "Full Stack Developer" 13 1 #111111 bold
+TEXT 60 456 "TechFlow" 11 1 #888888
+TEXT 660 436 "2021 — 2023" 10 1 #aaaaaa
+TEXT 60 480 "Built microservice architecture serving 2M req/day." 10 1 #444444
+TEXT 60 496 "Led frontend rebuild in Next.js, reduced bundle 60%." 10 1 #444444
+TEXT 60 532 "Junior Developer" 13 1 #111111 bold
+TEXT 60 552 "DataPulse" 11 1 #888888
+TEXT 660 532 "2020 — 2021" 10 1 #aaaaaa
+TEXT 60 576 "Built ETL pipelines processing 500GB daily." 10 1 #444444
+TEXT 60 592 "Created internal dashboard with React + D3.js." 10 1 #444444
+LINE 60 626 780 626 1 #e0e0e0 1
+TEXT 60 656 "PROJECTS" 10 1 #111111 bold
+TEXT 60 690 "VOXI" 12 1 #111111 bold
+TEXT 120 690 "— Spatial Reasoning DSL for 3D scenes in ~100 tokens" 10 1 #444444
+TEXT 60 718 "Brain Converter" 12 1 #111111 bold
+TEXT 200 718 "— Natural language to 3D voxel scene translator" 10 1 #444444
+TEXT 60 746 "Video Depth Reasoning" 12 1 #111111 bold
+TEXT 250 746 "— Spatial structure extraction from video" 10 1 #444444
+TEXT 60 774 "Sketch-Lang" 12 1 #111111 bold
+TEXT 178 774 "— Minimal 2D vector drawing language with vision matrix" 10 1 #444444
+LINE 60 808 780 808 1 #e0e0e0 1
+TEXT 60 838 "SKILLS" 10 1 #111111 bold
+TEXT 60 868 "Python  JavaScript  TypeScript  Go  SQL  Rust" 10 1 #444444
+TEXT 60 890 "React  Next.js  FastAPI  Flask  Node  Django" 10 1 #444444
+TEXT 60 912 "Docker  Kubernetes  AWS  PostgreSQL  Redis  Firebase" 10 1 #444444
+LINE 60 942 780 942 1 #e0e0e0 1
+TEXT 60 972 "EDUCATION" 10 1 #111111 bold
+TEXT 60 1002 "MSc Computer Science" 11 1 #111111 bold
+TEXT 260 1002 "University College London" 10 1 #888888
+TEXT 660 1002 "2018 — 2020" 10 1 #aaaaaa
+TEXT 60 1028 "BSc Mathematics" 11 1 #111111 bold
+TEXT 260 1028 "University of Warsaw" 10 1 #888888
+TEXT 660 1028 "2014 — 2018" 10 1 #aaaaaa`,
+
+'CV — Dark Hacker': `CANVAS 840 1120 #0a0a0a
+LINE 0 0 840 0 0 #1a1a1a 1
+LINE 0 20 840 20 0 #111111 1
+LINE 0 40 840 40 0 #111111 1
+RECT 30 30 780 100 0 #111111 4
+LINE 30 30 810 30 1 #00ff41 1
+TEXT 50 52 "> robert_paszek" 28 2 #00ff41 bold
+TEXT 50 90 "software_engineer // spatial_computing // dsl_design" 11 2 #00aa2a
+RECT 30 148 780 28 0 #111111 4
+TEXT 50 153 "$ cat contact.txt" 9 1 #555555
+TEXT 230 153 "robert@example.com" 9 1 #00ff41
+TEXT 430 153 "github.com/robertpaszek" 9 1 #00ff41
+TEXT 650 153 "London, UK" 9 1 #00ff41
+TEXT 50 206 "$ whoami" 10 1 #555555
+TEXT 50 226 "Software engineer with a focus on spatial computing," 11 1 #cccccc
+TEXT 50 244 "domain-specific languages, and creative tooling." 11 1 #cccccc
+TEXT 50 262 "Building bridges between human intuition and machines." 11 1 #cccccc
+TEXT 50 302 "$ cat experience.log" 10 1 #555555
+LINE 50 318 790 318 1 #1a1a1a 1
+RECT 50 332 6 70 0 #00ff41
+TEXT 70 336 "Senior Software Engineer" 13 1 #ffffff bold
+TEXT 70 356 "Spatial Labs — London" 11 1 #555555
+TEXT 680 336 "[2023-present]" 9 1 #00aa2a
+TEXT 70 380 ">> Designed VOXI DSL for 3D voxel scene description" 10 1 #aaaaaa
+TEXT 70 396 ">> Built real-time renderer with depth/shading modes" 10 1 #aaaaaa
+RECT 50 426 6 70 0 #00ff41
+TEXT 70 430 "Full Stack Developer" 13 1 #ffffff bold
+TEXT 70 450 "TechFlow — Remote" 11 1 #555555
+TEXT 680 430 "[2021-2023]" 9 1 #00aa2a
+TEXT 70 474 ">> Microservice arch serving 2M req/day" 10 1 #aaaaaa
+TEXT 70 490 ">> Frontend rebuild in Next.js, bundle -60%" 10 1 #aaaaaa
+RECT 50 520 6 52 0 #00ff41
+TEXT 70 524 "Junior Developer" 13 1 #ffffff bold
+TEXT 70 544 "DataPulse — Warsaw" 11 1 #555555
+TEXT 680 524 "[2020-2021]" 9 1 #00aa2a
+TEXT 70 568 ">> ETL pipelines processing 500GB/day" 10 1 #aaaaaa
+TEXT 50 612 "$ ls ~/projects/" 10 1 #555555
+LINE 50 628 790 628 1 #1a1a1a 1
+RECT 50 644 370 110 0 #111111 4
+TEXT 64 650 "drwxr-xr-x" 8 1 #555555
+TEXT 150 650 "voxi/" 10 1 #00ff41 bold
+TEXT 64 670 "Spatial Reasoning DSL for 3D" 9 1 #aaaaaa
+TEXT 64 686 "scenes in ~100 tokens. Used by" 9 1 #aaaaaa
+TEXT 64 702 "LLMs for spatial reasoning." 9 1 #aaaaaa
+RECT 64 724 50 16 1 #1a3a1a 8
+TEXT 70 727 "Python" 8 2 #00ff41
+RECT 120 724 30 16 1 #1a3a1a 8
+TEXT 126 727 "JS" 8 2 #00ff41
+RECT 156 724 50 16 1 #1a3a1a 8
+TEXT 162 727 "WebGL" 8 2 #00ff41
+RECT 440 644 370 110 0 #111111 4
+TEXT 454 650 "drwxr-xr-x" 8 1 #555555
+TEXT 540 650 "brain-converter/" 10 1 #00ff41 bold
+TEXT 454 670 "Natural language to structured" 9 1 #aaaaaa
+TEXT 454 686 "3D voxel scenes. LLM reasoning" 9 1 #aaaaaa
+TEXT 454 702 "+ DSL output pipeline." 9 1 #aaaaaa
+RECT 454 724 58 16 1 #1a3a1a 8
+TEXT 460 727 "FastAPI" 8 2 #00ff41
+RECT 518 724 64 16 1 #1a3a1a 8
+TEXT 524 727 "Claude AI" 8 2 #00ff41
+RECT 50 770 370 110 0 #111111 4
+TEXT 64 776 "drwxr-xr-x" 8 1 #555555
+TEXT 150 776 "video-depth/" 10 1 #00ff41 bold
+TEXT 64 796 "Spatial structure from video" 9 1 #aaaaaa
+TEXT 64 812 "using monocular depth + LLM" 9 1 #aaaaaa
+TEXT 64 828 "temporal reasoning." 9 1 #aaaaaa
+RECT 64 850 56 16 1 #1a3a1a 8
+TEXT 70 853 "PyTorch" 8 2 #00ff41
+RECT 126 850 68 16 1 #1a3a1a 8
+TEXT 132 853 "DepthPro" 8 2 #00ff41
+RECT 440 770 370 110 0 #111111 4
+TEXT 454 776 "drwxr-xr-x" 8 1 #555555
+TEXT 540 776 "sketch-lang/" 10 1 #00ff41 bold
+TEXT 454 796 "Minimal 2D vector drawing" 9 1 #aaaaaa
+TEXT 454 812 "language with vision matrix" 9 1 #aaaaaa
+TEXT 454 828 "for LLM consumption." 9 1 #aaaaaa
+RECT 454 850 68 16 1 #1a3a1a 8
+TEXT 460 853 "JavaScript" 8 2 #00ff41
+RECT 528 850 56 16 1 #1a3a1a 8
+TEXT 534 853 "Canvas" 8 2 #00ff41
+TEXT 50 908 "$ echo $SKILLS" 10 1 #555555
+LINE 50 924 790 924 1 #1a1a1a 1
+TEXT 50 944 "lang=" 9 1 #555555
+TEXT 100 944 "Python JavaScript TypeScript Go SQL Rust" 10 1 #00ff41
+TEXT 50 964 "frame=" 9 1 #555555
+TEXT 106 964 "React Next.js FastAPI Flask Node Django" 10 1 #00ff41
+TEXT 50 984 "infra=" 9 1 #555555
+TEXT 106 984 "Docker Kubernetes AWS PostgreSQL Redis Firebase" 10 1 #00ff41
+TEXT 50 1024 "$ cat education.log" 10 1 #555555
+LINE 50 1040 790 1040 1 #1a1a1a 1
+TEXT 50 1060 "MSc Computer Science" 11 1 #ffffff bold
+TEXT 300 1060 "UCL" 10 1 #555555
+TEXT 680 1060 "[2018-2020]" 9 1 #00aa2a
+TEXT 50 1082 "BSc Mathematics" 11 1 #ffffff bold
+TEXT 300 1082 "Univ. of Warsaw" 10 1 #555555
+TEXT 680 1082 "[2014-2018]" 9 1 #00aa2a
+TEXT 300 1106 "// generated with voxi dsl //" 8 1 #222222`,
+
+'CV — Gradient Modern': `CANVAS 840 1120 #f8fafc
+RECT 0 0 840 180 0 #4f46e5
+RECT 0 160 840 40 0 #6366f1
+RECT 0 180 840 20 0 #818cf8
+TEXT 60 50 "Robert Paszek" 32 2 #ffffff bold
+TEXT 60 90 "Software Engineer" 16 2 #c7d2fe
+TEXT 60 120 "Spatial Computing  •  DSL Design  •  Creative Tooling" 11 2 #a5b4fc
+RECT 560 50 240 90 1 #4338ca 8
+TEXT 578 62 "robert@example.com" 10 2 #e0e7ff
+TEXT 578 82 "github.com/robertpaszek" 10 2 #e0e7ff
+TEXT 578 102 "linkedin.com/in/rpaszek" 10 2 #e0e7ff
+TEXT 578 122 "London, United Kingdom" 10 2 #e0e7ff
+RECT 40 220 760 70 0 #ffffff 12
+TEXT 60 234 "Software engineer focused on spatial computing, domain-specific languages, and" 10 1 #475569
+TEXT 60 252 "creative tooling. Building the bridge between human spatial intuition and machine" 10 1 #475569
+TEXT 60 270 "understanding through compact, token-efficient DSLs." 10 1 #475569
+RECT 40 310 760 240 0 #ffffff 12
+RECT 40 310 760 36 1 #4f46e5 12
+TEXT 60 320 "Experience" 14 2 #ffffff bold
+TEXT 60 366 "Senior Software Engineer" 13 1 #1e293b bold
+TEXT 60 386 "Spatial Labs — London" 10 1 #94a3b8
+TEXT 640 366 "2023 — Present" 10 1 #a5b4fc bold
+TEXT 60 406 "Designed VOXI DSL for 3D voxel scene description" 10 1 #475569
+TEXT 60 422 "Built real-time renderer. Reduced LLM tokens by 85%" 10 1 #475569
+LINE 60 442 780 442 1 #e2e8f0 1
+TEXT 60 460 "Full Stack Developer" 13 1 #1e293b bold
+TEXT 60 480 "TechFlow — Remote" 10 1 #94a3b8
+TEXT 640 460 "2021 — 2023" 10 1 #a5b4fc bold
+TEXT 60 500 "Microservice architecture, 2M req/day. Next.js rebuild, -60% bundle" 10 1 #475569
+LINE 60 520 780 520 1 #e2e8f0 1
+TEXT 60 534 "Junior Developer" 13 1 #1e293b bold
+TEXT 60 554 "DataPulse — Warsaw" 10 1 #94a3b8
+TEXT 640 534 "2020 — 2021" 10 1 #a5b4fc bold
+RECT 40 570 760 36 0 #4f46e5 12
+TEXT 60 580 "Projects" 14 1 #ffffff bold
+RECT 40 606 370 120 0 #ffffff 12
+RECT 46 614 6 40 1 #4f46e5
+TEXT 62 618 "VOXI" 12 2 #1e293b bold
+TEXT 62 638 "Spatial Reasoning DSL" 9 2 #94a3b8
+TEXT 46 664 "3D scenes in ~100 tokens." 9 1 #475569
+TEXT 46 680 "Used by LLMs for reasoning." 9 1 #475569
+RECT 46 700 48 16 1 #ede9fe 8
+TEXT 52 703 "Python" 8 2 #6d28d9
+RECT 100 700 30 16 1 #ede9fe 8
+TEXT 106 703 "JS" 8 2 #6d28d9
+RECT 430 606 370 120 0 #ffffff 12
+RECT 436 614 6 40 1 #4f46e5
+TEXT 452 618 "Brain Converter" 12 2 #1e293b bold
+TEXT 452 638 "NL to 3D Scenes" 9 2 #94a3b8
+TEXT 436 664 "Translates descriptions into" 9 1 #475569
+TEXT 436 680 "structured voxel scenes." 9 1 #475569
+RECT 436 700 58 16 1 #ede9fe 8
+TEXT 442 703 "FastAPI" 8 2 #6d28d9
+RECT 500 700 60 16 1 #ede9fe 8
+TEXT 506 703 "Claude" 8 2 #6d28d9
+RECT 40 740 370 120 0 #ffffff 12
+RECT 46 748 6 40 1 #4f46e5
+TEXT 62 752 "Video Depth" 12 2 #1e293b bold
+TEXT 62 772 "Spatial from Video" 9 2 #94a3b8
+TEXT 46 798 "Monocular depth + temporal" 9 1 #475569
+TEXT 46 814 "LLM reasoning pipeline." 9 1 #475569
+RECT 46 834 56 16 1 #ede9fe 8
+TEXT 52 837 "PyTorch" 8 2 #6d28d9
+RECT 430 740 370 120 0 #ffffff 12
+RECT 436 748 6 40 1 #4f46e5
+TEXT 452 752 "Sketch-Lang" 12 2 #1e293b bold
+TEXT 452 772 "2D Vector DSL" 9 2 #94a3b8
+TEXT 436 798 "Vision matrix output for" 9 1 #475569
+TEXT 436 814 "LLM visual reasoning." 9 1 #475569
+RECT 436 834 68 16 1 #ede9fe 8
+TEXT 442 837 "JavaScript" 8 2 #6d28d9
+RECT 40 880 370 120 0 #ffffff 12
+RECT 40 880 370 36 1 #4f46e5 12
+TEXT 60 890 "Skills" 14 2 #ffffff bold
+TEXT 56 930 "Python  JS  TS  Go  SQL  Rust" 9 1 #475569
+TEXT 56 950 "React  Next.js  FastAPI  Django" 9 1 #475569
+TEXT 56 970 "Docker  K8s  AWS  PostgreSQL" 9 1 #475569
+RECT 430 880 370 120 0 #ffffff 12
+RECT 430 880 370 36 1 #4f46e5 12
+TEXT 450 890 "Education" 14 2 #ffffff bold
+TEXT 446 930 "MSc Computer Science" 10 1 #1e293b bold
+TEXT 446 948 "UCL — 2018-2020" 9 1 #94a3b8
+TEXT 446 972 "BSc Mathematics" 10 1 #1e293b bold
+TEXT 446 990 "Univ. of Warsaw — 2014-2018" 9 1 #94a3b8
+RECT 40 1020 760 70 0 #ffffff 12
+RECT 40 1020 760 36 1 #4f46e5 12
+TEXT 60 1030 "Certifications" 14 2 #ffffff bold
+TEXT 60 1068 "AWS Solutions Architect" 10 1 #475569
+TEXT 310 1068 "GCP Data Engineer" 10 1 #475569
+TEXT 530 1068 "CKA Kubernetes" 10 1 #475569`,
+
+'CV — Swiss Grid': `CANVAS 840 1120 #ffffff
+LINE 220 0 220 1120 0 #f0f0f0 1
+LINE 500 0 500 1120 0 #f0f0f0 1
+RECT 0 0 840 8 1 #dc2626
+TEXT 60 50 "Robert" 42 1 #111111 bold
+TEXT 60 96 "Paszek" 42 1 #111111 bold
+RECT 60 116 40 6 1 #dc2626
+TEXT 500 60 "Software Engineer" 12 1 #111111
+TEXT 500 80 "robert@example.com" 10 1 #666666
+TEXT 500 98 "github.com/robertpaszek" 10 1 #666666
+TEXT 500 116 "London, UK" 10 1 #666666
+LINE 60 148 780 148 1 #111111 1
+TEXT 60 172 "Profile" 10 1 #dc2626 bold
+TEXT 220 172 "Software engineer focused on spatial computing, domain-specific" 10 1 #333333
+TEXT 220 190 "languages, and creative tooling. Building the bridge between" 10 1 #333333
+TEXT 220 208 "human spatial intuition and machine understanding." 10 1 #333333
+LINE 60 236 780 236 1 #e0e0e0 1
+TEXT 60 260 "Experience" 10 1 #dc2626 bold
+TEXT 220 260 "Senior Software Engineer" 12 1 #111111 bold
+TEXT 500 260 "Spatial Labs" 10 1 #666666
+TEXT 700 260 "2023—" 9 1 #999999
+TEXT 220 282 "Designed VOXI DSL for 3D voxel scene description." 10 1 #333333
+TEXT 220 298 "Built real-time renderer with depth/shading modes." 10 1 #333333
+TEXT 220 314 "Reduced LLM scene-generation tokens by 85%." 10 1 #333333
+LINE 220 338 780 338 1 #e0e0e0 1
+TEXT 220 356 "Full Stack Developer" 12 1 #111111 bold
+TEXT 500 356 "TechFlow" 10 1 #666666
+TEXT 700 356 "2021—23" 9 1 #999999
+TEXT 220 378 "Built microservice architecture serving 2M req/day." 10 1 #333333
+TEXT 220 394 "Migrated monolith to event-driven system (Kafka)." 10 1 #333333
+TEXT 220 410 "Led frontend rebuild in Next.js, reduced bundle 60%." 10 1 #333333
+LINE 220 434 780 434 1 #e0e0e0 1
+TEXT 220 452 "Junior Developer" 12 1 #111111 bold
+TEXT 500 452 "DataPulse" 10 1 #666666
+TEXT 700 452 "2020—21" 9 1 #999999
+TEXT 220 474 "Built ETL pipelines processing 500GB daily." 10 1 #333333
+TEXT 220 490 "Created internal dashboard with React + D3.js." 10 1 #333333
+LINE 60 522 780 522 1 #e0e0e0 1
+TEXT 60 546 "Projects" 10 1 #dc2626 bold
+TEXT 220 546 "VOXI" 12 1 #111111 bold
+TEXT 500 546 "Python, JS, WebGL" 9 1 #999999
+TEXT 220 566 "Voxel-based DSL for 3D scenes in ~100 tokens." 10 1 #333333
+TEXT 220 582 "Used by LLMs for spatial reasoning and generation." 10 1 #333333
+LINE 220 606 780 606 1 #e0e0e0 1
+TEXT 220 624 "Brain Converter" 12 1 #111111 bold
+TEXT 500 624 "FastAPI, Claude AI" 9 1 #999999
+TEXT 220 644 "Natural language to structured 3D voxel scenes." 10 1 #333333
+TEXT 220 660 "Combines LLM reasoning with DSL output pipeline." 10 1 #333333
+LINE 220 684 780 684 1 #e0e0e0 1
+TEXT 220 702 "Video Depth Reasoning" 12 1 #111111 bold
+TEXT 500 702 "PyTorch, DepthPro" 9 1 #999999
+TEXT 220 722 "Extracts spatial structure from video using monocular" 10 1 #333333
+TEXT 220 738 "depth estimation and temporal LLM reasoning." 10 1 #333333
+LINE 220 762 780 762 1 #e0e0e0 1
+TEXT 220 780 "Sketch-Lang" 12 1 #111111 bold
+TEXT 500 780 "JavaScript, Canvas" 9 1 #999999
+TEXT 220 800 "Minimal 2D vector drawing language with vision matrix" 10 1 #333333
+TEXT 220 816 "output. Converts sketches to ASCII for LLM input." 10 1 #333333
+LINE 60 848 780 848 1 #e0e0e0 1
+TEXT 60 872 "Skills" 10 1 #dc2626 bold
+TEXT 220 872 "Languages" 9 1 #999999
+TEXT 320 872 "Python  JavaScript  TypeScript  Go  SQL  Rust" 10 1 #333333
+TEXT 220 896 "Frameworks" 9 1 #999999
+TEXT 320 896 "React  Next.js  FastAPI  Flask  Node  Django" 10 1 #333333
+TEXT 220 920 "Infrastructure" 9 1 #999999
+TEXT 320 920 "Docker  Kubernetes  AWS  PostgreSQL  Redis" 10 1 #333333
+LINE 60 950 780 950 1 #e0e0e0 1
+TEXT 60 974 "Education" 10 1 #dc2626 bold
+TEXT 220 974 "MSc Computer Science" 12 1 #111111 bold
+TEXT 500 974 "University College London" 10 1 #666666
+TEXT 700 974 "2018—20" 9 1 #999999
+TEXT 220 1002 "BSc Mathematics" 12 1 #111111 bold
+TEXT 500 1002 "University of Warsaw" 10 1 #666666
+TEXT 700 1002 "2014—18" 9 1 #999999
+LINE 60 1032 780 1032 1 #e0e0e0 1
+TEXT 60 1056 "Certs" 10 1 #dc2626 bold
+TEXT 220 1056 "AWS Solutions Architect" 10 1 #333333
+TEXT 500 1056 "GCP Data Engineer" 10 1 #333333
+TEXT 220 1076 "Certified Kubernetes Administrator" 10 1 #333333
+RECT 0 1112 840 8 0 #dc2626`,
+
+'CV — Warm Earth': `CANVAS 840 1120 #faf8f5
+RECT 0 0 840 6 0 #b45309
+RECT 0 6 840 3 0 #d97706
+RECT 0 9 840 140 0 #292524
+ELLIPSE 100 80 38 38 1 #44403c
+TEXT 86 78 "RP" 22 2 #d6d3d1 bold
+TEXT 170 48 "Robert Paszek" 26 1 #fafaf9 bold
+TEXT 170 82 "Software Engineer" 14 1 #a8a29e
+TEXT 170 110 "Spatial Computing  ·  DSL Design  ·  Creative Tools" 10 1 #78716c
+TEXT 580 58 "robert@example.com" 10 1 #d6d3d1
+TEXT 580 78 "github.com/robertpaszek" 10 1 #d6d3d1
+TEXT 580 98 "London, UK" 10 1 #d6d3d1
+RECT 50 172 740 60 0 #f5f0eb 8
+RECT 50 172 6 60 1 #b45309
+TEXT 72 182 "Software engineer focused on spatial computing, domain-specific languages," 10 1 #57534e
+TEXT 72 200 "and creative tooling. Building bridges between human intuition and machines." 10 1 #57534e
+TEXT 50 260 "Experience" 13 1 #292524 bold
+RECT 50 278 80 3 1 #b45309
+RECT 50 300 740 90 0 #ffffff 8
+TEXT 70 312 "Senior Software Engineer" 13 1 #292524 bold
+TEXT 70 332 "Spatial Labs — London" 10 1 #a8a29e
+TEXT 620 312 "2023 — Present" 10 1 #b45309 bold
+TEXT 70 356 "Designed VOXI DSL for 3D voxel scenes. Built real-time renderer" 10 1 #57534e
+TEXT 70 372 "with depth/shading modes. Reduced LLM scene-generation tokens by 85%." 10 1 #57534e
+RECT 50 400 740 72 0 #ffffff 8
+TEXT 70 412 "Full Stack Developer" 13 1 #292524 bold
+TEXT 70 432 "TechFlow — Remote" 10 1 #a8a29e
+TEXT 620 412 "2021 — 2023" 10 1 #b45309 bold
+TEXT 70 456 "Microservice arch, 2M req/day. Event-driven migration. Next.js rebuild." 10 1 #57534e
+RECT 50 482 740 56 0 #ffffff 8
+TEXT 70 494 "Junior Developer" 13 1 #292524 bold
+TEXT 70 514 "DataPulse — Warsaw" 10 1 #a8a29e
+TEXT 620 494 "2020 — 2021" 10 1 #b45309 bold
+TEXT 50 566 "Projects" 13 1 #292524 bold
+RECT 50 584 80 3 1 #b45309
+RECT 50 604 360 110 0 #ffffff 8
+RECT 50 604 360 4 1 #b45309
+TEXT 66 620 "VOXI — Spatial Reasoning DSL" 11 1 #292524 bold
+TEXT 66 644 "Voxel-based DSL for describing" 9 1 #57534e
+TEXT 66 660 "3D scenes in ~100 tokens. LLM" 9 1 #57534e
+TEXT 66 676 "spatial reasoning & generation." 9 1 #57534e
+RECT 66 696 50 14 1 #fef3c7 6
+TEXT 72 698 "Python" 8 2 #92400e
+RECT 122 696 30 14 1 #fef3c7 6
+TEXT 128 698 "JS" 8 2 #92400e
+RECT 430 604 360 110 0 #ffffff 8
+RECT 430 604 360 4 1 #b45309
+TEXT 446 620 "Brain Converter" 11 1 #292524 bold
+TEXT 446 644 "Natural language to structured" 9 1 #57534e
+TEXT 446 660 "3D voxel scenes via LLM" 9 1 #57534e
+TEXT 446 676 "reasoning + DSL pipeline." 9 1 #57534e
+RECT 446 696 58 14 1 #fef3c7 6
+TEXT 452 698 "FastAPI" 8 2 #92400e
+RECT 510 696 54 14 1 #fef3c7 6
+TEXT 516 698 "Claude" 8 2 #92400e
+RECT 50 728 360 110 0 #ffffff 8
+RECT 50 728 360 4 1 #b45309
+TEXT 66 744 "Video Depth Reasoning" 11 1 #292524 bold
+TEXT 66 768 "Spatial structure from video" 9 1 #57534e
+TEXT 66 784 "via monocular depth + LLM" 9 1 #57534e
+TEXT 66 800 "temporal reasoning." 9 1 #57534e
+RECT 66 820 56 14 1 #fef3c7 6
+TEXT 72 822 "PyTorch" 8 2 #92400e
+RECT 430 728 360 110 0 #ffffff 8
+RECT 430 728 360 4 1 #b45309
+TEXT 446 744 "Sketch-Lang" 11 1 #292524 bold
+TEXT 446 768 "Minimal 2D vector drawing" 9 1 #57534e
+TEXT 446 784 "language. Vision matrix output" 9 1 #57534e
+TEXT 446 800 "for LLM visual reasoning." 9 1 #57534e
+RECT 446 820 68 14 1 #fef3c7 6
+TEXT 452 822 "JavaScript" 8 2 #92400e
+TEXT 50 866 "Skills" 13 1 #292524 bold
+RECT 50 884 80 3 1 #b45309
+RECT 50 904 740 56 0 #ffffff 8
+TEXT 66 914 "Languages" 9 1 #a8a29e bold
+TEXT 150 914 "Python · JavaScript · TypeScript · Go · SQL · Rust" 10 1 #57534e
+TEXT 66 936 "Stack" 9 1 #a8a29e bold
+TEXT 150 936 "React · Next.js · FastAPI · Docker · K8s · AWS · PostgreSQL · Redis" 10 1 #57534e
+TEXT 50 988 "Education" 13 1 #292524 bold
+RECT 50 1006 80 3 1 #b45309
+RECT 50 1024 360 56 0 #ffffff 8
+TEXT 66 1034 "MSc Computer Science" 11 1 #292524 bold
+TEXT 66 1054 "UCL — 2018–2020" 10 1 #a8a29e
+RECT 430 1024 360 56 0 #ffffff 8
+TEXT 446 1034 "BSc Mathematics" 11 1 #292524 bold
+TEXT 446 1054 "Univ. of Warsaw — 2014–2018" 10 1 #a8a29e
+RECT 0 1111 840 3 0 #d97706
+RECT 0 1114 840 6 0 #b45309`,
+
+'CV — Blueprint': `CANVAS 840 1120 #1e3a5f
+LINE 0 80 840 80 0 #264a73 1
+LINE 0 160 840 160 0 #264a73 1
+LINE 0 240 840 240 0 #264a73 1
+LINE 0 320 840 320 0 #264a73 1
+LINE 0 400 840 400 0 #264a73 1
+LINE 0 480 840 480 0 #264a73 1
+LINE 0 560 840 560 0 #264a73 1
+LINE 0 640 840 640 0 #264a73 1
+LINE 0 720 840 720 0 #264a73 1
+LINE 0 800 840 800 0 #264a73 1
+LINE 0 880 840 880 0 #264a73 1
+LINE 0 960 840 960 0 #264a73 1
+LINE 0 1040 840 1040 0 #264a73 1
+LINE 105 0 105 1120 0 #264a73 1
+LINE 210 0 210 1120 0 #264a73 1
+LINE 315 0 315 1120 0 #264a73 1
+LINE 420 0 420 1120 0 #264a73 1
+LINE 525 0 525 1120 0 #264a73 1
+LINE 630 0 630 1120 0 #264a73 1
+LINE 735 0 735 1120 0 #264a73 1
+RECT 20 20 800 1080 1 #4a90d9
+RECT 24 24 792 1072 2 #2a6ab0
+RECT 500 1040 316 52 3 #1e3a5f
+RECT 500 1040 316 52 4 #4a90d9
+LINE 500 1062 816 1062 4 #4a90d9 1
+LINE 660 1040 660 1092 4 #4a90d9 1
+TEXT 516 1048 "ROBERT PASZEK" 10 5 #8ec5fc bold
+TEXT 516 1072 "SOFTWARE ENGINEER" 8 5 #5a9fd4
+TEXT 672 1048 "REV 2024.03" 8 5 #5a9fd4
+TEXT 672 1072 "SCALE: 1:1" 8 5 #5a9fd4
+TEXT 50 56 "ROBERT PASZEK" 30 3 #8ec5fc bold
+TEXT 50 90 "SOFTWARE ENGINEER — SPATIAL COMPUTING" 12 3 #5a9fd4
+LINE 50 108 790 108 3 #4a90d9 2
+RECT 50 120 300 50 3 #1a3050 4
+TEXT 60 130 "EMAIL:  robert@example.com" 9 4 #8ec5fc
+TEXT 60 146 "GIT:    github.com/robertpaszek" 9 4 #8ec5fc
+TEXT 60 162 "LOC:    London, UK" 9 4 #8ec5fc
+TEXT 50 198 "01. PROFILE" 11 3 #4a90d9 bold
+LINE 50 214 790 214 3 #2a6ab0 1
+TEXT 50 232 "Software engineer focused on spatial computing, DSL design," 10 3 #8ec5fc
+TEXT 50 248 "and creative tooling. Bridging human spatial intuition" 10 3 #8ec5fc
+TEXT 50 264 "and machine understanding through token-efficient DSLs." 10 3 #8ec5fc
+TEXT 50 298 "02. EXPERIENCE" 11 3 #4a90d9 bold
+LINE 50 314 790 314 3 #2a6ab0 1
+LINE 50 336 56 330 3 #5a9fd4 1
+LINE 50 336 56 342 3 #5a9fd4 1
+TEXT 66 332 "SENIOR SOFTWARE ENGINEER" 12 3 #ffffff bold
+TEXT 380 332 "Spatial Labs" 10 3 #5a9fd4
+TEXT 660 332 "2023 — PRESENT" 9 3 #4a90d9
+TEXT 66 354 "- Designed VOXI DSL for 3D voxel scene description" 9 3 #8ec5fc
+TEXT 66 370 "- Built real-time renderer with depth/shading modes" 9 3 #8ec5fc
+TEXT 66 386 "- Reduced LLM scene-generation tokens by 85%" 9 3 #8ec5fc
+LINE 50 406 56 400 3 #5a9fd4 1
+LINE 50 406 56 412 3 #5a9fd4 1
+TEXT 66 402 "FULL STACK DEVELOPER" 12 3 #ffffff bold
+TEXT 380 402 "TechFlow" 10 3 #5a9fd4
+TEXT 660 402 "2021 — 2023" 9 3 #4a90d9
+TEXT 66 424 "- Microservice arch serving 2M req/day" 9 3 #8ec5fc
+TEXT 66 440 "- Event-driven migration (Kafka), Next.js rebuild" 9 3 #8ec5fc
+LINE 50 460 56 454 3 #5a9fd4 1
+LINE 50 460 56 466 3 #5a9fd4 1
+TEXT 66 456 "JUNIOR DEVELOPER" 12 3 #ffffff bold
+TEXT 380 456 "DataPulse" 10 3 #5a9fd4
+TEXT 660 456 "2020 — 2021" 9 3 #4a90d9
+TEXT 66 478 "- ETL pipelines processing 500GB/day, React + D3 dashboard" 9 3 #8ec5fc
+TEXT 50 518 "03. PROJECTS" 11 3 #4a90d9 bold
+LINE 50 534 790 534 3 #2a6ab0 1
+RECT 50 548 360 100 3 #1a3050 4
+TEXT 60 556 "VOXI" 11 4 #ffffff bold
+TEXT 120 556 "Spatial Reasoning DSL" 9 4 #5a9fd4
+TEXT 60 576 "Voxel-based DSL for 3D scenes" 9 4 #8ec5fc
+TEXT 60 592 "in ~100 tokens. Used by LLMs" 9 4 #8ec5fc
+TEXT 60 608 "for spatial reasoning." 9 4 #8ec5fc
+TEXT 60 630 "[Python] [JS] [WebGL]" 8 4 #4a90d9
+RECT 430 548 360 100 3 #1a3050 4
+TEXT 440 556 "BRAIN CONVERTER" 11 4 #ffffff bold
+TEXT 440 576 "Natural language to structured" 9 4 #8ec5fc
+TEXT 440 592 "3D voxel scenes. Combines LLM" 9 4 #8ec5fc
+TEXT 440 608 "reasoning + DSL output." 9 4 #8ec5fc
+TEXT 440 630 "[FastAPI] [Claude AI] [React]" 8 4 #4a90d9
+RECT 50 662 360 100 3 #1a3050 4
+TEXT 60 670 "VIDEO DEPTH REASONING" 11 4 #ffffff bold
+TEXT 60 690 "Spatial structure from video" 9 4 #8ec5fc
+TEXT 60 706 "using monocular depth + LLM" 9 4 #8ec5fc
+TEXT 60 722 "temporal reasoning." 9 4 #8ec5fc
+TEXT 60 744 "[PyTorch] [DepthPro] [FFmpeg]" 8 4 #4a90d9
+RECT 430 662 360 100 3 #1a3050 4
+TEXT 440 670 "SKETCH-LANG" 11 4 #ffffff bold
+TEXT 440 690 "Minimal 2D vector drawing" 9 4 #8ec5fc
+TEXT 440 706 "language with vision matrix." 9 4 #8ec5fc
+TEXT 440 722 "Converts sketches to ASCII." 9 4 #8ec5fc
+TEXT 440 744 "[JavaScript] [Canvas] [DSL]" 8 4 #4a90d9
+TEXT 50 790 "04. SKILLS MATRIX" 11 3 #4a90d9 bold
+LINE 50 806 790 806 3 #2a6ab0 1
+RECT 50 816 740 80 3 #1a3050 4
+LINE 50 836 790 836 4 #264a73 1
+LINE 50 856 790 856 4 #264a73 1
+LINE 250 816 250 896 4 #264a73 1
+LINE 510 816 510 896 4 #264a73 1
+TEXT 60 822 "LANGUAGES" 8 5 #5a9fd4
+TEXT 260 822 "FRAMEWORKS" 8 5 #5a9fd4
+TEXT 520 822 "INFRASTRUCTURE" 8 5 #5a9fd4
+TEXT 60 842 "Python" 9 5 #8ec5fc
+TEXT 130 842 "JavaScript" 9 5 #8ec5fc
+TEXT 60 862 "TypeScript" 9 5 #8ec5fc
+TEXT 150 862 "Go" 9 5 #8ec5fc
+TEXT 180 862 "SQL" 9 5 #8ec5fc
+TEXT 260 842 "React" 9 5 #8ec5fc
+TEXT 320 842 "Next.js" 9 5 #8ec5fc
+TEXT 400 842 "FastAPI" 9 5 #8ec5fc
+TEXT 260 862 "Flask" 9 5 #8ec5fc
+TEXT 320 862 "Node" 9 5 #8ec5fc
+TEXT 380 862 "Django" 9 5 #8ec5fc
+TEXT 520 842 "Docker" 9 5 #8ec5fc
+TEXT 590 842 "Kubernetes" 9 5 #8ec5fc
+TEXT 690 842 "AWS" 9 5 #8ec5fc
+TEXT 520 862 "PostgreSQL" 9 5 #8ec5fc
+TEXT 610 862 "Redis" 9 5 #8ec5fc
+TEXT 680 862 "Firebase" 9 5 #8ec5fc
+TEXT 50 920 "05. EDUCATION" 11 3 #4a90d9 bold
+LINE 50 936 790 936 3 #2a6ab0 1
+TEXT 50 956 "MSc Computer Science" 11 3 #ffffff bold
+TEXT 300 956 "University College London" 10 3 #5a9fd4
+TEXT 660 956 "2018 — 2020" 9 3 #4a90d9
+TEXT 50 980 "BSc Mathematics" 11 3 #ffffff bold
+TEXT 300 980 "University of Warsaw" 10 3 #5a9fd4
+TEXT 660 980 "2014 — 2018" 9 3 #4a90d9
+TEXT 50 1012 "06. CERTIFICATIONS" 11 3 #4a90d9 bold
+LINE 50 1028 790 1028 3 #2a6ab0 1
+TEXT 50 1044 "AWS Solutions Architect" 9 3 #8ec5fc
+TEXT 300 1044 "GCP Data Engineer" 9 3 #8ec5fc
+TEXT 520 1044 "CKA Kubernetes" 9 3 #8ec5fc`,
+
+'CV — Coral Accent': `CANVAS 840 1120 #fafafa
+RECT 580 0 260 1120 0 #1a1a2e
+RECT 0 0 580 120 0 #ffffff
+TEXT 50 40 "Robert" 34 1 #1a1a2e bold
+TEXT 50 80 "Paszek" 34 1 #f97066 bold
+TEXT 50 108 "Software Engineer" 12 1 #888888
+TEXT 608 40 "CONTACT" 9 1 #f97066 bold
+LINE 608 54 810 54 1 #2a2a42 1
+TEXT 608 72 "robert@example.com" 10 1 #c4c4d8
+TEXT 608 92 "github.com/robertpaszek" 10 1 #c4c4d8
+TEXT 608 112 "London, UK" 10 1 #c4c4d8
+TEXT 608 152 "LANGUAGES" 9 1 #f97066 bold
+LINE 608 166 810 166 1 #2a2a42 1
+TEXT 608 184 "Python" 10 1 #e4e4f0
+RECT 608 200 160 4 1 #2a2a42
+RECT 608 200 152 4 2 #f97066
+TEXT 608 218 "JavaScript" 10 1 #e4e4f0
+RECT 608 234 160 4 1 #2a2a42
+RECT 608 234 144 4 2 #f97066
+TEXT 608 252 "TypeScript" 10 1 #e4e4f0
+RECT 608 268 160 4 1 #2a2a42
+RECT 608 268 136 4 2 #f97066
+TEXT 608 286 "Go" 10 1 #e4e4f0
+RECT 608 302 160 4 1 #2a2a42
+RECT 608 302 112 4 2 #f97066
+TEXT 608 320 "SQL" 10 1 #e4e4f0
+RECT 608 336 160 4 1 #2a2a42
+RECT 608 336 128 4 2 #f97066
+TEXT 608 360 "Rust" 10 1 #e4e4f0
+RECT 608 376 160 4 1 #2a2a42
+RECT 608 376 96 4 2 #f97066
+TEXT 608 410 "FRAMEWORKS" 9 1 #f97066 bold
+LINE 608 424 810 424 1 #2a2a42 1
+TEXT 608 442 "React" 9 1 #c4c4d8
+TEXT 660 442 "Next.js" 9 1 #c4c4d8
+TEXT 720 442 "FastAPI" 9 1 #c4c4d8
+TEXT 608 462 "Flask" 9 1 #c4c4d8
+TEXT 660 462 "Node" 9 1 #c4c4d8
+TEXT 710 462 "Django" 9 1 #c4c4d8
+TEXT 608 500 "INFRASTRUCTURE" 9 1 #f97066 bold
+LINE 608 514 810 514 1 #2a2a42 1
+TEXT 608 532 "Docker" 9 1 #c4c4d8
+TEXT 668 532 "K8s" 9 1 #c4c4d8
+TEXT 710 532 "AWS" 9 1 #c4c4d8
+TEXT 608 552 "PostgreSQL" 9 1 #c4c4d8
+TEXT 690 552 "Redis" 9 1 #c4c4d8
+TEXT 608 572 "Firebase" 9 1 #c4c4d8
+TEXT 608 612 "EDUCATION" 9 1 #f97066 bold
+LINE 608 626 810 626 1 #2a2a42 1
+TEXT 608 644 "MSc Computer Science" 10 1 #e4e4f0 bold
+TEXT 608 662 "UCL — 2018-2020" 9 1 #8888a8
+TEXT 608 692 "BSc Mathematics" 10 1 #e4e4f0 bold
+TEXT 608 710 "Univ. Warsaw — 2014-2018" 9 1 #8888a8
+TEXT 608 752 "CERTIFICATIONS" 9 1 #f97066 bold
+LINE 608 766 810 766 1 #2a2a42 1
+TEXT 608 784 "AWS Solutions Architect" 9 1 #c4c4d8
+TEXT 608 804 "GCP Data Engineer" 9 1 #c4c4d8
+TEXT 608 824 "CKA Kubernetes" 9 1 #c4c4d8
+TEXT 608 864 "INTERESTS" 9 1 #f97066 bold
+LINE 608 878 810 878 1 #2a2a42 1
+TEXT 608 896 "Spatial computing" 9 1 #c4c4d8
+TEXT 608 914 "Computer graphics" 9 1 #c4c4d8
+TEXT 608 932 "Language design" 9 1 #c4c4d8
+TEXT 608 950 "Generative AI" 9 1 #c4c4d8
+TEXT 50 150 "PROFILE" 10 1 #1a1a2e bold
+LINE 50 164 540 164 1 #e0e0e0 1
+TEXT 50 184 "Software engineer focused on spatial computing," 10 1 #444444
+TEXT 50 200 "domain-specific languages, and creative tooling." 10 1 #444444
+TEXT 50 216 "Bridging human intuition and machine understanding" 10 1 #444444
+TEXT 50 232 "through compact, token-efficient DSLs." 10 1 #444444
+TEXT 50 270 "EXPERIENCE" 10 1 #1a1a2e bold
+LINE 50 284 540 284 1 #e0e0e0 1
+RECT 50 298 10 10 1 #f97066
+TEXT 72 296 "Senior Software Engineer" 12 1 #1a1a2e bold
+TEXT 72 316 "Spatial Labs — London" 10 1 #999999
+TEXT 420 296 "2023 — Present" 9 1 #f97066
+TEXT 72 340 "Designed VOXI DSL for 3D voxel scene description." 10 1 #444444
+TEXT 72 356 "Built real-time renderer with depth/shading modes." 10 1 #444444
+TEXT 72 372 "Reduced LLM scene-generation tokens by 85%." 10 1 #444444
+RECT 50 398 10 10 1 #f97066
+TEXT 72 396 "Full Stack Developer" 12 1 #1a1a2e bold
+TEXT 72 416 "TechFlow — Remote" 10 1 #999999
+TEXT 420 396 "2021 — 2023" 9 1 #f97066
+TEXT 72 440 "Microservice arch serving 2M req/day." 10 1 #444444
+TEXT 72 456 "Event-driven migration. Next.js, bundle -60%." 10 1 #444444
+RECT 50 482 10 10 1 #f97066
+TEXT 72 480 "Junior Developer" 12 1 #1a1a2e bold
+TEXT 72 500 "DataPulse — Warsaw" 10 1 #999999
+TEXT 420 480 "2020 — 2021" 9 1 #f97066
+TEXT 72 524 "ETL pipelines 500GB/day. React + D3 dashboard." 10 1 #444444
+TEXT 50 568 "PROJECTS" 10 1 #1a1a2e bold
+LINE 50 582 540 582 1 #e0e0e0 1
+RECT 50 596 240 120 0 #ffffff 8
+RECT 50 596 240 4 1 #f97066
+TEXT 64 612 "VOXI" 11 2 #1a1a2e bold
+TEXT 64 632 "Spatial Reasoning DSL" 9 2 #999999
+TEXT 64 654 "3D scenes in ~100 tokens" 9 1 #444444
+TEXT 64 670 "for LLM spatial reasoning." 9 1 #444444
+RECT 64 694 48 14 1 #fff1f0 6
+TEXT 70 697 "Python" 7 2 #f97066
+RECT 118 694 28 14 1 #fff1f0 6
+TEXT 124 697 "JS" 7 2 #f97066
+RECT 310 596 240 120 0 #ffffff 8
+RECT 310 596 240 4 1 #f97066
+TEXT 324 612 "Brain Converter" 11 2 #1a1a2e bold
+TEXT 324 632 "NL → 3D Scenes" 9 2 #999999
+TEXT 324 654 "LLM reasoning + DSL" 9 1 #444444
+TEXT 324 670 "output pipeline." 9 1 #444444
+RECT 324 694 56 14 1 #fff1f0 6
+TEXT 330 697 "FastAPI" 7 2 #f97066
+RECT 386 694 52 14 1 #fff1f0 6
+TEXT 392 697 "Claude" 7 2 #f97066
+RECT 50 730 240 120 0 #ffffff 8
+RECT 50 730 240 4 1 #f97066
+TEXT 64 746 "Video Depth" 11 2 #1a1a2e bold
+TEXT 64 766 "Spatial from Video" 9 2 #999999
+TEXT 64 788 "Monocular depth + LLM" 9 1 #444444
+TEXT 64 804 "temporal reasoning." 9 1 #444444
+RECT 64 828 56 14 1 #fff1f0 6
+TEXT 70 831 "PyTorch" 7 2 #f97066
+RECT 310 730 240 120 0 #ffffff 8
+RECT 310 730 240 4 1 #f97066
+TEXT 324 746 "Sketch-Lang" 11 2 #1a1a2e bold
+TEXT 324 766 "2D Vector DSL" 9 2 #999999
+TEXT 324 788 "Vision matrix for LLM" 9 1 #444444
+TEXT 324 804 "visual reasoning." 9 1 #444444
+RECT 324 828 68 14 1 #fff1f0 6
+TEXT 330 831 "JavaScript" 7 2 #f97066`,
+
+'CV — Timeline': `CANVAS 840 1120 #ffffff
+TEXT 260 40 "ROBERT PASZEK" 28 1 #222222 bold
+TEXT 290 74 "Software Engineer" 14 1 #aaaaaa
+LINE 340 94 500 94 1 #222222 2
+TEXT 210 118 "robert@example.com" 9 1 #888888
+TEXT 390 118 "github.com/robertpaszek" 9 1 #888888
+TEXT 610 118 "London, UK" 9 1 #888888
+RECT 100 150 640 50 0 #f8f8f8 8
+TEXT 120 162 "Software engineer focused on spatial computing, DSL design, and creative" 10 1 #555555
+TEXT 120 180 "tooling. Building the bridge between human intuition and machine understanding." 10 1 #555555
+LINE 420 220 420 920 0 #e0e0e0 2
+RECT 370 222 100 24 1 #222222 12
+TEXT 384 228 "Experience" 10 2 #ffffff bold
+ELLIPSE 420 280 6 6 2 #3b82f6
+LINE 426 280 450 280 1 #3b82f6 2
+RECT 450 256 340 90 1 #f0f7ff 8
+RECT 450 256 340 28 2 #3b82f6 8
+TEXT 464 264 "Senior Software Engineer" 11 3 #ffffff bold
+TEXT 464 296 "Spatial Labs — London" 9 2 #888888
+TEXT 464 316 "VOXI DSL, real-time renderer," 9 2 #555555
+TEXT 464 332 "85% LLM token reduction." 9 2 #555555
+TEXT 710 264 "2023—" 8 3 #dbeafe
+ELLIPSE 420 380 6 6 2 #3b82f6
+LINE 414 380 390 380 1 #3b82f6 2
+RECT 50 356 340 90 1 #f0f7ff 8
+RECT 50 356 340 28 2 #3b82f6 8
+TEXT 64 364 "Full Stack Developer" 11 3 #ffffff bold
+TEXT 64 396 "TechFlow — Remote" 9 2 #888888
+TEXT 64 416 "Microservices, 2M req/day." 9 2 #555555
+TEXT 64 432 "Next.js rebuild, -60% bundle." 9 2 #555555
+TEXT 300 364 "2021—23" 8 3 #dbeafe
+ELLIPSE 420 480 6 6 2 #3b82f6
+LINE 426 480 450 480 1 #3b82f6 2
+RECT 450 456 340 74 1 #f0f7ff 8
+RECT 450 456 340 28 2 #3b82f6 8
+TEXT 464 464 "Junior Developer" 11 3 #ffffff bold
+TEXT 464 496 "DataPulse — Warsaw" 9 2 #888888
+TEXT 464 516 "ETL 500GB/day, React + D3." 9 2 #555555
+TEXT 710 464 "2020—21" 8 3 #dbeafe
+RECT 378 558 84 24 1 #222222 12
+TEXT 398 564 "Projects" 10 2 #ffffff bold
+ELLIPSE 420 610 6 6 2 #10b981
+LINE 414 610 390 610 1 #10b981 2
+RECT 50 590 340 76 1 #f0fdf4 8
+TEXT 64 600 "VOXI" 11 2 #111111 bold
+TEXT 110 600 "— Spatial Reasoning DSL" 9 2 #888888
+TEXT 64 622 "3D scenes in ~100 tokens." 9 1 #555555
+TEXT 64 638 "Used by LLMs for reasoning." 9 1 #555555
+RECT 64 652 48 12 1 #d1fae5 6
+TEXT 70 654 "Python" 7 2 #059669
+RECT 118 652 28 12 1 #d1fae5 6
+TEXT 124 654 "JS" 7 2 #059669
+ELLIPSE 420 700 6 6 2 #10b981
+LINE 426 700 450 700 1 #10b981 2
+RECT 450 680 340 76 1 #f0fdf4 8
+TEXT 464 690 "Brain Converter" 11 2 #111111 bold
+TEXT 464 712 "NL to 3D voxel scenes." 9 1 #555555
+TEXT 464 728 "LLM + DSL output pipeline." 9 1 #555555
+RECT 464 742 56 12 1 #d1fae5 6
+TEXT 470 744 "FastAPI" 7 2 #059669
+RECT 526 742 52 12 1 #d1fae5 6
+TEXT 532 744 "Claude" 7 2 #059669
+ELLIPSE 420 790 6 6 2 #10b981
+LINE 414 790 390 790 1 #10b981 2
+RECT 50 770 340 76 1 #f0fdf4 8
+TEXT 64 780 "Video Depth" 11 2 #111111 bold
+TEXT 64 802 "Spatial structure from video." 9 1 #555555
+TEXT 64 818 "Depth estimation + LLM." 9 1 #555555
+RECT 64 832 56 12 1 #d1fae5 6
+TEXT 70 834 "PyTorch" 7 2 #059669
+ELLIPSE 420 880 6 6 2 #10b981
+LINE 426 880 450 880 1 #10b981 2
+RECT 450 860 340 76 1 #f0fdf4 8
+TEXT 464 870 "Sketch-Lang" 11 2 #111111 bold
+TEXT 464 892 "2D vector DSL with vision" 9 1 #555555
+TEXT 464 908 "matrix for LLM input." 9 1 #555555
+RECT 464 922 68 12 1 #d1fae5 6
+TEXT 470 924 "JavaScript" 7 2 #059669
+ELLIPSE 420 920 4 4 2 #cccccc
+LINE 60 960 780 960 1 #e0e0e0 1
+TEXT 60 982 "SKILLS" 9 1 #222222 bold
+TEXT 120 982 "Python  JS  TS  Go  SQL  Rust  React  Next.js  FastAPI  Docker  K8s  AWS  PostgreSQL" 9 1 #888888
+LINE 60 1006 780 1006 1 #e0e0e0 1
+TEXT 60 1028 "EDUCATION" 9 1 #222222 bold
+TEXT 168 1028 "MSc Computer Science, UCL (2018-2020)" 9 1 #555555
+TEXT 168 1048 "BSc Mathematics, Univ. of Warsaw (2014-2018)" 9 1 #555555
+LINE 60 1072 780 1072 1 #e0e0e0 1
+TEXT 60 1094 "CERTS" 9 1 #222222 bold
+TEXT 168 1094 "AWS Solutions Architect  ·  GCP Data Engineer  ·  CKA Kubernetes" 9 1 #555555`
+
+};
+
+// Shared VOXI cube block for FW variations
+const FW_CUBE = `VOXI _X_ _Y_ 480 500 2 38 22
+V 40 40 40
+-- Front face — 4x4 photo panels
+B 0 30 0 9 9 1 0
+B 10 30 0 9 9 1 9
+B 20 30 0 9 9 1 a
+B 30 30 0 9 9 1 0
+B 0 20 0 9 9 1 9
+B 10 20 0 9 9 1 0
+B 20 20 0 9 9 1 d
+B 30 20 0 9 9 1 8
+B 0 10 0 9 9 1 0
+B 10 10 0 9 9 1 9
+B 20 10 0 9 9 1 0
+B 30 10 0 9 9 1 d
+B 0 0 0 9 9 1 9
+B 10 0 0 9 9 1 0
+B 20 0 0 9 9 1 7
+B 30 0 0 9 9 1 9
+-- Front grid dividers
+B 9 0 0 1 40 1 0
+B 19 0 0 1 40 1 0
+B 29 0 0 1 40 1 0
+B 0 9 0 40 1 1 0
+B 0 19 0 40 1 1 0
+B 0 29 0 40 1 1 0
+-- Right face
+B 39 30 0 1 9 9 d
+B 39 30 10 1 9 9 0
+B 39 30 20 1 9 9 9
+B 39 30 30 1 9 9 a
+B 39 20 0 1 9 9 0
+B 39 20 10 1 9 9 d
+B 39 20 20 1 9 9 0
+B 39 20 30 1 9 9 9
+B 39 10 0 1 9 9 9
+B 39 10 10 1 9 9 8
+B 39 10 20 1 9 9 0
+B 39 10 30 1 9 9 d
+B 39 0 0 1 9 9 0
+B 39 0 10 1 9 9 9
+B 39 0 20 1 9 9 a
+B 39 0 30 1 9 9 0
+-- Right grid dividers
+B 39 9 0 1 1 40 0
+B 39 19 0 1 1 40 0
+B 39 29 0 1 1 40 0
+B 39 0 9 1 40 1 0
+B 39 0 19 1 40 1 0
+B 39 0 29 1 40 1 0
+-- Top face
+B 0 39 0 9 1 9 9
+B 10 39 0 9 1 9 0
+B 20 39 0 9 1 9 d
+B 30 39 0 9 1 9 9
+B 0 39 10 9 1 9 0
+B 10 39 10 9 1 9 a
+B 20 39 10 9 1 9 9
+B 30 39 10 9 1 9 0
+B 0 39 20 9 1 9 9
+B 10 39 20 9 1 9 0
+B 20 39 20 9 1 9 0
+B 30 39 20 9 1 9 d
+B 0 39 30 9 1 9 0
+B 10 39 30 9 1 9 9
+B 20 39 30 9 1 9 a
+B 30 39 30 9 1 9 0
+-- Top grid dividers
+B 9 39 0 1 1 40 0
+B 19 39 0 1 1 40 0
+B 29 39 0 1 1 40 0
+B 0 39 9 40 1 1 0
+B 0 39 19 40 1 1 0
+B 0 39 29 40 1 1 0
+-- Orange edge accents
+B 0 0 0 40 1 1 7
+B 0 39 0 40 1 1 7
+B 0 0 0 1 40 1 7
+B 39 0 0 1 40 1 7
+B 39 0 0 1 1 40 7
+B 39 39 0 1 1 40 7
+B 0 39 0 1 1 40 7
+B 0 0 39 1 40 1 7
+/VOXI`;
+
+// Shared elements: nav, ruler, project list, credits
+const FW_NAV = `-- Navigation
+TEXT 620 100 "Featured Works," 14 5 #ddd bold
+TEXT 748 100 "Archive," 14 5 #555
+TEXT 810 100 "About" 14 5 #555`;
+
+const FW_RULER = `-- Ruler
+RECT 0 58 1440 1 4 #333
+TEXT 8 64 "0" 9 4 #555
+TEXT 95 64 "100" 9 4 #555
+TEXT 192 64 "200" 9 4 #555
+TEXT 289 64 "300" 9 4 #555
+TEXT 386 64 "400" 9 4 #555
+TEXT 483 64 "500" 9 4 #555
+TEXT 580 64 "600" 9 4 #555
+TEXT 677 64 "700" 9 4 #555
+TEXT 774 64 "800" 9 4 #555
+TEXT 871 64 "900" 9 4 #555
+TEXT 960 64 "1000" 9 4 #555
+TEXT 1150 64 "1200" 9 4 #555
+TEXT 1340 64 "1400" 9 4 #555`;
+
+const FW_LIST = `-- Project list
+TEXT 1030 90 "Ruby Campbell" 13 6 #666
+TEXT 1030 113 "Shaped by Earth" 13 6 #666
+TEXT 1030 136 "Echoes in Light" 13 6 #666
+TEXT 1030 159 "Moving Portraits" 13 6 #666
+TEXT 1030 182 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 205 "Studies in Motion" 13 6 #666
+TEXT 1030 228 "Ruby Campbell" 13 6 #666
+TEXT 1030 251 "Shaped by Earth" 13 6 #666
+TEXT 1030 274 "Echoes in Light" 13 6 #666
+TEXT 1030 297 "Moving Portraits" 13 6 #666
+TEXT 1030 320 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 343 "Studies in Motion" 13 6 #666
+TEXT 1030 366 "Ruby Campbell" 13 6 #666
+TEXT 1030 389 "Shaped by Earth" 13 6 #666
+TEXT 1030 412 "Echoes in Light" 13 6 #666
+TEXT 1030 435 "Moving Portraits" 13 6 #666
+TEXT 1030 458 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 481 "Studies in Motion" 13 6 #666
+TEXT 1030 504 "Ruby Campbell" 13 6 #666
+TEXT 1030 527 "Shaped by Earth" 13 6 #666
+TEXT 1030 550 "Echoes in Light" 13 6 #666
+TEXT 1030 573 "Moving Portraits" 13 6 #666
+TEXT 1030 596 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 619 "Studies in Motion" 13 6 #666
+TEXT 1030 642 "Ruby Campbell" 13 6 #666
+TEXT 1030 665 "Shaped by Earth" 13 6 #666
+TEXT 1030 688 "Echoes in Light" 13 6 #666
+TEXT 1030 711 "Moving Portraits" 13 6 #666
+TEXT 1030 734 "Issey Miyake SS25" 13 6 #666
+TEXT 1030 757 "Studies in Motion" 13 6 #666
+TEXT 1030 780 "Ruby Campbell" 13 6 #666
+TEXT 1030 803 "Shaped by Earth" 13 6 #666
+TEXT 1030 826 "Echoes in Light" 13 6 #666
+TEXT 1030 849 "Moving Portraits" 13 6 #666`;
+
+function makeCube(x, y) {
+  return FW_CUBE.replace('_X_', x).replace('_Y_', y);
+}
+
+// Build 4 variations
+EXAMPLES['FW v1 — Diagonal'] = `CANVAS 1440 860 #0a0a0a
+-- FW upper-left, large
+TEXT -10 40 "F" 400 1 #e8430a bold
+TEXT 180 40 "W" 400 1 #e8430a bold
+
+-- Cube lower-right
+${makeCube(640, 320)}
+
+${FW_RULER}
+TEXT 40 100 "1440px × 810px" 12 5 #555
+${FW_NAV}
+TEXT 1260 100 "Available April 2026" 12 5 #444
+
+-- Credits mid-left
+TEXT 44 480 "Corentin Bernadou" 13 5 #777
+TEXT 44 498 "Freelance Developer" 12 5 #555
+TEXT 260 480 "Issue N°003 / Coll. 2026" 12 5 #777
+TEXT 260 498 "Ref. EDI-032026-R02" 11 5 #555
+
+${FW_LIST}`;
+
+EXAMPLES['FW v2 — Stacked'] = `CANVAS 1440 860 #0a0a0a
+-- FW upper-left, compact
+TEXT 30 70 "F" 320 1 #e8430a bold
+TEXT 170 70 "W" 320 1 #e8430a bold
+
+-- Cube bottom-center
+${makeCube(480, 340)}
+
+${FW_RULER}
+${FW_NAV}
+TEXT 1260 100 "Available April 2026" 12 5 #444
+
+-- Credits bottom-left
+TEXT 44 780 "Corentin Bernadou" 13 5 #777
+TEXT 44 798 "Freelance Developer" 12 5 #555
+TEXT 44 828 "Issue N°003 / Coll. 2026" 12 5 #777
+
+-- Tagline under FW
+TEXT 40 390 "Featured" 48 3 #333 bold
+TEXT 40 440 "Works" 48 3 #333 bold
+
+${FW_LIST}`;
+
+EXAMPLES['FW v3 — Overlap'] = `CANVAS 1440 860 #0a0a0a
+-- FW upper-left, overlapping cube
+TEXT -20 20 "F" 500 1 #e8430a bold
+TEXT 220 20 "W" 500 1 #e8430a bold
+
+-- Cube bottom-left, overlaps FW letters
+${makeCube(200, 300)}
+
+${FW_RULER}
+${FW_NAV}
+TEXT 1260 100 "Available April 2026" 12 5 #444
+
+-- Credits far right
+TEXT 780 780 "Corentin Bernadou" 13 5 #777
+TEXT 780 798 "Freelance Developer" 12 5 #555
+TEXT 780 828 "Issue N°003 / Coll. 2026" 12 5 #777
+TEXT 780 846 "Ref. EDI-032026-R02" 11 5 #555
+
+${FW_LIST}`;
+
+EXAMPLES['FW v4 — Cinematic'] = `CANVAS 1440 860 #0a0a0a
+-- Letterbox bars
+RECT 0 0 1440 80 5 #000
+RECT 0 780 1440 80 5 #000
+
+-- FW upper-left inside letterbox gap
+TEXT 40 90 "FW" 180 1 #e8430a bold
+
+-- Cube right-of-center, lower half
+${makeCube(560, 280)}
+
+-- Thin orange accent line
+LINE 40 290 500 290 3 #e8430a 1
+
+-- Credits left-aligned, vertical
+TEXT 44 320 "Corentin Bernadou" 13 4 #777
+TEXT 44 340 "Freelance Developer" 11 4 #555
+LINE 44 360 200 360 4 #222 1
+TEXT 44 375 "Issue N°003" 11 4 #555
+TEXT 44 393 "Coll. 2026" 11 4 #555
+
+${FW_RULER}
+${FW_NAV}
+TEXT 1260 100 "Available April 2026" 12 6 #444
+
+-- "Featured Works" large, left side
+TEXT 44 440 "Featured" 64 3 #1a1a1a bold
+TEXT 44 510 "Works" 64 3 #1a1a1a bold
+
+-- Year
+TEXT 44 720 "2025" 80 2 #161616 bold
+
+${FW_LIST}`;
+
+const examplesSelect = document.getElementById('examples');
+for (const name of Object.keys(EXAMPLES)) {
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  examplesSelect.appendChild(opt);
+}
+examplesSelect.addEventListener('change', e => {
+  if (e.target.value && EXAMPLES[e.target.value]) {
+    editor.value = EXAMPLES[e.target.value];
+    selectedLine = -1;
+    updateLineNumbers();
+    render();
+  }
+});
+
+
+// ── Init ───────────────────────────────────────────────────────────
+
+editor.value = EXAMPLES['Cluster — Original'];
+updateLineNumbers();
+render();
+
+</script>
+</body>
+</html>

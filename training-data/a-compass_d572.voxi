@@ -1,0 +1,21 @@
+V 28 12 28
+-- outer case
+C 14 0 14 10 3 d
+-- inner rim
+C 14 2 14 9 2 9
+-- compass face
+C 14 3 14 8 2 8
+-- north needle (red)
+B 13 4 5 2 1 9 1
+-- south needle (orange)
+B 13 4 14 2 1 9 7
+-- center pivot
+S 14 5 14 1 5
+-- N cardinal mark
+B 13 4 3 2 1 1 3
+-- S cardinal mark
+B 13 4 24 2 1 1 3
+-- E cardinal mark
+B 23 4 13 1 1 2 3
+-- W cardinal mark
+B 4 4 13 1 1 2 3

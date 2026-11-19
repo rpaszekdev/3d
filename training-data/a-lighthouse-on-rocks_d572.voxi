@@ -1,0 +1,44 @@
+V 32 32 32
+
+-- rocky base
+S 13 1 14 4 9
+S 19 1 15 3 9
+S 16 1 19 3 a
+B 9 0 11 14 2 10 9
+B 12 0 8 8 2 6 a
+
+-- tower base
+C 16 2 16 4 3 8
+
+-- tower body white
+C 16 5 16 3 10 8
+
+-- red stripe low
+C 16 8 16 3 2 1
+
+-- red stripe mid
+C 16 13 16 3 2 1
+
+-- watch deck floor
+B 11 15 11 10 1 10 9
+
+-- watch room walls
+C 16 16 16 4 3 9
+
+-- lantern housing
+C 16 19 16 3 2 0
+
+-- light glow
+S 16 20 16 2 6
+
+-- roof cone
+B 13 21 13 6 1 6 1
+B 14 22 14 4 1 4 1
+B 15 23 15 2 2 2 1
+
+-- door
+B 15 2 12 2 3 1 a
+
+-- windows
+B 15 10 12 2 2 1 6
+B 15 10 20 2 2 1 6

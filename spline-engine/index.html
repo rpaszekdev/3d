@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spline Engine — Lathe / Extrude / Loft</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --dim: #8b949e;
+    --accent: #d2a8ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* ─── Left Panel ─── */
+  .editor-panel {
+    width: 440px;
+    min-width: 340px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+  }
+
+  .editor-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .editor-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .editor-header h1 span { color: var(--accent); }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .toolbar button {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .toolbar button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .toolbar button.primary {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .toolbar button.primary:hover { opacity: 0.85; }
+
+  .toolbar button.export-btn {
+    background: var(--green);
+    color: #000;
+    border-color: var(--green);
+    font-weight: 600;
+  }
+
+  #editor {
+    flex: 1;
+    background: var(--bg);
+    color: var(--text);
+    border: none;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    tab-size: 2;
+  }
+
+  .status-bar {
+    padding: 8px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--dim);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .status-bar .error { color: var(--red); }
+  .status-bar .success { color: var(--green); }
+
+  /* ─── Middle: Profile Preview ─── */
+  .profile-panel {
+    width: 220px;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dim);
+  }
+
+  #profileCanvas {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* ─── Right: 3D Viewport ─── */
+  .viewport {
+    flex: 1;
+    position: relative;
+    background: #0a0e14;
+  }
+
+  #canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .viewport-info {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--dim);
+    pointer-events: none;
+  }
+
+  /* ─── Examples dropdown ─── */
+  .examples-dropdown { position: relative; }
+
+  .examples-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 100;
+    min-width: 220px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .examples-menu.open { display: block; }
+
+  .examples-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .examples-menu button:hover { background: var(--bg); }
+
+  /* ─── Reference ─── */
+  .ref-toggle {
+    padding: 10px 20px;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--dim);
+    user-select: none;
+  }
+
+  .ref-toggle:hover { color: var(--accent); }
+
+  .ref-content {
+    display: none;
+    padding: 12px 20px;
+    font-size: 11px;
+    font-family: var(--mono);
+    line-height: 1.5;
+    color: var(--dim);
+    max-height: 220px;
+    overflow-y: auto;
+    border-top: 1px solid var(--border);
+  }
+
+  .ref-content.open { display: block; }
+  .ref-content code { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="editor-panel">
+  <div class="editor-header">
+    <h1><span>Spline</span> Engine</h1>
+    <div style="font-size:11px;color:var(--dim)">Lathe · Extrude · Loft</div>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" onclick="buildScene()">▶ Build</button>
+    <button class="export-btn" onclick="exportOBJ()">↓ OBJ</button>
+    <div class="examples-dropdown">
+      <button onclick="toggleExamples()">Examples ▾</button>
+      <div class="examples-menu" id="examplesMenu">
+        <button onclick="loadExample('wine_glass')">🍷 Wine Glass</button>
+        <button onclick="loadExample('vase')">🏺 Vase</button>
+        <button onclick="loadExample('chess_rook')">♜ Chess Rook</button>
+        <button onclick="loadExample('bottle')">🍾 Bottle</button>
+        <button onclick="loadExample('star_extrude')">⭐ Star Extrude</button>
+        <button onclick="loadExample('loft_morph')">🔄 Circle → Square Loft</button>
+        <button onclick="loadExample('lampshade')">💡 Lampshade</button>
+        <button onclick="loadExample('trumpet')">🎺 Trumpet Bell</button>
+      </div>
+    </div>
+    <button onclick="copyDSL()">Copy DSL</button>
+  </div>
+
+  <textarea id="editor" spellcheck="false">// Wine Glass — lathe a 2D profile
+// Profile points: (radius, height)
+// Spun 360° around Y-axis
+
+lathe(
+  profile: [
+    (0.0, 0.0),    // center bottom
+    (1.2, 0.0),    // base edge
+    (1.2, 0.15),   // base top
+    (0.15, 0.15),  // stem start
+    (0.15, 2.0),   // stem top
+    (0.3, 2.2),    // bowl start
+    (1.0, 2.8),    // bowl wide
+    (1.1, 3.5),    // bowl rim out
+    (0.95, 3.5),   // bowl rim in (thickness)
+    (0.85, 2.9),   // inner bowl
+    (0.25, 2.3),   // inner bowl bottom
+    (0.0, 2.3),    // center
+  ],
+  segments: 48
+)</textarea>
+
+  <div class="ref-toggle" onclick="toggleRef()">▸ DSL Reference</div>
+  <div class="ref-content" id="refContent">
+<b>Lathe</b> — spin a profile around Y-axis
+<code>lathe(
+  profile: [(r, y), ...],
+  segments: 32,        // optional, default 32
+  angle: 360           // optional, partial sweep
+)</code>
+
+<b>Extrude</b> — push a 2D shape along Y
+<code>extrude(
+  shape: [(x, z), ...],  // 2D polygon
+  height: 2.0,
+  cap: true              // optional, cap ends
+)</code>
+
+<b>Loft</b> — blend between profiles at heights
+<code>loft(
+  sections: [
+    { y: 0, shape: [(x,z), ...] },
+    { y: 2, shape: [(x,z), ...] },
+    ...
+  ],
+  segments: 32        // optional, per-ring
+)</code>
+
+<b>Bezier Profile</b> — use curves in lathe
+<code>lathe(
+  bezier: [
+    [(r0,y0), (cr,cy), (r1,y1)],  // quadratic
+    ...
+  ],
+  segments: 32
+)</code>
+
+<b>Tips for AI generation</b>
+— Profile points go bottom to top
+— Close the profile at r=0 for solid shapes
+— Segments: 24-48 for smooth, 3-8 for faceted
+— Extrude shapes should be closed polygons
+  </div>
+
+  <div class="status-bar">
+    <span id="status">Ready</span>
+    <span id="meshInfo"></span>
+  </div>
+</div>
+
+<div class="profile-panel">
+  <div class="profile-header">2D Profile</div>
+  <canvas id="profileCanvas"></canvas>
+</div>
+
+<div class="viewport">
+  <canvas id="canvas"></canvas>
+  <div class="viewport-info" id="viewportInfo">Scroll to zoom · Drag to orbit</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─────────────────────────────────────────────
+// 1. THREE.JS SETUP
+// ─────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(5, 4, 7);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 1.5, 0);
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+const key = new THREE.DirectionalLight(0xffffff, 1.2);
+key.position.set(5, 8, 6);
+key.castShadow = true;
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0xccaaff, 0.3);
+fill.position.set(-4, 3, -2);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(10, 10, 0x1a2030, 0x1a2030);
+scene.add(grid);
+
+const axes = new THREE.AxesHelper(1.5);
+axes.position.set(-5, 0, -5);
+scene.add(axes);
+
+let currentMesh = null;
+
+function resize() {
+  const vp = document.querySelector('.viewport');
+  renderer.setSize(vp.clientWidth, vp.clientHeight);
+  camera.aspect = vp.clientWidth / vp.clientHeight;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+
+// ─────────────────────────────────────────────
+// 2. DSL PARSER
+// ─────────────────────────────────────────────
+
+function parseDSL(code) {
+  // Strip comments
+  code = code.replace(/\/\/.*$/gm, '');
+  code = code.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  // Determine operation type
+  const latheMatch = code.match(/lathe\s*\(/);
+  const extrudeMatch = code.match(/extrude\s*\(/);
+  const loftMatch = code.match(/loft\s*\(/);
+
+  if (latheMatch) return parseLathe(code);
+  if (extrudeMatch) return parseExtrude(code);
+  if (loftMatch) return parseLoft(code);
+
+  throw new Error('Unknown operation — use lathe(), extrude(), or loft()');
+}
+
+function parsePointArray(str) {
+  const points = [];
+  const re = /\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/g;
+  let m;
+  while ((m = re.exec(str)) !== null) {
+    points.push([parseFloat(m[1]), parseFloat(m[2])]);
+  }
+  return points;
+}
+
+function parseNumber(code, key, defaultVal) {
+  const re = new RegExp(key + '\\s*:\\s*(-?[\\d.]+)');
+  const m = code.match(re);
+  return m ? parseFloat(m[1]) : defaultVal;
+}
+
+function parseBool(code, key, defaultVal) {
+  const re = new RegExp(key + '\\s*:\\s*(true|false)');
+  const m = code.match(re);
+  return m ? m[1] === 'true' : defaultVal;
+}
+
+function parseLathe(code) {
+  // Check for bezier profiles
+  const bezierMatch = code.match(/bezier\s*:\s*\[([\s\S]*?)\]\s*(?:,|\))/);
+  if (bezierMatch) {
+    return parseLatheBezier(code, bezierMatch[1]);
+  }
+
+  // Regular profile
+  const profileMatch = code.match(/profile\s*:\s*\[([\s\S]*?)\]/);
+  if (!profileMatch) throw new Error('lathe() needs a profile: [...]');
+
+  const profile = parsePointArray(profileMatch[1]);
+  if (profile.length < 2) throw new Error('Profile needs at least 2 points');
+
+  const segments = parseNumber(code, 'segments', 32);
+  const angle = parseNumber(code, 'angle', 360);
+
+  return { type: 'lathe', profile, segments, angle };
+}
+
+function parseLatheBezier(code, bezierStr) {
+  // Parse bezier curves: [(r0,y0), (cr,cy), (r1,y1)] for quadratic
+  const curves = [];
+  const curveRe = /\[\s*\(([^)]+)\)\s*,\s*\(([^)]+)\)\s*,\s*\(([^)]+)\)\s*\]/g;
+  let m;
+  while ((m = curveRe.exec(bezierStr)) !== null) {
+    const p0 = m[1].split(',').map(Number);
+    const p1 = m[2].split(',').map(Number);
+    const p2 = m[3].split(',').map(Number);
+    curves.push([p0, p1, p2]);
+  }
+
+  if (curves.length === 0) throw new Error('No bezier curves found');
+
+  // Subdivide bezier curves into profile points
+  const profile = [];
+  const subdivisions = 12;
+  for (const [p0, p1, p2] of curves) {
+    for (let i = 0; i <= subdivisions; i++) {
+      const t = i / subdivisions;
+      const mt = 1 - t;
+      const r = mt * mt * p0[0] + 2 * mt * t * p1[0] + t * t * p2[0];
+      const y = mt * mt * p0[1] + 2 * mt * t * p1[1] + t * t * p2[1];
+      // Avoid duplicate points at curve junctions
+      if (profile.length > 0) {
+        const last = profile[profile.length - 1];
+        if (Math.abs(last[0] - r) < 0.001 && Math.abs(last[1] - y) < 0.001) continue;
+      }
+      profile.push([r, y]);
+    }
+  }
+
+  const segments = parseNumber(code, 'segments', 32);
+  const angle = parseNumber(code, 'angle', 360);
+
+  return { type: 'lathe', profile, segments, angle };
+}
+
+function parseExtrude(code) {
+  const shapeMatch = code.match(/shape\s*:\s*\[([\s\S]*?)\]/);
+  if (!shapeMatch) throw new Error('extrude() needs a shape: [...]');
+
+  const shape = parsePointArray(shapeMatch[1]);
+  if (shape.length < 3) throw new Error('Shape needs at least 3 points');
+
+  const height = parseNumber(code, 'height', 2.0);
+  const cap = parseBool(code, 'cap', true);
+
+  return { type: 'extrude', shape, height, cap };
+}
+
+function parseLoft(code) {
+  // Parse sections
+  const sections = [];
+  const sectionRe = /\{\s*y\s*:\s*(-?[\d.]+)\s*,\s*shape\s*:\s*\[([\s\S]*?)\]\s*\}/g;
+  let m;
+  while ((m = sectionRe.exec(code)) !== null) {
+    const y = parseFloat(m[1]);
+    const shape = parsePointArray(m[2]);
+    sections.push({ y, shape });
+  }
+
+  if (sections.length < 2) throw new Error('loft() needs at least 2 sections');
+
+  // Sort by y
+  sections.sort((a, b) => a.y - b.y);
+
+  const segments = parseNumber(code, 'segments', 32);
+
+  return { type: 'loft', sections, segments };
+}
+
+
+// ─────────────────────────────────────────────
+// 3. MESH GENERATORS
+// ─────────────────────────────────────────────
+
+function generateLathe(spec) {
+  const { profile, segments, angle } = spec;
+  const vertices = [];
+  const faces = [];
+  const angleRad = angle * Math.PI / 180;
+  const closed = Math.abs(angle - 360) < 0.01;
+
+  // Generate vertices: for each profile point, rotate around Y
+  for (let s = 0; s <= segments; s++) {
+    const theta = (s / segments) * angleRad;
+    const cosT = Math.cos(theta);
+    const sinT = Math.sin(theta);
+
+    for (let p = 0; p < profile.length; p++) {
+      const [r, y] = profile[p];
+      vertices.push([r * cosT, y, r * sinT]);
+    }
+  }
+
+  // Generate faces: quads between adjacent rings
+  const ringSize = profile.length;
+  const maxS = closed ? segments : segments;
+
+  for (let s = 0; s < maxS; s++) {
+    const ring0 = s * ringSize;
+    const ring1 = closed && s === segments - 1 ? 0 : (s + 1) * ringSize;
+
+    for (let p = 0; p < ringSize - 1; p++) {
+      const a = ring0 + p;
+      const b = ring0 + p + 1;
+      const c = ring1 + p + 1;
+      const d = ring1 + p;
+
+      faces.push([a, d, c]);
+      faces.push([a, c, b]);
+    }
+  }
+
+  return { vertices, faces };
+}
+
+function generateExtrude(spec) {
+  const { shape, height, cap } = spec;
+  const vertices = [];
+  const faces = [];
+  const n = shape.length;
+
+  // Bottom ring (y=0)
+  for (const [x, z] of shape) {
+    vertices.push([x, 0, z]);
+  }
+
+  // Top ring (y=height)
+  for (const [x, z] of shape) {
+    vertices.push([x, height, z]);
+  }
+
+  // Side faces
+  for (let i = 0; i < n; i++) {
+    const next = (i + 1) % n;
+    const a = i;
+    const b = next;
+    const c = n + next;
+    const d = n + i;
+
+    faces.push([a, b, c]);
+    faces.push([a, c, d]);
+  }
+
+  // Caps — simple fan triangulation from centroid
+  if (cap) {
+    // Bottom cap (centroid vertex)
+    let cx = 0, cz = 0;
+    for (const [x, z] of shape) { cx += x; cz += z; }
+    cx /= n; cz /= n;
+
+    const bottomCenter = vertices.length;
+    vertices.push([cx, 0, cz]);
+    for (let i = 0; i < n; i++) {
+      const next = (i + 1) % n;
+      faces.push([bottomCenter, next, i]);
+    }
+
+    // Top cap
+    const topCenter = vertices.length;
+    vertices.push([cx, height, cz]);
+    for (let i = 0; i < n; i++) {
+      const next = (i + 1) % n;
+      faces.push([topCenter, n + i, n + next]);
+    }
+  }
+
+  return { vertices, faces };
+}
+
+function generateLoft(spec) {
+  const { sections, segments } = spec;
+  const vertices = [];
+  const faces = [];
+
+  // Normalize all sections to same point count via resampling
+  const maxPoints = Math.max(segments, ...sections.map(s => s.shape.length));
+
+  function resampleShape(shape, count) {
+    // Closed polygon — resample to `count` evenly spaced points
+    const result = [];
+    const n = shape.length;
+
+    // Compute total perimeter
+    let perimeter = 0;
+    for (let i = 0; i < n; i++) {
+      const next = (i + 1) % n;
+      const dx = shape[next][0] - shape[i][0];
+      const dz = shape[next][1] - shape[i][1];
+      perimeter += Math.sqrt(dx * dx + dz * dz);
+    }
+
+    // Walk the perimeter and place points evenly
+    const segLen = perimeter / count;
+    let edgeIdx = 0;
+    let edgeT = 0;
+    let accumulated = 0;
+
+    for (let i = 0; i < count; i++) {
+      const target = i * segLen;
+
+      while (accumulated + remainingEdgeLen() < target - 1e-8 && edgeIdx < n) {
+        accumulated += remainingEdgeLen();
+        edgeIdx = (edgeIdx + 1) % n;
+        edgeT = 0;
+      }
+
+      const needed = target - accumulated;
+      const eLen = edgeLength(edgeIdx);
+      const t = eLen > 0 ? edgeT + needed / eLen : 0;
+
+      const a = shape[edgeIdx % n];
+      const b = shape[(edgeIdx + 1) % n];
+      result.push([
+        a[0] + t * (b[0] - a[0]),
+        a[1] + t * (b[1] - a[1])
+      ]);
+    }
+
+    return result;
+
+    function edgeLength(idx) {
+      const a = shape[idx % n];
+      const b = shape[(idx + 1) % n];
+      const dx = b[0] - a[0];
+      const dz = b[1] - a[1];
+      return Math.sqrt(dx * dx + dz * dz);
+    }
+
+    function remainingEdgeLen() {
+      return edgeLength(edgeIdx) * (1 - edgeT);
+    }
+  }
+
+  // Resample all sections
+  const rings = sections.map(sec => ({
+    y: sec.y,
+    points: resampleShape(sec.shape, maxPoints)
+  }));
+
+  // Generate vertices for each ring
+  for (const ring of rings) {
+    for (const [x, z] of ring.points) {
+      vertices.push([x, ring.y, z]);
+    }
+  }
+
+  // Generate faces between adjacent rings
+  const ringSize = maxPoints;
+  for (let r = 0; r < rings.length - 1; r++) {
+    const base0 = r * ringSize;
+    const base1 = (r + 1) * ringSize;
+
+    for (let i = 0; i < ringSize; i++) {
+      const next = (i + 1) % ringSize;
+      const a = base0 + i;
+      const b = base0 + next;
+      const c = base1 + next;
+      const d = base1 + i;
+
+      faces.push([a, b, c]);
+      faces.push([a, c, d]);
+    }
+  }
+
+  // Cap bottom and top
+  const bottomCenter = vertices.length;
+  const firstRing = rings[0];
+  let bcx = 0, bcz = 0;
+  for (const [x, z] of firstRing.points) { bcx += x; bcz += z; }
+  bcx /= ringSize; bcz /= ringSize;
+  vertices.push([bcx, firstRing.y, bcz]);
+  for (let i = 0; i < ringSize; i++) {
+    const next = (i + 1) % ringSize;
+    faces.push([bottomCenter, next, i]);
+  }
+
+  const topCenter = vertices.length;
+  const lastRing = rings[rings.length - 1];
+  let tcx = 0, tcz = 0;
+  for (const [x, z] of lastRing.points) { tcx += x; tcz += z; }
+  tcx /= ringSize; tcz /= ringSize;
+  const topBase = (rings.length - 1) * ringSize;
+  vertices.push([tcx, lastRing.y, tcz]);
+  for (let i = 0; i < ringSize; i++) {
+    const next = (i + 1) % ringSize;
+    faces.push([topCenter, topBase + i, topBase + next]);
+  }
+
+  return { vertices, faces };
+}
+
+
+// ─────────────────────────────────────────────
+// 4. PROFILE 2D PREVIEW (Canvas)
+// ─────────────────────────────────────────────
+
+function drawProfile(spec) {
+  const profileCanvas = document.getElementById('profileCanvas');
+  const panel = profileCanvas.parentElement;
+  const w = panel.clientWidth;
+  const h = panel.clientHeight - 32; // minus header
+  profileCanvas.width = w * window.devicePixelRatio;
+  profileCanvas.height = h * window.devicePixelRatio;
+  profileCanvas.style.width = w + 'px';
+  profileCanvas.style.height = h + 'px';
+
+  const ctx = profileCanvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  ctx.clearRect(0, 0, w, h);
+
+  let points = [];
+  let label = '';
+
+  if (spec.type === 'lathe') {
+    points = spec.profile; // (r, y)
+    label = 'Lathe Profile (r, y)';
+  } else if (spec.type === 'extrude') {
+    points = spec.shape; // (x, z)
+    label = 'Extrude Shape (x, z)';
+  } else if (spec.type === 'loft') {
+    // Show all sections overlaid
+    drawLoftProfiles(ctx, spec, w, h);
+    return;
+  }
+
+  if (points.length === 0) return;
+
+  // Find bounds
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const [x, y] of points) {
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+  }
+
+  const padding = 30;
+  const rangeX = maxX - minX || 1;
+  const rangeY = maxY - minY || 1;
+  const scaleX = (w - 2 * padding) / rangeX;
+  const scaleY = (h - 2 * padding) / rangeY;
+  const sc = Math.min(scaleX, scaleY);
+
+  const offX = padding + (w - 2 * padding - rangeX * sc) / 2;
+  const offY = padding + (h - 2 * padding - rangeY * sc) / 2;
+
+  function tx(x) { return offX + (x - minX) * sc; }
+  function ty(y) { return h - offY - (y - minY) * sc; }
+
+  // Draw axis line for lathe (r=0)
+  if (spec.type === 'lathe') {
+    ctx.strokeStyle = '#30363d';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    const axX = tx(0);
+    ctx.moveTo(axX, padding);
+    ctx.lineTo(axX, h - padding);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '10px monospace';
+    ctx.fillText('axis', axX + 4, padding + 10);
+  }
+
+  // Draw profile
+  ctx.strokeStyle = '#d2a8ff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < points.length; i++) {
+    const px = tx(points[i][0]);
+    const py = ty(points[i][1]);
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+
+  if (spec.type === 'extrude') ctx.closePath();
+  ctx.stroke();
+
+  // Draw points
+  for (let i = 0; i < points.length; i++) {
+    const px = tx(points[i][0]);
+    const py = ty(points[i][1]);
+
+    ctx.fillStyle = '#d2a8ff';
+    ctx.beginPath();
+    ctx.arc(px, py, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '9px monospace';
+    ctx.fillText(`${i}`, px + 6, py - 6);
+  }
+
+  // Label
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '10px monospace';
+  ctx.fillText(label, 8, 14);
+}
+
+function drawLoftProfiles(ctx, spec, w, h) {
+  // Find all-section bounds
+  let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  for (const sec of spec.sections) {
+    for (const [x, z] of sec.shape) {
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+      minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z);
+    }
+  }
+
+  const padding = 30;
+  const rangeX = maxX - minX || 1;
+  const rangeZ = maxZ - minZ || 1;
+  const sc = Math.min((w - 2 * padding) / rangeX, (h - 2 * padding) / rangeZ);
+  const offX = padding + (w - 2 * padding - rangeX * sc) / 2;
+  const offY = padding + (h - 2 * padding - rangeZ * sc) / 2;
+
+  function tx(x) { return offX + (x - minX) * sc; }
+  function tz(z) { return h - offY - (z - minZ) * sc; }
+
+  const colors = ['#d2a8ff', '#58a6ff', '#3fb950', '#d29922', '#f85149'];
+
+  for (let s = 0; s < spec.sections.length; s++) {
+    const sec = spec.sections[s];
+    const color = colors[s % colors.length];
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let i = 0; i < sec.shape.length; i++) {
+      const px = tx(sec.shape[i][0]);
+      const py = tz(sec.shape[i][1]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.font = '9px monospace';
+    ctx.fillText(`y=${sec.y}`, tx(sec.shape[0][0]) + 4, tz(sec.shape[0][1]) - 6);
+  }
+
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '10px monospace';
+  ctx.fillText('Loft Sections (x, z)', 8, 14);
+}
+
+
+// ─────────────────────────────────────────────
+// 5. MESH → THREE.JS + OBJ EXPORT
+// ─────────────────────────────────────────────
+
+function meshToGeometry(mesh) {
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(mesh.faces.length * 9);
+  let idx = 0;
+
+  for (const [a, b, c] of mesh.faces) {
+    const va = mesh.vertices[a];
+    const vb = mesh.vertices[b];
+    const vc = mesh.vertices[c];
+    if (!va || !vb || !vc) continue;
+    positions[idx++] = va[0]; positions[idx++] = va[1]; positions[idx++] = va[2];
+    positions[idx++] = vb[0]; positions[idx++] = vb[1]; positions[idx++] = vb[2];
+    positions[idx++] = vc[0]; positions[idx++] = vc[1]; positions[idx++] = vc[2];
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(positions.slice(0, idx), 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function meshToOBJ(mesh) {
+  let obj = '# Spline Engine Export\n';
+  for (const v of mesh.vertices) {
+    obj += `v ${v[0].toFixed(6)} ${v[1].toFixed(6)} ${v[2].toFixed(6)}\n`;
+  }
+  for (const [a, b, c] of mesh.faces) {
+    obj += `f ${a + 1} ${b + 1} ${c + 1}\n`;
+  }
+  return obj;
+}
+
+
+// ─────────────────────────────────────────────
+// 6. BUILD + UI WIRING
+// ─────────────────────────────────────────────
+
+let lastMesh = null;
+
+window.buildScene = function () {
+  const code = document.getElementById('editor').value;
+  const statusEl = document.getElementById('status');
+  const meshInfoEl = document.getElementById('meshInfo');
+
+  try {
+    const t0 = performance.now();
+    const spec = parseDSL(code);
+
+    let mesh;
+    switch (spec.type) {
+      case 'lathe': mesh = generateLathe(spec); break;
+      case 'extrude': mesh = generateExtrude(spec); break;
+      case 'loft': mesh = generateLoft(spec); break;
+      default: throw new Error('Unknown type: ' + spec.type);
+    }
+
+    const t1 = performance.now();
+
+    if (mesh.faces.length === 0) {
+      statusEl.innerHTML = '<span class="error">No geometry generated</span>';
+      return;
+    }
+
+    // Draw 2D profile
+    drawProfile(spec);
+
+    // Remove old mesh
+    if (currentMesh) {
+      scene.remove(currentMesh);
+      currentMesh.geometry.dispose();
+      currentMesh.material.dispose();
+    }
+
+    const geo = meshToGeometry(mesh);
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0xd2a8ff,
+      roughness: 0.25,
+      metalness: 0.15,
+      side: THREE.DoubleSide,
+    });
+
+    currentMesh = new THREE.Mesh(geo, mat);
+    currentMesh.castShadow = true;
+    currentMesh.receiveShadow = true;
+    scene.add(currentMesh);
+
+    lastMesh = mesh;
+
+    statusEl.innerHTML = `<span class="success">Built in ${(t1 - t0).toFixed(0)}ms</span>`;
+    meshInfoEl.textContent = `${mesh.vertices.length} verts · ${mesh.faces.length} tris`;
+
+  } catch (e) {
+    statusEl.innerHTML = `<span class="error">${e.message}</span>`;
+    console.error(e);
+  }
+};
+
+window.exportOBJ = function () {
+  if (!lastMesh) {
+    document.getElementById('status').innerHTML = '<span class="error">Build first!</span>';
+    return;
+  }
+  const obj = meshToOBJ(lastMesh);
+  const blob = new Blob([obj], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'spline-model.obj';
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('status').innerHTML = '<span class="success">Exported OBJ!</span>';
+};
+
+window.copyDSL = function () {
+  navigator.clipboard.writeText(document.getElementById('editor').value);
+  document.getElementById('status').innerHTML = '<span class="success">Copied to clipboard</span>';
+};
+
+
+// ─── Examples ───
+const EXAMPLES = {
+
+wine_glass: `// Wine Glass — classic lathe profile
+lathe(
+  profile: [
+    (0.0, 0.0),
+    (1.2, 0.0),
+    (1.2, 0.15),
+    (0.15, 0.15),
+    (0.15, 2.0),
+    (0.3, 2.2),
+    (1.0, 2.8),
+    (1.1, 3.5),
+    (0.95, 3.5),
+    (0.85, 2.9),
+    (0.25, 2.3),
+    (0.0, 2.3),
+  ],
+  segments: 48
+)`,
+
+vase: `// Decorative Vase — curved profile
+lathe(
+  profile: [
+    (0.0, 0.0),
+    (1.5, 0.0),
+    (1.5, 0.1),
+    (1.3, 0.3),
+    (0.6, 0.8),
+    (0.5, 1.2),
+    (0.7, 1.8),
+    (1.2, 2.5),
+    (1.4, 3.0),
+    (1.3, 3.5),
+    (1.0, 3.8),
+    (0.8, 4.0),
+    (0.9, 4.1),
+    (1.0, 4.0),
+    (1.35, 3.5),
+    (1.5, 3.0),
+    (1.3, 2.5),
+    (0.8, 1.8),
+    (0.6, 1.2),
+    (0.7, 0.8),
+    (1.2, 0.4),
+    (1.4, 0.1),
+    (0.0, 0.1),
+  ],
+  segments: 48
+)`,
+
+chess_rook: `// Chess Rook — lathe with battlements
+lathe(
+  profile: [
+    (0.0, 0.0),
+    (1.3, 0.0),
+    (1.3, 0.25),
+    (1.1, 0.35),
+    (0.5, 0.5),
+    (0.45, 0.6),
+    (0.45, 2.2),
+    (0.5, 2.3),
+    (0.7, 2.4),
+    (0.9, 2.5),
+    (0.9, 2.8),
+    (1.0, 2.8),
+    (1.0, 3.2),
+    (0.8, 3.2),
+    (0.8, 2.9),
+    (0.6, 2.9),
+    (0.6, 3.2),
+    (0.0, 3.2),
+  ],
+  segments: 8
+)`,
+
+bottle: `// Bottle with neck — smooth curves via bezier
+lathe(
+  bezier: [
+    [(1.2, 0.0), (1.2, 1.5), (1.2, 3.0)],
+    [(1.2, 3.0), (1.1, 3.5), (0.4, 4.0)],
+    [(0.4, 4.0), (0.35, 4.3), (0.35, 5.0)],
+    [(0.35, 5.0), (0.35, 5.3), (0.45, 5.5)],
+    [(0.45, 5.5), (0.45, 5.6), (0.0, 5.6)],
+  ],
+  segments: 36
+)`,
+
+star_extrude: `// 5-pointed star extruded
+extrude(
+  shape: [
+    (0.0, 1.5),
+    (0.35, 0.45),
+    (1.43, 0.45),
+    (0.55, -0.2),
+    (0.88, -1.2),
+    (0.0, -0.55),
+    (-0.88, -1.2),
+    (-0.55, -0.2),
+    (-1.43, 0.45),
+    (-0.35, 0.45),
+  ],
+  height: 0.5,
+  cap: true
+)`,
+
+loft_morph: `// Circle morphing into square
+loft(
+  sections: [
+    { y: 0, shape: [
+      (1.0, 0.0), (0.92, 0.38), (0.71, 0.71),
+      (0.38, 0.92), (0.0, 1.0), (-0.38, 0.92),
+      (-0.71, 0.71), (-0.92, 0.38), (-1.0, 0.0),
+      (-0.92, -0.38), (-0.71, -0.71), (-0.38, -0.92),
+      (0.0, -1.0), (0.38, -0.92), (0.71, -0.71),
+      (0.92, -0.38)
+    ]},
+    { y: 1.5, shape: [
+      (1.2, 0.0), (1.1, 0.5), (0.85, 0.85),
+      (0.5, 1.1), (0.0, 1.2), (-0.5, 1.1),
+      (-0.85, 0.85), (-1.1, 0.5), (-1.2, 0.0),
+      (-1.1, -0.5), (-0.85, -0.85), (-0.5, -1.1),
+      (0.0, -1.2), (0.5, -1.1), (0.85, -0.85),
+      (1.1, -0.5)
+    ]},
+    { y: 3, shape: [
+      (1.0, 1.0), (1.0, 1.0), (1.0, 1.0),
+      (1.0, 1.0), (1.0, 1.0), (-1.0, 1.0),
+      (-1.0, 1.0), (-1.0, 1.0), (-1.0, 1.0),
+      (-1.0, -1.0), (-1.0, -1.0), (-1.0, -1.0),
+      (-1.0, -1.0), (1.0, -1.0), (1.0, -1.0),
+      (1.0, -1.0)
+    ]}
+  ],
+  segments: 16
+)`,
+
+lampshade: `// Lampshade — partial lathe
+lathe(
+  profile: [
+    (0.3, 0.0),
+    (0.3, 0.1),
+    (0.8, 0.15),
+    (1.8, 1.2),
+    (2.0, 1.3),
+    (1.9, 1.3),
+    (1.7, 1.2),
+    (0.75, 0.2),
+    (0.35, 0.15),
+    (0.2, 0.15),
+    (0.2, 0.0),
+  ],
+  segments: 36
+)`,
+
+trumpet: `// Trumpet Bell — exponential flare via bezier
+lathe(
+  bezier: [
+    [(0.15, 0.0), (0.15, 0.8), (0.15, 1.5)],
+    [(0.15, 1.5), (0.15, 2.0), (0.2, 2.3)],
+    [(0.2, 2.3), (0.3, 2.6), (0.6, 2.8)],
+    [(0.6, 2.8), (1.2, 3.1), (1.8, 3.2)],
+    [(1.8, 3.2), (1.9, 3.22), (1.9, 3.25)],
+    [(1.9, 3.25), (1.85, 3.25), (1.7, 3.2)],
+    [(1.7, 3.2), (1.1, 3.05), (0.55, 2.8)],
+    [(0.55, 2.8), (0.25, 2.6), (0.12, 2.3)],
+    [(0.12, 2.3), (0.1, 1.5), (0.1, 0.8)],
+    [(0.1, 0.8), (0.1, 0.4), (0.0, 0.0)],
+  ],
+  segments: 40
+)`
+};
+
+window.loadExample = function (name) {
+  document.getElementById('editor').value = EXAMPLES[name];
+  document.getElementById('examplesMenu').classList.remove('open');
+  buildScene();
+};
+
+window.toggleExamples = function () {
+  document.getElementById('examplesMenu').classList.toggle('open');
+};
+
+window.toggleRef = function () {
+  const el = document.getElementById('refContent');
+  el.classList.toggle('open');
+  el.previousElementSibling.textContent = el.classList.contains('open') ? '▾ DSL Reference' : '▸ DSL Reference';
+};
+
+// Close examples menu on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.examples-dropdown')) {
+    document.getElementById('examplesMenu').classList.remove('open');
+  }
+});
+
+// Ctrl/Cmd+Enter to build
+document.getElementById('editor').addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    buildScene();
+  }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const ta = e.target;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(end);
+    ta.selectionStart = ta.selectionEnd = start + 2;
+  }
+});
+
+// Handle profile panel resize
+window.addEventListener('resize', () => {
+  if (lastMesh) {
+    try {
+      const spec = parseDSL(document.getElementById('editor').value);
+      drawProfile(spec);
+    } catch (e) { /* ignore */ }
+  }
+});
+
+// Build on load
+buildScene();
+
+</script>
+</body>
+</html>

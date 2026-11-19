@@ -1,0 +1,34 @@
+V 32 32 32
+
+-- anchor ring (top)
+C 16 26 16 5 3 3
+
+-- anchor shaft (vertical bar)
+C 16 13 16 1 14 3
+
+-- anchor crossbar (horizontal)
+B 8 21 15 16 2 2 3
+
+-- anchor top knob
+S 16 29 16 2 8
+
+-- anchor left arm
+C 9 10 16 1 5 3
+
+-- anchor right arm
+C 23 10 16 1 5 3
+
+-- anchor left foot (curved end)
+S 9 8 16 2 3
+
+-- anchor right foot (curved end)
+S 23 8 16 2 3
+
+-- anchor left foot curl
+B 7 6 15 4 3 2 3
+
+-- anchor right foot curl
+B 21 6 15 4 3 2 3
+
+-- chain link top
+B 14 30 15 4 2 2 9

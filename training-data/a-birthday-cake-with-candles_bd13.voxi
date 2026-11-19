@@ -1,0 +1,35 @@
+V 24 24 24
+
+-- bottom cake tier
+C 12 3 12 8 6 b
+
+-- top cake tier
+C 12 9 12 5 5 5
+
+-- white frosting rim on bottom tier
+C 12 6 12 9 1 8
+
+-- white frosting rim on top tier
+C 12 12 12 6 1 8
+
+-- decorative dots on bottom tier
+S 4 4 12 1 1
+S 20 4 12 1 1
+S 12 4 4 1 6
+S 12 4 20 1 4
+S 4 4 8 1 5
+S 20 4 16 1 4
+
+-- candles on top
+C 12 15 12 1 4 6
+C 9 15 10 1 4 1
+C 15 15 10 1 4 4
+C 9 15 14 1 4 5
+C 15 15 14 1 4 2
+
+-- flames
+S 12 18 12 1 7
+S 9 18 10 1 7
+S 15 18 10 1 7
+S 9 18 14 1 7
+S 15 18 14 1 7

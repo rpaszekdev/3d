@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D AI Generation — Complete Guide</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a28;
+    --border: #2a2a3a;
+    --text: #e0e0e8;
+    --text-dim: #8888a0;
+    --accent: #6c5ce7;
+    --accent2: #00cec9;
+    --accent3: #fd79a8;
+    --accent4: #fdcb6e;
+    --accent5: #55efc4;
+    --glow: rgba(108, 92, 231, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+    z-index: 0;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #6c5ce7, #00cec9, #fd79a8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── Navigation Tabs ── */
+  .tab-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1rem 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+    padding-bottom: 3rem;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+
+  .tab-btn:hover { border-color: var(--accent); color: var(--text); }
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--glow);
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.4s ease; }
+  .tab-panel.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Section Styling ── */
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-title .icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  /* ── Pipeline Diagram ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+  }
+
+  .pipeline-step {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .pipeline-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50px;
+    flex-shrink: 0;
+  }
+
+  .pipeline-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .pipeline-connector {
+    width: 2px;
+    flex: 1;
+    min-height: 20px;
+  }
+
+  .pipeline-content {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+  }
+
+  .pipeline-content:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .pipeline-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pipeline-content p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+
+  .pipeline-content .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .tech-tag {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Approach Cards ── */
+  .approach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .approach-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .approach-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .approach-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  .approach-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .approach-card .badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .approach-card p {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .approach-card .details {
+    display: none;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .approach-card.expanded .details { display: block; }
+
+  .approach-card .expand-hint {
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-top: 0.5rem;
+  }
+
+  .approach-card.expanded .expand-hint { display: none; }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    margin: 2rem 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .timeline-marker {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    z-index: 2;
+    border: 3px solid var(--bg);
+  }
+
+  .timeline-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.3s;
+  }
+
+  .timeline-card:hover {
+    border-color: var(--accent);
+  }
+
+  .timeline-card h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+  .timeline-card .org { font-size: 0.8rem; color: var(--accent2); font-weight: 600; }
+  .timeline-card p { font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem; }
+
+  /* ── Comparison Table ── */
+  .comparison-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .comparison-table th {
+    background: var(--surface2);
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    position: sticky;
+    top: 0;
+  }
+
+  .comparison-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    background: var(--surface);
+  }
+
+  .comparison-table tr:hover td {
+    background: var(--surface2);
+  }
+
+  .comparison-table .model-name {
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* ── Architecture Diagram ── */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+  }
+
+  .arch-box {
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 140px;
+    position: relative;
+  }
+
+  .arch-arrow {
+    font-size: 1.5rem;
+    color: var(--text-dim);
+  }
+
+  .arch-arrow-down {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--text-dim);
+    margin: 0.5rem 0;
+  }
+
+  .arch-label {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin: 0.25rem 0;
+    font-style: italic;
+  }
+
+  .arch-group {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .arch-group-title {
+    font-size: 0.75rem;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  /* ── Challenge Cards ── */
+  .challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .challenge-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .challenge-card h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .challenge-card p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .challenge-card .severity {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* ── Color Utilities ── */
+  .c-accent { color: var(--accent); }
+  .c-accent2 { color: var(--accent2); }
+  .c-accent3 { color: var(--accent3); }
+  .c-accent4 { color: var(--accent4); }
+  .c-accent5 { color: var(--accent5); }
+
+  .bg-accent { background: var(--accent); color: #fff; }
+  .bg-accent2 { background: var(--accent2); color: #000; }
+  .bg-accent3 { background: var(--accent3); color: #fff; }
+  .bg-accent4 { background: var(--accent4); color: #000; }
+  .bg-accent5 { background: var(--accent5); color: #000; }
+
+  .bg-accent-dim { background: rgba(108,92,231,0.15); color: var(--accent); border: 1px solid rgba(108,92,231,0.3); }
+  .bg-accent2-dim { background: rgba(0,206,201,0.15); color: var(--accent2); border: 1px solid rgba(0,206,201,0.3); }
+  .bg-accent3-dim { background: rgba(253,121,168,0.15); color: var(--accent3); border: 1px solid rgba(253,121,168,0.3); }
+  .bg-accent4-dim { background: rgba(253,203,110,0.15); color: var(--accent4); border: 1px solid rgba(253,203,110,0.3); }
+  .bg-accent5-dim { background: rgba(85,239,196,0.15); color: var(--accent5); border: 1px solid rgba(85,239,196,0.3); }
+
+  /* ── Stat Bar ── */
+  .stat-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface2);
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+
+  /* ── Key Insight Box ── */
+  .insight-box {
+    background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,206,201,0.1));
+    border: 1px solid rgba(108,92,231,0.3);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  .insight-box strong { color: var(--accent); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2rem; }
+    .approach-grid { grid-template-columns: 1fr; }
+    .arch-row { flex-direction: column; }
+    .arch-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ HERO ═══ -->
+<div class="hero">
+  <h1>3D AI Generation</h1>
+  <p>A complete guide to how AI creates 3D content — from text and images to production-ready meshes, textures, and animations.</p>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════ TABS ═══ -->
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="approaches">Approaches</button>
+  <button class="tab-btn" data-tab="pipeline">Pipeline</button>
+  <button class="tab-btn" data-tab="architectures">Key Architectures</button>
+  <button class="tab-btn" data-tab="models">Models & Timeline</button>
+  <button class="tab-btn" data-tab="commercial">Commercial Tools</button>
+  <button class="tab-btn" data-tab="challenges">Challenges & Future</button>
+</nav>
+
+<!-- ═══════════════════════════════════════ TAB 1: APPROACHES ═══ -->
+<div class="tab-panel active" id="approaches">
+  <h2 class="section-title"><span class="icon bg-accent">🧬</span> Six Paradigms of 3D AI Generation</h2>
+
+  <div class="insight-box">
+    <strong>Key insight:</strong> The field has evolved from slow optimization-based methods (minutes–hours per asset) toward feed-forward models (<1 second) and native 3D diffusion. The trend is: <strong>lift-from-2D → multi-view → native 3D</strong>.
+  </div>
+
+  <div class="approach-grid">
+
+    <!-- Card 1: SDS -->
+    <div class="approach-card" onclick="this.classList.toggle('expanded')" style="--card-color: var(--accent);">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);border-radius:16px 16px 0 0;"></div>
+      <h3>🔄 Score Distillation (SDS) <span class="badge bg-accent-dim">Pioneer</span></h3>
+      <p>Uses pretrained 2D diffusion models as a "critic" to optimize a 3D representation via gradient descent. The 2D model never sees 3D — it just scores rendered views.</p>
+      <div class="expand-hint">Click to expand →</div>
+      <div class="details">
+        <p><strong>How it works:</strong></p>
+        <ol style="font-size:0.85rem;color:var(--text-dim);padding-left:1.2rem;margin-bottom:0.75rem;">
+          <li>Initialize a random 3D representation (NeRF or 3D Gaussians)</li>
+          <li>Render the 3D scene from a random camera angle</li>
+          <li>Add noise to the rendered image</li>
+          <li>Ask the 2D diffusion model: "How would you denoise this?"</li>
+          <li>The difference between the noisy render and the model's prediction becomes the gradient</li>
+          <li>Backpropagate that gradient through the differentiable renderer into the 3D representation</li>
+          <li>Repeat 10,000+ times from different angles</li>
+        </ol>
+        <p><strong>Pros:</strong> Leverages massive 2D priors (Stable Diffusion), no 3D training data needed</p>
+        <p><strong>Cons:</strong> Slow (30-90 min), oversaturation, Janus problem (multi-face artifacts), over-smoothing</p>
+        <div class="tech-tags">
+          <span class="tech-tag bg-accent-dim">DreamFusion</span>
+          <span class="tech-tag bg-accent-dim">ProlificDreamer</span>
+          <span class="tech-tag bg-accent-dim">Magic3D</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Multi-View Diffusion -->
+    <div class="approach-card" onclick="this.classList.toggle('expanded')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent2);border-radius:16px 16px 0 0;"></div>
+      <h3>👁️ Multi-View Diffusion <span class="badge bg-accent2-dim">Mainstream</span></h3>
+      <p>Generate multiple consistent 2D views of an object simultaneously, then reconstruct 3D from them — bridging powerful 2D models with 3D consistency.</p>
+      <div class="expand-hint">Click to expand →</div>
+      <div class="details">
+        <p><strong>How it works:</strong></p>
+        <ol style="font-size:0.85rem;color:var(--text-dim);padding-left:1.2rem;margin-bottom:0.75rem;">
+          <li>A diffusion model generates N views (e.g., 4-16) conditioned on text/image + target camera poses</li>
+          <li>Cross-view attention layers enforce geometric consistency between views</li>
+          <li>The generated views (RGB + optionally normals/depth) feed into 3D reconstruction</li>
+          <li>Reconstruction via NeRF, NeuS, or large reconstruction model (LRM)</li>
+        </ol>
+        <p><strong>Pros:</strong> Much faster than SDS, better consistency, leverages 2D diffusion quality</p>
+        <p><strong>Cons:</strong> Still a 2D→3D pipeline (not native 3D), limited by number of generated views</p>
+        <div class="tech-tags">
+          <span class="tech-tag bg-accent2-dim">MVDream</span>
+          <span class="tech-tag bg-accent2-dim">Zero123</span>
+          <span class="tech-tag bg-accent2-dim">CAT3D</span>
+          <span class="tech-tag bg-accent2-dim">Wonder3D</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Feed-Forward LRM -->
+    <div class="approach-card" onclick="this.classList.toggle('expanded')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent3);border-radius:16px 16px 0 0;"></div>
+      <h3>⚡ Feed-Forward LRMs <span class="badge bg-accent3-dim">Fastest</span></h3>
+      <p>Single-pass transformer models that directly predict 3D from one image — no optimization, no iteration. Under 1 second.</p>
+      <div class="expand-hint">Click to expand →</div>
+      <div class="details">
+        <p><strong>How it works:</strong></p>
+        <ol style="font-size:0.85rem;color:var(--text-dim);padding-left:1.2rem;margin-bottom:0.75rem;">
+          <li>A vision transformer (ViT/DINOv2) encodes the input image into feature tokens</li>
+          <li>A transformer decoder cross-attends image features with learnable 3D tokens</li>
+          <li>Output: triplane features (3 axis-aligned 2D feature maps encoding 3D space)</li>
+          <li>For any 3D point, sample from all three planes → MLP → density + color</li>
+          <li>Extract mesh via Marching Cubes or FlexiCubes</li>
+        </ol>
+        <p><strong>Pros:</strong> Blazing fast (0.5s), no per-asset optimization, great for interactive workflows</p>
+        <p><strong>Cons:</strong> Quality limited by single view, less detail than optimization methods</p>
+        <div class="tech-tags">
+          <span class="tech-tag bg-accent3-dim">TripoSR</span>
+          <span class="tech-tag bg-accent3-dim">SF3D</span>
+          <span class="tech-tag bg-accent3-dim">SPAR3D</span>
+          <span class="tech-tag bg-accent3-dim">InstantMesh</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Native 3D Diffusion -->
+    <div class="approach-card" onclick="this.classList.toggle('expanded')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent4);border-radius:16px 16px 0 0;"></div>
+      <h3>🎯 Native 3D Diffusion <span class="badge bg-accent4-dim">State of Art</span></h3>
+      <p>Run the diffusion process directly in 3D latent space — no 2D intermediary. The model thinks in 3D from the start.</p>
+      <div class="expand-hint">Click to expand →</div>
+      <div class="details">
+        <p><strong>How it works:</strong></p>
+        <ol style="font-size:0.85rem;color:var(--text-dim);padding-left:1.2rem;margin-bottom:0.75rem;">
+          <li><strong>3D VAE:</strong> Encode 3D assets (meshes/point clouds) into compact latent representations (structured latents, triplanes, sparse voxels)</li>
+          <li><strong>Diffusion Transformer (DiT):</strong> Add noise to 3D latents, train a transformer to denoise</li>
+          <li>At generation time: start from random 3D noise, iteratively denoise</li>
+          <li><strong>Decoding:</strong> Map the denoised latent back to mesh, Gaussians, or radiance field</li>
+          <li>Separate texture stage or integrated into the latent representation</li>
+        </ol>
+        <p><strong>Pros:</strong> Inherently 3D-consistent, no Janus problem, highest quality geometry</p>
+        <p><strong>Cons:</strong> Requires large 3D training datasets, more compute, newer/less mature</p>
+        <div class="tech-tags">
+          <span class="tech-tag bg-accent4-dim">TRELLIS 2</span>
+          <span class="tech-tag bg-accent4-dim">Hunyuan3D 2.5</span>
+          <span class="tech-tag bg-accent4-dim">Direct3D</span>
+          <span class="tech-tag bg-accent4-dim">CraftsMan3D</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Video-to-3D -->
+    <div class="approach-card" onclick="this.classList.toggle('expanded')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent5);border-radius:16px 16px 0 0;"></div>
+      <h3>🎬 Video-to-3D / 4D <span class="badge bg-accent5-dim">Emerging</span></h3>
+      <p>Leverage video diffusion models to generate orbiting videos, then reconstruct 3D. Also extends to dynamic 4D (3D + time).</p>
+      <div class="expand-hint">Click to expand →</div>
+      <div class="details">
+        <p><strong>How it works:</strong></p>
+        <ol style="font-size:0.85rem;color:var(--text-dim);padding-left:1.2rem;margin-bottom:0.75rem;">
+          <li>A video diffusion model generates a smooth orbit around the object</li>
+          <li>Temporal consistency in video provides geometric consistency</li>
+          <li>Run 3D reconstruction (NeRF/3DGS) on the generated video frames</li>
+          <li>For 4D: generate multi-view videos → reconstruct per-frame 3D → connect across time</li>
+        </ol>
+        <p><strong>Pros:</strong> Leverages rapidly improving video models, naturally handles dynamics</p>
+        <p><strong>Cons:</strong> Slow multi-stage process, video artifacts transfer to 3D</p>
+        <div class="tech-tags">
+          <span class="tech-tag bg-accent5-dim">SV4D</span>
+          <span class="tech-tag bg-accent5-dim">DreamMesh4D</span>
+          <span class="tech-tag bg-accent5-dim">Efficient4D</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: Gaussian Splatting -->
+    <div class="approach-card" onclick="this.classList.toggle('expanded')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, var(--accent), var(--accent3));border-radius:16px 16px 0 0;"></div>
+      <h3>💎 3D Gaussian Splatting <span class="badge bg-accent-dim">Representation</span></h3>
+      <p>Not an approach per se, but a 3D representation revolution. Millions of anisotropic Gaussians that render in real-time via rasterization.</p>
+      <div class="expand-hint">Click to expand →</div>
+      <div class="details">
+        <p><strong>What are 3D Gaussians?</strong></p>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.75rem;">Each Gaussian is defined by: position (x,y,z), covariance matrix (shape/orientation), opacity, and color (spherical harmonics). Rendering: project Gaussians to 2D, sort by depth, alpha-composite. 100-200fps at high quality.</p>
+        <p><strong>Why it matters for generation:</strong></p>
+        <ul style="font-size:0.85rem;color:var(--text-dim);padding-left:1.2rem;">
+          <li>Fully differentiable — gradients flow from rendered image back to Gaussian params</li>
+          <li>No neural network needed at render time — pure rasterization</li>
+          <li>Initializable from point clouds — natural bridge from LRM outputs</li>
+          <li>Can be converted to meshes via Poisson Reconstruction</li>
+        </ul>
+        <div class="tech-tags">
+          <span class="tech-tag bg-accent-dim">GaussianDreamer</span>
+          <span class="tech-tag bg-accent-dim">LGM</span>
+          <span class="tech-tag bg-accent-dim">DreamGaussian</span>
+          <span class="tech-tag bg-accent-dim">GSGEN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ TAB 2: PIPELINE ═══ -->
+<div class="tab-panel" id="pipeline">
+  <h2 class="section-title"><span class="icon bg-accent2">⚙️</span> The Generation Pipeline</h2>
+
+  <div class="insight-box">
+    <strong>Three dominant pipelines exist today.</strong> Click each one to see the full step-by-step flow. Most production systems use the Two-Stage or Native 3D approach.
+  </div>
+
+  <!-- Pipeline Selector -->
+  <div style="display:flex;gap:0.75rem;margin:1.5rem 0;flex-wrap:wrap;">
+    <button class="tab-btn active" data-pipeline="twostage" onclick="showPipeline('twostage',this)">Two-Stage (Hunyuan3D, Meta 3D Gen)</button>
+    <button class="tab-btn" data-pipeline="feedforward" onclick="showPipeline('feedforward',this)">Feed-Forward (TripoSR, SPAR3D)</button>
+    <button class="tab-btn" data-pipeline="native" onclick="showPipeline('native',this)">Native 3D (TRELLIS, Direct3D)</button>
+  </div>
+
+  <!-- Two-Stage Pipeline -->
+  <div class="pipeline-view active" id="pipe-twostage">
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent"></div><div class="pipeline-connector" style="background:var(--accent);"></div></div>
+        <div class="pipeline-content">
+          <h3>1. Input Encoding</h3>
+          <p>Text prompt → CLIP/T5 text encoder → text embeddings. Or image → CLIP/DINOv2 vision encoder → image embeddings. These condition everything downstream.</p>
+          <div class="tech-tags"><span class="tech-tag bg-accent-dim">CLIP ViT-L</span><span class="tech-tag bg-accent-dim">T5-XXL</span><span class="tech-tag bg-accent-dim">DINOv2</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent2"></div><div class="pipeline-connector" style="background:var(--accent2);"></div></div>
+        <div class="pipeline-content">
+          <h3>2. Multi-View Generation</h3>
+          <p>A diffusion model generates 6-16 consistent views (RGB + normal maps) at predetermined camera poses around the object. Cross-view attention layers enforce geometric consistency between views.</p>
+          <div class="tech-tags"><span class="tech-tag bg-accent2-dim">U-Net / DiT</span><span class="tech-tag bg-accent2-dim">Cross-View Attention</span><span class="tech-tag bg-accent2-dim">Camera Conditioning</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent3"></div><div class="pipeline-connector" style="background:var(--accent3);"></div></div>
+        <div class="pipeline-content">
+          <h3>3. 3D Reconstruction</h3>
+          <p>A transformer-based reconstruction model takes the multi-view images and predicts a 3D representation — typically triplane features or a point cloud. This is the "lifting" step from 2D to 3D.</p>
+          <div class="tech-tags"><span class="tech-tag bg-accent3-dim">Transformer Decoder</span><span class="tech-tag bg-accent3-dim">Triplane Features</span><span class="tech-tag bg-accent3-dim">SDF Prediction</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent4"></div><div class="pipeline-connector" style="background:var(--accent4);"></div></div>
+        <div class="pipeline-content">
+          <h3>4. Mesh Extraction</h3>
+          <p>Convert the implicit 3D representation to an explicit mesh. Marching Cubes extracts the isosurface from an SDF. FlexiCubes is a differentiable alternative with learnable vertex positions and edge weights for sharper features.</p>
+          <div class="tech-tags"><span class="tech-tag bg-accent4-dim">Marching Cubes</span><span class="tech-tag bg-accent4-dim">FlexiCubes</span><span class="tech-tag bg-accent4-dim">DMTet</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent5"></div><div class="pipeline-connector" style="background:var(--accent5);"></div></div>
+        <div class="pipeline-content">
+          <h3>5. Texture Synthesis</h3>
+          <p>A dedicated paint model applies textures to the mesh. Multi-view inpainting in UV space ensures seamless coverage. PBR materials (albedo, roughness, metallic, normal maps) are generated for realistic lighting.</p>
+          <div class="tech-tags"><span class="tech-tag bg-accent5-dim">UV Unwrapping</span><span class="tech-tag bg-accent5-dim">PBR Maps</span><span class="tech-tag bg-accent5-dim">Multi-View Inpainting</span></div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot" style="background:var(--text-dim);"></div></div>
+        <div class="pipeline-content">
+          <h3>6. Post-Processing & Export</h3>
+          <p>Remeshing, LOD generation, format conversion (GLB, FBX, OBJ, USDZ). Optional: auto-rigging for animation, quad remesh for production topology.</p>
+          <div class="tech-tags"><span class="tech-tag" style="background:rgba(255,255,255,0.1);color:var(--text-dim);">GLB</span><span class="tech-tag" style="background:rgba(255,255,255,0.1);color:var(--text-dim);">FBX</span><span class="tech-tag" style="background:rgba(255,255,255,0.1);color:var(--text-dim);">USDZ</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed-Forward Pipeline -->
+  <div class="pipeline-view" id="pipe-feedforward" style="display:none;">
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent3"></div><div class="pipeline-connector" style="background:var(--accent3);"></div></div>
+        <div class="pipeline-content">
+          <h3>1. Image Input</h3>
+          <p>Single image → Vision Transformer (ViT/DINOv2) → patch tokens. The entire 3D shape must be inferred from this one view. Background is typically removed first.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent3"></div><div class="pipeline-connector" style="background:var(--accent3);"></div></div>
+        <div class="pipeline-content">
+          <h3>2. Transformer Prediction</h3>
+          <p>A large transformer cross-attends image tokens with learnable 3D query tokens. Directly outputs triplane features or point cloud — no diffusion, no iteration, just a single forward pass.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent3"></div><div class="pipeline-connector" style="background:var(--accent3);"></div></div>
+        <div class="pipeline-content">
+          <h3>3. Mesh + Texture Extraction</h3>
+          <p>FlexiCubes extracts mesh from triplane features. Color/texture is predicted simultaneously. SPAR3D adds an intermediate point cloud editing step for user control. Total time: 0.5-1 second.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Native 3D Pipeline -->
+  <div class="pipeline-view" id="pipe-native" style="display:none;">
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent4"></div><div class="pipeline-connector" style="background:var(--accent4);"></div></div>
+        <div class="pipeline-content">
+          <h3>1. 3D VAE (Training Only)</h3>
+          <p>Encode a large corpus of 3D assets into a compact structured latent space. E.g., TRELLIS.2 uses a Sparse 3D VAE with 16x spatial downsampling to compress meshes into sparse voxel latents.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent4"></div><div class="pipeline-connector" style="background:var(--accent4);"></div></div>
+        <div class="pipeline-content">
+          <h3>2. Conditioned Denoising in 3D</h3>
+          <p>Start from random noise in the 3D latent space. A Diffusion Transformer (DiT) iteratively denoises, conditioned on text/image embeddings. The model operates natively in 3D — no 2D rendering involved.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent4"></div><div class="pipeline-connector" style="background:var(--accent4);"></div></div>
+        <div class="pipeline-content">
+          <h3>3. Latent → Multiple Outputs</h3>
+          <p>The structured latent can be decoded to different formats: meshes (via Marching Cubes on SDF), 3D Gaussians (for real-time rendering), or radiance fields. One latent, many outputs.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-line"><div class="pipeline-dot bg-accent4"></div></div>
+        <div class="pipeline-content">
+          <h3>4. Texture Stage</h3>
+          <p>Either integrated in the latent (TRELLIS encodes appearance) or a separate texture DiT paints the geometry (Hunyuan3D approach). PBR materials are becoming standard.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ TAB 3: ARCHITECTURES ═══ -->
+<div class="tab-panel" id="architectures">
+  <h2 class="section-title"><span class="icon bg-accent3">🏗️</span> Key Architectural Innovations</h2>
+
+  <!-- Triplane -->
+  <div class="arch-diagram">
+    <h3 style="margin-bottom:0.5rem;">Triplane Representation</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:1.5rem;">The workhorse of modern 3D AI. Encodes 3D information as three 2D feature maps aligned to the XY, XZ, and YZ planes. For any 3D point, project onto all three planes, bilinearly sample features, aggregate, and decode with a small MLP.</p>
+    <div class="arch-row">
+      <div class="arch-box bg-accent-dim">3D Space<br><small>(x, y, z)</small></div>
+      <div class="arch-arrow">→</div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div class="arch-box bg-accent2-dim">XY Plane Features</div>
+        <div class="arch-box bg-accent3-dim">XZ Plane Features</div>
+        <div class="arch-box bg-accent4-dim">YZ Plane Features</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box bg-accent5-dim">Σ Aggregate<br><small>concat/sum</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="background:rgba(255,255,255,0.1);">MLP<br><small>→ color, density</small></div>
+    </div>
+    <div class="arch-label">Memory: O(3 × H × W × C) vs O(H × W × D × C) for voxels — orders of magnitude smaller</div>
+  </div>
+
+  <!-- FlexiCubes -->
+  <div class="arch-diagram">
+    <h3 style="margin-bottom:0.5rem;">FlexiCubes — Differentiable Mesh Extraction</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:1.5rem;">Classic Marching Cubes snaps vertices to grid edges — FlexiCubes makes vertex positions, edge weights, and face orientations learnable parameters. This allows end-to-end training through mesh extraction, producing sharper edges and better geometry.</p>
+    <div class="arch-row">
+      <div class="arch-box bg-accent-dim">Implicit Field<br><small>(SDF / occupancy)</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box bg-accent4-dim" style="border:2px solid var(--accent4);">FlexiCubes<br><small>learnable vertices<br>learnable weights<br>learnable splits</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box bg-accent5-dim">Explicit Mesh<br><small>sharp features<br>clean topology</small></div>
+    </div>
+    <div class="arch-label">Used by: InstantMesh, SF3D, FlexiDreamer — replaces DMTet and standard Marching Cubes</div>
+  </div>
+
+  <!-- Structured Latents -->
+  <div class="arch-diagram">
+    <h3 style="margin-bottom:0.5rem;">Structured Latents (SLAT) — TRELLIS Architecture</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:1.5rem;">Instead of flat latent vectors, TRELLIS stores latent features on a sparse 3D voxel grid. This preserves spatial structure and enables the same latent to be decoded into multiple output formats.</p>
+    <div class="arch-group">
+      <div class="arch-group-title">Encoder (3D VAE)</div>
+      <div class="arch-row">
+        <div class="arch-box bg-accent2-dim">3D Asset<br><small>mesh / point cloud</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box bg-accent-dim">Sparse 3D VAE<br><small>16× downsample</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box bg-accent4-dim">Structured Latent<br><small>sparse voxel features</small></div>
+      </div>
+    </div>
+    <div class="arch-arrow-down">↓ Rectified Flow DiT (denoise) ↓</div>
+    <div class="arch-group">
+      <div class="arch-group-title">Decoders (Multiple Outputs)</div>
+      <div class="arch-row">
+        <div class="arch-box bg-accent3-dim">3D Gaussians<br><small>real-time render</small></div>
+        <div class="arch-box bg-accent5-dim">Radiance Field<br><small>high quality</small></div>
+        <div class="arch-box bg-accent2-dim">Mesh<br><small>production use</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Autoregressive Mesh -->
+  <div class="arch-diagram">
+    <h3 style="margin-bottom:0.5rem;">Autoregressive Mesh Generation (Meshtron / NVIDIA)</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:1.5rem;">Treat mesh generation like language modeling: tokenize faces as coordinate sequences, predict one face at a time. Hourglass Transformer enables up to 64K faces with manageable memory.</p>
+    <div class="arch-row">
+      <div class="arch-box bg-accent-dim">Point Cloud<br><small>input condition</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box bg-accent3-dim">Face Tokenizer<br><small>vertex coords → tokens</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box bg-accent4-dim" style="border:2px solid var(--accent4);">Hourglass<br>Transformer<br><small>sliding window attn<br>hierarchical layers</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box bg-accent5-dim">64K Face Mesh<br><small>high fidelity</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ TAB 4: MODELS ═══ -->
+<div class="tab-panel" id="models">
+  <h2 class="section-title"><span class="icon bg-accent4">🚀</span> Key Models & Timeline</h2>
+
+  <div class="insight-box">
+    <strong>Scaling trend:</strong> Model sizes went from ~300M params (2023) → 2B (2024) → 4-10B (2025-2026). Quality tracks with scale, mirroring the LLM scaling phenomenon.
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent" style="font-size:0.6rem;">2022</div>
+      <div class="timeline-card">
+        <h4>DreamFusion</h4>
+        <div class="org">Google Research</div>
+        <p>Pioneered Score Distillation Sampling (SDS). First viable text-to-3D. Slow (hours) and artifact-prone, but proved the concept. Used NeRF as the 3D representation.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent" style="font-size:0.6rem;">2023</div>
+      <div class="timeline-card">
+        <h4>LRM / Zero123 / Point-E / Shap-E</h4>
+        <div class="org">Various (Hong Kong U, Stability AI, OpenAI)</div>
+        <p>The first wave of feed-forward models. LRM introduced the triplane transformer. Zero123 showed single-image novel view synthesis. Point-E/Shap-E attempted direct 3D diffusion on point clouds.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent2" style="font-size:0.6rem;">Mar 24</div>
+      <div class="timeline-card">
+        <h4>TripoSR</h4>
+        <div class="org">Stability AI + Tripo</div>
+        <p>Image-to-3D in <strong>0.5 seconds</strong>. Built on LRM with data curation improvements. Open-source. Set the speed benchmark for feed-forward generation.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent2" style="font-size:0.6rem;">Apr 24</div>
+      <div class="timeline-card">
+        <h4>InstantMesh</h4>
+        <div class="org">Tencent</div>
+        <p>Combined multi-view diffusion + sparse-view LRM. 3D mesh in ~10 seconds. Introduced FlexiCubes for mesh extraction into the generation pipeline.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent3" style="font-size:0.6rem;">Jul 24</div>
+      <div class="timeline-card">
+        <h4>Meta 3D Gen</h4>
+        <div class="org">Meta</div>
+        <p>Integrated AssetGen (text→mesh with PBR via triplane SDF) + TextureGen. Full asset <1 minute. 68% win rate over single-stage alternatives.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent3" style="font-size:0.6rem;">Aug 24</div>
+      <div class="timeline-card">
+        <h4>SF3D</h4>
+        <div class="org">Stability AI</div>
+        <p>Successor to TripoSR. Better UV unwrapping, illumination disentanglement, improved mesh quality. Still 0.5 seconds.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent4" style="font-size:0.6rem;">Nov 24</div>
+      <div class="timeline-card">
+        <h4>TRELLIS</h4>
+        <div class="org">Microsoft</div>
+        <p>CVPR 2025 Spotlight. Structured Latent (SLAT) representation with Rectified Flow Transformers. Up to 2B parameters. Multi-format output (Gaussians, mesh, radiance field). Trained on TRELLIS-500K dataset.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent4" style="font-size:0.6rem;">Nov 24</div>
+      <div class="timeline-card">
+        <h4>Hunyuan3D 1.0</h4>
+        <div class="org">Tencent</div>
+        <p>Unified text/image-to-3D. 3M+ downloads on HuggingFace. Kicked off Tencent's rapid iteration cycle.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent5" style="font-size:0.6rem;">Jan 25</div>
+      <div class="timeline-card">
+        <h4>Hunyuan3D 2.0 / SPAR3D</h4>
+        <div class="org">Tencent / Stability AI</div>
+        <p><strong>Hunyuan3D 2.0:</strong> Two-stage (shape DiT + texture Paint). Flow-based diffusion transformer for geometry.<br><strong>SPAR3D:</strong> Point cloud diffusion + mesh regression. 0.7s generation with interactive point editing. Free commercial use.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent3" style="font-size:0.6rem;">May 25</div>
+      <div class="timeline-card">
+        <h4>Meta AssetGen 2.0</h4>
+        <div class="org">Meta</div>
+        <p>Single-stage 3D diffusion (no multi-view intermediary). Trained on massive 3D corpus. For Horizon/Avatar platforms. Roadmap: auto-regressive scene generation.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent4" style="font-size:0.6rem;">Jun 25</div>
+      <div class="timeline-card">
+        <h4>Hunyuan3D 2.5</h4>
+        <div class="org">Tencent</div>
+        <p>LATTICE shape foundation model up to <strong>10B parameters</strong>. Geometry resolution 1024. Complex models in 8-20 seconds on A100/4090. CLIP score 0.821.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent" style="font-size:0.6rem;">Sep 25</div>
+      <div class="timeline-card">
+        <h4>Tripo 3.0</h4>
+        <div class="org">Tripo AI</div>
+        <p>2B-parameter foundation model. 300% detail improvement. Sketch-to-3D, auto-rigging, clean quad topology.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent3" style="font-size:0.6rem;">Oct 25</div>
+      <div class="timeline-card">
+        <h4>Rodin Gen-2</h4>
+        <div class="org">Hyper3D / Deemos</div>
+        <p><strong>10B parameters</strong> (BANG architecture). Recursive part-based generation. 4× mesh quality. Native 3D textures (no seams). Quad mesh output. T/A pose support. 1-2 minutes per asset.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker bg-accent2" style="font-size:0.6rem;">Dec 25</div>
+      <div class="timeline-card">
+        <h4>TRELLIS.2</h4>
+        <div class="org">Microsoft</div>
+        <p><strong>4B parameters</strong>. Introduces O-Voxel (field-free sparse voxels) for arbitrary topology. Sparse 3D VAE with 16× downsample. Full PBR. Handles complex topologies and sharp features.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ TAB 5: COMMERCIAL ═══ -->
+<div class="tab-panel" id="commercial">
+  <h2 class="section-title"><span class="icon bg-accent5">💰</span> Commercial Tools (2025-2026)</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Approach</th>
+        <th>Speed</th>
+        <th>Price</th>
+        <th>Best For</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="model-name">Meshy</td>
+        <td>Multi-modal AI</td>
+        <td>~30s-2min</td>
+        <td>From $15/mo</td>
+        <td>Blender/Unity/Unreal plugins, PBR textures, team workflows</td>
+      </tr>
+      <tr>
+        <td class="model-name">Tripo AI</td>
+        <td>Feed-forward (Tripo 3.0, 2B)</td>
+        <td>~5-15s</td>
+        <td>Freemium</td>
+        <td>Speed, clean quad topology, auto-rigging, sketch input</td>
+      </tr>
+      <tr>
+        <td class="model-name">Luma AI (Genie)</td>
+        <td>NeRF / Gaussian Splatting</td>
+        <td>~10-30s</td>
+        <td>Free tier</td>
+        <td>Real-world capture, spatial accuracy, rapid prototyping</td>
+      </tr>
+      <tr>
+        <td class="model-name">Rodin (Hyper3D)</td>
+        <td>Native 3D (BANG, 10B)</td>
+        <td>~1-2min</td>
+        <td>From $99/mo</td>
+        <td>Highest quality, photorealistic, 4K PBR, part-based generation</td>
+      </tr>
+      <tr>
+        <td class="model-name">CSM</td>
+        <td>Multi-modal</td>
+        <td>~15-60s</td>
+        <td>Varies</td>
+        <td>Text-to-3D, animation-ready, texture customization</td>
+      </tr>
+      <tr>
+        <td class="model-name">Sloyd AI</td>
+        <td>Procedural + AI hybrid</td>
+        <td>~5-10s</td>
+        <td>Varies</td>
+        <td>Game-ready assets, parametric controls, guaranteed clean topology</td>
+      </tr>
+      <tr>
+        <td class="model-name">Spline</td>
+        <td>Browser-based 3D + AI</td>
+        <td>Varies</td>
+        <td>Freemium</td>
+        <td>Web-native collaborative 3D design</td>
+      </tr>
+      <tr>
+        <td class="model-name">3DAI Studio</td>
+        <td>Multi-model (hosts TRELLIS 2, etc.)</td>
+        <td>Varies</td>
+        <td>Varies</td>
+        <td>Access to multiple backend models in one platform</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box">
+    <strong>Industry consensus (2026):</strong> AI 3D generation is "20% generation, 80% intelligent refinement." Most outputs still need artist cleanup for production. But the gap is closing fast — Rodin Gen-2 and Hunyuan3D 2.5 are approaching production-quality for many use cases.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ TAB 6: CHALLENGES ═══ -->
+<div class="tab-panel" id="challenges">
+  <h2 class="section-title"><span class="icon bg-accent3">⚠️</span> Challenges & What's Next</h2>
+
+  <h3 style="margin:1.5rem 0 1rem;font-size:1.2rem;">Current Limitations</h3>
+  <div class="challenge-grid">
+    <div class="challenge-card">
+      <h4>🔺 Geometry Quality <span class="severity" style="background:rgba(253,121,168,0.2);color:var(--accent3);">High</span></h4>
+      <p>Non-manifold edges, broken topology, no proper edge loops. Most meshes need retopology for rigging/animation. Quad mesh output is improving (Rodin Gen-2, Meshtron) but not universal.</p>
+    </div>
+    <div class="challenge-card">
+      <h4>🎨 Texture & Materials <span class="severity" style="background:rgba(253,121,168,0.2);color:var(--accent3);">High</span></h4>
+      <p>UV seams, stretching, incorrect PBR values. Texture quality lags behind geometry improvements. Native 3D textures (Rodin Gen-2) are a promising solution but compute-intensive.</p>
+    </div>
+    <div class="challenge-card">
+      <h4>🎯 Controllability <span class="severity" style="background:rgba(253,203,110,0.2);color:var(--accent4);">Medium</span></h4>
+      <p>Fine-grained control over specific part shapes, exact proportions, and style is limited. Recursive part generation (Rodin Gen-2) and point cloud editing (SPAR3D) are early solutions.</p>
+    </div>
+    <div class="challenge-card">
+      <h4>📊 Training Data <span class="severity" style="background:rgba(253,203,110,0.2);color:var(--accent4);">Medium</span></h4>
+      <p>Only 500K-1M quality 3D assets available vs. billions of images. Objaverse-XL and TRELLIS-500K help but quality varies. Synthetic data augmentation is critical.</p>
+    </div>
+    <div class="challenge-card">
+      <h4>🏙️ Scene Generation <span class="severity" style="background:rgba(253,121,168,0.2);color:var(--accent3);">High</span></h4>
+      <p>Single-object generation is maturing; multi-object scenes with proper spatial relationships and interactions are still early-stage. Physics-aware generation is an open frontier.</p>
+    </div>
+    <div class="challenge-card">
+      <h4>📏 Evaluation <span class="severity" style="background:rgba(85,239,196,0.2);color:var(--accent5);">Low</span></h4>
+      <p>No universally agreed benchmark. CLIP score, Chamfer Distance, LPIPS each capture different aspects. Human preference studies remain the gold standard but are expensive.</p>
+    </div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 1rem;font-size:1.2rem;">Emerging Trends (2025-2026)</h3>
+  <div class="approach-grid">
+    <div class="approach-card" style="cursor:default;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:16px 16px 0 0;"></div>
+      <h3>📈 Scaling Laws for 3D</h3>
+      <p>300M → 2B → 10B parameters in two years. Quality tracks with scale. Hunyuan3D LATTICE (10B) and Rodin Gen-2 (10B) show clear improvements. Expect 50B+ models by 2027.</p>
+    </div>
+    <div class="approach-card" style="cursor:default;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent2),var(--accent5));border-radius:16px 16px 0 0;"></div>
+      <h3>🌍 World Models</h3>
+      <p>AI systems learning physics and spatial relationships. Not just generating shapes, but understanding how objects interact, move, and function in 3D space.</p>
+    </div>
+    <div class="approach-card" style="cursor:default;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent3),var(--accent4));border-radius:16px 16px 0 0;"></div>
+      <h3>🏗️ Auto-Regressive Scenes</h3>
+      <p>Meta's roadmap: generate entire environments sequentially. Place objects, define relationships, build coherent scenes. The "GPT moment" for 3D environments.</p>
+    </div>
+    <div class="approach-card" style="cursor:default;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent5),var(--accent));border-radius:16px 16px 0 0;"></div>
+      <h3>⚡ Real-Time Interactive</h3>
+      <p>Sub-second generation (SPAR3D at 0.7s, TripoSR at 0.5s) enables interactive workflows. Edit in real-time, regenerate instantly. The gap between design and 3D is vanishing.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>3D AI Generation Guide — Research Reference — March 2026</p>
+</div>
+
+<script>
+  // Tab navigation
+  document.querySelectorAll('.tab-nav .tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-nav .tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Pipeline selector
+  function showPipeline(id, btn) {
+    document.querySelectorAll('.pipeline-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('[data-pipeline]').forEach(b => b.classList.remove('active'));
+    document.getElementById('pipe-' + id).style.display = 'block';
+    btn.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

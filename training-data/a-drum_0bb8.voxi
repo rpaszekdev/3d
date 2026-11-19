@@ -1,0 +1,35 @@
+V 24 18 24
+
+-- drum shell (wooden body)
+C 12 5 12 7 10 a
+
+-- bottom drumhead (white)
+C 12 0 12 7 1 8
+
+-- top drumhead (white)
+C 12 10 12 7 1 8
+
+-- bottom rim (metal)
+C 12 0 12 8 1 9
+
+-- top rim (metal)
+C 12 11 12 8 1 9
+
+-- tension rods around shell
+B 5 4 12 1 6 1 9
+B 19 4 12 1 6 1 9
+B 12 4 5 1 6 1 9
+B 12 4 19 1 6 1 9
+B 7 4 7 1 6 1 9
+B 17 4 7 1 6 1 9
+B 7 4 17 1 6 1 9
+B 17 4 17 1 6 1 9
+
+-- snare wire straps at bottom
+B 7 1 11 10 1 2 9
+
+-- left drumstick
+B 14 11 10 1 7 1 d
+
+-- right drumstick (angled)
+B 16 12 9 1 7 1 d

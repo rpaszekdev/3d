@@ -1,0 +1,46 @@
+V 32 16 16
+
+-- lower body / chassis
+B 3 3 4 26 5 8 7
+
+-- cabin
+B 8 8 5 16 5 6 7
+
+-- windshield front
+B 9 8 6 4 4 4 8
+
+-- rear window
+B 18 8 6 5 4 4 8
+
+-- roof
+B 10 13 5 12 1 6 9
+
+-- headlight
+B 28 4 5 2 2 6 6
+
+-- taillight
+B 3 4 5 2 2 6 1
+
+-- front bumper
+B 29 3 5 1 2 6 9
+
+-- rear bumper
+B 2 3 5 1 2 6 9
+
+-- front wheel
+S 8 2 8 3 0
+
+-- front hubcap
+S 8 2 8 1 9
+
+-- rear wheel
+S 23 2 8 3 0
+
+-- rear hubcap
+S 23 2 8 1 9
+
+-- door panel line
+B 9 4 4 12 1 1 9
+
+-- side mirror
+B 27 9 3 2 1 2 9

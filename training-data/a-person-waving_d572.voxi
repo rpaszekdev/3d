@@ -1,0 +1,34 @@
+V 24 30 16
+
+-- hair
+B 9 26 6 6 2 4 0
+
+-- head
+S 12 23 8 3 d
+
+-- neck
+B 11 19 7 2 3 2 d
+
+-- torso (blue shirt)
+B 8 10 6 8 9 4 2
+
+-- pants
+B 8 2 6 8 8 4 9
+
+-- left foot
+B 7 0 6 4 2 4 0
+
+-- right foot
+B 13 0 6 4 2 4 0
+
+-- left arm (resting down)
+B 5 10 7 3 8 2 d
+
+-- right upper arm (raised to wave)
+B 16 13 7 3 7 2 d
+
+-- right forearm (angled outward)
+B 19 18 7 2 5 2 d
+
+-- waving hand
+S 21 23 8 2 8

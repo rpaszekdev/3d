@@ -1,0 +1,37 @@
+V 24 24 24
+
+-- feet
+B 9 0 11 3 1 3 b
+B 13 0 11 3 1 3 b
+
+-- lower legs
+C 10 1 12 1 5 b
+C 14 1 12 1 5 b
+
+-- upper legs (angled inward)
+C 11 6 12 1 4 b
+C 13 6 12 1 4 b
+
+-- body
+E 12 11 12 4 3 3 5
+
+-- tail feathers
+B 11 10 14 3 2 2 5
+
+-- lower neck
+C 12 14 12 1 3 5
+
+-- neck curves forward
+C 12 17 11 1 3 5
+
+-- head
+S 12 20 10 2 5
+
+-- upper beak (orange)
+B 9 20 6 6 1 1 7
+
+-- bent beak lower (dark, angles down)
+B 9 18 7 2 1 3 e
+
+-- eye
+S 13 21 8 1 0

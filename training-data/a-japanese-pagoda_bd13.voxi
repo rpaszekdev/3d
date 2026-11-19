@@ -1,0 +1,43 @@
+V 32 48 32
+
+-- stone foundation
+B 5 0 5 22 2 22 9
+
+-- tier 1 body
+B 9 2 9 14 6 14 8
+-- tier 1 red trim
+B 9 8 9 14 1 14 1
+
+-- tier 1 roof layers
+B 5 9 5 22 1 22 c
+B 7 10 7 18 1 18 c
+B 9 11 9 14 1 14 c
+
+-- tier 2 body
+B 10 12 10 12 5 12 8
+-- tier 2 red trim
+B 10 17 10 12 1 12 1
+
+-- tier 2 roof layers
+B 7 18 7 18 1 18 c
+B 9 19 9 14 1 14 c
+B 10 20 10 12 1 12 c
+
+-- tier 3 body
+B 11 21 11 10 4 10 8
+-- tier 3 red trim
+B 11 25 11 10 1 10 1
+
+-- tier 3 roof layers
+B 9 26 9 14 1 14 c
+B 10 27 10 12 1 12 c
+B 11 28 11 10 1 10 c
+
+-- spire post
+B 15 29 15 2 4 2 d
+
+-- spire needle
+C 16 33 16 1 6 6
+
+-- finial orb
+S 16 39 16 1 6

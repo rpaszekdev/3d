@@ -1,0 +1,9 @@
+SCORE: 1
+STRENGTHS: The model was submitted and rendered without errors — the geometry structure likely exists in the VOXI source, which means the underlying shape logic is present and just needs a color fix to become visible.
+
+ISSUES:
+- **Critical: Entire model is invisible (color 0 = black on dark background).** Every single view is pure black — all 6 angles show nothing. The penguin body, head, belly, beak, and feet are all rendered with color `0` (black), which blends completely into the renderer's `#13151f` background. Replace the body/head with navy (`f`) — e.g. change `B 12 0 12 8 20 8 0` → `B 12 0 12 8 20 8 f`. Use white (`8`) for the belly: `B 13 2 11 6 14 3 8`.
+- **No contrast elements visible to confirm penguin shape.** Because no color is visible, it's impossible to verify body proportions, head-to-body ratio, or penguin silhouette. The penguin needs at minimum: a dark body (navy `f` or gray `9`), a white belly patch (`8`), an orange/yellow beak (`7`), and orange feet (`7`). Example beak: `B 15 22 10 2 2 2 7`.
+- **Feet and beak likely missing or also black.** Penguin feet (`B 13 0 10 3 2 5 7` and `B 18 0 10 3 2 5 7`) and a beak (`B 15 22 10 2 2 2 7`) are the most character-defining details. Without orange/yellow accent colors these features are invisible even if geometrically present.
+
+PRIORITY_FIX: **Replace color `0` with navy (`f`) on all body/head geometry immediately.** This single change will make the entire model appear and allow all other proportional and shape issues to be evaluated. Example: swap every `... 0` color argument to `... f` for dark parts and `... 8` for the white belly patch. Without this fix, no further critique of shape or form is possible.

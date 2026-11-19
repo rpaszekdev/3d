@@ -1,0 +1,19 @@
+V 24 24 24
+
+-- table top
+B 2 9 6 20 2 12 a
+
+-- lower shelf
+B 4 4 8 16 1 8 d
+
+-- front-left leg
+B 2 0 6 2 9 2 e
+
+-- front-right leg
+B 20 0 6 2 9 2 e
+
+-- back-left leg
+B 2 0 16 2 9 2 e
+
+-- back-right leg
+B 20 0 16 2 9 2 e

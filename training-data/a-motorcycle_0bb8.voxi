@@ -1,0 +1,42 @@
+V 32 20 14
+
+-- rear wheel
+S 7 5 7 5 0
+S 7 5 7 2 9
+
+-- front wheel
+S 25 5 7 5 0
+S 25 5 7 2 9
+
+-- main frame spine
+B 7 9 6 18 2 2 9
+
+-- engine block
+B 10 5 6 9 5 2 8
+
+-- fuel tank
+B 13 10 5 7 3 4 1
+
+-- seat
+B 11 12 5 11 2 4 0
+
+-- rear fender
+B 6 9 5 4 3 4 1
+
+-- front fork
+B 23 5 6 2 9 2 9
+
+-- front fender
+B 22 9 5 4 2 4 1
+
+-- handlebars
+B 21 13 5 5 1 4 0
+
+-- headlight
+S 27 10 7 2 6
+
+-- exhaust pipe
+B 9 4 4 11 1 2 7
+
+-- footpegs
+B 13 4 5 2 1 4 9

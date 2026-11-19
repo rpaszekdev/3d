@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSL Numeric — Spatial Sketch Language</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+    --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #6c8cff; --accent-dim: #4a5a8a;
+    --error-bg: #3a1820; --error-text: #ff6b7a;
+    --grid-line: #1e2230; --grid-major: #252a3a;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border); flex-shrink: 0; height: 44px;
+  }
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: 0.5px; }
+  header h1 span { color: var(--accent); }
+  .toolbar { display: flex; align-items: center; gap: 10px; }
+  select, button {
+    font-family: inherit; font-size: 12px;
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 5px;
+    padding: 5px 10px; cursor: pointer; transition: border-color 0.15s;
+  }
+  select:hover, button:hover { border-color: var(--accent-dim); }
+  button:active { background: var(--border); }
+  button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  main { display: flex; flex: 1; overflow: hidden; }
+  .editor-pane {
+    width: 40%; min-width: 280px;
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--border);
+  }
+  .ref-bar {
+    flex-shrink: 0; padding: 6px 12px;
+    background: #151820; border-bottom: 1px solid var(--border);
+    font: 10px/1.6 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: var(--text-dim); user-select: none;
+  }
+  .ref-bar .types { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ref-bar .types b { color: var(--accent); font-weight: 600; }
+  .ref-bar .colors { display: flex; gap: 3px; margin-top: 2px; align-items: center; }
+  .ref-bar .colors .swatch {
+    display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+    border: 1px solid #444; vertical-align: middle;
+  }
+  .editor-wrap { flex: 1; position: relative; overflow: hidden; }
+  .line-numbers {
+    position: absolute; top: 0; left: 0; bottom: 0; width: 38px;
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 12px 6px 12px 0; text-align: right;
+    font: 13px/1.55 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: var(--text-dim); overflow: hidden; user-select: none; pointer-events: none; z-index: 1;
+  }
+  textarea#editor {
+    width: 100%; height: 100%; resize: none;
+    background: var(--surface); color: var(--text); border: none; outline: none;
+    font: 13px/1.55 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    padding: 12px 12px 12px 46px; tab-size: 2; overflow-y: auto;
+  }
+  textarea#editor::placeholder { color: var(--text-dim); }
+  .error-bar {
+    flex-shrink: 0; min-height: 0; max-height: 80px; overflow-y: auto;
+    background: var(--error-bg); color: var(--error-text);
+    font: 12px/1.5 'SF Mono', monospace; padding: 0;
+    transition: padding 0.15s; border-top: 1px solid transparent;
+  }
+  .error-bar.visible { padding: 6px 12px; border-top-color: #5a2030; }
+  .error-bar:empty { display: none; }
+  .canvas-pane {
+    flex: 1; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px; position: relative;
+  }
+  svg#canvas { width: 100%; height: 100%; border-radius: 6px; background: #13151f; }
+  .canvas-pane .mouse-pos {
+    position: absolute; bottom: 16px; right: 20px;
+    font: 11px/1 'SF Mono', monospace; color: var(--text-dim); pointer-events: none;
+  }
+  .ssl-idx { font: 8px 'SF Mono', monospace; fill: #556; pointer-events: none; }
+  .ssl-text { font-family: -apple-system, system-ui, sans-serif; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>SSL</span> Numeric</h1>
+  <div class="toolbar">
+    <select id="examples">
+      <option value="">Load example...</option>
+      <option value="snowman">Snowman</option>
+      <option value="rocket">Rocket</option>
+      <option value="castle">Castle</option>
+      <option value="lamp">Desk Lamp</option>
+      <option value="chess">Chess Piece</option>
+      <option value="tree">Tree</option>
+      <option value="robot">Robot</option>
+      <option value="house">House</option>
+      <option value="nn">Neural Network (H)</option>
+      <option value="shapes3d">All Primitives</option>
+    </select>
+    <button id="btn-view" title="Toggle 2D / Isometric 3D view">2D</button>
+    <button id="btn-clear">Clear</button>
+    <button id="btn-export">Export PNG</button>
+  </div>
+</header>
+
+<main>
+  <div class="editor-pane">
+    <div class="ref-bar">
+      <div class="types">
+        <span><b>H</b> <b>V</b> <b>G</b> <b>F</b> <b>P1</b> mode</span>
+        <span>0=box 1=sph 2=cyl 3=cone 4=pyr 5=tor 6=line 7=dot 8=txt 9=arc</span>
+        <span><b>U</b> <b>I</b> <b>S</b> csg</span>
+        <span>0>1>2 connect</span>
+      </div>
+      <div class="colors">
+        <span>Colors:</span>
+        <span class="swatch" style="background:#1a1a1a" title="0"></span><span>0</span>
+        <span class="swatch" style="background:#e53935" title="1"></span><span>1</span>
+        <span class="swatch" style="background:#43a047" title="2"></span><span>2</span>
+        <span class="swatch" style="background:#1e88e5" title="3"></span><span>3</span>
+        <span class="swatch" style="background:#00bcd4" title="4"></span><span>4</span>
+        <span class="swatch" style="background:#8e24aa" title="5"></span><span>5</span>
+        <span class="swatch" style="background:#fdd835" title="6"></span><span>6</span>
+        <span class="swatch" style="background:#fb8c00" title="7"></span><span>7</span>
+        <span class="swatch" style="background:#ffffff" title="8"></span><span>8</span>
+        <span class="swatch" style="background:#9e9e9e" title="9"></span><span>9</span>
+      </div>
+    </div>
+    <div class="editor-wrap">
+      <div class="line-numbers" id="line-numbers"></div>
+      <textarea id="editor" placeholder="H 10&#10;0 30 100 2&#10;0 20 150 3&#10;0>1" spellcheck="false"></textarea>
+    </div>
+    <div class="error-bar" id="error-bar"></div>
+  </div>
+  <div class="canvas-pane">
+    <svg id="canvas" viewBox="0 0 999 999" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#888"/>
+        </marker>
+        <marker id="ah-r" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+          <polygon points="8 0, 0 3, 8 6" fill="#888"/>
+        </marker>
+      </defs>
+      <g id="grid"></g>
+      <g id="scene" transform="scale(1,-1) translate(0,-999)"></g>
+    </svg>
+    <div class="mouse-pos" id="mouse-pos"></div>
+  </div>
+</main>
+
+<script>
+// =============================================================================
+// SSL NUMERIC PLAYGROUND
+// =============================================================================
+
+// --- CONSTANTS ---
+
+const TYPES = ['box','sphere','cylinder','cone','pyramid','torus','line','dot','text','arc'];
+const COLORS = [
+  '#1a1a1a','#e53935','#43a047','#1e88e5','#00bcd4',
+  '#8e24aa','#fdd835','#fb8c00','#ffffff','#9e9e9e'
+];
+// Mnemonic maps: word → index (hybrid mode)
+const TYPE_NAMES = {box:0,sph:1,ball:1,cyl:2,tube:2,cone:3,pyr:4,tor:5,ring:5,line:6,dot:7,txt:8,text:8,arc:9};
+const COLOR_NAMES = {blk:0,red:1,grn:2,blu:3,cyn:4,mag:5,yel:6,org:7,wht:8,gry:9,
+  black:0,green:2,blue:3,cyan:4,magenta:5,yellow:6,orange:7,white:8,gray:9,grey:9};
+const NS = 'http://www.w3.org/2000/svg';
+const D2R = Math.PI / 180;
+let viewMode = '2d';
+
+// --- UTILITIES ---
+
+function parseRGB(hex) {
+  if (!hex) return null;
+  if (hex.startsWith('rgb')) {
+    const m = hex.match(/(\d+)/g);
+    return m ? { r:+m[0], g:+m[1], b:+m[2] } : null;
+  }
+  if (hex.length === 4) return { r:parseInt(hex[1]+hex[1],16), g:parseInt(hex[2]+hex[2],16), b:parseInt(hex[3]+hex[3],16) };
+  if (hex.length === 7) return { r:parseInt(hex.slice(1,3),16), g:parseInt(hex.slice(3,5),16), b:parseInt(hex.slice(5,7),16) };
+  return null;
+}
+
+function darken(hex, f) {
+  const c = parseRGB(hex); if (!c) return hex;
+  return `rgb(${Math.round(c.r*f)},${Math.round(c.g*f)},${Math.round(c.b*f)})`;
+}
+
+function lighten(hex, n) {
+  const c = parseRGB(hex); if (!c) return hex;
+  return `rgb(${Math.min(255,c.r+n)},${Math.min(255,c.g+n)},${Math.min(255,c.b+n)})`;
+}
+
+function contrast(hex) {
+  const c = parseRGB(hex); if (!c) return '#fff';
+  return (0.299*c.r + 0.587*c.g + 0.114*c.b)/255 > 0.55 ? '#1a1a2e' : '#f0f0f5';
+}
+
+// --- ISO PROJECTION ---
+
+const ISO_S = 0.7, ISO_OX = 500, ISO_OY = 780;
+
+function iso(x, y, z) {
+  return {
+    sx: ISO_OX + (x - z) * ISO_S * Math.cos(Math.PI / 6),
+    sy: ISO_OY - y * ISO_S - (x + z) * ISO_S * Math.sin(Math.PI / 6)
+  };
+}
+
+function isoDepth(x, y, z) { return -x - z + y * 0.01; }
+
+// --- 3D ROTATION ---
+
+function rot3D(px, py, pz, cx, cy, cz, rx, ry, rz) {
+  let x = px - cx, y = py - cy, z = pz - cz;
+  if (rx) { const c = Math.cos(rx*D2R), s = Math.sin(rx*D2R); const y2=y*c-z*s, z2=y*s+z*c; y=y2; z=z2; }
+  if (ry) { const c = Math.cos(ry*D2R), s = Math.sin(ry*D2R); const x2=x*c+z*s, z2=-x*s+z*c; x=x2; z=z2; }
+  if (rz) { const c = Math.cos(rz*D2R), s = Math.sin(rz*D2R); const x2=x*c-y*s, y2=x*s+y*c; x=x2; y=y2; }
+  return { x: x + cx, y: y + cy, z: z + cz };
+}
+
+function rotNormal(nx, ny, nz, rx, ry, rz) {
+  let x = nx, y = ny, z = nz;
+  if (rx) { const c = Math.cos(rx*D2R), s = Math.sin(rx*D2R); const y2=y*c-z*s, z2=y*s+z*c; y=y2; z=z2; }
+  if (ry) { const c = Math.cos(ry*D2R), s = Math.sin(ry*D2R); const x2=x*c+z*s, z2=-x*s+z*c; x=x2; z=z2; }
+  if (rz) { const c = Math.cos(rz*D2R), s = Math.sin(rz*D2R); const x2=x*c-y*s, y2=x*s+y*c; x=x2; y=y2; }
+  return { x, y, z };
+}
+
+// View direction for iso (normalized)
+const VD = { x: 0.577, y: -0.577, z: 0.577 };
+function faceVisible(nx, ny, nz, rx, ry, rz) {
+  const n = rotNormal(nx, ny, nz, rx || 0, ry || 0, rz || 0);
+  return (n.x * VD.x + n.y * VD.y + n.z * VD.z) < 0;
+}
+
+// --- PARSER ---
+
+function parse(source) {
+  const lines = source.split('\n');
+  const elements = [];
+  const connections = [];
+  const csgOps = [];
+  const errors = [];
+  let layout = { mode: 'H', gap: 10, projection: null };
+  let modeSet = false;
+
+  for (let li = 0; li < lines.length; li++) {
+    const raw = lines[li].trim();
+    if (!raw || raw.startsWith('--')) continue;
+
+    // Projection mode: P0=flat canvas, P1=iso, P2=persp, P3=cabinet
+    if (!modeSet && /^P[0-3]\b/i.test(raw)) {
+      layout.mode = 'F';
+      layout.projection = raw[1] === '0' ? 'flat' : raw[1] === '1' ? 'iso' : raw[1] === '2' ? 'persp' : raw[1] === '3' ? 'cabinet' : 'ortho';
+      modeSet = true;
+      continue;
+    }
+
+    // Layout mode: H V G F
+    if (!modeSet && /^[HVGF]\b/i.test(raw)) {
+      const p = raw.split(/\s+/);
+      layout.mode = p[0].toUpperCase();
+      if (layout.mode === 'G') { layout.cols = parseInt(p[1]) || 4; layout.gap = parseInt(p[2]) || 15; }
+      else { layout.gap = parseInt(p[1]) || 10; }
+      modeSet = true;
+      continue;
+    }
+
+    // CSG operation: U a b, I a b, S a b
+    if (/^[UIS]\s+\d/i.test(raw)) {
+      const p = raw.split(/\s+/);
+      const op = p[0].toUpperCase();
+      const a = parseInt(p[1]), b = parseInt(p[2]);
+      if (!isNaN(a) && !isNaN(b)) {
+        csgOps.push({ op, a, b, line: li, idx: elements.length });
+        // CSG result becomes a new element
+        elements.push({ line: li, type: '_csg', csgOp: op, csgA: a, csgB: b, idx: elements.length,
+          _rx: 0, _ry: 0, _rz: 0, _w: 0, _h: 0, _d: 0, _color: '#888', _opacity: 1,
+          _rotX: 0, _rotY: 0, _rotZ: 0, text: null, flags: {} });
+      }
+      continue;
+    }
+
+    // Extract quoted text
+    let text = null;
+    const tm = raw.match(/"([^"]*)"/);
+    if (tm) text = tm[1];
+    const numStr = raw.replace(/"[^"]*"/g, '').trim();
+
+    // Connection line
+    if (/\d\s*>/.test(numStr) || /\d\s*<>/.test(numStr) || /\d\s*-\s*\d/.test(numStr)) {
+      if (numStr.includes('<>')) {
+        const parts = numStr.split('<>').map(s => parseInt(s.trim()));
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!isNaN(parts[i]) && !isNaN(parts[i+1]))
+            connections.push({ from: parts[i], to: parts[i+1], edge: '<>', line: li });
+        }
+      } else if (numStr.includes('>')) {
+        const parts = numStr.split('>').map(s => parseInt(s.trim()));
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!isNaN(parts[i]) && !isNaN(parts[i+1]))
+            connections.push({ from: parts[i], to: parts[i+1], edge: '>', line: li });
+        }
+      } else {
+        const parts = numStr.split('-').map(s => parseInt(s.trim()));
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!isNaN(parts[i]) && !isNaN(parts[i+1]))
+            connections.push({ from: parts[i], to: parts[i+1], edge: '-', line: li });
+        }
+      }
+      continue;
+    }
+
+    // Element line — resolve mnemonics (box→0, red→1, etc.) before numeric parse
+    const tokens = numStr.split(/\s+/).filter(s => s.length > 0);
+
+    // Sketch primitives for flat mode: line, pen, fill, curve
+    if (layout.projection === 'flat') {
+      const ft = tokens[0].toLowerCase();
+      if (ft === 'line' || ft === 'pen' || ft === 'fill' || ft === 'curve') {
+        let color = COLORS[9]; // default gray
+        let weight = ft === 'pen' ? 2 : ft === 'fill' ? 1 : 1.5;
+        const coords = [];
+        for (let ti = 1; ti < tokens.length; ti++) {
+          const lo = tokens[ti].toLowerCase();
+          if (COLOR_NAMES[lo] !== undefined) { color = COLORS[COLOR_NAMES[lo]]; continue; }
+          const n = Number(tokens[ti]);
+          if (!isNaN(n)) coords.push(n);
+        }
+        // Last coord is weight if odd count
+        if (coords.length % 2 === 1) weight = coords.pop();
+        const points = [];
+        for (let i = 0; i < coords.length - 1; i += 2) points.push([coords[i], coords[i+1]]);
+        if (points.length >= 2 || (ft === 'fill' && points.length >= 3)) {
+          const el = {
+            line: li, type: ft, points, _color: color, _weight: weight,
+            _rx: points[0][0], _ry: points[0][1], _w: 0, _h: 0, _d: 0,
+            _opacity: 1, _rotX: 0, _rotY: 0, _rotZ: 0,
+            idx: elements.length, text, flags: {}
+          };
+          // center for connections
+          const xs = points.map(p=>p[0]), ys = points.map(p=>p[1]);
+          el._cx = xs.reduce((a,b)=>a+b,0)/xs.length;
+          el._cy = ys.reduce((a,b)=>a+b,0)/ys.length;
+          elements.push(el);
+        }
+        continue;
+      }
+    }
+
+    const nums = tokens.map(t => {
+      const lo = t.toLowerCase();
+      if (TYPE_NAMES[lo] !== undefined) return TYPE_NAMES[lo];
+      if (COLOR_NAMES[lo] !== undefined) return COLOR_NAMES[lo];
+      const n = Number(t);
+      return isNaN(n) ? null : n;
+    }).filter(n => n !== null);
+    if (nums.length < 3) {
+      if (nums.length > 0) errors.push({ line: li, msg: `Need 3+ values, got ${nums.length}` });
+      continue;
+    }
+
+    const el = { line: li, text, flags: {}, _opacity: 1, _rz: 0, _d: 0, _rotX: 0, _rotY: 0, _rotZ: 0 };
+
+    if (layout.mode === 'F') {
+      if (nums.length >= 11) {
+        // 3D + rotation: T X Y Z W H D C RX RY RZ
+        el.type = TYPES[nums[0]] || 'box';
+        el._rx = nums[1]; el._ry = nums[2]; el._rz = nums[3];
+        el._w = nums[4]; el._h = nums[5]; el._d = nums[6];
+        el._color = COLORS[clamp(nums[7])] || COLORS[9];
+        el._rotX = nums[8]; el._rotY = nums[9]; el._rotZ = nums[10];
+      } else if (nums.length >= 8) {
+        // 3D: T X Y Z W H D C
+        el.type = TYPES[nums[0]] || 'box';
+        el._rx = nums[1]; el._ry = nums[2]; el._rz = nums[3];
+        el._w = nums[4]; el._h = nums[5]; el._d = nums[6];
+        el._color = COLORS[clamp(nums[7])] || COLORS[9];
+      } else if (nums.length >= 6) {
+        // 2D: T X Y W H C
+        el.type = TYPES[nums[0]] || 'box';
+        el._rx = nums[1]; el._ry = nums[2];
+        el._w = nums[3]; el._h = nums[4];
+        el._color = COLORS[clamp(nums[5])] || COLORS[9];
+      } else {
+        errors.push({ line: li, msg: 'Free mode: need T X Y W H C (6+)' });
+        continue;
+      }
+    } else {
+      // Auto mode: T W H C
+      el.type = TYPES[nums[0]] || 'box';
+      if (nums.length >= 4) {
+        el._w = nums[1]; el._h = nums[2];
+        el._color = COLORS[clamp(nums[3])] || COLORS[9];
+      } else {
+        el._w = nums[1]; el._h = nums[1];
+        el._color = COLORS[clamp(nums[2])] || COLORS[9];
+      }
+      el._rx = 0; el._ry = 0;
+    }
+
+    el.idx = elements.length;
+    elements.push(el);
+  }
+
+  return { elements, connections, csgOps, errors, layout };
+}
+
+function clamp(n) { return Math.max(0, Math.min(9, Math.round(n))); }
+
+// --- RESOLVER ---
+
+function resolve(parsed) {
+  const { elements, connections, csgOps, errors, layout } = parsed;
+
+  function isCtr(t) { return t==='sphere'||t==='dot'||t==='torus'||t==='text'; }
+
+  function bw(el) {
+    const t = el.type, w = el._w;
+    if (t==='sphere'||t==='dot'||t==='torus') return w * 2;
+    if (t==='text') return Math.max(w * ((el.text||' ').length * 0.6 + 1), w * 2);
+    if (t==='_csg') return 0;
+    return w;
+  }
+  function bh(el) {
+    const t = el.type, w = el._w, h = el._h;
+    if (t==='sphere'||t==='dot'||t==='torus') return w * 2;
+    if (t==='text') return w * 1.5;
+    if (t==='_csg') return 0;
+    return h;
+  }
+
+  // Auto-layout (H/V/G)
+  if (layout.mode !== 'F') {
+    const gap = layout.gap;
+    const realEls = elements.filter(e => e.type !== '_csg');
+    const bws = realEls.map(bw);
+    const bhs = realEls.map(bh);
+
+    if (layout.mode === 'H') {
+      const totalW = bws.reduce((s, v) => s + v, 0) + Math.max(0, realEls.length - 1) * gap;
+      let x = Math.max(20, (999 - totalW) / 2);
+      const cy = 500;
+      for (let i = 0; i < realEls.length; i++) {
+        const el = realEls[i], cxBB = x + bws[i] / 2;
+        if (isCtr(el.type)) { el._rx = cxBB; el._ry = cy; }
+        else { el._rx = cxBB - el._w / 2; el._ry = cy - bhs[i] / 2; }
+        x += bws[i] + gap;
+      }
+    } else if (layout.mode === 'V') {
+      const totalH = bhs.reduce((s, v) => s + v, 0) + Math.max(0, realEls.length - 1) * gap;
+      let y = Math.min(970, 500 + totalH / 2);
+      const cx = 500;
+      for (let i = 0; i < realEls.length; i++) {
+        const el = realEls[i], cyBB = y - bhs[i] / 2;
+        if (isCtr(el.type)) { el._rx = cx; el._ry = cyBB; }
+        else { el._rx = cx - bws[i] / 2; el._ry = cyBB - bhs[i] / 2; }
+        y -= bhs[i] + gap;
+      }
+    } else if (layout.mode === 'G') {
+      const cols = layout.cols;
+      const maxW = Math.max(...bws, 1), maxH = Math.max(...bhs, 1);
+      const cellW = maxW + gap, cellH = maxH + gap;
+      const rows = Math.ceil(realEls.length / cols);
+      const totalW = cols * cellW - gap, totalH = rows * cellH - gap;
+      const startX = Math.max(20, (999 - totalW) / 2);
+      const startY = Math.min(970, 500 + totalH / 2);
+      for (let i = 0; i < realEls.length; i++) {
+        const col = i % cols, row = Math.floor(i / cols);
+        const el = realEls[i];
+        const cxBB = startX + col * cellW + maxW / 2;
+        const cyBB = startY - row * cellH - maxH / 2;
+        if (isCtr(el.type)) { el._rx = cxBB; el._ry = cyBB; }
+        else { el._rx = cxBB - el._w / 2; el._ry = cyBB - bhs[i] / 2; }
+      }
+    }
+  }
+
+  // Handle line type (endpoints)
+  for (const el of elements) {
+    if (el.type === 'line' && layout.mode === 'F' && !el.points) {
+      el.points = [[el._rx, el._ry, el._rz || 0], [el._w, el._h, el._d || 0]];
+    }
+  }
+
+  // Compute centers
+  for (const el of elements) {
+    if (el.type === '_csg') {
+      // CSG result: inherit center from first operand
+      const a = elements[el.csgA];
+      if (a) { el._cx = a._cx || 0; el._cy = a._cy || 0; el._cz = a._cz || 0; }
+      else { el._cx = 0; el._cy = 0; el._cz = 0; }
+    } else if (el.type === 'line' && el.points) {
+      const a = el.points[0], b = el.points[1];
+      el._cx = (a[0]+b[0])/2; el._cy = (a[1]+b[1])/2; el._cz = (a[2]+b[2])/2;
+    } else if (isCtr(el.type)) {
+      el._cx = el._rx; el._cy = el._ry; el._cz = el._rz || 0;
+    } else {
+      el._cx = el._rx + el._w / 2; el._cy = el._ry + el._h / 2;
+      el._cz = (el._rz || 0) + (el._d || 0) / 2;
+    }
+  }
+
+  // Process CSG: mark consumed elements
+  const csgConsumed = new Set();
+  for (const el of elements) {
+    if (el.type === '_csg') {
+      csgConsumed.add(el.csgA);
+      csgConsumed.add(el.csgB);
+      // For subtract, mark B as "cut" style
+      if (el.csgOp === 'S') {
+        const b = elements[el.csgB];
+        if (b) b._csgCut = true;
+      }
+    }
+  }
+
+  // Mark visibility: consumed elements are hidden unless they're part of a CSG result
+  for (const el of elements) {
+    el._csgHidden = csgConsumed.has(el.idx) && el.type !== '_csg';
+    // For CSG results, mark the operands for special rendering
+    if (el.type === '_csg') {
+      el._csgRenderA = elements[el.csgA];
+      el._csgRenderB = elements[el.csgB];
+    }
+  }
+
+  // Resolve connections
+  const rConns = [];
+  for (const c of connections) {
+    const from = elements[c.from], to = elements[c.to];
+    if (!from) { errors.push({ line: c.line, msg: `No element #${c.from}` }); continue; }
+    if (!to) { errors.push({ line: c.line, msg: `No element #${c.to}` }); continue; }
+    rConns.push({
+      ...c, x1: from._cx, y1: from._cy, z1: from._cz || 0,
+      x2: to._cx, y2: to._cy, z2: to._cz || 0,
+      _color: '#888', _opacity: 1, _weight: 1.5
+    });
+  }
+
+  return { elements, connections: rConns, errors, layout };
+}
+
+// --- DISPATCH RENDERER ---
+
+function render(scene) {
+  const proj = scene.layout && scene.layout.projection;
+  if (proj === 'flat') renderFlat(scene);
+  else if (proj === 'iso' || viewMode === 'iso') renderIso(scene);
+  else render2D(scene);
+}
+
+// --- FLAT CANVAS RENDERER (P0 — painter's mode) ---
+// Y goes DOWN (0=top, 600=bottom). Draw order = file order = depth.
+// No projection, no transforms. Shapes placed directly on canvas.
+function renderFlat(scene) {
+  const g = document.getElementById('scene');
+  g.setAttribute('transform', '');  // no flip — natural screen coords
+  while (g.lastChild) g.removeChild(g.lastChild);
+  for (const el of scene.elements) {
+    if (!el._csgHidden) renderElFlat(g, el);
+  }
+  for (const c of scene.connections) renderConnFlat(g, c);
+}
+
+function renderElFlat(parent, el) {
+  const { type, _rx: x, _ry: y, _w: w, _h: h, _color: col, _opacity: op } = el;
+  const stroke = col;
+  const sw = el._weight || 1.5;
+  let shape;
+
+  switch (type) {
+    // === SKETCH PRIMITIVES (line-based) ===
+    case 'line': case 'pen': {
+      if (el.points && el.points.length >= 2) {
+        const pts = el.points.map(p => `${p[0]},${p[1]}`).join(' ');
+        shape = mkSVG('polyline', {
+          points: pts, fill: 'none', stroke, 'stroke-width': sw,
+          'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+        });
+        parent.appendChild(shape);
+      }
+      break;
+    }
+    case 'fill': {
+      if (el.points && el.points.length >= 3) {
+        const pts = el.points.map(p => `${p[0]},${p[1]}`).join(' ');
+        shape = mkSVG('polygon', {
+          points: pts, fill: col, 'fill-opacity': 0.3, stroke, 'stroke-width': sw,
+          'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+        });
+        parent.appendChild(shape);
+      }
+      break;
+    }
+    case 'curve': {
+      if (el.points && el.points.length >= 3) {
+        const p = el.points;
+        let d = `M ${p[0][0]} ${p[0][1]}`;
+        if (p.length === 3) {
+          d += ` Q ${p[1][0]} ${p[1][1]} ${p[2][0]} ${p[2][1]}`;
+        } else if (p.length >= 4) {
+          d += ` C ${p[1][0]} ${p[1][1]} ${p[2][0]} ${p[2][1]} ${p[3][0]} ${p[3][1]}`;
+        }
+        shape = mkSVG('path', {
+          d, fill: 'none', stroke, 'stroke-width': sw,
+          'stroke-linecap': 'round'
+        });
+        parent.appendChild(shape);
+      }
+      break;
+    }
+
+    // === SHAPE PRIMITIVES (rendered as outlines in sketch mode) ===
+    case 'box': {
+      shape = mkSVG('rect', {
+        x, y, width: w, height: h, rx: 1,
+        fill: col, 'fill-opacity': 0.15, stroke, 'stroke-width': sw
+      });
+      parent.appendChild(shape); break;
+    }
+    case 'sphere': {
+      shape = mkSVG('circle', {
+        cx: x, cy: y, r: w,
+        fill: col, 'fill-opacity': 0.15, stroke, 'stroke-width': sw
+      });
+      parent.appendChild(shape); break;
+    }
+    case 'dot': {
+      shape = mkSVG('circle', { cx: x, cy: y, r: Math.max(2, w), fill: col, stroke: 'none' });
+      parent.appendChild(shape); break;
+    }
+    case 'cylinder': {
+      shape = mkSVG('rect', {
+        x: x - w, y, width: w * 2, height: h, rx: w,
+        fill: col, 'fill-opacity': 0.15, stroke, 'stroke-width': sw
+      });
+      parent.appendChild(shape); break;
+    }
+    case 'cone': case 'pyramid': {
+      const hw = type === 'pyramid' ? w / 2 : w;
+      const pts = `${x},${y} ${x - hw},${y + h} ${x + hw},${y + h}`;
+      shape = mkSVG('polygon', {
+        points: pts, fill: col, 'fill-opacity': 0.15, stroke, 'stroke-width': sw
+      });
+      parent.appendChild(shape); break;
+    }
+    case 'torus': case 'ring': {
+      const R = w;
+      shape = mkSVG('circle', { cx: x, cy: y, r: R, fill: 'none', stroke, 'stroke-width': sw });
+      parent.appendChild(shape); break;
+    }
+    case 'text': {
+      const txt = mkSVG('text', {
+        x, y, 'font-size': w, fill: col, 'text-anchor': 'middle', 'dominant-baseline': 'central'
+      });
+      txt.classList.add('ssl-text'); txt.textContent = el.text || '';
+      parent.appendChild(txt); break;
+    }
+    case 'arc': {
+      const r = w, startA = (el._d || 0) * D2R, sweepA = (h || 180) * D2R;
+      const sx = x + r * Math.cos(startA), sy = y + r * Math.sin(startA);
+      const ex = x + r * Math.cos(startA + sweepA), ey = y + r * Math.sin(startA + sweepA);
+      const large = sweepA > Math.PI ? 1 : 0;
+      shape = mkSVG('path', {
+        d: `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`,
+        fill: 'none', stroke, 'stroke-width': sw, 'stroke-linecap': 'round'
+      });
+      parent.appendChild(shape); break;
+    }
+    default: {
+      shape = mkSVG('rect', {
+        x, y, width: w, height: h, rx: 1,
+        fill: col, 'fill-opacity': 0.15, stroke, 'stroke-width': sw
+      });
+      parent.appendChild(shape);
+    }
+  }
+
+  if (op < 1 && shape) shape.setAttribute('opacity', op);
+
+  // Index label
+  if (el.idx !== undefined && !['text','line','pen','fill','curve'].includes(type)) {
+    const isCtr = type === 'sphere' || type === 'dot' || type === 'torus';
+    const lx = isCtr ? x : x + w / 2;
+    const ly = isCtr ? y - w - 4 : y - 4;
+    const lbl = mkSVG('text', { x: lx, y: ly, 'font-size': 8, fill: '#556', 'text-anchor': 'middle' });
+    lbl.classList.add('ssl-idx'); lbl.textContent = '#' + el.idx;
+    parent.appendChild(lbl);
+  }
+}
+
+function renderConnFlat(parent, c) {
+  const line = mkSVG('line', {
+    x1: c.x1, y1: c.y1, x2: c.x2, y2: c.y2,
+    stroke: '#fff', 'stroke-width': 1.5, 'stroke-dasharray': c.edge === '-' ? '4 3' : 'none'
+  });
+  parent.appendChild(line);
+  if (c.edge === '>') {
+    const dx = c.x2 - c.x1, dy = c.y2 - c.y1;
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    const ux = dx/len, uy = dy/len;
+    const ax = c.x2 - ux*8 - uy*4, ay = c.y2 - uy*8 + ux*4;
+    const bx = c.x2 - ux*8 + uy*4, by = c.y2 - uy*8 - ux*4;
+    parent.appendChild(mkSVG('polygon', {
+      points: `${c.x2},${c.y2} ${ax},${ay} ${bx},${by}`, fill: '#fff'
+    }));
+  }
+}
+
+// --- 2D RENDERER ---
+
+function render2D(scene) {
+  const g = document.getElementById('scene');
+  g.setAttribute('transform', 'scale(1,-1) translate(0,-999)');
+  while (g.lastChild) g.removeChild(g.lastChild);
+  for (const el of scene.elements) {
+    if (!el._csgHidden) renderEl2D(g, el);
+  }
+  for (const c of scene.connections) renderConn2D(g, c);
+}
+
+function renderEl2D(parent, el) {
+  if (el.type === '_csg') { renderCSG2D(parent, el); return; }
+  const { type, _rx: x, _ry: y, _w: w, _h: h, _color: col, _opacity: op } = el;
+  const fill = col, stroke = darken(col, 0.7);
+  const cut = el._csgCut;
+
+  let shape;
+  switch (type) {
+    case 'box': {
+      shape = mkSVG('rect', { x, y, width: w, height: h, rx: 2, fill, stroke, 'stroke-width': 1 });
+      parent.appendChild(shape); break;
+    }
+    case 'sphere': {
+      shape = mkSVG('circle', { cx: x, cy: y, r: w, fill, stroke, 'stroke-width': 1.5 });
+      parent.appendChild(shape); break;
+    }
+    case 'cylinder': {
+      shape = mkSVG('rect', { x: x - w, y, width: w * 2, height: h, rx: w, fill, stroke, 'stroke-width': 1 });
+      parent.appendChild(shape); break;
+    }
+    case 'cone': {
+      const pts = `${x},${y+h} ${x-w},${y} ${x+w},${y}`;
+      shape = mkSVG('polygon', { points: pts, fill, stroke, 'stroke-width': 1.5 });
+      parent.appendChild(shape); break;
+    }
+    case 'pyramid': {
+      const pts = `${x},${y+h} ${x-w/2},${y} ${x+w/2},${y}`;
+      shape = mkSVG('polygon', { points: pts, fill, stroke, 'stroke-width': 1.5 });
+      parent.appendChild(shape); break;
+    }
+    case 'torus': {
+      const R = w, r = h || w * 0.3;
+      shape = mkSVG('circle', { cx: x, cy: y, r: R, fill: 'none', stroke: col, 'stroke-width': r * 2 });
+      parent.appendChild(shape);
+      parent.appendChild(mkSVG('circle', { cx: x, cy: y, r: R, fill: 'none', stroke: darken(col, 0.6), 'stroke-width': 1 }));
+      break;
+    }
+    case 'line': {
+      if (el.points && el.points.length >= 2) {
+        const pts = el.points.map(p => `${p[0]},${p[1]}`).join(' ');
+        shape = mkSVG('polyline', { points: pts, fill: 'none', stroke: col, 'stroke-width': 2 });
+        parent.appendChild(shape);
+      }
+      break;
+    }
+    case 'dot': {
+      shape = mkSVG('circle', { cx: x, cy: y, r: Math.max(2, w), fill: col });
+      parent.appendChild(shape); break;
+    }
+    case 'text': {
+      const txt = mkSVG('text', {
+        x, y, 'font-size': w, fill: col, 'text-anchor': 'middle',
+        transform: `scale(1,-1) translate(0, ${-2*y})`
+      });
+      txt.classList.add('ssl-text'); txt.textContent = el.text || '';
+      parent.appendChild(txt); break;
+    }
+    case 'arc': {
+      const r = w, startA = (el._d || 0) * D2R, sweepA = (h || 180) * D2R;
+      const sx = x + r * Math.cos(startA), sy = y + r * Math.sin(startA);
+      const ex = x + r * Math.cos(startA + sweepA), ey = y + r * Math.sin(startA + sweepA);
+      const large = sweepA > Math.PI ? 1 : 0;
+      shape = mkSVG('path', {
+        d: `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`,
+        fill: 'none', stroke: col, 'stroke-width': 2
+      });
+      parent.appendChild(shape); break;
+    }
+    default: {
+      shape = mkSVG('rect', { x, y, width: w, height: h, rx: 2, fill, stroke, 'stroke-width': 1 });
+      parent.appendChild(shape);
+    }
+  }
+
+  if (cut && shape) {
+    shape.setAttribute('stroke-dasharray', '4 3');
+    shape.setAttribute('opacity', '0.5');
+  }
+
+  // Text overlay
+  if (el.text && type !== 'text') {
+    const cx = isCtr2D(type) ? x : x + w / 2;
+    const cy = isCtr2D(type) ? y : y + h / 2;
+    const fs = Math.min(14, w * 0.35, (h||w) * 0.5) || 10;
+    const txt = mkSVG('text', {
+      x: cx, y: cy, 'font-size': fs, fill: contrast(col),
+      'text-anchor': 'middle', 'dominant-baseline': 'central',
+      transform: `scale(1,-1) translate(0, ${-2*cy})`
+    });
+    txt.classList.add('ssl-text'); txt.textContent = el.text;
+    parent.appendChild(txt);
+  }
+
+  // Index label
+  if (el.idx !== undefined && type !== 'text') {
+    const lx = isCtr2D(type) ? x : x + w / 2;
+    const ly = isCtr2D(type) ? y + w + 8 : y + h + 8;
+    const lbl = mkSVG('text', {
+      x: lx, y: ly, 'font-size': 8, fill: '#556', 'text-anchor': 'middle',
+      transform: `scale(1,-1) translate(0, ${-2*ly})`
+    });
+    lbl.classList.add('ssl-idx'); lbl.textContent = '#' + el.idx;
+    parent.appendChild(lbl);
+  }
+}
+
+function isCtr2D(t) { return t==='sphere'||t==='dot'||t==='torus'; }
+
+function renderCSG2D(parent, el) {
+  // Render CSG result: show operands with special styling
+  const a = el._csgRenderA, b = el._csgRenderB;
+  if (a) renderEl2D(parent, { ...a, _csgHidden: false, _csgCut: false });
+  if (b && el.csgOp === 'S') {
+    renderEl2D(parent, { ...b, _csgHidden: false, _csgCut: true });
+  } else if (b && el.csgOp === 'I') {
+    renderEl2D(parent, { ...b, _csgHidden: false, _opacity: 0.5 });
+  } else if (b) {
+    renderEl2D(parent, { ...b, _csgHidden: false, _csgCut: false });
+  }
+}
+
+function renderConn2D(parent, c) {
+  const { x1, y1, x2, y2, edge, _color, _opacity, _weight } = c;
+  const dx = x2-x1, dy = y2-y1, dist = Math.sqrt(dx*dx+dy*dy);
+  if (dist < 1) return;
+  const nudge = Math.min(20, dist * 0.15);
+  const nx = dx/dist, ny = dy/dist;
+  const sx = x1+nx*nudge, sy = y1+ny*nudge, ex = x2-nx*nudge, ey = y2-ny*nudge;
+
+  const line = mkSVG('line', {
+    x1: sx, y1: sy, x2: ex, y2: ey,
+    stroke: _color, 'stroke-width': _weight
+  });
+  if (_opacity < 1) line.setAttribute('opacity', _opacity);
+  if (edge === '>') line.setAttribute('marker-end', 'url(#ah)');
+  if (edge === '<>') {
+    line.setAttribute('marker-end', 'url(#ah)');
+    line.setAttribute('marker-start', 'url(#ah-r)');
+  }
+  parent.appendChild(line);
+}
+
+// --- ISOMETRIC 3D RENDERER ---
+
+function renderIso(scene) {
+  const g = document.getElementById('scene');
+  g.setAttribute('transform', '');
+  while (g.lastChild) g.removeChild(g.lastChild);
+
+  const items = [];
+  for (const el of scene.elements) {
+    if (!el._csgHidden) {
+      items.push({ kind: 'el', data: el, depth: isoDepth(el._cx, el._cy, el._cz || 0) });
+    }
+  }
+  for (const c of scene.connections) {
+    const mx = (c.x1+c.x2)/2, my = (c.y1+c.y2)/2, mz = ((c.z1||0)+(c.z2||0))/2;
+    items.push({ kind: 'conn', data: c, depth: isoDepth(mx, my, mz) - 0.5 });
+  }
+  items.sort((a, b) => b.depth - a.depth);
+
+  for (const it of items) {
+    if (it.kind === 'el') renderElIso(g, it.data);
+    else renderConnIso(g, it.data);
+  }
+}
+
+function renderElIso(parent, el) {
+  if (el.type === '_csg') { renderCSGIso(parent, el); return; }
+  const { type, _rx: x, _ry: y, _rz: z, _w: w, _h: h, _d: d, _color: col, _opacity: op } = el;
+  const rx = el._rotX || 0, ry = el._rotY || 0, rz = el._rotZ || 0;
+  const cut = el._csgCut;
+
+  switch (type) {
+    case 'box': default: {
+      if (d > 0) {
+        renderIsoCuboid(parent, x, y, z||0, w, h, d, col, op, rx, ry, rz, cut);
+      } else {
+        const p1=iso(x,y,z||0), p2=iso(x+w,y,z||0), p3=iso(x+w,y+h,z||0), p4=iso(x,y+h,z||0);
+        const poly = mkSVG('polygon', {
+          points: `${p1.sx},${p1.sy} ${p2.sx},${p2.sy} ${p3.sx},${p3.sy} ${p4.sx},${p4.sy}`,
+          fill: col, stroke: darken(col, 0.6), 'stroke-width': 1
+        });
+        if (op < 1) poly.setAttribute('opacity', op);
+        if (cut) { poly.setAttribute('stroke-dasharray', '4 3'); poly.setAttribute('opacity', '0.4'); }
+        parent.appendChild(poly);
+      }
+      break;
+    }
+    case 'sphere': {
+      const p = iso(x, y, z||0);
+      const r = w * ISO_S;
+      const s = mkSVG('circle', { cx:p.sx, cy:p.sy, r, fill:col, stroke:darken(col,0.6), 'stroke-width':1.5 });
+      if (cut) { s.setAttribute('stroke-dasharray', '4 3'); s.setAttribute('opacity', '0.4'); }
+      parent.appendChild(s);
+      if (!cut) parent.appendChild(mkSVG('circle', { cx:p.sx-r*0.2, cy:p.sy-r*0.3, r:r*0.35, fill:lighten(col,80), opacity:0.4 }));
+      break;
+    }
+    case 'cylinder': {
+      if (rx || ry || rz) {
+        // Rotated cylinder: sample cap circles as polygons
+        const r3d = w, cxc = x, cyc = y + h/2, czc = z || 0;
+        const N = 24;
+        const capPts = (capY) => {
+          const pts = [];
+          for (let i = 0; i < N; i++) {
+            const a = (i / N) * Math.PI * 2;
+            const rp = rot3D(x + r3d * Math.cos(a), capY, (z||0) + r3d * Math.sin(a), cxc, cyc, czc, rx, ry, rz);
+            pts.push(iso(rp.x, rp.y, rp.z));
+          }
+          return pts;
+        };
+        const botPts = capPts(y), topPts = capPts(y + h);
+        // Body: connect bottom and top cap outlines
+        const bodyStr = botPts.map(p => `${p.sx},${p.sy}`).join(' ') + ' ' + [...topPts].reverse().map(p => `${p.sx},${p.sy}`).join(' ');
+        const body = mkSVG('polygon', { points: bodyStr, fill: col, stroke: darken(col,0.6), 'stroke-width': 0.5 });
+        if (cut) { body.setAttribute('stroke-dasharray', '4 3'); body.setAttribute('opacity', '0.4'); }
+        parent.appendChild(body);
+        // Top cap
+        const capStr = topPts.map(p => `${p.sx},${p.sy}`).join(' ');
+        const cap = mkSVG('polygon', { points: capStr, fill: lighten(col,30), stroke: darken(col,0.6), 'stroke-width': 0.5 });
+        if (cut) { cap.setAttribute('stroke-dasharray', '4 3'); cap.setAttribute('opacity', '0.4'); }
+        parent.appendChild(cap);
+      } else {
+        // Non-rotated: original ellipse-based rendering
+        const r = w * ISO_S, bot = iso(x, y, z||0), top = iso(x, y+h, z||0);
+        const ry_e = r * 0.4;
+        const body = mkSVG('path', {
+          d: `M ${bot.sx-r} ${bot.sy} L ${top.sx-r} ${top.sy} A ${r} ${ry_e} 0 0 0 ${top.sx+r} ${top.sy} L ${bot.sx+r} ${bot.sy} A ${r} ${ry_e} 0 0 1 ${bot.sx-r} ${bot.sy}`,
+          fill: col, stroke: darken(col,0.6), 'stroke-width': 1
+        });
+        if (cut) { body.setAttribute('stroke-dasharray', '4 3'); body.setAttribute('opacity', '0.4'); }
+        parent.appendChild(body);
+        const cap = mkSVG('ellipse', { cx:top.sx, cy:top.sy, rx:r, ry:ry_e, fill:lighten(col,30), stroke:darken(col,0.6), 'stroke-width':1 });
+        if (cut) { cap.setAttribute('stroke-dasharray', '4 3'); cap.setAttribute('opacity', '0.4'); }
+        parent.appendChild(cap);
+      }
+      break;
+    }
+    case 'cone': {
+      if (rx || ry || rz) {
+        // Rotated cone: sample base circle + rotated tip
+        const r3d = w, cxc = x, cyc = y + h/2, czc = z || 0;
+        const N = 24;
+        const basePts = [];
+        for (let i = 0; i < N; i++) {
+          const a = (i / N) * Math.PI * 2;
+          const rp = rot3D(x + r3d * Math.cos(a), y, (z||0) + r3d * Math.sin(a), cxc, cyc, czc, rx, ry, rz);
+          basePts.push(iso(rp.x, rp.y, rp.z));
+        }
+        const tipRot = rot3D(x, y+h, z||0, cxc, cyc, czc, rx, ry, rz);
+        const tipP = iso(tipRot.x, tipRot.y, tipRot.z);
+        // Draw cone body: base polygon connecting to tip
+        const coneStr = basePts.map(p => `${p.sx},${p.sy}`).join(' ') + ` ${tipP.sx},${tipP.sy}`;
+        const s = mkSVG('polygon', { points: coneStr, fill: col, stroke: darken(col,0.6), 'stroke-width': 0.5 });
+        if (cut) { s.setAttribute('stroke-dasharray', '4 3'); s.setAttribute('opacity', '0.4'); }
+        parent.appendChild(s);
+      } else {
+        // Non-rotated: original arc-based rendering
+        const p = iso(x,y,z||0), tip = iso(x,y+h,z||0), r = w * ISO_S;
+        const ry_e = r * 0.4;
+        const s = mkSVG('path', {
+          d: `M ${p.sx-r} ${p.sy} A ${r} ${ry_e} 0 0 0 ${p.sx+r} ${p.sy} L ${tip.sx} ${tip.sy} Z`,
+          fill: col, stroke: darken(col,0.6), 'stroke-width': 1
+        });
+        if (cut) { s.setAttribute('stroke-dasharray', '4 3'); s.setAttribute('opacity', '0.4'); }
+        parent.appendChild(s);
+      }
+      break;
+    }
+    case 'pyramid': {
+      // 4-sided pyramid: base square + 4 triangular faces
+      const cx = x, cy = y, cz = z || 0;
+      const hw = w/2, tipY = cy + h;
+      // Base corners
+      const bl = iso(cx-hw, cy, cz-hw), br = iso(cx+hw, cy, cz-hw);
+      const fr = iso(cx+hw, cy, cz+hw), fl = iso(cx-hw, cy, cz+hw);
+      const tip = iso(cx, tipY, cz);
+      // Visible faces (front-left, front-right from iso view)
+      const face1 = mkSVG('polygon', {
+        points: `${fl.sx},${fl.sy} ${fr.sx},${fr.sy} ${tip.sx},${tip.sy}`,
+        fill: darken(col, 0.85), stroke: darken(col,0.5), 'stroke-width': 0.8
+      });
+      const face2 = mkSVG('polygon', {
+        points: `${fl.sx},${fl.sy} ${bl.sx},${bl.sy} ${tip.sx},${tip.sy}`,
+        fill: darken(col, 0.65), stroke: darken(col,0.5), 'stroke-width': 0.8
+      });
+      const face3 = mkSVG('polygon', {
+        points: `${bl.sx},${bl.sy} ${br.sx},${br.sy} ${tip.sx},${tip.sy}`,
+        fill: lighten(col, 20), stroke: darken(col,0.5), 'stroke-width': 0.8
+      });
+      if (cut) { [face1,face2,face3].forEach(f => { f.setAttribute('stroke-dasharray','4 3'); f.setAttribute('opacity','0.4'); }); }
+      parent.appendChild(face1); parent.appendChild(face2); parent.appendChild(face3);
+      break;
+    }
+    case 'torus': {
+      // Torus: thick ring rendered as ellipse with hole
+      const p = iso(x, y, z||0);
+      const R = w * ISO_S, r = (h || w*0.3) * ISO_S;
+      // Outer ellipse
+      parent.appendChild(mkSVG('ellipse', { cx:p.sx, cy:p.sy, rx:R+r, ry:(R+r)*0.5, fill:col, stroke:darken(col,0.6), 'stroke-width':1 }));
+      // Inner hole
+      parent.appendChild(mkSVG('ellipse', { cx:p.sx, cy:p.sy, rx:Math.max(1,R-r), ry:Math.max(1,(R-r)*0.5), fill:'#13151f', stroke:darken(col,0.4), 'stroke-width':1 }));
+      // Top highlight
+      parent.appendChild(mkSVG('ellipse', { cx:p.sx, cy:p.sy-R*0.15, rx:R*0.6, ry:r*0.5, fill:lighten(col,40), opacity:0.3 }));
+      break;
+    }
+    case 'dot': {
+      const p = iso(x, y, z||0);
+      parent.appendChild(mkSVG('circle', { cx:p.sx, cy:p.sy, r: Math.max(3, w*ISO_S), fill:col }));
+      break;
+    }
+    case 'line': {
+      if (el.points && el.points.length >= 2) {
+        const pts = el.points.map(p => { const s=iso(p[0],p[1],p[2]||0); return `${s.sx},${s.sy}`; });
+        parent.appendChild(mkSVG('polyline', { points:pts.join(' '), fill:'none', stroke:col, 'stroke-width':2 }));
+      }
+      break;
+    }
+    case 'text': {
+      const p = iso(x, y, z||0);
+      const txt = mkSVG('text', { x:p.sx, y:p.sy, 'font-size':Math.max(8, w*ISO_S), fill:col, 'text-anchor':'middle' });
+      txt.classList.add('ssl-text'); txt.textContent = el.text || '';
+      parent.appendChild(txt); return;
+    }
+    case 'arc': {
+      const p = iso(x, y, z||0);
+      const r = w * ISO_S;
+      parent.appendChild(mkSVG('circle', { cx:p.sx, cy:p.sy, r, fill:'none', stroke:col, 'stroke-width':2 }));
+      break;
+    }
+  }
+
+  // Text overlay
+  if (el.text && type !== 'text') {
+    const p = iso(el._cx, el._cy, el._cz || 0);
+    const fs = Math.min(14, w * ISO_S * 0.5) || 10;
+    const txt = mkSVG('text', {
+      x:p.sx, y:p.sy, 'font-size':fs, fill:contrast(col),
+      'text-anchor':'middle', 'dominant-baseline':'central'
+    });
+    txt.classList.add('ssl-text'); txt.textContent = el.text;
+    parent.appendChild(txt);
+  }
+
+  // Index label
+  if (el.idx !== undefined && type !== 'text') {
+    const p = iso(el._cx, (el._cy || 0) + (el._h || 0) + 10, el._cz || 0);
+    const lbl = mkSVG('text', { x:p.sx, y:p.sy, 'font-size':7, fill:'#556', 'text-anchor':'middle' });
+    lbl.classList.add('ssl-idx'); lbl.textContent = '#' + el.idx;
+    parent.appendChild(lbl);
+  }
+}
+
+function renderCSGIso(parent, el) {
+  const a = el._csgRenderA, b = el._csgRenderB;
+  if (a) renderElIso(parent, { ...a, _csgHidden: false, _csgCut: false });
+  if (b && el.csgOp === 'S') {
+    renderElIso(parent, { ...b, _csgHidden: false, _csgCut: true });
+  } else if (b && el.csgOp === 'I') {
+    renderElIso(parent, { ...b, _csgHidden: false, _opacity: 0.5 });
+  } else if (b) {
+    renderElIso(parent, { ...b, _csgHidden: false, _csgCut: false });
+  }
+}
+
+function renderIsoCuboid(parent, x, y, z, w, h, d, col, op, rx, ry, rz, cut) {
+  const cx = x + w/2, cy = y + h/2, cz = z + d/2;
+  // 8 corners of the cuboid
+  const corners = [
+    [x,y,z], [x+w,y,z], [x+w,y+h,z], [x,y+h,z],
+    [x,y,z+d], [x+w,y,z+d], [x+w,y+h,z+d], [x,y+h,z+d]
+  ];
+  // Apply rotation if any
+  const rc = (rx||ry||rz) ? corners.map(c => {
+    const r = rot3D(c[0],c[1],c[2], cx,cy,cz, rx||0,ry||0,rz||0);
+    return r;
+  }) : corners.map(c => ({x:c[0],y:c[1],z:c[2]}));
+
+  const p = rc.map(c => iso(c.x, c.y, c.z));
+
+  // 6 faces with normals
+  const faces = [
+    { verts: [3,2,6,7], normal: [0,1,0], shade: 'top' },   // top
+    { verts: [0,3,7,4], normal: [-1,0,0], shade: 'left' },  // left (-X)
+    { verts: [1,2,6,5], normal: [1,0,0], shade: 'right' },  // right (+X)
+    { verts: [0,1,2,3], normal: [0,0,-1], shade: 'front' }, // front (-Z)
+    { verts: [4,5,6,7], normal: [0,0,1], shade: 'back' },   // back (+Z)
+    { verts: [0,1,5,4], normal: [0,-1,0], shade: 'bottom' } // bottom
+  ];
+
+  const shadeColors = {
+    top: lighten(col, 35), front: darken(col, 0.85),
+    left: darken(col, 0.65), right: darken(col, 0.75),
+    back: darken(col, 0.55), bottom: darken(col, 0.5)
+  };
+  const sc = darken(col, 0.45);
+
+  // Filter visible faces
+  for (const face of faces) {
+    const n = (rx||ry||rz) ? rotNormal(face.normal[0], face.normal[1], face.normal[2], rx||0, ry||0, rz||0) : {x:face.normal[0],y:face.normal[1],z:face.normal[2]};
+    const dot = n.x * VD.x + n.y * VD.y + n.z * VD.z;
+    if (dot >= 0) continue; // back-face culled
+
+    const pts = face.verts.map(i => `${p[i].sx},${p[i].sy}`).join(' ');
+    const poly = mkSVG('polygon', {
+      points: pts, fill: shadeColors[face.shade], stroke: sc, 'stroke-width': 0.8
+    });
+    if (op < 1) poly.setAttribute('opacity', op);
+    if (cut) { poly.setAttribute('stroke-dasharray', '4 3'); poly.setAttribute('opacity', '0.4'); }
+    parent.appendChild(poly);
+  }
+}
+
+function renderConnIso(parent, c) {
+  const p1 = iso(c.x1, c.y1, c.z1||0), p2 = iso(c.x2, c.y2, c.z2||0);
+  const dx = p2.sx-p1.sx, dy = p2.sy-p1.sy, dist = Math.sqrt(dx*dx+dy*dy);
+  if (dist < 1) return;
+  const nudge = Math.min(15, dist*0.12);
+  const nx = dx/dist, ny = dy/dist;
+
+  const line = mkSVG('line', {
+    x1: p1.sx+nx*nudge, y1: p1.sy+ny*nudge,
+    x2: p2.sx-nx*nudge, y2: p2.sy-ny*nudge,
+    stroke: c._color, 'stroke-width': c._weight
+  });
+  if (c.edge === '>') line.setAttribute('marker-end', 'url(#ah)');
+  if (c.edge === '<>') {
+    line.setAttribute('marker-end', 'url(#ah)');
+    line.setAttribute('marker-start', 'url(#ah-r)');
+  }
+  parent.appendChild(line);
+}
+
+// --- SVG HELPER ---
+
+function mkSVG(tag, attrs) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+// --- GRID ---
+
+function drawGrid() {
+  const g = document.getElementById('grid');
+  while (g.lastChild) g.removeChild(g.lastChild);
+  if (viewMode === 'iso') drawIsoGrid(g); else draw2DGrid(g);
+}
+
+function draw2DGrid(g) {
+  for (let i = 0; i <= 999; i += 100) {
+    const major = i % 500 === 0, c = major ? 'var(--grid-major)' : 'var(--grid-line)', sw = major ? 0.8 : 0.3;
+    g.appendChild(mkSVG('line', { x1:0, y1:i, x2:999, y2:i, stroke:c, 'stroke-width':sw }));
+    g.appendChild(mkSVG('line', { x1:i, y1:0, x2:i, y2:999, stroke:c, 'stroke-width':sw }));
+  }
+  for (let i = 0; i <= 999; i += 200) {
+    const lx = mkSVG('text', { x:i, y:994, 'font-size':8, fill:'#445', 'text-anchor':'middle' });
+    lx.textContent = i; g.appendChild(lx);
+    const ly = mkSVG('text', { x:4, y:999-i+3, 'font-size':8, fill:'#445' });
+    ly.textContent = i; g.appendChild(ly);
+  }
+}
+
+function drawIsoGrid(g) {
+  const gc = '#1c2030', ac = '#2a3550', step = 100;
+  for (let i = 0; i <= 500; i += step) {
+    const a=iso(0,0,i), b=iso(500,0,i);
+    g.appendChild(mkSVG('line', { x1:a.sx, y1:a.sy, x2:b.sx, y2:b.sy, stroke:i===0?ac:gc, 'stroke-width':i===0?1:0.3 }));
+    const c=iso(i,0,0), d=iso(i,0,500);
+    g.appendChild(mkSVG('line', { x1:c.sx, y1:c.sy, x2:d.sx, y2:d.sy, stroke:i===0?ac:gc, 'stroke-width':i===0?1:0.3 }));
+  }
+  const yB=iso(0,0,0), yT=iso(0,500,0);
+  g.appendChild(mkSVG('line', { x1:yB.sx, y1:yB.sy, x2:yT.sx, y2:yT.sy, stroke:'#3a4a70', 'stroke-width':1 }));
+  [{t:'X',p:iso(530,0,0)},{t:'Y',p:iso(0,530,0)},{t:'Z',p:iso(0,0,530)}].forEach(l => {
+    const t = mkSVG('text', { x:l.p.sx, y:l.p.sy, 'font-size':10, fill:'#556', 'text-anchor':'middle' });
+    t.textContent = l.t; g.appendChild(t);
+  });
+}
+
+// --- EXAMPLES ---
+
+const EXAMPLES = {
+  snowman: `-- Snowman
+P1
+1 200 25 200 30 30 0 8
+1 200 70 200 22 22 0 8
+1 200 105 200 15 15 0 8
+2 160 30 200 4 35 0 0
+2 240 30 200 4 35 0 0
+3 200 120 200 4 15 0 7
+7 192 108 185 3 3 0 0
+7 208 108 185 3 3 0 0
+7 195 100 183 2 2 0 1
+7 200 98 182 2 2 0 1
+7 205 100 183 2 2 0 1`,
+
+  rocket: `-- Rocket
+P1
+2 200 0 200 25 100 0 9
+3 200 100 200 25 40 0 1
+2 200 0 200 15 15 0 7
+0 175 0 175 10 30 50 7
+0 225 0 225 10 30 50 7
+0 175 0 225 10 30 50 7
+1 200 0 200 12 12 0 6`,
+
+  castle: `-- Castle
+P1
+0 150 0 150 200 40 200 9
+2 150 40 150 18 60 0 9
+2 350 40 150 18 60 0 9
+2 150 40 350 18 60 0 9
+2 350 40 350 18 60 0 9
+3 150 100 150 18 25 0 1
+3 350 100 150 18 25 0 1
+3 150 100 350 18 25 0 1
+3 350 100 350 18 25 0 1
+0 220 40 220 60 50 60 9
+4 250 90 250 80 40 0 1`,
+
+  lamp: `-- Desk Lamp
+P1
+2 200 0 200 40 5 0 9
+2 200 5 200 8 80 0 9
+1 200 85 200 5 5 0 6
+3 200 70 200 30 25 0 6
+5 200 0 200 35 3 9`,
+
+  chess: `-- Chess Pawn
+P1
+2 200 0 200 30 8 0 9
+2 200 8 200 22 5 0 9
+2 200 13 200 12 40 0 9
+5 200 53 200 18 4 9
+1 200 65 200 15 15 0 9`,
+
+  tree: `-- Pine Tree
+P1
+2 200 0 200 10 40 0 7
+3 200 40 200 40 35 0 2
+3 200 60 200 33 30 0 2
+3 200 78 200 25 28 0 2
+1 200 106 200 4 4 0 6`,
+
+  robot: `-- Robot
+P1
+0 175 0 175 50 40 50 9
+0 180 40 180 40 45 40 3
+1 200 95 200 22 22 0 3
+7 192 100 185 4 4 0 4
+7 208 100 185 4 4 0 4
+0 190 97 185 20 3 20 0
+2 155 40 200 8 40 0 9
+2 245 40 200 8 40 0 9
+2 185 0 200 10 0 0 9
+2 215 0 200 10 0 0 9
+1 155 80 200 8 8 0 1
+1 245 80 200 8 8 0 1`,
+
+  house: `-- House
+P1
+0 130 0 130 140 60 140 9
+4 200 60 200 170 50 0 1
+0 180 0 115 40 45 15 3
+2 320 0 200 12 50 0 9
+0 320 50 200 4 30 0 1
+0 155 5 131 20 25 25 4
+0 210 5 131 20 25 25 4`,
+
+  nn: `-- Neural Network
+H 10
+0 30 100 2 "Input"
+0 20 150 3 "Conv"
+0 15 120 4 "Pool"
+0 20 140 3 "Conv"
+0 15 110 4 "Pool"
+0 15 80 7 "FC"
+0 15 40 7 "FC"
+0 20 20 1 "Out"
+0>1>2>3>4>5>6>7`,
+
+  shapes3d: `-- All 3D Primitives
+P1
+0 50 0 80 60 60 60 3 "box"
+1 200 30 80 30 30 0 1 "sphere"
+2 300 0 80 20 60 0 2 "cyl"
+3 400 0 80 20 60 0 7 "cone"
+4 100 0 250 60 60 0 6 "pyr"
+5 250 20 250 25 8 0 5 "torus"`
+};
+
+// --- WIRE UP ---
+
+const editor = document.getElementById('editor');
+const errorBar = document.getElementById('error-bar');
+const lineNums = document.getElementById('line-numbers');
+const exSel = document.getElementById('examples');
+const btnClear = document.getElementById('btn-clear');
+const btnView = document.getElementById('btn-view');
+const canvas = document.getElementById('canvas');
+const mousePos = document.getElementById('mouse-pos');
+
+let debounce = null;
+
+function updateLines() {
+  const n = editor.value.split('\n').length;
+  let s = '';
+  for (let i = 1; i <= n; i++) s += i + '\n';
+  lineNums.textContent = s;
+}
+
+function autoFitViewBox() {
+  const scene = document.getElementById('scene');
+  const svg = document.getElementById('canvas');
+  try {
+    const bbox = scene.getBBox();
+    if (bbox.width < 1 || bbox.height < 1) {
+      svg.setAttribute('viewBox', '0 0 999 999');
+      return;
+    }
+    const pad = Math.max(bbox.width, bbox.height) * 0.15;
+    const vx = bbox.x - pad;
+    const vy = bbox.y - pad;
+    const vw = bbox.width + pad * 2;
+    const vh = bbox.height + pad * 2;
+    svg.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+  } catch (e) {
+    svg.setAttribute('viewBox', '0 0 999 999');
+  }
+}
+
+function pipeline() {
+  const src = editor.value;
+  if (!src.trim()) {
+    const g = document.getElementById('scene');
+    while (g.lastChild) g.removeChild(g.lastChild);
+    canvas.setAttribute('viewBox', '0 0 999 999');
+    errorBar.textContent = ''; errorBar.classList.remove('visible');
+    return;
+  }
+  try {
+    const parsed = parse(src);
+    const scene = resolve(parsed);
+    // Auto-switch view for projection mode
+    const proj = scene.layout && scene.layout.projection;
+    if (proj === 'flat') {
+      viewMode = '2d'; btnView.textContent = '2D';
+      btnView.classList.remove('active');
+      document.getElementById('grid').style.display = 'none';
+    } else if (proj === 'iso' && viewMode !== 'iso') {
+      viewMode = 'iso'; btnView.textContent = 'Iso 3D';
+      btnView.classList.add('active'); drawGrid();
+    }
+    render(scene);
+    autoFitViewBox();
+    if (scene.errors.length > 0) {
+      errorBar.textContent = scene.errors.map(e => `Line ${e.line+1}: ${e.msg}`).join('\n');
+      errorBar.classList.add('visible');
+    } else { errorBar.textContent = ''; errorBar.classList.remove('visible'); }
+  } catch (err) {
+    errorBar.textContent = `Error: ${err.message}`;
+    errorBar.classList.add('visible');
+  }
+}
+
+function sched() { clearTimeout(debounce); debounce = setTimeout(pipeline, 200); }
+
+function toggleView() {
+  viewMode = viewMode === '2d' ? 'iso' : '2d';
+  btnView.textContent = viewMode === '2d' ? '2D' : 'Iso 3D';
+  btnView.classList.toggle('active', viewMode === 'iso');
+  drawGrid(); pipeline();
+}
+
+editor.addEventListener('input', () => { updateLines(); sched(); });
+editor.addEventListener('scroll', () => { lineNums.style.transform = `translateY(${-editor.scrollTop}px)`; });
+
+exSel.addEventListener('change', () => {
+  const k = exSel.value;
+  if (k && EXAMPLES[k]) {
+    const src = EXAMPLES[k];
+    const is3D = /^P[1-3]/m.test(src);
+    if (is3D && viewMode !== 'iso') toggleView();
+    else if (!is3D && viewMode !== '2d') toggleView();
+    editor.value = src;
+    updateLines(); pipeline();
+  }
+  exSel.value = '';
+});
+
+btnClear.addEventListener('click', () => { editor.value = ''; updateLines(); pipeline(); editor.focus(); });
+btnView.addEventListener('click', toggleView);
+
+canvas.addEventListener('mousemove', (e) => {
+  const r = canvas.getBoundingClientRect();
+  const sx = ((e.clientX-r.left)/r.width)*999, sy = 999-((e.clientY-r.top)/r.height)*999;
+  mousePos.textContent = viewMode === '2d' ? `@${Math.round(sx)} ${Math.round(sy)}` : '';
+});
+canvas.addEventListener('mouseleave', () => { mousePos.textContent = ''; });
+
+editor.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = editor.selectionStart, end = editor.selectionEnd;
+    editor.value = editor.value.substring(0, s) + '  ' + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = s + 2;
+    updateLines(); sched();
+  }
+});
+
+// --- PNG EXPORT ---
+
+function getSSLSvgString() {
+  const svg = document.getElementById('canvas');
+  const clone = svg.cloneNode(true);
+  // Inline computed styles for standalone rendering
+  clone.setAttribute('xmlns', NS);
+  clone.setAttribute('width', '999');
+  clone.setAttribute('height', '999');
+  // Set background explicitly on clone
+  clone.style.background = '#13151f';
+  return new XMLSerializer().serializeToString(clone);
+}
+
+function exportPNG() {
+  const svgStr = getSSLSvgString();
+  const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = 999; c.height = 999;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#13151f';
+    ctx.fillRect(0, 0, 999, 999);
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+    c.toBlob(b => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = 'ssl-scene.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }, 'image/png');
+  };
+  img.src = url;
+}
+
+document.getElementById('btn-export').addEventListener('click', exportPNG);
+
+// --- PLAYWRIGHT API ---
+// Exposed globally so headless renderer can drive the playground
+
+window.sslSetCode = function(text) {
+  editor.value = text;
+  updateLines();
+  pipeline();
+};
+
+window.getSSLSvgString = getSSLSvgString;
+window.sslPipeline = pipeline;
+
+window.sslPresentationMode = function(on) {
+  document.getElementById('grid').style.display = on ? 'none' : '';
+  document.querySelectorAll('.ssl-idx').forEach(el => {
+    el.style.display = on ? 'none' : '';
+  });
+  // Re-fit after hiding elements
+  if (on) autoFitViewBox();
+};
+
+// Init
+drawGrid(); updateLines();
+editor.value = EXAMPLES.snowman;
+updateLines(); pipeline();
+</script>
+</body>
+</html>

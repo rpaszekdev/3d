@@ -1,0 +1,36 @@
+V 24 36 24
+
+-- boots
+B 8 0 10 4 3 5 a
+B 13 0 10 4 3 5 a
+-- lower legs
+B 9 3 10 3 6 5 9
+B 13 3 10 3 6 5 9
+-- upper legs
+B 8 9 10 4 5 5 9
+B 13 9 10 4 5 5 9
+-- torso torn clothes
+B 7 14 9 10 9 6 9
+-- rotting skin showing
+B 9 16 8 3 5 1 2
+B 13 17 8 2 4 1 2
+-- blood stain
+B 10 18 8 2 2 1 1
+-- neck
+B 11 23 10 3 3 5 2
+-- head
+B 9 26 9 7 6 6 2
+-- eyes white
+B 10 29 8 2 2 1 8
+B 14 29 8 2 2 1 8
+-- dark pupils
+B 11 29 7 1 1 1 0
+B 15 29 7 1 1 1 0
+-- mouth
+B 10 26 8 5 1 1 0
+-- left arm outstretched toward viewer
+B 2 18 3 4 4 10 2
+-- right arm outstretched toward viewer
+B 18 18 3 4 4 10 2
+-- decay patch on head
+B 12 28 8 2 2 1 a

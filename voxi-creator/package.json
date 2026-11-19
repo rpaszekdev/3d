@@ -1,0 +1,15 @@
+{
+  "name": "voxi-creator",
+  "version": "1.0.0",
+  "description": "AI-powered 3D model creator using VOXI language with builder-critic loop",
+  "type": "module",
+  "scripts": {
+    "server": "node server.js",
+    "create": "node create.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "express": "^5.2.1",
+    "ws": "^8.18.0"
+  }
+}

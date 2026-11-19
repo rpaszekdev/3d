@@ -1,0 +1,23 @@
+V 32 20 16
+
+-- left post
+C 3 0 8 1 14 a
+-- right post
+C 28 0 8 1 14 a
+
+-- rope ties at post tops
+B 3 12 6 2 1 4 a
+B 27 12 6 2 1 4 a
+
+-- hammock fabric (sagging curve, high at ends, low at center)
+B 5 11 5 3 1 6 d
+B 8 9 5 4 1 6 d
+B 12 7 5 4 1 6 d
+B 16 6 5 4 1 6 d
+B 20 7 5 4 1 6 d
+B 23 9 5 3 1 6 d
+B 26 11 5 2 1 6 d
+
+-- ground anchors
+B 2 0 7 3 2 2 a
+B 27 0 7 3 2 2 a

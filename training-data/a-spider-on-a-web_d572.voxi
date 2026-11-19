@@ -1,0 +1,57 @@
+V 32 32 32
+
+-- web radials
+B 6 18 26 20 1 1 8
+B 16 6 26 1 24 1 8
+
+-- web diagonal strands
+B 8 10 26 2 2 1 9
+B 10 12 26 2 2 1 9
+B 12 14 26 2 2 1 9
+B 20 22 26 2 2 1 9
+B 22 24 26 2 2 1 9
+B 22 10 26 2 2 1 9
+B 20 12 26 2 2 1 9
+B 12 22 26 2 2 1 9
+B 10 24 26 2 2 1 9
+
+-- web concentric rings outer
+B 10 10 26 12 1 1 8
+B 10 26 26 12 1 1 8
+B 10 10 26 1 16 1 8
+B 22 10 26 1 16 1 8
+
+-- web concentric rings inner
+B 12 14 26 8 1 1 8
+B 12 22 26 8 1 1 8
+B 12 14 26 1 8 1 8
+B 20 14 26 1 8 1 8
+
+-- spider abdomen
+S 16 18 20 4 0
+
+-- spider cephalothorax
+S 16 18 14 3 9
+
+-- eyes
+S 15 20 12 1 8
+S 17 20 12 1 8
+
+-- legs front pair
+B 6 21 13 10 1 1 0
+B 17 21 13 10 1 1 0
+
+-- legs second pair
+B 6 19 15 10 1 1 0
+B 17 19 15 10 1 1 0
+
+-- legs third pair
+B 6 19 17 10 1 1 0
+B 17 19 17 10 1 1 0
+
+-- legs rear pair
+B 6 17 19 10 1 1 0
+B 17 17 19 10 1 1 0
+
+-- silk thread anchoring spider to web
+B 16 22 20 1 4 1 8

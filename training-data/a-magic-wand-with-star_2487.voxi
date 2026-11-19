@@ -1,0 +1,38 @@
+V 24 32 24
+
+-- wand shaft
+C 12 9 12 1 18 a
+
+-- handle grip band
+B 10 1 11 4 4 2 7
+
+-- handle end cap
+S 12 1 12 2 a
+
+-- shaft cap / connector
+B 10 15 11 4 2 2 6
+
+-- glow aura at tip
+S 12 19 12 2 5
+
+-- star center orb
+S 12 22 12 3 6
+
+-- star top point
+B 11 25 11 2 5 2 6
+
+-- star horizontal arm
+B 6 21 11 12 2 2 6
+
+-- star lower-left point
+B 7 17 11 4 5 2 6
+
+-- star lower-right point
+B 13 17 11 4 5 2 6
+
+-- sparkle accents (white)
+S 12 30 12 1 8
+S 7 28 11 1 8
+S 17 28 11 1 8
+S 6 22 12 1 8
+S 18 22 12 1 8

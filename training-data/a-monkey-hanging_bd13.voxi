@@ -1,0 +1,50 @@
+V 24 32 24
+
+-- hanging bar
+B 4 29 11 16 2 2 9
+
+-- hands gripping bar
+S 9 29 12 1 d
+S 15 29 12 1 d
+
+-- arms stretched upward
+C 9 25 12 1 6 a
+C 15 25 12 1 6 a
+
+-- head
+S 12 22 12 2 a
+
+-- face
+E 12 22 10 2 2 1 d
+
+-- ears
+S 10 23 12 1 a
+S 14 23 12 1 a
+
+-- eyes
+S 11 23 11 1 0
+S 13 23 11 1 0
+
+-- snout
+S 12 21 10 1 d
+
+-- body
+E 12 17 12 3 4 2 a
+
+-- belly
+E 12 17 11 2 3 1 d
+
+-- legs hanging
+C 10 12 12 1 5 a
+C 14 12 12 1 5 a
+
+-- feet
+S 10 9 12 2 a
+S 14 9 12 2 a
+
+-- tail curling
+B 15 17 12 1 1 1 a
+B 16 16 12 1 1 1 a
+B 17 15 12 1 1 1 a
+B 17 14 13 1 1 1 a
+B 16 13 14 1 1 1 a

@@ -1,0 +1,48 @@
+V 32 32 32
+
+-- Feet (orange)
+B 10 0 14 5 2 5 7
+B 17 0 14 5 2 5 7
+
+-- Legs (navy)
+B 12 2 14 3 3 5 f
+B 17 2 14 3 3 5 f
+
+-- Main body (navy back)
+B 9 4 12 14 15 8 f
+
+-- White belly (front layer)
+B 11 5 11 10 12 2 8
+
+-- Left wing
+B 7 4 13 3 13 6 f
+
+-- Right wing
+B 22 4 13 3 13 6 f
+
+-- Tail bump (back)
+B 11 4 19 10 6 3 f
+
+-- Head (navy)
+B 10 18 12 12 9 7 f
+
+-- White face patch (front of head)
+B 11 19 11 10 7 2 8
+
+-- Beak upper (orange)
+B 13 21 10 6 2 3 7
+
+-- Beak lower (orange, slight step)
+B 14 19 10 4 2 3 7
+
+-- Left eye
+P 13 24 11 0
+
+-- Right eye
+P 19 24 11 0
+
+-- Eye shine left
+P 14 25 11 8
+
+-- Eye shine right
+P 20 25 11 8

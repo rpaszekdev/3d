@@ -1,0 +1,29 @@
+V 24 20 24
+
+-- taco shell bottom
+B 6 2 8 12 1 8 d
+-- left shell wall
+B 6 3 8 2 5 8 d
+-- right shell wall
+B 16 3 8 2 5 8 d
+-- left shell top flare
+B 4 7 8 4 1 8 d
+-- right shell top flare
+B 16 7 8 4 1 8 d
+
+-- meat filling
+B 8 3 9 8 2 6 a
+
+-- cheese layer
+B 7 5 9 10 1 6 6
+
+-- lettuce (overflowing top)
+B 6 6 9 12 2 6 2
+
+-- tomato chunks
+S 10 7 12 1 1
+S 14 7 12 1 1
+S 12 7 10 1 1
+
+-- sour cream dollop
+S 12 7 14 1 8

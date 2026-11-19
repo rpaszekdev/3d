@@ -1,0 +1,145 @@
+-- FILM-TITLE: "Diffusion Models — From Noise to Structure"
+-- FILM: 0 5 "Pure Noise" "The process begins with **pure Gaussian noise** — completely random voxels with no structure."
+-- FILM: 5 10 "Step 1 — Predict Noise" "A neural network **scans the noise** and predicts which parts are noise to subtract."
+-- FILM: 10 17 "Denoising — Structure Emerges" "Over many steps, the predicted noise is subtracted. **Order crystallizes from chaos.**"
+-- FILM: 17 22 "Fine Details" "The rough shape sharpens. **Details emerge** — branches, leaves, texture."
+-- FILM: 22 26 "The Generated Object" "All noise removed. A clean, structured **3D tree** — the output of diffusion."
+-- FILM: 26 30 "The Process" "The full diffusion pipeline: from **pure noise to structured output** in many small steps."
+
+V 96 56 56
+DUR 30
+L 1
+
+-- ============================================================
+-- NOISE PARTICLES THAT LERP TO TREE POSITIONS
+-- Each point starts random, ends at tree position
+-- p = clamp((T-5)/12, 0, 1) controls progress
+-- ============================================================
+
+-- TRUNK POINTS (brown)
+P lerp(sin(1.1)*40+48, 48+sin(T*5.1)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(2.3)*25+28, 8+sin(T*3.2)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(3.7)*40+28, 28+cos(T*4.1)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(4.2)*38+48, 49+sin(T*4.8)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(5.1)*22+28, 10+cos(T*3.5)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(6.8)*35+28, 27+sin(T*4.4)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(7.3)*42+48, 47+cos(T*5.3)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(8.9)*20+28, 12+sin(T*2.9)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(9.1)*38+28, 29+cos(T*3.8)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(10.7)*36+48, 48+sin(T*4.1)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(11.2)*24+28, 14+cos(T*3.1)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(12.4)*40+28, 28+sin(T*4.7)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(13.8)*44+48, 50+cos(T*5.5)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(14.5)*18+28, 16+sin(T*2.7)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(15.9)*36+28, 27+cos(T*4.2)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(16.3)*39+48, 47+sin(T*4.6)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(17.7)*21+28, 18+cos(T*3.3)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(18.2)*42+28, 29+sin(T*3.9)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(19.6)*41+48, 49+cos(T*5.0)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(20.1)*23+28, 20+sin(T*2.5)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(21.8)*37+28, 28+cos(T*4.5)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+P lerp(sin(22.4)*43+48, 48+sin(T*4.3)*2*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(23.9)*19+28, 22+cos(T*3.6)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(24.5)*39+28, 27+sin(T*4.0)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) a
+
+-- FOLIAGE POINTS (green)
+P lerp(sin(25.1)*45+48, 48+sin(T*4.9)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(26.8)*25+28, 30+cos(T*3.4)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(27.3)*40+28, 28+sin(T*4.6)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(28.7)*38+48, 55+cos(T*5.2)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(29.2)*22+28, 32+sin(T*2.8)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(30.6)*42+28, 22+cos(T*4.3)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(31.4)*41+48, 42+sin(T*4.7)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(32.9)*20+28, 34+cos(T*3.0)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(33.5)*36+28, 34+sin(T*3.7)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(34.8)*44+48, 52+cos(T*5.4)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(35.3)*24+28, 28+sin(T*2.6)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(36.1)*39+28, 20+cos(T*4.8)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(37.6)*43+48, 44+sin(T*4.4)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(38.2)*18+28, 36+cos(T*3.2)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(39.7)*41+28, 26+sin(T*4.1)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(40.3)*37+48, 50+cos(T*5.1)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(41.8)*21+28, 33+sin(T*2.9)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(42.4)*44+28, 30+cos(T*3.5)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(43.9)*40+48, 46+sin(T*4.5)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(44.5)*23+28, 31+cos(T*3.7)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(45.1)*38+28, 24+sin(T*4.9)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(46.6)*42+48, 54+cos(T*5.3)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(47.2)*19+28, 35+sin(T*2.4)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(48.8)*36+28, 32+cos(T*4.0)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(49.3)*39+48, 40+sin(T*4.2)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(50.7)*26+28, 29+cos(T*3.8)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(51.4)*43+28, 36+sin(T*3.6)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(52.8)*46+48, 56+cos(T*5.6)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(53.3)*17+28, 26+sin(T*2.3)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(54.9)*41+28, 28+cos(T*4.4)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(55.4)*38+48, 43+sin(T*4.8)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(56.1)*22+28, 37+cos(T*3.1)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(57.7)*40+28, 22+sin(T*4.2)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+P lerp(sin(58.2)*44+48, 51+cos(T*5.0)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(59.8)*20+28, 34+sin(T*2.7)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(60.3)*37+28, 26+cos(T*3.9)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) 2
+
+-- Dark green foliage depth
+P lerp(sin(61.7)*43+48, 47+sin(T*4.6)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(62.3)*24+28, 32+cos(T*3.3)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(63.8)*39+28, 30+sin(T*4.7)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) c
+P lerp(sin(64.4)*41+48, 53+cos(T*5.5)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(65.9)*18+28, 27+sin(T*2.5)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(66.5)*45+28, 34+cos(T*3.4)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) c
+P lerp(sin(67.1)*37+48, 41+sin(T*4.3)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(68.6)*21+28, 36+cos(T*3.6)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(69.2)*42+28, 24+sin(T*4.5)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) c
+P lerp(sin(70.8)*40+48, 45+cos(T*4.1)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(71.3)*23+28, 30+sin(T*2.8)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(72.9)*38+28, 32+cos(T*4.8)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) c
+P lerp(sin(73.5)*44+48, 57+sin(T*5.7)*3*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(cos(74.1)*19+28, 25+cos(T*3.9)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) lerp(sin(75.6)*41+28, 28+sin(T*3.3)*(1-clamp((T-5)/12,0,1)), clamp((T-5)/12,0,1)) c
+
+-- Extra chaos particles (fade out as denoising progresses)
+P sin(T*3.7+1)*40+48 cos(T*2.9+7)*20+28 sin(T*4.1+3)*25+28 1
+P sin(T*2.3+12)*38+48 cos(T*3.5+19)*22+28 sin(T*4.8+8)*20+28 3
+P sin(T*4.1+25)*42+48 cos(T*2.1+33)*18+28 sin(T*3.3+15)*22+28 5
+P sin(T*3.2+38)*36+48 cos(T*4.4+44)*24+28 sin(T*2.7+21)*24+28 6
+P sin(T*5.1+51)*44+48 cos(T*3.8+57)*16+28 sin(T*4.5+29)*18+28 4
+P sin(T*2.8+64)*40+48 cos(T*4.2+70)*20+28 sin(T*3.6+35)*26+28 7
+P sin(T*4.6+77)*38+48 cos(T*2.5+83)*22+28 sin(T*3.9+42)*20+28 1
+P sin(T*3.4+90)*42+48 cos(T*4.7+96)*18+28 sin(T*2.2+48)*24+28 5
+P sin(T*5.3+103)*36+48 cos(T*3.1+109)*24+28 sin(T*4.3+55)*22+28 3
+P sin(T*2.6+116)*44+48 cos(T*4.9+122)*16+28 sin(T*3.7+62)*18+28 6
+P sin(T*4.4+5)*35+48 cos(T*3.3+11)*25+28 sin(T*2.9+17)*23+28 4
+P sin(T*3.1+18)*43+48 cos(T*5.2+24)*17+28 sin(T*4.7+30)*21+28 7
+P sin(T*2.7+31)*37+48 cos(T*4.1+37)*21+28 sin(T*3.5+43)*25+28 1
+P sin(T*5.5+44)*41+48 cos(T*2.8+50)*19+28 sin(T*4.0+56)*19+28 5
+P sin(T*3.9+57)*39+48 cos(T*4.6+63)*23+28 sin(T*2.4+69)*27+28 3
+P sin(T*4.2+70)*45+48 cos(T*3.0+76)*15+28 sin(T*5.1+82)*17+28 6
+P sin(T*2.5+83)*36+48 cos(T*4.8+89)*26+28 sin(T*3.2+95)*23+28 b
+P sin(T*5.0+96)*43+48 cos(T*2.3+102)*18+28 sin(T*4.4+108)*21+28 8
+
+-- ============================================================
+-- SCANNING PLANE (T=5-10)
+-- ============================================================
+
+B lerp(10,86,clamp((T-5)/5,0,1))*clamp(T-5,0,1)*clamp(10-T,0,1) 28*clamp(T-5,0,1)*clamp(10-T,0,1) 28*clamp(T-5,0,1)*clamp(10-T,0,1) 2*clamp(T-5,0,1)*clamp(10-T,0,1) 50*clamp(T-5,0,1)*clamp(10-T,0,1) 50*clamp(T-5,0,1)*clamp(10-T,0,1) 3
+
+P lerp(10,86,clamp((T-5)/5,0,1))*clamp(T-5,0,1)*clamp(10-T,0,1) 10*clamp(T-5,0,1)*clamp(10-T,0,1)+sin(T*8)*5 15*clamp(T-5,0,1)*clamp(10-T,0,1) 4
+P lerp(10,86,clamp((T-5)/5,0,1))*clamp(T-5,0,1)*clamp(10-T,0,1) 40*clamp(T-5,0,1)*clamp(10-T,0,1)+cos(T*7)*5 35*clamp(T-5,0,1)*clamp(10-T,0,1) 4
+P lerp(10,86,clamp((T-5)/5,0,1))*clamp(T-5,0,1)*clamp(10-T,0,1) 25*clamp(T-5,0,1)*clamp(10-T,0,1)+sin(T*6)*5 42*clamp(T-5,0,1)*clamp(10-T,0,1) 4
+
+-- ============================================================
+-- SOLID TREE (fades in T=15-17)
+-- ============================================================
+
+-- Trunk
+C 48*clamp((T-15)/2,0,1) 0 28*clamp((T-15)/2,0,1) 4*clamp((T-15)/2,0,1) 22*clamp((T-15)/2,0,1) a
+
+-- Main foliage
+S 48*clamp((T-16)/2,0,1) 30*clamp((T-16)/2,0,1) 28*clamp((T-16)/2,0,1) 14*clamp((T-16)/2,0,1) 2
+S 44*clamp((T-16.5)/2,0,1) 32*clamp((T-16.5)/2,0,1) 24*clamp((T-16.5)/2,0,1) 10*clamp((T-16.5)/2,0,1) c
+S 52*clamp((T-16.5)/2,0,1) 28*clamp((T-16.5)/2,0,1) 32*clamp((T-16.5)/2,0,1) 10*clamp((T-16.5)/2,0,1) c
+S 48*clamp((T-16.5)/2,0,1) 36*clamp((T-16.5)/2,0,1) 28*clamp((T-16.5)/2,0,1) 8*clamp((T-16.5)/2,0,1) 2
+
+-- Fruit
+S 40*clamp((T-18)/1,0,1) 28*clamp((T-18)/1,0,1) 22*clamp((T-18)/1,0,1) 2*clamp((T-18)/1,0,1) 1
+S 54*clamp((T-18.5)/1,0,1) 32*clamp((T-18.5)/1,0,1) 34*clamp((T-18.5)/1,0,1) 2*clamp((T-18.5)/1,0,1) 1
+S 46*clamp((T-19)/1,0,1) 34*clamp((T-19)/1,0,1) 20*clamp((T-19)/1,0,1) 2*clamp((T-19)/1,0,1) 7
+S 52*clamp((T-19.5)/1,0,1) 26*clamp((T-19.5)/1,0,1) 30*clamp((T-19.5)/1,0,1) 2*clamp((T-19.5)/1,0,1) 7
+
+-- Ground
+B 48*clamp((T-17)/2,0,1) 0 28*clamp((T-17)/2,0,1) 20*clamp((T-17)/2,0,1) 1*clamp((T-17)/2,0,1) 16*clamp((T-17)/2,0,1) c
+
+-- ============================================================
+-- SPARKLES (T=22-26)
+-- ============================================================
+
+P (48+18*cos(T*2.0))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+18*sin(T*2.0))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+18*sin(T*1.5))*clamp(T-22,0,1)*clamp(26-T,0,1) 8
+P (48+20*cos(T*1.7+2))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+15*sin(T*2.3+1))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+20*cos(T*1.8+3))*clamp(T-22,0,1)*clamp(26-T,0,1) 6
+P (48+16*sin(T*2.5+4))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+22*cos(T*1.4+2))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+16*sin(T*2.1+5))*clamp(T-22,0,1)*clamp(26-T,0,1) 4
+P (48+22*cos(T*1.3+1))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+12*sin(T*2.8+3))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+22*cos(T*1.6+2))*clamp(T-22,0,1)*clamp(26-T,0,1) 8
+P (48+14*sin(T*2.2+5))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+20*cos(T*1.9+4))*clamp(T-22,0,1)*clamp(26-T,0,1) (28+14*sin(T*2.4+1))*clamp(T-22,0,1)*clamp(26-T,0,1) 6
+
+-- ============================================================
+-- PROCESS DIAGRAM (T=26-30)
+-- Mini trees from noise to clean, left to right
+-- ============================================================
+
+-- Position 1 (X=10): Pure noise
+P (10+sin(T*5)*3)*clamp(T-26,0,1) (20+cos(T*4)*5)*clamp(T-26,0,1) (28+sin(T*3)*4)*clamp(T-26,0,1) 1
+P (12+cos(T*4)*4)*clamp(T-26,0,1) (25+sin(T*5)*3)*clamp(T-26,0,1) (30+cos(T*3)*3)*clamp(T-26,0,1) 3
+P (8+sin(T*6)*3)*clamp(T-26,0,1) (22+cos(T*3)*4)*clamp(T-26,0,1) (26+sin(T*5)*5)*clamp(T-26,0,1) 5
+P (14+cos(T*3)*5)*clamp(T-26,0,1) (18+sin(T*4)*3)*clamp(T-26,0,1) (32+cos(T*6)*3)*clamp(T-26,0,1) 6
+
+-- Position 2 (X=28): Blob
+S 28*clamp(T-26,0,1) 22*clamp(T-26,0,1) 28*clamp(T-26,0,1) 5*clamp(T-26,0,1) 9
+P (26+sin(T*3)*2)*clamp(T-26,0,1) (18+cos(T*2)*2)*clamp(T-26,0,1) (28+sin(T*4)*2)*clamp(T-26,0,1) 2
+P (30+cos(T*4)*2)*clamp(T-26,0,1) (24+sin(T*3)*2)*clamp(T-26,0,1) (26+cos(T*2)*2)*clamp(T-26,0,1) a
+
+-- Position 3 (X=46): Rough tree
+C 46*clamp(T-26,0,1) 10*clamp(T-26,0,1) 28*clamp(T-26,0,1) 2*clamp(T-26,0,1) 8*clamp(T-26,0,1) a
+S 46*clamp(T-26,0,1) 20*clamp(T-26,0,1) 28*clamp(T-26,0,1) 6*clamp(T-26,0,1) 2
+
+-- Position 4 (X=64): Nearly clean
+C 64*clamp(T-26,0,1) 10*clamp(T-26,0,1) 28*clamp(T-26,0,1) 2*clamp(T-26,0,1) 10*clamp(T-26,0,1) a
+S 64*clamp(T-26,0,1) 24*clamp(T-26,0,1) 28*clamp(T-26,0,1) 7*clamp(T-26,0,1) 2
+S 64*clamp(T-26,0,1) 28*clamp(T-26,0,1) 28*clamp(T-26,0,1) 5*clamp(T-26,0,1) c
+
+-- Position 5 (X=82): Perfect tree
+C 82*clamp(T-26,0,1) 10*clamp(T-26,0,1) 28*clamp(T-26,0,1) 3*clamp(T-26,0,1) 12*clamp(T-26,0,1) a
+S 82*clamp(T-26,0,1) 26*clamp(T-26,0,1) 28*clamp(T-26,0,1) 9*clamp(T-26,0,1) 2
+S 82*clamp(T-26,0,1) 30*clamp(T-26,0,1) 28*clamp(T-26,0,1) 6*clamp(T-26,0,1) c
+S 80*clamp(T-26,0,1) 24*clamp(T-26,0,1) 24*clamp(T-26,0,1) 2*clamp(T-26,0,1) 1
+
+-- Sweeping arrow
+B lerp(10,82,clamp((T-26)/4,0,1))*clamp(T-26,0,1) 8*clamp(T-26,0,1) 28*clamp(T-26,0,1) 4*clamp(T-26,0,1) 2*clamp(T-26,0,1) 2*clamp(T-26,0,1) 8
+K lerp(10,82,clamp((T-26)/4,0,1))*clamp(T-26,0,1)+3*clamp(T-26,0,1) 8*clamp(T-26,0,1) 28*clamp(T-26,0,1) 3*clamp(T-26,0,1) 3*clamp(T-26,0,1) 8

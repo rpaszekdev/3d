@@ -1,0 +1,52 @@
+## Dragon Pose Analysis
+
+`★ Insight ─────────────────────────────────────`
+The six orthographic projections (top/front/back/left/right/bottom) together form a complete 3D picture — depth values (0-9) encode surface distance from camera, letting you distinguish near vs far surfaces even in 2D text. The BACK view X-axis is mirrored relative to FRONT, so BACK X=7 ≈ world X=13 (grid_width - x).
+`─────────────────────────────────────────────────`
+
+---
+
+### Head & Snout
+
+The most isolated high-elevation cluster in FRONT view is at **Y=9–11, X=13–19** (rows 3–4 of the front grid). BACK view confirms this: its high-Y activity at X=1–7 maps to world X=13–19 after mirroring. The head sits in the **upper-right** of the model — approximately low-res **(16, 10, 8)**.
+
+The snout reaches the maximum X extent of the bounding box (X=20, high-res ≈165). In TOP view, the X=15–19 columns show a narrowing cluster at Z=6–8, tapering toward the +X edge — classic elongated skull shape. **The mouth opens pointing in the +X direction**, slightly elevated. **Fire would project from ~(20, 10, 7) low-res, aimed in the +X direction.**
+
+---
+
+### Neck & Body
+
+Moving inward along the diagonal (X=8–15, Y=4–8): FRONT view shows dense mid-body voxels here. The depth values (2–4) indicate a thick, close surface — this is the **torso mass**. The LEFT view shows Z=5–9 fully occupied at Y=5–8, confirming the body has depth.
+
+---
+
+### Tail
+
+Low X (X=5–10), low Y (Y=0–4), sweeping toward the ground. BACK view rows Y=9–13 at mirrored X=12–18 show the tail extending **down and toward −X**. The BOTTOM view's cluster at X=9–11 shows the tail contacting or near the ground plane.
+
+---
+
+### Wings
+
+TOP view at Z=4–8, X=5–8 (rows 7–8) shows a parallel band of voxels separate from the body spine. LEFT view at Y=0–2 has activity at **both Z=4 and Z=8–9** simultaneously — two surfaces far apart in Z = lateral wing membranes spread wide. The wings appear **folded back and downward**, not fully extended.
+
+---
+
+### Legs
+
+BOTTOM view is clearest here: paired blobs at X=9–10 and X=14–15 (rows 4–7) — **two visible feet/claws planted beneath the torso**. Depth values near 0 confirm these are the lowest surfaces.
+
+---
+
+### Overall Pose Summary
+
+```
+         HEAD (X=16,Y=10,Z=8)
+          /
+  NECK ──/
+        BODY (X=11,Y=6,Z=6)
+        \
+    TAIL ──── (X=6,Y=2,Z=5)
+```
+
+**Rearing/lunging pose**: the spine arcs diagonally from the lower-left (tail near ground, X≈5) up to the upper-right (head raised at Y≈10, X≈19). The dragon's head is elevated and angled forward, mouth at the +X boundary. **Fire direction: +X, slightly upward (~+Y 1–2 units).**

@@ -1,0 +1,126 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 2: Dark Hacker — Terminal-inspired, green on black
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #0a0a0a
+
+-- ── Scan lines decoration ────────────────────────────────
+LINE 0 0 840 0 0 #1a1a1a 1
+LINE 0 20 840 20 0 #111111 1
+LINE 0 40 840 40 0 #111111 1
+
+-- ── Header ───────────────────────────────────────────────
+RECT 30 30 780 100 0 #111111 4
+LINE 30 30 810 30 1 #00ff41 1
+TEXT 50 52 "> robert_paszek" 28 2 #00ff41 bold
+TEXT 50 90 "software_engineer // spatial_computing // dsl_design" 11 2 #00aa2a
+
+-- ── Contact bar ──────────────────────────────────────────
+RECT 30 148 780 28 0 #111111 4
+TEXT 50 153 "$ cat contact.txt" 9 1 #555555
+TEXT 230 153 "robert@example.com" 9 1 #00ff41
+TEXT 430 153 "github.com/robertpaszek" 9 1 #00ff41
+TEXT 650 153 "London, UK" 9 1 #00ff41
+
+-- ── Profile ──────────────────────────────────────────────
+TEXT 50 206 "$ whoami" 10 1 #555555
+TEXT 50 226 "Software engineer with a focus on spatial computing," 11 1 #cccccc
+TEXT 50 244 "domain-specific languages, and creative tooling." 11 1 #cccccc
+TEXT 50 262 "Building bridges between human intuition and machines." 11 1 #cccccc
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 50 302 "$ cat experience.log" 10 1 #555555
+LINE 50 318 790 318 1 #1a1a1a 1
+
+RECT 50 332 6 70 0 #00ff41
+TEXT 70 336 "Senior Software Engineer" 13 1 #ffffff bold
+TEXT 70 356 "Spatial Labs — London" 11 1 #555555
+TEXT 680 336 "[2023-present]" 9 1 #00aa2a
+TEXT 70 380 ">> Designed VOXI DSL for 3D voxel scene description" 10 1 #aaaaaa
+TEXT 70 396 ">> Built real-time renderer with depth/shading modes" 10 1 #aaaaaa
+
+RECT 50 426 6 70 0 #00ff41
+TEXT 70 430 "Full Stack Developer" 13 1 #ffffff bold
+TEXT 70 450 "TechFlow — Remote" 11 1 #555555
+TEXT 680 430 "[2021-2023]" 9 1 #00aa2a
+TEXT 70 474 ">> Microservice arch serving 2M req/day" 10 1 #aaaaaa
+TEXT 70 490 ">> Frontend rebuild in Next.js, bundle -60%" 10 1 #aaaaaa
+
+RECT 50 520 6 52 0 #00ff41
+TEXT 70 524 "Junior Developer" 13 1 #ffffff bold
+TEXT 70 544 "DataPulse — Warsaw" 11 1 #555555
+TEXT 680 524 "[2020-2021]" 9 1 #00aa2a
+TEXT 70 568 ">> ETL pipelines processing 500GB/day" 10 1 #aaaaaa
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 50 612 "$ ls ~/projects/" 10 1 #555555
+LINE 50 628 790 628 1 #1a1a1a 1
+
+RECT 50 644 370 110 0 #111111 4
+TEXT 64 650 "drwxr-xr-x" 8 1 #555555
+TEXT 150 650 "voxi/" 10 1 #00ff41 bold
+TEXT 64 670 "Spatial Reasoning DSL for 3D" 9 1 #aaaaaa
+TEXT 64 686 "scenes in ~100 tokens. Used by" 9 1 #aaaaaa
+TEXT 64 702 "LLMs for spatial reasoning." 9 1 #aaaaaa
+RECT 64 724 50 16 1 #1a3a1a 8
+TEXT 70 727 "Python" 8 2 #00ff41
+RECT 120 724 30 16 1 #1a3a1a 8
+TEXT 126 727 "JS" 8 2 #00ff41
+RECT 156 724 50 16 1 #1a3a1a 8
+TEXT 162 727 "WebGL" 8 2 #00ff41
+
+RECT 440 644 370 110 0 #111111 4
+TEXT 454 650 "drwxr-xr-x" 8 1 #555555
+TEXT 540 650 "brain-converter/" 10 1 #00ff41 bold
+TEXT 454 670 "Natural language to structured" 9 1 #aaaaaa
+TEXT 454 686 "3D voxel scenes. LLM reasoning" 9 1 #aaaaaa
+TEXT 454 702 "+ DSL output pipeline." 9 1 #aaaaaa
+RECT 454 724 58 16 1 #1a3a1a 8
+TEXT 460 727 "FastAPI" 8 2 #00ff41
+RECT 518 724 64 16 1 #1a3a1a 8
+TEXT 524 727 "Claude AI" 8 2 #00ff41
+
+RECT 50 770 370 110 0 #111111 4
+TEXT 64 776 "drwxr-xr-x" 8 1 #555555
+TEXT 150 776 "video-depth/" 10 1 #00ff41 bold
+TEXT 64 796 "Spatial structure from video" 9 1 #aaaaaa
+TEXT 64 812 "using monocular depth + LLM" 9 1 #aaaaaa
+TEXT 64 828 "temporal reasoning." 9 1 #aaaaaa
+RECT 64 850 56 16 1 #1a3a1a 8
+TEXT 70 853 "PyTorch" 8 2 #00ff41
+RECT 126 850 68 16 1 #1a3a1a 8
+TEXT 132 853 "DepthPro" 8 2 #00ff41
+
+RECT 440 770 370 110 0 #111111 4
+TEXT 454 776 "drwxr-xr-x" 8 1 #555555
+TEXT 540 776 "sketch-lang/" 10 1 #00ff41 bold
+TEXT 454 796 "Minimal 2D vector drawing" 9 1 #aaaaaa
+TEXT 454 812 "language with vision matrix" 9 1 #aaaaaa
+TEXT 454 828 "for LLM consumption." 9 1 #aaaaaa
+RECT 454 850 68 16 1 #1a3a1a 8
+TEXT 460 853 "JavaScript" 8 2 #00ff41
+RECT 528 850 56 16 1 #1a3a1a 8
+TEXT 534 853 "Canvas" 8 2 #00ff41
+
+-- ── Skills ───────────────────────────────────────────────
+TEXT 50 908 "$ echo $SKILLS" 10 1 #555555
+LINE 50 924 790 924 1 #1a1a1a 1
+TEXT 50 944 "lang=" 9 1 #555555
+TEXT 100 944 "Python JavaScript TypeScript Go SQL Rust" 10 1 #00ff41
+TEXT 50 964 "frame=" 9 1 #555555
+TEXT 106 964 "React Next.js FastAPI Flask Node Django" 10 1 #00ff41
+TEXT 50 984 "infra=" 9 1 #555555
+TEXT 106 984 "Docker Kubernetes AWS PostgreSQL Redis Firebase" 10 1 #00ff41
+
+-- ── Education ────────────────────────────────────────────
+TEXT 50 1024 "$ cat education.log" 10 1 #555555
+LINE 50 1040 790 1040 1 #1a1a1a 1
+TEXT 50 1060 "MSc Computer Science" 11 1 #ffffff bold
+TEXT 300 1060 "UCL" 10 1 #555555
+TEXT 680 1060 "[2018-2020]" 9 1 #00aa2a
+TEXT 50 1082 "BSc Mathematics" 11 1 #ffffff bold
+TEXT 300 1082 "Univ. of Warsaw" 10 1 #555555
+TEXT 680 1082 "[2014-2018]" 9 1 #00aa2a
+
+-- ── Footer ───────────────────────────────────────────────
+TEXT 300 1106 "// generated with voxi dsl //" 8 1 #222222

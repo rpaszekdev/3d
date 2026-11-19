@@ -1,0 +1,22 @@
+V 24 32 24
+
+-- hanging string top
+C 12 28 12 1 4 9
+
+-- top cap
+C 12 24 12 3 3 a
+
+-- main lantern body
+E 12 15 12 6 9 6 6
+
+-- inner warm glow
+S 12 15 12 3 7
+
+-- decorative middle band
+C 12 15 12 7 2 5
+
+-- bottom cap
+C 12 5 12 3 3 a
+
+-- bottom tassel
+C 12 2 12 1 4 9

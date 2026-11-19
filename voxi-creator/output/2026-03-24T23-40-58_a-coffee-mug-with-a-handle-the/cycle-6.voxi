@@ -1,0 +1,1 @@
+Key improvements needed: (1) Handle bars must be 3–4 voxels deep in Z to read as a 3D loop. (2) The mug interior must be hollow at the top — use a ring of wall voxels only, not a filled cylinder. (3) Handle bottom bar must align with Y=1 (mug base level), not float below ground.

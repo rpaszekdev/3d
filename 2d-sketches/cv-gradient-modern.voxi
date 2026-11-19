@@ -1,0 +1,120 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 3: Gradient Modern — Bold header, card-based
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #f8fafc
+
+-- ── Hero Header ──────────────────────────────────────────
+RECT 0 0 840 180 0 #4f46e5
+RECT 0 160 840 40 0 #6366f1
+RECT 0 180 840 20 0 #818cf8
+
+-- Name block
+TEXT 60 50 "Robert Paszek" 32 2 #ffffff bold
+TEXT 60 90 "Software Engineer" 16 2 #c7d2fe
+TEXT 60 120 "Spatial Computing  •  DSL Design  •  Creative Tooling" 11 2 #a5b4fc
+
+-- Contact right
+RECT 560 50 240 90 1 #4338ca 8
+TEXT 578 62 "robert@example.com" 10 2 #e0e7ff
+TEXT 578 82 "github.com/robertpaszek" 10 2 #e0e7ff
+TEXT 578 102 "linkedin.com/in/rpaszek" 10 2 #e0e7ff
+TEXT 578 122 "London, United Kingdom" 10 2 #e0e7ff
+
+-- ── Profile Card ─────────────────────────────────────────
+RECT 40 220 760 70 0 #ffffff 12
+TEXT 60 234 "Software engineer focused on spatial computing, domain-specific languages, and" 10 1 #475569
+TEXT 60 252 "creative tooling. Building the bridge between human spatial intuition and machine" 10 1 #475569
+TEXT 60 270 "understanding through compact, token-efficient DSLs." 10 1 #475569
+
+-- ── Experience Card ──────────────────────────────────────
+RECT 40 310 760 240 0 #ffffff 12
+RECT 40 310 760 36 1 #4f46e5 12
+TEXT 60 320 "Experience" 14 2 #ffffff bold
+
+TEXT 60 366 "Senior Software Engineer" 13 1 #1e293b bold
+TEXT 60 386 "Spatial Labs — London" 10 1 #94a3b8
+TEXT 640 366 "2023 — Present" 10 1 #a5b4fc bold
+TEXT 60 406 "Designed VOXI DSL for 3D voxel scene description" 10 1 #475569
+TEXT 60 422 "Built real-time renderer. Reduced LLM tokens by 85%" 10 1 #475569
+
+LINE 60 442 780 442 1 #e2e8f0 1
+
+TEXT 60 460 "Full Stack Developer" 13 1 #1e293b bold
+TEXT 60 480 "TechFlow — Remote" 10 1 #94a3b8
+TEXT 640 460 "2021 — 2023" 10 1 #a5b4fc bold
+TEXT 60 500 "Microservice architecture, 2M req/day. Next.js rebuild, -60% bundle" 10 1 #475569
+
+LINE 60 520 780 520 1 #e2e8f0 1
+
+TEXT 60 534 "Junior Developer" 13 1 #1e293b bold
+TEXT 60 554 "DataPulse — Warsaw" 10 1 #94a3b8
+TEXT 640 534 "2020 — 2021" 10 1 #a5b4fc bold
+
+-- ── Projects Grid ────────────────────────────────────────
+RECT 40 570 760 36 0 #4f46e5 12
+TEXT 60 580 "Projects" 14 1 #ffffff bold
+
+RECT 40 606 370 120 0 #ffffff 12
+RECT 46 614 6 40 1 #4f46e5
+TEXT 62 618 "VOXI" 12 2 #1e293b bold
+TEXT 62 638 "Spatial Reasoning DSL" 9 2 #94a3b8
+TEXT 46 664 "3D scenes in ~100 tokens." 9 1 #475569
+TEXT 46 680 "Used by LLMs for reasoning." 9 1 #475569
+RECT 46 700 48 16 1 #ede9fe 8
+TEXT 52 703 "Python" 8 2 #6d28d9
+RECT 100 700 30 16 1 #ede9fe 8
+TEXT 106 703 "JS" 8 2 #6d28d9
+
+RECT 430 606 370 120 0 #ffffff 12
+RECT 436 614 6 40 1 #4f46e5
+TEXT 452 618 "Brain Converter" 12 2 #1e293b bold
+TEXT 452 638 "NL to 3D Scenes" 9 2 #94a3b8
+TEXT 436 664 "Translates descriptions into" 9 1 #475569
+TEXT 436 680 "structured voxel scenes." 9 1 #475569
+RECT 436 700 58 16 1 #ede9fe 8
+TEXT 442 703 "FastAPI" 8 2 #6d28d9
+RECT 500 700 60 16 1 #ede9fe 8
+TEXT 506 703 "Claude" 8 2 #6d28d9
+
+RECT 40 740 370 120 0 #ffffff 12
+RECT 46 748 6 40 1 #4f46e5
+TEXT 62 752 "Video Depth" 12 2 #1e293b bold
+TEXT 62 772 "Spatial from Video" 9 2 #94a3b8
+TEXT 46 798 "Monocular depth + temporal" 9 1 #475569
+TEXT 46 814 "LLM reasoning pipeline." 9 1 #475569
+RECT 46 834 56 16 1 #ede9fe 8
+TEXT 52 837 "PyTorch" 8 2 #6d28d9
+
+RECT 430 740 370 120 0 #ffffff 12
+RECT 436 748 6 40 1 #4f46e5
+TEXT 452 752 "Sketch-Lang" 12 2 #1e293b bold
+TEXT 452 772 "2D Vector DSL" 9 2 #94a3b8
+TEXT 436 798 "Vision matrix output for" 9 1 #475569
+TEXT 436 814 "LLM visual reasoning." 9 1 #475569
+RECT 436 834 68 16 1 #ede9fe 8
+TEXT 442 837 "JavaScript" 8 2 #6d28d9
+
+-- ── Skills & Education Row ───────────────────────────────
+RECT 40 880 370 120 0 #ffffff 12
+RECT 40 880 370 36 1 #4f46e5 12
+TEXT 60 890 "Skills" 14 2 #ffffff bold
+TEXT 56 930 "Python  JS  TS  Go  SQL  Rust" 9 1 #475569
+TEXT 56 950 "React  Next.js  FastAPI  Django" 9 1 #475569
+TEXT 56 970 "Docker  K8s  AWS  PostgreSQL" 9 1 #475569
+
+RECT 430 880 370 120 0 #ffffff 12
+RECT 430 880 370 36 1 #4f46e5 12
+TEXT 450 890 "Education" 14 2 #ffffff bold
+TEXT 446 930 "MSc Computer Science" 10 1 #1e293b bold
+TEXT 446 948 "UCL — 2018-2020" 9 1 #94a3b8
+TEXT 446 972 "BSc Mathematics" 10 1 #1e293b bold
+TEXT 446 990 "Univ. of Warsaw — 2014-2018" 9 1 #94a3b8
+
+-- ── Certifications ───────────────────────────────────────
+RECT 40 1020 760 70 0 #ffffff 12
+RECT 40 1020 760 36 1 #4f46e5 12
+TEXT 60 1030 "Certifications" 14 2 #ffffff bold
+TEXT 60 1068 "AWS Solutions Architect" 10 1 #475569
+TEXT 310 1068 "GCP Data Engineer" 10 1 #475569
+TEXT 530 1068 "CKA Kubernetes" 10 1 #475569

@@ -1,0 +1,33 @@
+V 32 24 16
+
+-- body
+C 16 2 8 1 10 a
+
+-- head
+S 16 13 8 2 a
+
+-- left antenna
+B 14 14 8 1 4 1 0
+S 13 18 8 1 0
+
+-- right antenna
+B 17 14 8 1 4 1 0
+S 19 18 8 1 0
+
+-- upper left wing
+B 3 7 7 12 5 2 6
+
+-- upper right wing
+B 17 7 7 12 5 2 6
+
+-- lower left wing
+B 6 2 7 9 5 2 7
+
+-- lower right wing
+B 17 2 7 9 5 2 7
+
+-- wing spots
+S 7 10 8 2 0
+S 25 10 8 2 0
+S 9 4 8 2 0
+S 22 4 8 2 0

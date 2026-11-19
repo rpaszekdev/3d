@@ -1,0 +1,127 @@
+CANVAS 595 842 #ffffff
+
+-- ═══════════════════════════════════════════════════
+-- LEFT SIDEBAR  (x 0-235, dark background)
+-- ═══════════════════════════════════════════════════
+
+RECT 0 0 235 842 0 #111111
+
+-- Photo fills sidebar top
+PHOTO 17 12 200 1 #222222 0
+
+-- Contact info
+CONTACT 18 232 1 #aaaaaa location "Canton, Georgia 30114"
+CONTACT 18 254 1 #aaaaaa phone "555-555-5555"
+CONTACT 18 276 1 #aaaaaa email "example@example.com"
+
+DIVIDER 15 296 220 296 1 #333333
+
+-- Education
+TEXT 15 312 "EDUCATION" 11 1 #ffffff bold
+
+TEXT 15 332 "Bachelor of Science  |" 9 1 #dddddd bold
+TEXT 15 348 "Mathematics" 9 1 #dddddd bold
+TEXT 15 364 "Georgia College And State" 9 1 #dddddd bold
+TEXT 15 380 "University Milledgeville GA" 9 1 #dddddd bold
+
+DIVIDER 15 398 220 398 1 #333333
+
+-- Certifications
+TEXT 15 414 "CERTIFICATIONS" 11 1 #ffffff bold
+
+TEXT 15 432 "•  Valid Georgia's Teaching" 8.5 1 #cccccc
+TEXT 22 448 "License - Georgia" 8.5 1 #cccccc
+TEXT 22 464 "Professional Standards" 8.5 1 #cccccc
+TEXT 22 480 "Commission (GaPSC)" 8.5 1 #cccccc
+
+DIVIDER 15 498 220 498 1 #333333
+
+-- Skills
+TEXT 15 514 "SKILLS" 11 1 #ffffff bold
+
+TEXT 15 532 "•  Group and individual" 8.5 1 #cccccc
+TEXT 22 548 "instruction" 8.5 1 #cccccc
+TEXT 15 564 "•  High school math education" 8.5 1 #cccccc
+TEXT 15 580 "•  Progress reporting" 8.5 1 #cccccc
+TEXT 15 596 "•  Communication and" 8.5 1 #cccccc
+TEXT 22 612 "interpersonal skills" 8.5 1 #cccccc
+TEXT 15 628 "•  Critical-thinking" 8.5 1 #cccccc
+TEXT 15 644 "•  Physical stamina" 8.5 1 #cccccc
+TEXT 15 660 "•  Classroom management" 8.5 1 #cccccc
+TEXT 15 676 "•  Conflict resolution" 8.5 1 #cccccc
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN  (x 250-582)
+-- ═══════════════════════════════════════════════════
+
+-- Name
+TEXT 250 38 "Terrance  Ryan" 32 1 #9a8870
+
+DIVIDER 250 90 582 90 1 #c0c0c0
+
+-- Professional Summary (section band + content)
+RECT 250 98 332 20 0 #e8e8e8
+TEXT 254 112 "PROFESSIONAL SUMMARY" 9 1 #333333 bold
+
+TEXT 250 132 "Skilled high school math teacher with innovative and engaging" 8.5 1 #222222 bold
+TEXT 250 148 "teaching style demonstrated over seven years of academic" 8.5 1 #222222 bold
+TEXT 250 164 "experience. Caring and hardworking professional with exceptional" 8.5 1 #222222 bold
+TEXT 250 180 "work ethic and commitment to cultivating productive learning" 8.5 1 #222222 bold
+TEXT 250 196 "environments to drive student progress and comprehension." 8.5 1 #222222 bold
+
+DIVIDER 250 214 582 214 1 #c0c0c0
+
+-- Work History (section band)
+RECT 250 220 332 20 0 #e8e8e8
+TEXT 254 234 "WORK HISTORY" 9 1 #333333 bold
+
+-- Job 1
+TEXT 250 254 "September 2011  - Current" 8.5 1 #666666
+TEXT 250 270 "High School Math Teacher   Cherokee High School   | Canton, GA" 8.5 1 #222222 bold
+
+TEXT 258 288 "•  Provide meaningful math instruction to improve the math" 8.5 1 #222222 bold
+TEXT 266 304 "skills of children." 8.5 1 #222222 bold
+TEXT 258 320 "•  Assess submitted class assignments, determining grades and" 8.5 1 #222222 bold
+TEXT 266 336 "review work with struggling learners to boost success chance." 8.5 1 #222222 bold
+TEXT 258 352 "•  Develop thematic units that incorporated real-world examples" 8.5 1 #222222 bold
+TEXT 266 368 "to introduce new materials, consolidate essential concepts" 8.5 1 #222222 bold
+TEXT 266 384 "and encourage 90 pupil learning." 8.5 1 #222222 bold
+
+-- Job 2
+TEXT 250 404 "September 2009  - June 2011" 8.5 1 #666666
+TEXT 250 420 "Math Teaching Assistant   Sequoyah High School   | Canton, GA" 8.5 1 #222222 bold
+
+TEXT 258 438 "•  Took daily attendance, notifying classroom teacher immediately" 8.5 1 #222222 bold
+TEXT 266 454 "of any student absences." 8.5 1 #222222 bold
+TEXT 258 470 "•  Observed 30+ students' performance and recorded relevant data" 8.5 1 #222222 bold
+TEXT 266 486 "to assess progress." 8.5 1 #222222 bold
+TEXT 258 502 "•  Enhanced learning plans and quantified student progress using" 8.5 1 #222222 bold
+TEXT 266 518 "quizzes and projects." 8.5 1 #222222 bold
+
+-- Job 3
+TEXT 250 538 "September 2008  - June 2009" 8.5 1 #666666
+TEXT 250 554 "Student Teacher   Sequoyah High School   | Canton, GA" 8.5 1 #222222 bold
+
+TEXT 258 572 "•  Collaborated with three teachers to devise and implement" 8.5 1 #222222 bold
+TEXT 266 588 "coordinated educational strategies and student support networks." 8.5 1 #222222 bold
+TEXT 258 604 "•  Prepared and presented daily lesson plans." 8.5 1 #222222 bold
+TEXT 258 620 "•  Get acquainted with the classroom mentor teacher." 8.5 1 #222222 bold
+
+DIVIDER 250 638 582 638 1 #c0c0c0
+
+-- Languages (section band)
+RECT 250 644 332 20 0 #e8e8e8
+TEXT 254 658 "LANGUAGES" 9 1 #333333 bold
+
+TEXT 250 678 "English :  First Language" 8.5 1 #333333 bold
+
+-- Spanish (left half) and Italian (right half)
+TEXT 250 698 "Spanish :" 8.5 1 #333333 bold
+SKILL-BAR 316 711 125 5 1 65 #888888 #dddddd
+TEXT 444 698 "B2" 8.5 1 #666666
+TEXT 250 724 "Upper Intermediate" 8 1 #666666
+
+TEXT 462 698 "Italian :" 8.5 1 #333333 bold
+SKILL-BAR 522 711 52 5 1 25 #888888 #dddddd
+TEXT 577 698 "A2" 8.5 1 #666666
+TEXT 462 724 "Elementary" 8 1 #666666

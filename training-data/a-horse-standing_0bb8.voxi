@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- body
+E 16 12 16 7 4 9 d
+
+-- lower neck
+B 13 11 8 5 5 4 d
+
+-- upper neck
+B 13 15 6 4 5 3 d
+
+-- head
+B 12 19 3 6 5 5 d
+
+-- snout
+B 13 17 1 4 3 3 6
+
+-- nostril
+B 14 17 0 1 1 1 0
+B 17 17 0 1 1 1 0
+
+-- eye
+B 12 21 3 1 1 1 0
+
+-- ear left
+B 13 23 3 1 3 1 d
+-- ear right
+B 17 23 3 1 3 1 d
+
+-- mane
+B 14 21 5 2 4 3 2
+
+-- front left leg
+C 12 5 9 1 9 d
+-- front right leg
+C 19 5 9 1 9 d
+-- back left leg
+C 12 5 23 1 9 d
+-- back right leg
+C 19 5 23 1 9 d
+
+-- hooves
+B 11 0 8 3 2 3 0
+B 18 0 8 3 2 3 0
+B 11 0 22 3 2 3 0
+B 18 0 22 3 2 3 0
+
+-- tail
+B 15 13 25 3 6 3 8

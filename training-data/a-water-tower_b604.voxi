@@ -1,0 +1,33 @@
+V 32 48 32
+
+-- support legs
+B 11 0 11 2 22 2 9
+B 19 0 11 2 22 2 9
+B 11 0 19 2 22 2 9
+B 19 0 19 2 22 2 9
+
+-- diagonal cross braces lower
+B 11 5 11 10 2 2 9
+B 11 5 19 10 2 2 9
+
+-- diagonal cross braces upper
+B 11 13 11 10 2 2 9
+B 11 13 19 10 2 2 9
+
+-- ring brace mid-height
+B 9 11 9 14 2 14 9
+
+-- catwalk platform at base of tank
+B 8 21 8 16 2 16 9
+
+-- main water tank body
+C 16 30 16 10 16 3
+
+-- tank dome roof
+S 16 40 16 10 9
+
+-- central vent pipe
+C 16 45 16 2 6 9
+
+-- access ladder side
+B 14 0 9 2 22 1 9

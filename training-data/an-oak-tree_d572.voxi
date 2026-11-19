@@ -1,0 +1,39 @@
+V 32 40 32
+
+-- trunk
+C 16 0 16 2 10 a
+
+-- lower trunk detail
+B 14 0 14 4 8 4 a
+
+-- main branches
+B 10 7 15 6 2 2 a
+B 16 7 15 6 2 2 a
+B 13 8 10 2 2 6 a
+B 13 8 16 2 2 6 a
+
+-- inner canopy core
+S 16 18 16 7 c
+
+-- main canopy mass
+S 16 20 16 9 2
+
+-- outer canopy lobes
+S 10 17 16 5 2
+S 22 17 16 5 2
+S 16 17 10 5 2
+S 16 17 22 5 2
+S 11 17 11 4 2
+S 21 17 11 4 2
+S 11 17 21 4 2
+S 21 17 21 4 2
+
+-- upper canopy
+S 16 25 16 5 2
+S 12 23 13 3 2
+S 20 23 13 3 2
+S 12 23 19 3 2
+S 20 23 19 3 2
+
+-- top highlight (lighter green)
+S 16 28 16 3 2

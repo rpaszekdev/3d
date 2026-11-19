@@ -1,0 +1,26 @@
+V 32 28 20
+
+-- TV stand body
+B 4 0 4 24 6 12 a
+-- Stand top surface
+B 4 5 4 24 1 12 d
+-- Stand legs
+B 4 0 4 3 5 3 7
+B 25 0 4 3 5 3 7
+B 4 0 13 3 5 3 7
+B 25 0 13 3 5 3 7
+
+-- TV neck connector
+B 14 6 8 4 2 2 9
+
+-- TV outer frame
+B 5 8 7 22 16 2 0
+-- TV screen
+B 7 9 7 18 13 1 3
+-- Screen glow tint
+B 8 10 7 16 11 1 4
+
+-- TV brand logo dot
+B 15 8 7 2 1 1 9
+-- Power indicator
+B 25 9 7 1 1 1 2

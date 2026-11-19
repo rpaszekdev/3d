@@ -1,0 +1,6 @@
+{
+  "name": "voxi-home",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Semantic interior design DSL with spatial reasoning"
+}

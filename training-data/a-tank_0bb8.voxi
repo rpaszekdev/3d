@@ -1,0 +1,36 @@
+V 32 32 32
+
+-- left track
+B 4 0 4 4 6 24 0
+-- right track
+B 24 0 4 4 6 24 0
+-- track rollers (gray band)
+B 5 1 5 2 4 22 9
+B 25 1 5 2 4 22 9
+
+-- hull body
+B 8 0 5 16 6 22 c
+-- hull top deck
+B 7 6 5 18 2 22 c
+-- front glacis slope
+B 8 1 3 16 5 3 c
+
+-- turret body
+B 10 8 9 12 6 12 c
+-- turret top
+B 11 14 10 10 2 10 c
+
+-- gun barrel
+B 14 9 0 4 3 10 9
+-- barrel tip detail
+B 15 10 0 2 1 2 0
+
+-- commander hatch
+C 16 16 13 2 2 9
+-- hatch cover
+B 15 17 12 4 1 4 9
+
+-- exhaust port
+B 22 7 23 3 3 2 7
+-- rear plate detail
+B 8 1 25 16 5 2 c

@@ -1,0 +1,32 @@
+`★ Insight ─────────────────────────────────────`
+A pretzel's topology is tricky: the dough forms one continuous path that crosses itself, creating two holes. The crossing is represented here as two overlapping horizontal bars at y=9, while the inner walls (x=10, x=14) separate the left and right holes from each other.
+`─────────────────────────────────────────────────`
+
+V 26 22 5
+
+-- outer arch top
+B 4 17 1 18 2 3 a
+-- outer left and right sides
+B 3 10 1 2 8 3 a
+B 21 10 1 2 8 3 a
+-- left inner loop
+B 4 14 1 7 2 3 a
+B 10 10 1 2 5 3 a
+-- right inner loop
+B 15 14 1 7 2 3 a
+B 14 10 1 2 5 3 a
+-- crossing arms (overlap at x=12-14 represents the knot)
+B 4 9 1 10 2 3 a
+B 12 9 1 10 2 3 a
+-- bottom prongs
+B 8 2 1 2 8 3 a
+B 16 2 1 2 8 3 a
+-- salt crystals
+S 9 18 2 1 8
+S 17 18 2 1 8
+S 6 15 2 1 8
+S 20 15 2 1 8
+
+`★ Insight ─────────────────────────────────────`
+The two crossing bars (B 4 9... and B 12 9...) intentionally overlap at x=12–14 — this voxel overlap encodes the pretzel's self-crossing knot. In a richer renderer, the z-offset of the depth dimension (z=1 vs z=3) could be used to show one arm going over the other.
+`─────────────────────────────────────────────────`

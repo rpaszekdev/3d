@@ -1,0 +1,36 @@
+V 32 20 32
+
+-- wheels
+B 5 0 5 4 3 5 0
+B 23 0 5 4 3 5 0
+B 5 0 20 4 3 5 0
+B 23 0 20 4 3 5 0
+
+-- front cab (tan)
+B 5 3 4 22 5 7 d
+
+-- windshield
+B 8 5 4 8 3 2 3
+
+-- main body box (white)
+B 5 3 11 22 8 16 8
+
+-- siren light bar (red)
+B 8 11 12 16 2 10 1
+
+-- red stripe on sides
+B 5 5 11 1 2 16 1
+B 26 5 11 1 2 16 1
+
+-- red cross right side (vertical)
+B 26 4 17 1 6 2 1
+-- red cross right side (horizontal)
+B 26 6 15 1 2 6 1
+
+-- headlights (yellow)
+B 6 4 4 4 2 1 6
+B 22 4 4 4 2 1 6
+
+-- rear reflectors (red)
+B 6 4 26 4 2 1 1
+B 22 4 26 4 2 1 1

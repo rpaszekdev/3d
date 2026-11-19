@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- base foundation
+B 11 0 11 10 3 10 9
+
+-- main tower body
+B 13 3 13 6 12 6 7
+
+-- tower walls upper section
+B 12 15 12 8 6 8 8
+
+-- corner battlements
+B 12 21 12 2 3 2 9
+B 18 21 12 2 3 2 9
+B 12 21 18 2 3 2 9
+B 18 21 18 2 3 2 9
+
+-- battlement gaps (dark)
+B 14 21 12 4 2 1 0
+B 12 21 14 1 2 4 0
+B 19 21 14 1 2 4 0
+B 14 21 19 4 2 1 0
+
+-- floor platform inside top
+B 12 21 12 8 1 8 a
+
+-- roof point
+B 14 24 14 4 1 4 e
+B 15 25 15 2 1 2 e
+B 15 26 15 1 2 1 1
+
+-- door entrance
+B 14 3 10 4 5 1 0
+
+-- window slots
+B 15 8 12 2 2 1 0
+B 15 13 12 2 2 1 0
+B 12 10 15 1 2 2 0
+B 19 10 15 1 2 2 0
+
+-- wooden ladder detail
+B 15 3 14 1 8 1 a
+B 16 3 14 1 8 1 a
+B 15 5 14 2 1 1 6
+B 15 8 14 2 1 1 6
+
+-- ground detail / moat edge
+B 9 0 9 14 1 14 c
+B 11 1 11 10 1 10 9

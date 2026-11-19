@@ -1,0 +1,39 @@
+V 32 32 16
+
+-- base platform
+B 2 0 4 28 2 8 a
+
+-- frame left post
+B 4 2 7 2 16 2 a
+-- frame right post
+B 26 2 7 2 16 2 a
+-- horizontal axle beam
+B 4 17 7 24 2 2 a
+
+-- MAIN WHEEL center (10,20,8) radius 8
+-- crossed spokes
+B 9 12 8 2 16 1 9
+B 2 19 8 16 2 1 9
+-- hub
+S 10 20 8 2 9
+-- rim (8 segments)
+S 10 28 8 2 7
+S 10 12 8 2 7
+S 18 20 8 2 7
+S 2 20 8 2 7
+S 16 26 8 1 7
+S 4 26 8 1 7
+S 16 14 8 1 7
+S 4 14 8 1 7
+
+-- FLYER upright maidens
+B 22 17 6 2 8 2 a
+-- whorl
+S 23 18 8 2 5
+-- spindle
+C 23 18 8 1 6 9
+
+-- TREADLE foot pedal
+B 8 2 4 14 2 5 6
+-- treadle connecting rod
+B 14 4 6 2 13 2 a

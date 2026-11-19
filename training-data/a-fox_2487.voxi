@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- body
+B 11 4 10 10 6 12 7
+
+-- belly
+B 12 4 11 8 2 10 8
+
+-- front legs
+B 12 0 11 3 4 3 0
+B 17 0 11 3 4 3 0
+
+-- back legs
+B 12 0 19 3 4 3 0
+B 17 0 19 3 4 3 0
+
+-- head
+B 12 7 5 8 7 6 7
+
+-- muzzle
+B 13 7 3 6 4 4 d
+
+-- nose
+S 16 9 2 1 0
+
+-- eyes
+B 13 12 5 2 2 1 0
+B 17 12 5 2 2 1 0
+
+-- cheek markings
+B 12 8 5 2 3 2 8
+B 18 8 5 2 3 2 8
+
+-- ear left
+B 12 14 5 3 5 2 7
+B 13 15 5 1 4 1 1
+
+-- ear right
+B 17 14 5 3 5 2 7
+B 18 15 5 1 4 1 1
+
+-- tail base
+E 16 7 24 4 4 5 7
+
+-- tail mid
+E 16 7 28 3 3 4 7
+
+-- tail tip
+S 16 7 31 3 8

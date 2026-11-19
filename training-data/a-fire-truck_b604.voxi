@@ -1,0 +1,53 @@
+V 32 24 32
+
+-- chassis / body
+B 4 2 6 24 6 14 1
+
+-- cab front
+B 4 8 6 10 6 8 e
+
+-- cab windows
+B 5 11 7 4 3 1 4
+B 11 11 7 4 3 1 4
+
+-- roof light bar
+B 6 14 8 6 2 6 6
+
+-- ladder on top
+B 8 16 9 16 1 2 9
+B 8 17 9 16 1 2 9
+B 10 16 9 1 2 2 9
+B 16 16 9 1 2 2 9
+B 22 16 9 1 2 2 9
+
+-- hose compartments (side panels)
+B 4 4 6 3 3 2 7
+B 4 4 18 3 3 2 7
+B 24 4 6 3 3 2 7
+B 24 4 18 3 3 2 7
+
+-- front bumper
+B 3 2 5 26 2 2 9
+
+-- wheels (4 corners)
+C 7 2 6 3 2 1 0
+C 7 2 19 3 2 1 0
+C 24 2 6 3 2 1 0
+C 24 2 19 3 2 1 0
+
+-- wheel hubs
+S 7 2 6 1 8
+S 7 2 19 1 8
+S 24 2 6 1 8
+S 24 2 19 1 8
+
+-- siren on cab roof
+S 9 16 11 2 6
+S 14 16 11 2 6
+
+-- headlights
+B 4 9 5 2 2 1 6
+B 12 9 5 2 2 1 6
+
+-- exhaust pipe
+C 4 10 8 1 5 9

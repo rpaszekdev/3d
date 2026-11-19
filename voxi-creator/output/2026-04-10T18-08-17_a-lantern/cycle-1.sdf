@@ -1,0 +1,57 @@
+# Lantern
+
+# base foot plate
+cylinder 0 0.04 0 0.28 0.04
+
+# decorative foot ring
+torus 0 0.09 0 0.24 0.03
+
+# lower collar band
+cylinder 0 0.14 0 0.21 0.05
+
+# body frame — four corner posts via box minus windows
+box 0 0.65 0 0.2 0.46 0.2
+
+# front and back window openings
+subtract
+box 0 0.65 0 0.13 0.38 0.3
+
+# left and right window openings
+subtract
+box 0 0.65 0 0.3 0.38 0.13
+
+# candle body
+cylinder 0 0.32 0 0.04 0.2
+
+# candle flame
+sphere 0 0.51 0 0.045
+
+# upper collar ring
+torus 0 1.13 0 0.22 0.03
+
+# upper collar band
+cylinder 0 1.18 0 0.21 0.05
+
+# roof tier 1 — widest brim
+cylinder 0 1.26 0 0.28 0.05
+
+# roof tier 2
+cylinder 0 1.35 0 0.22 0.05
+
+# roof tier 3
+cylinder 0 1.43 0 0.16 0.05
+
+# roof tier 4
+cylinder 0 1.5 0 0.11 0.05
+
+# roof peak
+cylinder 0 1.56 0 0.07 0.04
+
+# finial ball
+sphere 0 1.63 0 0.06
+
+# handle stem connecting to ring
+cylinder 0 1.73 0 0.025 0.1
+
+# handle loop
+torus 0 1.86 0 0.09 0.025

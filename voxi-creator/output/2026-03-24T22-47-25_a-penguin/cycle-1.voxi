@@ -1,0 +1,1 @@
+Penguins have a distinctive black-and-white coloration with an orange beak. In VOXI, color `0` (black) is invisible against the dark background — so I'll use `f` (navy) for the dark body instead, with `8` (white) for the belly, `7` (orange) for the beak and feet, and `4` (cyan) for eye highlights.

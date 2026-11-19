@@ -1,0 +1,32 @@
+V 32 32 32
+
+-- main mosque building
+B 8 0 8 16 10 16 d
+
+-- drum under dome
+C 16 12 16 5 4 d
+
+-- central dome
+S 16 18 16 6 8
+
+-- four corner minarets
+C 8 11 8 1 22 d
+C 24 11 8 1 22 d
+C 8 11 24 1 22 d
+C 24 11 24 1 22 d
+
+-- minaret caps
+S 8 23 8 2 8
+S 24 23 8 2 8
+S 8 23 24 2 8
+S 24 23 24 2 8
+
+-- front entrance portal
+B 14 0 7 4 8 2 d
+
+-- entrance doorway shadow
+B 15 0 7 2 6 1 0
+
+-- arched windows
+B 10 3 8 2 3 1 8
+B 20 3 8 2 3 1 8

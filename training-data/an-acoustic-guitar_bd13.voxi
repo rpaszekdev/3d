@@ -1,0 +1,30 @@
+V 32 36 32
+
+-- lower bout (wide)
+E 16 8 16 7 7 3 7
+-- upper bout (narrower)
+E 16 17 16 5 5 3 7
+-- waist fill
+B 14 12 14 4 4 4 7
+-- sound hole
+S 16 13 13 2 0
+-- bridge
+B 14 7 13 4 2 3 a
+-- saddle
+B 14 7 12 4 1 1 8
+-- neck
+B 15 21 15 2 9 2 a
+-- fretboard
+B 15 21 14 2 9 1 c
+-- nut
+B 15 30 14 2 1 1 8
+-- headstock
+B 14 31 15 4 4 3 a
+-- tuning pegs left
+S 14 33 15 1 9
+S 14 34 15 1 9
+S 14 35 15 1 9
+-- tuning pegs right
+S 18 33 15 1 9
+S 18 34 15 1 9
+S 18 35 15 1 9

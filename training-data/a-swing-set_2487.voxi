@@ -1,0 +1,36 @@
+V 34 26 16
+
+-- Left side posts
+C 6 11 6 1 22 7
+C 6 11 10 1 22 7
+
+-- Right side posts
+C 28 11 6 1 22 7
+C 28 11 10 1 22 7
+
+-- Main top bar
+B 6 22 7 22 2 2 7
+
+-- Left cap brace
+B 5 21 5 2 3 6 a
+
+-- Right cap brace
+B 27 21 5 2 3 6 a
+
+-- Base footings
+B 3 0 4 6 2 8 9
+B 25 0 4 6 2 8 9
+
+-- Swing 1 chains
+B 11 10 8 1 12 1 9
+B 14 10 8 1 12 1 9
+
+-- Swing 1 seat
+B 10 9 7 5 1 3 2
+
+-- Swing 2 chains
+B 20 10 8 1 12 1 9
+B 23 10 8 1 12 1 9
+
+-- Swing 2 seat
+B 19 9 7 5 1 3 5

@@ -1,0 +1,35 @@
+V 32 32 32
+
+-- tripod legs (gray)
+C 11 0 11 1 10 9
+C 21 0 11 1 10 9
+C 16 0 21 1 10 9
+
+-- foot pads (brown)
+B 9 0 9 4 1 4 a
+B 19 0 9 4 1 4 a
+B 14 0 19 4 1 4 a
+
+-- mount head (gray)
+B 12 10 12 8 3 8 9
+
+-- telescope tube (blue)
+B 10 14 4 12 8 20 3
+
+-- front objective ring (gray)
+B 10 14 4 12 8 2 9
+
+-- front lens (white)
+S 16 18 5 5 8
+
+-- eyepiece housing (gray)
+B 13 16 22 6 4 4 9
+
+-- focusing knob (yellow)
+B 22 16 12 2 4 2 6
+
+-- finderscope tube (gray)
+B 14 22 8 4 2 10 9
+
+-- finderscope bracket
+B 14 21 12 4 2 2 9

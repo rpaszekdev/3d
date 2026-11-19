@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- main hull
+B 10 7 5 12 6 22 3
+
+-- nose cone
+E 16 9 3 4 4 5 4
+
+-- cockpit dome
+S 16 14 9 3 4
+
+-- cockpit glass tint
+S 16 14 9 2 c
+
+-- left wing
+B 2 7 10 8 2 10 9
+
+-- right wing
+B 22 7 10 8 2 10 9
+
+-- left wing stripe accent
+B 2 8 10 8 1 10 6
+
+-- right wing stripe accent
+B 22 8 10 8 1 10 6
+
+-- left engine nacelle
+C 11 9 28 2 5 9
+
+-- right engine nacelle
+C 21 9 28 2 5 9
+
+-- left exhaust glow
+S 11 9 32 2 1
+
+-- right exhaust glow
+S 21 9 32 2 1
+
+-- dorsal fin
+B 15 13 18 2 5 8 9
+
+-- fin top edge
+B 15 17 18 2 1 8 4
+
+-- underbelly panel
+B 11 6 8 10 1 16 f
+
+-- hull accent stripe
+B 10 12 5 12 1 22 4

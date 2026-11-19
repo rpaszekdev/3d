@@ -1,0 +1,28 @@
+V 32 32 32
+-- Body (white belly)
+S 16 10 16 7 8
+-- Body outer (black)
+E 16 10 16 8 10 8 f
+-- White belly patch
+E 16 10 14 5 8 3 8
+-- Head (black)
+S 16 22 16 5 f
+-- White face patch
+E 16 22 14 3 4 2 8
+-- Eyes
+P 14 24 12 1
+P 18 24 12 1
+-- Beak
+B 15 21 11 2 2 2 7
+-- Left wing
+B 6 8 13 3 10 4 f
+-- Right wing
+B 23 8 13 3 10 4 f
+-- Left foot
+B 10 0 14 4 2 5 7
+B 9 0 14 2 1 6 7
+-- Right foot
+B 18 0 14 4 2 5 7
+B 19 0 14 2 1 6 7
+-- Belly highlight
+E 16 8 14 3 5 2 8

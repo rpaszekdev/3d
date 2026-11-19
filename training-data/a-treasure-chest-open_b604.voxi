@@ -1,0 +1,54 @@
+V 24 24 24
+
+-- chest base
+B 4 0 6 16 8 12 a
+
+-- chest base front panel
+B 4 0 6 16 8 1 6
+
+-- chest base dark interior bottom
+B 5 1 7 14 1 10 0
+
+-- chest interior walls
+B 5 1 7 1 6 10 a
+B 18 1 7 1 6 10 a
+B 5 1 17 14 6 1 a
+
+-- gold coins inside
+S 9 3 12 2 6
+S 13 3 11 1 6
+S 11 4 13 1 6
+S 7 3 14 1 6
+
+-- gems inside
+B 8 3 10 2 2 2 1
+B 13 3 13 2 2 2 3
+B 10 3 9 2 2 2 5
+
+-- chest lid (open, tilted back)
+B 4 8 15 16 2 10 a
+
+-- lid front edge
+B 4 8 15 16 2 1 6
+
+-- lid inner face
+B 5 8 16 14 1 8 c
+
+-- metal bands on base horizontal
+B 4 3 6 16 1 12 9
+B 4 6 6 16 1 12 9
+
+-- metal bands on lid
+B 4 8 15 16 1 10 9
+
+-- front lock hasp
+B 10 3 5 4 3 2 6
+
+-- lock clasp center
+B 11 4 5 2 2 2 7
+
+-- corner reinforcements
+B 4 0 6 2 8 2 9
+B 18 0 6 2 8 2 9
+B 4 0 16 2 8 2 9
+B 18 0 16 2 8 2 9

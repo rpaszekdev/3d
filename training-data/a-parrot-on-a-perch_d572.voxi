@@ -1,0 +1,49 @@
+V 24 24 24
+
+-- stand base
+B 7 0 11 10 1 2 a
+
+-- stand post
+B 11 1 11 2 9 2 a
+
+-- perch bar
+B 4 10 10 16 1 3 7
+
+-- feet gripping perch
+B 10 11 9 4 1 5 0
+
+-- tail feathers
+B 9 10 13 6 5 2 3
+
+-- body
+E 12 15 10 3 4 2 2
+
+-- chest accent
+B 11 13 8 2 4 1 1
+
+-- left wing
+B 8 13 10 3 5 2 4
+
+-- right wing
+B 13 13 10 3 5 2 4
+
+-- wing tips left
+B 8 13 10 2 2 2 3
+
+-- wing tips right
+B 14 13 10 2 2 2 3
+
+-- head
+S 12 19 10 2 2
+
+-- eye
+S 11 20 9 1 0
+
+-- upper beak
+B 11 18 7 2 1 2 6
+
+-- lower beak
+B 12 17 8 1 1 1 d
+
+-- crest feathers
+B 11 21 10 2 2 1 6

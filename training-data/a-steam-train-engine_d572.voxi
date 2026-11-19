@@ -1,0 +1,54 @@
+V 36 28 26
+
+-- chassis frame
+B 11 0 4 14 3 20 9
+
+-- large drive wheels (left)
+S 10 4 8 4 0
+S 10 4 15 4 0
+
+-- large drive wheels (right)
+S 26 4 8 4 0
+S 26 4 15 4 0
+
+-- small leading wheels
+S 10 2 22 2 0
+S 26 2 22 2 0
+
+-- small tender wheels
+S 10 2 4 2 0
+S 26 2 4 2 0
+
+-- boiler
+E 18 10 13 5 5 9 1
+
+-- smokebox (front)
+B 13 5 20 10 10 5 e
+
+-- smokestack
+C 18 18 23 2 4 0
+
+-- steam dome
+S 18 16 13 3 8
+
+-- bell
+S 18 16 9 2 6
+
+-- firebox
+B 12 4 3 12 10 4 7
+
+-- cab walls
+B 12 4 2 12 11 3 a
+
+-- cab roof
+B 11 14 2 14 2 5 e
+
+-- cab windows
+B 14 9 2 3 4 0 3
+B 19 9 2 3 4 0 3
+
+-- headlight
+S 18 11 24 2 6
+
+-- cowcatcher
+B 13 0 22 10 3 3 9

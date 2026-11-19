@@ -1,0 +1,25 @@
+V 24 18 24
+
+-- snow base
+C 12 0 12 10 1 9
+
+-- main dome (upper hemisphere visible above ground)
+S 12 0 12 8 8
+
+-- block texture ring lower
+C 12 2 12 8 1 9
+
+-- block texture ring middle
+C 12 4 12 6 1 9
+
+-- block texture ring upper
+C 12 6 12 4 1 9
+
+-- entrance tunnel
+B 9 0 3 6 4 5 8
+
+-- entrance opening (dark interior)
+B 10 0 3 4 3 3 0
+
+-- vent at apex
+S 12 8 12 1 9

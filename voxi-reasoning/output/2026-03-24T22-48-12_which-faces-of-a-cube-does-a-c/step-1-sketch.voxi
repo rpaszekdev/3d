@@ -1,0 +1,36 @@
+V 18 12 18
+
+-- Gray floor at Y=0
+B 0 0 0 18 1 18 9
+
+-- ====== CUBE FACES ======
+-- Draw hidden faces first (gray/red), visible on top (green)
+
+-- Hidden: right face (+X outward, at X=9) - camera is on wrong side
+B 9 1 6 1 4 4 1
+-- Hidden: bottom face (-Y outward, at Y=1)
+B 6 1 6 4 1 4 1
+-- Hidden: back face (+Z outward, at Z=9)
+B 6 1 9 4 4 1 1
+
+-- Visible: left face (-X outward, at X=6) - camera is at X=0, sees this
+B 6 1 6 1 4 4 2
+-- Visible: top face (+Y outward, at Y=4) - camera is at Y=8, above
+B 6 4 6 4 1 4 2
+-- Visible: front face (-Z outward, at Z=6) - camera is at Z=0, sees this
+B 6 1 6 4 4 1 2
+
+-- ====== CAMERA ======
+-- Camera position at (0,8,0) - yellow
+B 0 8 0 1 1 1 6
+
+-- ====== VIEW RAY ======
+-- From (0,8,0) to (8,4,8): parametric (8t, 8-4t, 8t)
+-- t=0.25: (2,7,2)
+P 2 7 2 4
+-- t=0.50: (4,6,4)
+P 4 6 4 4
+-- t=0.75: (6,5,6) -- just above top-front-left corner of cube!
+P 6 5 6 4
+-- t=1.00: (8,4,8) -- target on top surface of cube
+P 8 4 8 5

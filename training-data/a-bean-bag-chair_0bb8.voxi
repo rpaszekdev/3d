@@ -1,0 +1,19 @@
+V 24 24 24
+
+-- main bean bag body
+E 12 9 12 9 9 9 d
+
+-- seat indentation (top)
+E 12 16 12 5 3 5 a
+
+-- fabric seam - vertical front
+B 11 2 3 2 14 1 8
+
+-- fabric seam - horizontal wrap
+B 4 9 3 16 2 1 8
+
+-- bottom ground patch
+E 12 1 12 7 1 7 a
+
+-- zipper pull
+B 12 4 3 1 2 1 9

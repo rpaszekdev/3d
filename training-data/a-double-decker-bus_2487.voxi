@@ -1,0 +1,47 @@
+V 44 24 18
+
+-- lower deck body
+B 2 4 3 40 8 12 1
+
+-- upper deck body
+B 2 12 3 40 8 12 1
+
+-- roof
+B 2 20 3 40 2 12 9
+
+-- front face lower (maroon trim)
+B 2 4 3 2 8 12 e
+
+-- front face upper
+B 2 12 3 2 8 12 e
+
+-- lower windshield
+B 2 5 4 1 6 10 8
+
+-- upper windshield
+B 2 13 4 1 6 10 8
+
+-- lower deck windows (side)
+B 7 6 3 4 3 1 8
+B 13 6 3 4 3 1 8
+B 19 6 3 4 3 1 8
+B 25 6 3 4 3 1 8
+B 31 6 3 4 3 1 8
+
+-- upper deck windows (side)
+B 7 14 3 4 3 1 8
+B 13 14 3 4 3 1 8
+B 19 14 3 4 3 1 8
+B 25 14 3 4 3 1 8
+B 31 14 3 4 3 1 8
+
+-- rear door
+B 38 4 3 3 6 1 7
+
+-- wheels (front axle)
+S 9 3 4 3 0
+S 9 3 14 3 0
+
+-- wheels (rear axle)
+S 34 3 4 3 0
+S 34 3 14 3 0

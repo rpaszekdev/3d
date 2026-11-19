@@ -1,0 +1,41 @@
+V 32 32 32
+
+-- Feet (orange)
+B 11 0 13 5 2 5 7
+B 17 0 13 5 2 5 7
+
+-- Legs (navy)
+B 12 2 14 4 4 4 f
+B 17 2 14 4 4 4 f
+
+-- Main body (navy ellipsoid)
+E 16 13 16 7 10 6 f
+
+-- White belly patch (front-facing ellipsoid)
+E 16 12 13 4 8 3 8
+
+-- Left wing (navy)
+B 8 9 14 3 11 5 f
+
+-- Right wing (navy)
+B 22 9 14 3 11 5 f
+
+-- Neck (navy)
+B 13 22 13 6 3 5 f
+
+-- Head (navy sphere)
+S 16 26 15 5 f
+
+-- White eye patches
+P 13 27 11 8
+P 19 27 11 8
+
+-- Pupils (gray)
+P 13 27 10 9
+P 19 27 10 9
+
+-- Upper beak (orange)
+B 14 25 10 4 2 4 7
+
+-- Lower beak (orange, slightly smaller)
+B 15 23 10 2 2 3 7

@@ -1,0 +1,30 @@
+V 32 48 32
+
+-- gondola/basket
+B 12 1 12 8 5 8 a
+
+-- burner ring
+B 14 6 14 4 2 4 9
+
+-- flame
+S 16 9 16 2 6
+
+-- ropes (4 corners to envelope)
+B 13 8 13 1 12 1 9
+B 18 8 13 1 12 1 9
+B 13 8 18 1 12 1 9
+B 18 8 18 1 12 1 9
+
+-- balloon envelope base
+E 16 28 16 11 15 11 1
+
+-- orange front and back panels
+B 10 13 5 12 30 4 7
+B 10 13 23 12 30 4 7
+
+-- yellow side panels
+B 5 13 10 4 30 12 6
+B 23 13 10 4 30 12 6
+
+-- white crown cap
+S 16 43 16 4 8

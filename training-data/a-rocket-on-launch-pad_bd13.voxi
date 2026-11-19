@@ -1,0 +1,38 @@
+V 32 48 32
+
+-- launch pad platform
+B 4 0 4 24 2 24 9
+
+-- pad support pillars
+B 7 2 14 2 10 4 9
+B 23 2 14 2 10 4 9
+B 14 2 7 4 10 2 9
+B 14 2 23 4 10 2 9
+
+-- rocket fins
+B 11 2 14 2 10 4 e
+B 20 2 14 2 10 4 e
+B 14 2 11 4 10 2 e
+B 14 2 20 4 10 2 e
+
+-- rocket body
+C 16 12 16 4 20 8
+
+-- stripes
+B 12 10 12 8 2 8 1
+
+-- cockpit window
+S 16 20 12 2 3
+
+-- nose cone
+E 16 24 16 3 6 3 1
+
+-- tip
+S 16 30 16 1 6
+
+-- exhaust flames
+S 16 2 16 4 6
+S 13 0 16 2 7
+S 19 0 16 2 7
+S 16 0 13 2 7
+S 16 0 19 2 7

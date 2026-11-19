@@ -1,0 +1,28 @@
+V 32 32 32
+
+-- hull exterior
+B 5 1 12 22 3 8 f
+
+-- keel
+B 13 0 13 6 2 6 0
+
+-- deck
+B 7 4 13 18 1 6 d
+
+-- cabin
+B 14 5 15 6 3 4 7
+
+-- mast
+C 16 4 15 1 18 a
+
+-- boom
+B 16 8 15 8 1 1 a
+
+-- mainsail
+B 17 5 14 1 14 6 8
+
+-- jib sail
+B 10 5 14 1 10 5 8
+
+-- pennant
+S 16 22 15 1 1

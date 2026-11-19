@@ -1,0 +1,31 @@
+Verification: Visual vs Auditory
+NIfTI: /Users/robertpaszek/nilearn_data/brainomics_localizer/brainomics_data/S01/tmaps_VisualProcessingVsAuditoryProcessing.nii.gz
+Shape: (53, 63, 46), Threshold: 3.0
+Clusters found: 11
+
+Cluster Details:
+--------------------------------------------------------------------------------
+  # Region                    MNI (x,y,z)            Size   Peak t
+--------------------------------------------------------------------------------
+  1 L-cerebellum              (-30,-78,-6)           1021     11.4
+  2 unknown                   (-27,-78,57)            967      9.7
+  3 unknown                   (-27,-15,84)            652    -12.1
+  4 unknown                   (-21,-15,-27)           529     -9.6
+  5 unknown                   (21,-51,57)              96      7.3
+  6 R-fusiform                (27,-51,-12)             64      5.9
+  7 unknown                   (12,0,-24)               54      5.7
+  8 unknown                   (0,9,75)                 43      5.5
+  9 unknown                   (18,0,81)                32      5.1
+ 10 R-premotor                (24,0,57)                31      5.2
+ 11 unknown                   (0,15,-12)               13      4.2
+
+Files generated:
+  1-ground-truth-ortho.png   — Standard nilearn stat map (reference)
+  2-glass-brain.png          — 3D glass brain projection
+  3-axial-slices.png         — Axial slice montage
+  4-cluster-verification.png — Each VOXI cluster at its MNI peak
+  5-atlas-overlay.png        — Clusters with atlas labels
+
+To verify: Compare cluster locations in plot 4 against the VOXI output.
+Each row shows the activation at the exact MNI coordinate the converter reported.
+If the crosshair sits on a bright activation blob, the conversion is correct.

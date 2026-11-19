@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SDF Renderer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0b; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  #status-msg {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #4caf50;
+    z-index: 10;
+  }
+  #status-msg.error { color: #f04242; }
+</style>
+</head>
+<body>
+<span id="status-msg">Ready</span>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ─────────────────────────────────────────────
+// SDF Parser
+// ─────────────────────────────────────────────
+function parseDSL(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  const operations = [];
+  let currentBool = 'union';
+
+  for (const line of lines) {
+    if (line === 'subtract') { currentBool = 'subtract'; continue; }
+    if (line === 'intersect') { currentBool = 'intersect'; continue; }
+
+    const parts = line.split(/\s+/);
+    const type = parts[0];
+    const transforms = { rx: 0, ry: 0, rz: 0 };
+
+    const numParts = [];
+    for (let i = 1; i < parts.length; i++) {
+      const m = parts[i].match(/^(rx|ry|rz):(-?\d+\.?\d*)$/);
+      if (m) {
+        transforms[m[1]] = parseFloat(m[2]) * Math.PI / 180;
+      } else {
+        numParts.push(parseFloat(parts[i]));
+      }
+    }
+
+    let op = null;
+    switch (type) {
+      case 'sphere':
+        if (numParts.length >= 4) {
+          op = { type: 'sphere', center: numParts.slice(0, 3), radius: numParts[3], transforms, bool: currentBool };
+        }
+        break;
+      case 'box':
+        if (numParts.length >= 6) {
+          op = { type: 'box', center: numParts.slice(0, 3), size: numParts.slice(3, 6), transforms, bool: currentBool };
+        } else if (numParts.length >= 4) {
+          const s = numParts[3];
+          op = { type: 'box', center: numParts.slice(0, 3), size: [s, s, s], transforms, bool: currentBool };
+        }
+        break;
+      case 'cylinder':
+        if (numParts.length >= 5) {
+          op = { type: 'cylinder', center: numParts.slice(0, 3), radius: numParts[3], height: numParts[4], transforms, bool: currentBool };
+        }
+        break;
+      case 'torus':
+        if (numParts.length >= 5) {
+          op = { type: 'torus', center: numParts.slice(0, 3), R: numParts[3], r: numParts[4], transforms, bool: currentBool };
+        }
+        break;
+      default:
+        throw new Error(`Unknown primitive: ${type}`);
+    }
+
+    if (op) {
+      operations.push(op);
+      if (currentBool !== 'union') currentBool = 'union';
+    }
+  }
+
+  return operations;
+}
+
+// ─────────────────────────────────────────────
+// SDF Evaluator
+// ─────────────────────────────────────────────
+function applyRotation(px, py, pz, t) {
+  let x = px, y = py, z = pz;
+  if (t.rx !== 0) {
+    const c = Math.cos(t.rx), s = Math.sin(t.rx);
+    const ny = c * y - s * z, nz = s * y + c * z;
+    y = ny; z = nz;
+  }
+  if (t.ry !== 0) {
+    const c = Math.cos(t.ry), s = Math.sin(t.ry);
+    const nx = c * x + s * z, nz = -s * x + c * z;
+    x = nx; z = nz;
+  }
+  if (t.rz !== 0) {
+    const c = Math.cos(t.rz), s = Math.sin(t.rz);
+    const nx = c * x - s * y, ny = s * x + c * y;
+    x = nx; y = ny;
+  }
+  return [x, y, z];
+}
+
+function sdfPrimitive(px, py, pz, op) {
+  let lx = px - op.center[0];
+  let ly = py - op.center[1];
+  let lz = pz - op.center[2];
+  if (op.transforms.rx || op.transforms.ry || op.transforms.rz) {
+    [lx, ly, lz] = applyRotation(lx, ly, lz, {
+      rx: -op.transforms.rx, ry: -op.transforms.ry, rz: -op.transforms.rz
+    });
+  }
+  switch (op.type) {
+    case 'sphere':
+      return Math.sqrt(lx * lx + ly * ly + lz * lz) - op.radius;
+    case 'box': {
+      const dx = Math.abs(lx) - op.size[0];
+      const dy = Math.abs(ly) - op.size[1];
+      const dz = Math.abs(lz) - op.size[2];
+      return Math.sqrt(Math.max(dx, 0) ** 2 + Math.max(dy, 0) ** 2 + Math.max(dz, 0) ** 2) + Math.min(Math.max(dx, dy, dz), 0);
+    }
+    case 'cylinder': {
+      const h = op.height / 2;
+      const d = Math.sqrt(lx * lx + lz * lz) - op.radius;
+      const dy = Math.abs(ly) - h;
+      return Math.sqrt(Math.max(d, 0) ** 2 + Math.max(dy, 0) ** 2) + Math.min(Math.max(d, dy), 0);
+    }
+    case 'torus': {
+      const qx = Math.sqrt(lx * lx + lz * lz) - op.R;
+      return Math.sqrt(qx * qx + ly * ly) - op.r;
+    }
+    default: return 1e10;
+  }
+}
+
+function evaluateSDF(px, py, pz, operations) {
+  if (operations.length === 0) return 1e10;
+  let d = sdfPrimitive(px, py, pz, operations[0]);
+  for (let i = 1; i < operations.length; i++) {
+    const op = operations[i];
+    const di = sdfPrimitive(px, py, pz, op);
+    switch (op.bool) {
+      case 'union':     d = Math.min(d, di); break;
+      case 'subtract':  d = Math.max(d, -di); break;
+      case 'intersect': d = Math.max(d, di); break;
+    }
+  }
+  return d;
+}
+
+// ─────────────────────────────────────────────
+// Per-Part Grouping
+// ─────────────────────────────────────────────
+function groupIntoParts(operations) {
+  const parts = [];
+  let current = null;
+  for (const op of operations) {
+    if (op.bool === 'union') {
+      current = [op];
+      parts.push(current);
+    } else {
+      if (current) current.push(op);
+    }
+  }
+  return parts;
+}
+
+function computePartBounds(part) {
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+  for (const op of part) {
+    if (op.bool === 'subtract') continue;
+    const c = op.center;
+    let r = 0;
+    switch (op.type) {
+      case 'sphere': r = op.radius; break;
+      case 'box': r = Math.max(op.size[0], op.size[1], op.size[2]); break;
+      case 'cylinder': r = Math.max(op.radius, op.height / 2); break;
+      case 'torus': r = op.R + op.r; break;
+    }
+    r *= 1.3;
+    minX = Math.min(minX, c[0] - r); minY = Math.min(minY, c[1] - r); minZ = Math.min(minZ, c[2] - r);
+    maxX = Math.max(maxX, c[0] + r); maxY = Math.max(maxY, c[1] + r); maxZ = Math.max(maxZ, c[2] + r);
+  }
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+  const half = Math.max(maxX - minX, maxY - minY, maxZ - minZ) / 2 + 0.05;
+  return [[cx - half, cy - half, cz - half], [cx + half, cy + half, cz + half]];
+}
+
+// ─────────────────────────────────────────────
+// Parametric Mesh Generators
+// ─────────────────────────────────────────────
+function nearestPow2(n) { let p = 4; while (p < n) p *= 2; return p; }
+
+function applyTransformToVerts(verts, cx, cy, cz, t) {
+  if (!t.rx && !t.ry && !t.rz) return;
+  for (let i = 0; i < verts.length; i += 3) {
+    let x = verts[i] - cx, y = verts[i+1] - cy, z = verts[i+2] - cz;
+    [x, y, z] = applyRotation(x, y, z, t);
+    verts[i] = x + cx; verts[i+1] = y + cy; verts[i+2] = z + cz;
+  }
+}
+
+function connectRings(topStart, topSegs, botStart, botSegs, idxs) {
+  if (topSegs === botSegs) {
+    for (let s = 0; s < topSegs; s++) {
+      const t0 = topStart + s, t1 = topStart + (s + 1) % topSegs;
+      const b0 = botStart + s, b1 = botStart + (s + 1) % botSegs;
+      idxs.push(t0, b0, t1); idxs.push(t1, b0, b1);
+    }
+  } else if (botSegs === topSegs * 2) {
+    for (let s = 0; s < topSegs; s++) {
+      const t0 = topStart + s, t1 = topStart + (s + 1) % topSegs;
+      const b0 = botStart + (2 * s), b1 = botStart + (2 * s + 1), b2 = botStart + (2 * s + 2) % botSegs;
+      idxs.push(t0, b0, b1); idxs.push(t0, b1, t1); idxs.push(t1, b1, b2);
+    }
+  } else if (topSegs === botSegs * 2) {
+    for (let s = 0; s < botSegs; s++) {
+      const b0 = botStart + s, b1 = botStart + (s + 1) % botSegs;
+      const t0 = topStart + (2 * s), t1 = topStart + (2 * s + 1), t2 = topStart + (2 * s + 2) % topSegs;
+      idxs.push(t0, b0, t1); idxs.push(t1, b0, b1); idxs.push(t1, b1, t2);
+    }
+  }
+}
+
+function generateParametricSphere(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const radius = op.radius;
+  const verts = [], idxs = [];
+  const maxSegs = nearestPow2(Math.max(8, Math.min(resolution, 64)));
+  const latBands = Math.max(8, Math.floor(resolution / 2));
+  verts.push(cx, cy + radius, cz);
+  const ringData = [];
+  for (let lat = 1; lat < latBands; lat++) {
+    const phi = Math.PI * lat / latBands;
+    const sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
+    let segs = 4;
+    while (segs * 2 <= maxSegs && segs < maxSegs * sinPhi * 1.3) segs *= 2;
+    const startIdx = verts.length / 3;
+    for (let s = 0; s < segs; s++) {
+      const theta = 2 * Math.PI * s / segs;
+      verts.push(cx + radius * sinPhi * Math.cos(theta), cy + radius * cosPhi, cz + radius * sinPhi * Math.sin(theta));
+    }
+    ringData.push({ startIdx, segs });
+  }
+  const southIdx = verts.length / 3;
+  verts.push(cx, cy - radius, cz);
+  if (ringData.length > 0) {
+    const first = ringData[0];
+    for (let s = 0; s < first.segs; s++) idxs.push(0, first.startIdx + s, first.startIdx + (s + 1) % first.segs);
+  }
+  for (let r = 0; r < ringData.length - 1; r++) {
+    connectRings(ringData[r].startIdx, ringData[r].segs, ringData[r+1].startIdx, ringData[r+1].segs, idxs);
+  }
+  if (ringData.length > 0) {
+    const last = ringData[ringData.length - 1];
+    for (let s = 0; s < last.segs; s++) idxs.push(last.startIdx + (s + 1) % last.segs, last.startIdx + s, southIdx);
+  }
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+function generateParametricCylinder(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const r = op.radius, halfH = op.height / 2;
+  const segs = Math.max(8, resolution);
+  const heightDivs = Math.max(1, Math.floor(resolution / 8));
+  const verts = [], idxs = [];
+  verts.push(cx, cy + halfH, cz);
+  const ringStarts = [];
+  for (let h = 0; h <= heightDivs; h++) {
+    const y = cy + halfH - (h / heightDivs) * op.height;
+    const startIdx = verts.length / 3;
+    for (let s = 0; s < segs; s++) {
+      const theta = 2 * Math.PI * s / segs;
+      verts.push(cx + r * Math.cos(theta), y, cz + r * Math.sin(theta));
+    }
+    ringStarts.push(startIdx);
+  }
+  const botCenter = verts.length / 3;
+  verts.push(cx, cy - halfH, cz);
+  for (let s = 0; s < segs; s++) idxs.push(0, ringStarts[0] + (s + 1) % segs, ringStarts[0] + s);
+  for (let h = 0; h < heightDivs; h++) {
+    for (let s = 0; s < segs; s++) {
+      const t0 = ringStarts[h] + s, t1 = ringStarts[h] + (s + 1) % segs;
+      const b0 = ringStarts[h+1] + s, b1 = ringStarts[h+1] + (s + 1) % segs;
+      idxs.push(t0, t1, b1); idxs.push(t0, b1, b0);
+    }
+  }
+  const lastRing = ringStarts[heightDivs];
+  for (let s = 0; s < segs; s++) idxs.push(botCenter, lastRing + s, lastRing + (s + 1) % segs);
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+function generateParametricBox(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const [sx, sy, sz] = op.size;
+  const verts = [], idxs = [];
+  const divs = Math.max(1, Math.floor(resolution / 16));
+  function addFace(origin, uAxis, vAxis, uLen, vLen) {
+    const baseIdx = verts.length / 3;
+    for (let v = 0; v <= divs; v++) {
+      for (let u = 0; u <= divs; u++) {
+        const fu = u / divs, fv = v / divs;
+        verts.push(
+          origin[0] + uAxis[0] * uLen * fu + vAxis[0] * vLen * fv,
+          origin[1] + uAxis[1] * uLen * fu + vAxis[1] * vLen * fv,
+          origin[2] + uAxis[2] * uLen * fu + vAxis[2] * vLen * fv
+        );
+      }
+    }
+    const stride = divs + 1;
+    for (let v = 0; v < divs; v++) {
+      for (let u = 0; u < divs; u++) {
+        const a = baseIdx + v * stride + u, b = a + 1, c = a + stride + 1, d = a + stride;
+        idxs.push(a, b, c); idxs.push(a, c, d);
+      }
+    }
+  }
+  addFace([cx-sx, cy-sy, cz+sz], [1,0,0], [0,1,0], 2*sx, 2*sy);
+  addFace([cx+sx, cy-sy, cz-sz], [-1,0,0], [0,1,0], 2*sx, 2*sy);
+  addFace([cx-sx, cy+sy, cz-sz], [1,0,0], [0,0,1], 2*sx, 2*sz);
+  addFace([cx-sx, cy-sy, cz+sz], [1,0,0], [0,0,-1], 2*sx, 2*sz);
+  addFace([cx+sx, cy-sy, cz-sz], [0,0,1], [0,1,0], 2*sz, 2*sy);
+  addFace([cx-sx, cy-sy, cz+sz], [0,0,-1], [0,1,0], 2*sz, 2*sy);
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+function generateParametricTorus(op, resolution) {
+  const [cx, cy, cz] = op.center;
+  const R = op.R, r = op.r;
+  const majorSegs = Math.max(8, resolution), minorSegs = Math.max(6, Math.floor(resolution * 0.6));
+  const verts = [], idxs = [];
+  for (let i = 0; i < majorSegs; i++) {
+    const theta = 2 * Math.PI * i / majorSegs;
+    const cosT = Math.cos(theta), sinT = Math.sin(theta);
+    for (let j = 0; j < minorSegs; j++) {
+      const phi = 2 * Math.PI * j / minorSegs;
+      verts.push(cx + (R + r * Math.cos(phi)) * cosT, cy + r * Math.sin(phi), cz + (R + r * Math.cos(phi)) * sinT);
+    }
+  }
+  for (let i = 0; i < majorSegs; i++) {
+    const ni = (i + 1) % majorSegs;
+    for (let j = 0; j < minorSegs; j++) {
+      const nj = (j + 1) % minorSegs;
+      const a = i * minorSegs + j, b = ni * minorSegs + j, c = ni * minorSegs + nj, d = i * minorSegs + nj;
+      idxs.push(a, b, c); idxs.push(a, c, d);
+    }
+  }
+  applyTransformToVerts(verts, cx, cy, cz, op.transforms);
+  return { vertices: new Float32Array(verts), indices: new Uint32Array(idxs) };
+}
+
+function canUseParametric(part) { return part.length === 1 && part[0].bool === 'union'; }
+
+function generateParametricMesh(op, resolution) {
+  switch (op.type) {
+    case 'sphere':   return generateParametricSphere(op, resolution);
+    case 'cylinder': return generateParametricCylinder(op, resolution);
+    case 'box':      return generateParametricBox(op, resolution);
+    case 'torus':    return generateParametricTorus(op, resolution);
+    default:         return null;
+  }
+}
+
+// ─────────────────────────────────────────────
+// Vertex Welding
+// ─────────────────────────────────────────────
+function weldMeshes(meshes, threshold) {
+  const allVerts = [], allIndices = [];
+  let vertexOffset = 0;
+  for (const mesh of meshes) {
+    const vCount = mesh.vertices.length / 3;
+    for (let i = 0; i < mesh.vertices.length; i++) allVerts.push(mesh.vertices[i]);
+    for (let i = 0; i < mesh.indices.length; i++) allIndices.push(mesh.indices[i] + vertexOffset);
+    vertexOffset += vCount;
+  }
+  const totalVerts = allVerts.length / 3;
+  const cellSize = threshold * 10;
+  const grid = new Map();
+  function cellKey(x, y, z) {
+    return `${Math.floor(x / cellSize)},${Math.floor(y / cellSize)},${Math.floor(z / cellSize)}`;
+  }
+  const remap = new Int32Array(totalVerts);
+  const finalVerts = [];
+  let finalCount = 0;
+  const threshSq = threshold * threshold;
+  for (let i = 0; i < totalVerts; i++) {
+    const x = allVerts[i * 3], y = allVerts[i * 3 + 1], z = allVerts[i * 3 + 2];
+    const cx = Math.floor(x / cellSize), cy = Math.floor(y / cellSize), cz = Math.floor(z / cellSize);
+    let merged = -1;
+    outer:
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const cell = grid.get(`${cx + dx},${cy + dy},${cz + dz}`);
+          if (!cell) continue;
+          for (const candidate of cell) {
+            const fx = finalVerts[candidate * 3] - x, fy = finalVerts[candidate * 3 + 1] - y, fz = finalVerts[candidate * 3 + 2] - z;
+            if (fx * fx + fy * fy + fz * fz <= threshSq) { merged = candidate; break outer; }
+          }
+        }
+      }
+    }
+    if (merged >= 0) {
+      remap[i] = merged;
+    } else {
+      const vi = finalCount++;
+      remap[i] = vi;
+      finalVerts.push(x, y, z);
+      const key = cellKey(x, y, z);
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key).push(vi);
+    }
+  }
+  const finalIndices = [];
+  for (let i = 0; i < allIndices.length; i += 3) {
+    const a = remap[allIndices[i]], b = remap[allIndices[i + 1]], c = remap[allIndices[i + 2]];
+    if (a !== b && b !== c && a !== c) finalIndices.push(a, b, c);
+  }
+  return { vertices: new Float32Array(finalVerts), indices: new Uint32Array(finalIndices), originalVertCount: totalVerts, weldedVertCount: finalCount };
+}
+
+// ─────────────────────────────────────────────
+// Marching Cubes
+// ─────────────────────────────────────────────
+const EDGE_TABLE = [
+  0x0,0x109,0x203,0x30a,0x406,0x50f,0x605,0x70c,0x80c,0x905,0xa0f,0xb06,0xc0a,0xd03,0xe09,0xf00,
+  0x190,0x99,0x393,0x29a,0x596,0x49f,0x795,0x69c,0x99c,0x895,0xb9f,0xa96,0xd9a,0xc93,0xf99,0xe90,
+  0x230,0x339,0x33,0x13a,0x636,0x73f,0x435,0x53c,0xa3c,0xb35,0x83f,0x936,0xe3a,0xf33,0xc39,0xd30,
+  0x3a0,0x2a9,0x1a3,0xaa,0x7a6,0x6af,0x5a5,0x4ac,0xbac,0xaa5,0x9af,0x8a6,0xfaa,0xea3,0xda9,0xca0,
+  0x460,0x569,0x663,0x76a,0x66,0x16f,0x265,0x36c,0xc6c,0xd65,0xe6f,0xf66,0x86a,0x963,0xa69,0xb60,
+  0x5f0,0x4f9,0x7f3,0x6fa,0x1f6,0xff,0x3f5,0x2fc,0xdfc,0xcf5,0xfff,0xef6,0x9fa,0x8f3,0xbf9,0xaf0,
+  0x650,0x759,0x453,0x55a,0x256,0x35f,0x55,0x15c,0xe5c,0xf55,0xc5f,0xd56,0xa5a,0xb53,0x859,0x950,
+  0x7c0,0x6c9,0x5c3,0x4ca,0x3c6,0x2cf,0x1c5,0xcc,0xfcc,0xec5,0xdcf,0xcc6,0xbca,0xac3,0x9c9,0x8c0,
+  0x8c0,0x9c9,0xac3,0xbca,0xcc6,0xdcf,0xec5,0xfcc,0xcc,0x1c5,0x2cf,0x3c6,0x4ca,0x5c3,0x6c9,0x7c0,
+  0x950,0x859,0xb53,0xa5a,0xd56,0xc5f,0xf55,0xe5c,0x15c,0x55,0x35f,0x256,0x55a,0x453,0x759,0x650,
+  0xaf0,0xbf9,0x8f3,0x9fa,0xef6,0xfff,0xcf5,0xdfc,0x2fc,0x3f5,0xff,0x1f6,0x6fa,0x7f3,0x4f9,0x5f0,
+  0xb60,0xa69,0x963,0x86a,0xf66,0xe6f,0xd65,0xc6c,0x36c,0x265,0x16f,0x66,0x76a,0x663,0x569,0x460,
+  0xca0,0xda9,0xea3,0xfaa,0x8a6,0x9af,0xaa5,0xbac,0x4ac,0x5a5,0x6af,0x7a6,0xaa,0x1a3,0x2a9,0x3a0,
+  0xd30,0xc39,0xf33,0xe3a,0x936,0x83f,0xb35,0xa3c,0x53c,0x435,0x73f,0x636,0x13a,0x33,0x339,0x230,
+  0xe90,0xf99,0xc93,0xd9a,0xa96,0xb9f,0x895,0x99c,0x69c,0x795,0x49f,0x596,0x29a,0x393,0x99,0x190,
+  0xf00,0xe09,0xd03,0xc0a,0xb06,0xa0f,0x905,0x80c,0x70c,0x605,0x50f,0x406,0x30a,0x203,0x109,0x0
+];
+
+const TRI_TABLE = new Array(256);
+(function initTriTable() {
+  const t = [
+    [],
+    [0,8,3],[0,1,9],[1,8,3,9,8,1],[1,2,10],[0,8,3,1,2,10],[9,2,10,0,2,9],
+    [2,8,3,2,10,8,10,9,8],[3,11,2],[0,11,2,8,11,0],[1,9,0,2,3,11],
+    [1,11,2,1,9,11,9,8,11],[3,10,1,11,10,3],[0,10,1,0,8,10,8,11,10],
+    [3,9,0,3,11,9,11,10,9],[9,8,10,10,8,11],[4,7,8],[4,3,0,7,3,4],
+    [0,1,9,8,4,7],[4,1,9,4,7,1,7,3,1],[1,2,10,8,4,7],
+    [3,4,7,3,0,4,1,2,10],[9,2,10,9,0,2,8,4,7],[2,10,9,2,9,7,2,7,3,7,9,4],
+    [8,4,7,3,11,2],[11,4,7,11,2,4,2,0,4],[9,0,1,8,4,7,2,3,11],
+    [4,7,11,9,4,11,9,11,2,9,2,1],[3,10,1,3,11,10,7,8,4],
+    [1,11,10,1,4,11,1,0,4,7,11,4],[4,7,8,9,0,11,9,11,10,11,0,3],
+    [4,7,11,4,11,9,9,11,10],[9,5,4],[9,5,4,0,8,3],[0,5,4,1,5,0],
+    [8,5,4,8,3,5,3,1,5],[1,2,10,9,5,4],[3,0,8,1,2,10,4,9,5],
+    [5,2,10,5,4,2,4,0,2],[2,10,5,3,2,5,3,5,4,3,4,8],[9,5,4,2,3,11],
+    [0,11,2,0,8,11,4,9,5],[0,5,4,0,1,5,2,3,11],[2,1,5,2,5,8,2,8,11,4,8,5],
+    [10,3,11,10,1,3,9,5,4],[4,9,5,0,8,1,8,10,1,8,11,10],
+    [5,4,0,5,0,11,5,11,10,11,0,3],[5,4,8,5,8,10,10,8,11],
+    [9,7,8,5,7,9],[9,3,0,9,5,3,5,7,3],[0,7,8,0,1,7,1,5,7],[1,5,3,3,5,7],
+    [9,7,8,9,5,7,10,1,2],[10,1,2,9,5,0,5,3,0,5,7,3],
+    [8,0,2,8,2,5,8,5,7,10,5,2],[2,10,5,2,5,3,3,5,7],
+    [7,9,5,7,8,9,3,11,2],[9,5,7,9,7,2,9,2,0,2,7,11],
+    [2,3,11,0,1,8,1,7,8,1,5,7],[11,2,1,11,1,7,7,1,5],
+    [9,5,8,8,5,7,10,1,3,10,3,11],[5,7,0,5,0,9,7,11,0,1,0,10,11,10,0],
+    [11,10,0,11,0,3,10,5,0,8,0,7,5,7,0],[11,10,5,7,11,5],
+    [10,6,5],[0,8,3,5,10,6],[9,0,1,5,10,6],[1,8,3,1,9,8,5,10,6],
+    [1,6,5,2,6,1],[1,6,5,1,2,6,3,0,8],[9,6,5,9,0,6,0,2,6],
+    [5,9,8,5,8,2,5,2,6,3,2,8],[2,3,11,10,6,5],[11,0,8,11,2,0,10,6,5],
+    [0,1,9,2,3,11,5,10,6],[5,10,6,1,9,2,9,11,2,9,8,11],
+    [6,3,11,6,5,3,5,1,3],[0,8,11,0,11,5,0,5,1,5,11,6],
+    [3,11,6,0,3,6,0,6,5,0,5,9],[6,5,9,6,9,11,11,9,8],
+    [5,10,6,4,7,8],[4,3,0,4,7,3,6,5,10],[1,9,0,5,10,6,8,4,7],
+    [10,6,5,1,9,7,1,7,3,7,9,4],[6,1,2,6,5,1,4,7,8],
+    [1,2,5,5,2,6,3,0,4,3,4,7],[8,4,7,9,0,5,0,6,5,0,2,6],
+    [7,3,9,7,9,4,3,2,9,5,9,6,2,6,9],[3,11,2,7,8,4,10,6,5],
+    [5,10,6,4,7,2,4,2,0,2,7,11],[0,1,9,4,7,8,2,3,11,5,10,6],
+    [9,2,1,9,11,2,9,4,11,7,11,4,5,10,6],[8,4,7,3,11,5,3,5,1,5,11,6],
+    [5,1,11,5,11,6,1,0,11,7,11,4,0,4,11],
+    [0,5,9,0,6,5,0,3,6,11,6,3,8,4,7],[6,5,9,6,9,11,4,7,9,7,11,9],
+    [10,4,9,6,4,10],[4,10,6,4,9,10,0,8,3],[10,0,1,10,6,0,6,4,0],
+    [8,3,1,8,1,6,8,6,4,6,1,10],[1,4,9,1,2,4,2,6,4],
+    [3,0,8,1,2,9,2,4,9,2,6,4],[0,2,4,4,2,6],[8,3,2,8,2,4,4,2,6],
+    [10,4,9,10,6,4,11,2,3],[0,8,2,2,8,11,4,9,10,4,10,6],
+    [3,11,2,0,1,6,0,6,4,6,1,10],[6,4,1,6,1,10,4,8,1,2,1,11,8,11,1],
+    [9,6,4,9,3,6,9,1,3,11,6,3],[8,11,1,8,1,0,11,6,1,9,1,4,6,4,1],
+    [3,11,6,3,6,0,0,6,4],[6,4,8,11,6,8],
+    [7,10,6,7,8,10,8,9,10],[0,7,3,0,10,7,0,9,10,6,7,10],
+    [10,6,7,1,10,7,1,7,8,1,8,0],[10,6,7,10,7,1,1,7,3],
+    [1,2,6,1,6,8,1,8,9,8,6,7],[2,6,9,2,9,1,6,7,9,0,9,3,7,3,9],
+    [7,8,0,7,0,6,6,0,2],[7,3,2,6,7,2],
+    [2,3,11,10,6,8,10,8,9,8,6,7],[2,0,7,2,7,11,0,9,7,6,7,10,9,10,7],
+    [1,8,0,1,7,8,1,10,7,6,7,10,2,3,11],[11,2,1,11,1,7,10,6,1,6,7,1],
+    [8,9,6,8,6,7,9,1,6,11,6,3,1,3,6],[0,9,1,11,6,7],
+    [7,8,0,7,0,6,3,11,0,11,6,0],[7,11,6],
+    [7,6,11],[3,0,8,11,7,6],[0,1,9,11,7,6],[8,1,9,8,3,1,11,7,6],
+    [10,1,2,6,11,7],[1,2,10,3,0,8,6,11,7],[2,9,0,2,10,9,6,11,7],
+    [6,11,7,2,10,3,10,8,3,10,9,8],[7,2,3,6,2,7],[7,0,8,7,6,0,6,2,0],
+    [2,7,6,2,3,7,0,1,9],[1,6,2,1,8,6,1,9,8,8,7,6],
+    [10,7,6,10,1,7,1,3,7],[10,7,6,1,7,10,1,8,7,1,0,8],
+    [0,3,7,0,7,10,0,10,9,6,10,7],[7,6,10,7,10,8,8,10,9],
+    [6,8,4,11,8,6],[3,6,11,3,0,6,0,4,6],[8,6,11,8,4,6,9,0,1],
+    [9,4,6,9,6,3,9,3,1,11,3,6],[6,8,4,6,11,8,2,10,1],
+    [1,2,10,3,0,11,0,6,11,0,4,6],[4,11,8,4,6,11,0,2,9,2,10,9],
+    [10,9,3,10,3,2,9,4,3,11,3,6,4,6,3],[8,2,3,8,4,2,4,6,2],
+    [0,4,2,4,6,2],[1,9,0,2,3,4,2,4,6,4,3,8],[1,9,4,1,4,2,2,4,6],
+    [8,1,3,8,6,1,8,4,6,6,10,1],[10,1,0,10,0,6,6,0,4],
+    [4,6,3,4,3,8,6,10,3,0,3,9,10,9,3],[10,9,4,6,10,4],
+    [4,9,5,7,6,11],[0,8,3,4,9,5,11,7,6],[5,0,1,5,4,0,7,6,11],
+    [11,7,6,8,3,4,3,5,4,3,1,5],[9,5,4,10,1,2,7,6,11],
+    [6,11,7,1,2,10,0,8,3,4,9,5],[7,6,11,5,4,10,4,2,10,4,0,2],
+    [3,4,8,3,5,4,3,2,5,10,5,2,11,7,6],[7,2,3,7,6,2,5,4,9],
+    [9,5,4,0,8,6,0,6,2,6,8,7],[3,6,2,3,7,6,1,5,0,5,4,0],
+    [6,2,8,6,8,7,2,1,8,4,8,5,1,5,8],[9,5,4,10,1,6,1,7,6,1,3,7],
+    [1,6,10,1,7,6,1,0,7,8,7,0,9,5,4],
+    [4,0,10,4,10,5,0,3,10,6,10,7,3,7,10],[7,6,10,7,10,8,5,4,10,4,8,10],
+    [6,9,5,6,11,9,11,8,9],[3,6,11,0,6,3,0,5,6,0,9,5],
+    [0,11,8,0,5,11,0,1,5,5,6,11],[6,11,3,6,3,5,5,3,1],
+    [1,2,10,9,5,11,9,11,8,11,5,6],[0,11,3,0,6,11,0,9,6,5,6,9,1,2,10],
+    [11,8,5,11,5,6,8,0,5,10,5,2,0,2,5],[6,11,3,6,3,5,2,10,3,10,5,3],
+    [5,8,9,5,2,8,5,6,2,3,8,2],[9,5,6,9,6,0,0,6,2],
+    [1,5,8,1,8,0,5,6,8,3,8,2,6,2,8],[1,5,6,2,1,6],
+    [1,3,6,1,6,10,3,8,6,5,6,9,8,9,6],[10,1,0,10,0,6,9,5,0,5,6,0],
+    [0,3,8,5,6,10],[10,5,6],
+    [11,5,10,7,5,11],[11,5,10,11,7,5,8,3,0],[5,11,7,5,10,11,1,9,0],
+    [10,7,5,10,11,7,9,8,1,8,3,1],[11,1,2,11,7,1,7,5,1],
+    [0,8,3,1,2,7,1,7,5,7,2,11],[9,7,5,9,2,7,9,0,2,2,11,7],
+    [7,5,2,7,2,11,5,9,2,3,2,8,9,8,2],[2,5,10,2,3,5,3,7,5],
+    [8,2,0,8,5,2,8,7,5,10,2,5],[9,0,1,5,10,3,5,3,7,3,10,2],
+    [9,8,2,9,2,1,8,7,2,10,2,5,7,5,2],[1,3,5,3,7,5],
+    [0,8,7,0,7,1,1,7,5],[9,0,3,9,3,5,5,3,7],[9,8,7,5,9,7],
+    [5,8,4,5,10,8,10,11,8],[5,0,4,5,11,0,5,10,11,11,3,0],
+    [0,1,9,8,4,10,8,10,11,10,4,5],[10,11,4,10,4,5,11,3,4,9,4,1,3,1,4],
+    [2,5,1,2,8,5,2,11,8,4,5,8],[0,4,11,0,11,3,4,5,11,2,11,1,5,1,11],
+    [0,2,5,0,5,9,2,11,5,4,5,8,11,8,5],[9,4,5,2,11,3],
+    [2,5,10,3,5,2,3,4,5,3,8,4],[5,10,2,5,2,4,4,2,0],
+    [3,10,2,3,5,10,3,8,5,4,5,8,0,1,9],[5,10,2,5,2,4,1,9,2,9,4,2],
+    [8,4,5,8,5,3,3,5,1],[0,4,5,1,0,5],[8,4,5,8,5,3,9,0,5,0,3,5],[9,4,5],
+    [4,11,7,4,9,11,9,10,11],[0,8,3,4,9,7,9,11,7,9,10,11],
+    [1,10,11,1,11,4,1,4,0,7,4,11],[3,1,4,3,4,8,1,10,4,7,4,11,10,11,4],
+    [4,11,7,9,11,4,9,2,11,9,1,2],[9,7,4,9,11,7,9,1,11,2,11,1,0,8,3],
+    [11,7,4,11,4,2,2,4,0],[11,7,4,11,4,2,8,3,4,3,2,4],
+    [2,9,10,2,7,9,2,3,7,7,4,9],[9,10,7,9,7,4,10,2,7,8,7,0,2,0,7],
+    [3,7,10,3,10,2,7,4,10,1,10,0,4,0,10],[1,10,2,8,7,4],
+    [4,9,1,4,1,7,7,1,3],[4,9,1,4,1,7,0,8,1,8,7,1],[4,0,3,7,4,3],[4,8,7],
+    [9,10,8,10,11,8],[3,0,9,3,9,11,11,9,10],[0,1,10,0,10,8,8,10,11],
+    [3,1,10,11,3,10],[1,2,11,1,11,9,9,11,8],[3,0,9,3,9,11,1,2,9,2,11,9],
+    [0,2,11,8,0,11],[3,2,11],[2,3,8,2,8,10,10,8,9],[9,10,2,0,9,2],
+    [2,3,8,2,8,10,0,1,8,1,10,8],[1,10,2],[1,3,8,9,1,8],[0,9,1],[0,3,8],[]
+  ];
+  for (let i = 0; i < 256; i++) TRI_TABLE[i] = t[i];
+})();
+
+function marchingCubes(sdfFn, resolution, bounds) {
+  const [minB, maxB] = bounds;
+  const step = (maxB[0] - minB[0]) / resolution;
+  const vertices = [], indices = [];
+  const size = resolution + 1;
+  const field = new Float32Array(size * size * size);
+  for (let z = 0; z < size; z++)
+    for (let y = 0; y < size; y++)
+      for (let x = 0; x < size; x++)
+        field[x + y * size + z * size * size] = sdfFn(minB[0] + x * step, minB[1] + y * step, minB[2] + z * step);
+
+  const idx = (x, y, z) => x + y * size + z * size * size;
+  function interp(x1, y1, z1, v1, x2, y2, z2, v2) {
+    if (Math.abs(v1) < 1e-6) return [x1, y1, z1];
+    if (Math.abs(v2) < 1e-6) return [x2, y2, z2];
+    if (Math.abs(v1 - v2) < 1e-6) return [x1, y1, z1];
+    const t = -v1 / (v2 - v1);
+    return [x1 + t * (x2 - x1), y1 + t * (y2 - y1), z1 + t * (z2 - z1)];
+  }
+  const vertCache = new Map();
+  function getVertex(x1, y1, z1, v1, x2, y2, z2, v2, edgeKey) {
+    const cached = vertCache.get(edgeKey);
+    if (cached !== undefined) return cached;
+    const p = interp(x1, y1, z1, v1, x2, y2, z2, v2);
+    const vi = vertices.length / 3;
+    vertices.push(p[0], p[1], p[2]);
+    vertCache.set(edgeKey, vi);
+    return vi;
+  }
+
+  for (let z = 0; z < resolution; z++) {
+    for (let y = 0; y < resolution; y++) {
+      for (let x = 0; x < resolution; x++) {
+        const px = minB[0] + x * step, py = minB[1] + y * step, pz = minB[2] + z * step;
+        const v = [
+          field[idx(x, y, z)], field[idx(x+1, y, z)], field[idx(x+1, y, z+1)], field[idx(x, y, z+1)],
+          field[idx(x, y+1, z)], field[idx(x+1, y+1, z)], field[idx(x+1, y+1, z+1)], field[idx(x, y+1, z+1)]
+        ];
+        let cubeIndex = 0;
+        for (let i = 0; i < 8; i++) if (v[i] < 0) cubeIndex |= (1 << i);
+        if (EDGE_TABLE[cubeIndex] === 0) continue;
+        const corners = [
+          [px, py, pz], [px+step, py, pz], [px+step, py, pz+step], [px, py, pz+step],
+          [px, py+step, pz], [px+step, py+step, pz], [px+step, py+step, pz+step], [px, py+step, pz+step]
+        ];
+        const edgePairs = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+        const cornerKeys = [
+          x+y*size+z*size*size, (x+1)+y*size+z*size*size, (x+1)+y*size+(z+1)*size*size, x+y*size+(z+1)*size*size,
+          x+(y+1)*size+z*size*size, (x+1)+(y+1)*size+z*size*size, (x+1)+(y+1)*size+(z+1)*size*size, x+(y+1)*size+(z+1)*size*size
+        ];
+        const edgeVerts = new Array(12);
+        for (let i = 0; i < 12; i++) {
+          if (EDGE_TABLE[cubeIndex] & (1 << i)) {
+            const [a, b] = edgePairs[i];
+            const ka = cornerKeys[a], kb = cornerKeys[b];
+            const edgeKey = ka < kb ? ka * size * size * size + kb : kb * size * size * size + ka;
+            edgeVerts[i] = getVertex(corners[a][0], corners[a][1], corners[a][2], v[a], corners[b][0], corners[b][1], corners[b][2], v[b], edgeKey);
+          }
+        }
+        const tri = TRI_TABLE[cubeIndex];
+        for (let i = 0; i < tri.length; i += 3) indices.push(edgeVerts[tri[i]], edgeVerts[tri[i+1]], edgeVerts[tri[i+2]]);
+      }
+    }
+  }
+  return { vertices: new Float32Array(vertices), indices: new Uint32Array(indices) };
+}
+
+// ─────────────────────────────────────────────
+// Three.js Setup (headless renderer)
+// ─────────────────────────────────────────────
+const RESOLUTION = 64;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x0a0a0b);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.01, 100);
+camera.position.set(2.5, 2.2, 3);
+
+// Lighting — matches SDF Sculptor
+scene.add(new THREE.AmbientLight(0x404050, 0.6));
+const dirLight = new THREE.DirectionalLight(0xfff8f0, 1.8);
+dirLight.position.set(3, 5, 4);
+scene.add(dirLight);
+const fillLight = new THREE.DirectionalLight(0x8090c0, 0.5);
+fillLight.position.set(-3, 2, -2);
+scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xc4f042, 0.3);
+rimLight.position.set(0, -1, -4);
+scene.add(rimLight);
+
+// Grid
+scene.add(new THREE.GridHelper(4, 20, 0x1a1a1f, 0x1a1a1f));
+
+const meshMaterial = new THREE.MeshStandardMaterial({
+  color: 0xd8d4cc, roughness: 0.55, metalness: 0.05, flatShading: true, side: THREE.DoubleSide
+});
+
+let currentMesh = null;
+const statusMsg = document.getElementById('status-msg');
+
+function generateMesh(code) {
+  // Clear previous
+  if (currentMesh) { scene.remove(currentMesh); currentMesh.geometry.dispose(); currentMesh = null; }
+
+  let operations;
+  try {
+    operations = parseDSL(code);
+  } catch (e) {
+    statusMsg.textContent = e.message;
+    statusMsg.classList.add('error');
+    return;
+  }
+
+  if (operations.length === 0) {
+    statusMsg.textContent = 'No primitives defined';
+    statusMsg.classList.add('error');
+    return;
+  }
+
+  statusMsg.textContent = 'Generating...';
+  statusMsg.classList.remove('error');
+
+  const parts = groupIntoParts(operations);
+  const partMeshes = [];
+
+  for (const part of parts) {
+    let partResult;
+    if (canUseParametric(part)) {
+      partResult = generateParametricMesh(part[0], RESOLUTION);
+    }
+    if (!partResult) {
+      const partBounds = computePartBounds(part);
+      const partSdf = (x, y, z) => evaluateSDF(x, y, z, part);
+      partResult = marchingCubes(partSdf, RESOLUTION, partBounds);
+    }
+    if (partResult && partResult.indices.length > 0) partMeshes.push(partResult);
+  }
+
+  const welded = weldMeshes(partMeshes, 0.0001);
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(welded.vertices, 3));
+  geometry.setIndex(new THREE.BufferAttribute(welded.indices, 1));
+  geometry.computeVertexNormals();
+
+  currentMesh = new THREE.Mesh(geometry, meshMaterial);
+  scene.add(currentMesh);
+
+  statusMsg.textContent = `Ready — ${welded.weldedVertCount} verts, ${welded.indices.length / 3} tris`;
+  statusMsg.classList.remove('error');
+
+  renderer.render(scene, camera);
+}
+
+// ─────────────────────────────────────────────
+// Window API (used by server.js via iframe)
+// ─────────────────────────────────────────────
+window.sdfSetCode = (code) => {
+  generateMesh(code);
+};
+
+window.setCameraPosition = (x, y, z) => {
+  camera.position.set(x, y, z);
+  camera.lookAt(0, 0.7, 0);
+  renderer.render(scene, camera);
+};
+
+window.getRendererCanvas = () => {
+  renderer.render(scene, camera);
+  return renderer.domElement;
+};
+
+window.resetCamera = () => {
+  camera.position.set(2.5, 2.2, 3);
+  camera.lookAt(0, 0.7, 0);
+  renderer.render(scene, camera);
+};
+
+// Handle resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Initial render
+renderer.render(scene, camera);
+</script>
+</body>
+</html>

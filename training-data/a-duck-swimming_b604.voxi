@@ -1,0 +1,31 @@
+V 24 16 24
+
+-- deep water
+B 0 0 0 24 4 24 3
+
+-- water surface
+B 0 4 0 24 1 24 4
+
+-- duck body (white)
+E 12 6 12 5 3 4 8
+
+-- wing detail (gray)
+B 11 7 10 4 1 4 9
+
+-- tail feathers
+B 16 7 11 2 3 2 8
+
+-- neck
+B 10 8 10 2 2 2 8
+
+-- white collar ring
+B 10 9 10 2 1 2 8
+
+-- head (mallard green)
+S 10 11 9 3 c
+
+-- beak (orange)
+B 8 10 6 3 2 3 7
+
+-- eye (black)
+S 9 12 7 1 0

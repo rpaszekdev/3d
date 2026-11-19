@@ -1,0 +1,13 @@
+`★ Insight ─────────────────────────────────────`
+**The black-on-dark-background trap:** The VOXI renderer uses a very dark background (#13151f). Color `0` (black) voxels are virtually indistinguishable from the background, making the entire model disappear. This is one of the most common and catastrophic mistakes in VOXI — always substitute `f` (navy) for black penguin bodies, which is perceptually correct AND visible.
+`─────────────────────────────────────────────────`
+
+SCORE: 1
+STRENGTHS: The structural intent is sound — the session history reveals that the model has differentiated feet (orange, color `7`), legs (gray, color `9`), and a body. The foot and leg placement logic shows correct understanding of Y-axis-up layering and bilateral symmetry.
+
+ISSUES:
+- **🚨 CRITICAL — Entire model is invisible:** The main body is using color `0` (black), which vanishes completely against the `#13151f` background. Every angle shows a pure black frame with zero visible geometry. Fix immediately by replacing all body/head/wing voxels with `f` (navy) — e.g., change `B 10 8 10 12 14 10 0` → `B 10 8 10 12 14 10 f`. The feet (color `7`, orange) and legs (color `9`, gray) are also invisible because the body obscures them or they're too small at this scale.
+- **Missing head and beak:** Even once colors are fixed, the prior code has no head sphere or beak. Add `S 16 26 16 5 f` for a round navy head and `B 14 24 11 4 3 3 6` (yellow, color `6`) for a beak pointing forward (Z-axis).
+- **No white belly:** A penguin's signature white front patch is entirely absent. Add `B 13 8 11 6 12 3 8` (white, color `8`) as a tall front-facing belly panel to instantly make this recognizable.
+
+PRIORITY_FIX: Replace **all** color `0` voxels with color `f` (navy) immediately — the model is 100% invisible right now and no other improvements matter until this is resolved. Even a simple `B 10 0 10 12 28 10 f` as a placeholder body would score a 4+ instantly.

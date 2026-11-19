@@ -1,0 +1,31 @@
+V 24 32 24
+
+-- pole
+C 12 8 12 1 16 a
+
+-- house base platform
+B 7 15 8 10 2 8 a
+
+-- house walls
+B 8 17 9 8 8 6 d
+
+-- entrance hole
+S 12 21 9 1 0
+
+-- perch rod
+B 11 19 7 2 1 2 a
+
+-- roof layer 1 (wide base)
+B 6 25 7 12 2 10 7
+
+-- roof layer 2
+B 7 27 8 10 2 8 7
+
+-- roof layer 3
+B 8 29 9 8 2 6 7
+
+-- roof layer 4
+B 9 31 10 6 2 4 7
+
+-- roof peak
+B 10 33 11 4 1 2 6

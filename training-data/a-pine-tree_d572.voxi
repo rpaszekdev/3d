@@ -1,0 +1,22 @@
+V 24 28 24
+
+-- trunk
+C 12 3 12 2 6 a
+
+-- bottom foliage tier (widest)
+C 12 9 12 7 4 2
+
+-- second foliage tier
+C 12 13 12 6 4 c
+
+-- third foliage tier
+C 12 17 12 5 3 2
+
+-- fourth foliage tier
+C 12 21 12 4 3 c
+
+-- upper tier
+C 12 24 12 3 3 2
+
+-- top spike
+C 12 27 12 1 4 c

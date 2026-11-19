@@ -1,0 +1,56 @@
+## Verification Result: ALL-BLACK FAILURE — Step 2 Also Failed
+
+**All 6 angles are completely black.** Not a single voxel is visible. The step-2 scene failed just as badly as the original.
+
+---
+
+## Diagnosis
+
+The sphere was not the only culprit. The step-2 scene contains **no spheres at all** — yet it still produces all-black. This eliminates the boundary-sphere hypothesis as the root cause.
+
+**New suspects to investigate:**
+
+### 1. `B` syntax — is the 5th argument the color or extent?
+The VOXI `B` command is written as `B x y z w h d color`. Double-check:
+- `B 0 0 0 16 1 16 9` — color `9` (gray). Is color `9` valid? Is it perhaps parsed as the 7th field (index 6)?
+- `B 6 1 6 4 4 4 7` — color `7` (orange). Same question.
+- `B 1 7 1 2 2 2 6` — color `6` (yellow).
+
+If the VOXI parser expects **0-indexed** colors from a fixed palette and color `9` is out of range or maps to black, the floor would be invisible against a black background.
+
+### 2. `P` point command — radius argument
+`P 2 7 2 4` — if `4` is the radius (in voxels), that's a large sphere at Y=7 in a 16-unit grid. But that shouldn't cause a parse abort.
+
+### 3. Y=7 for the camera marker — viewport clipping?
+The yellow box is at Y=7 out of 16 total — mid-air. If the renderer's default camera is positioned looking at Y≈1 (ground level), the high-Y camera marker box and the cyan ray might all be off-camera.
+
+---
+
+## Most Likely Root Cause
+
+**The renderer is failing silently at the `B` command with color index 9 (gray).** Color index 9 may be out-of-bounds for the palette (e.g., if the palette has indices 0–8), causing a parse abort that prevents anything from rendering — including the scene that "passed" Step 1 before the camera marker was added.
+
+**Wait — the reasoner says Step 1 (floor + cube only) needs to be verified first.** These screenshots are labeled `step-2-shots`. Was Step 1 ever verified to succeed? If Step 1 also produced black, then the issue is the `B` command itself or color indexing — not the boundary sphere.
+
+---
+
+## What to Sketch Next
+
+**Step 1 must be confirmed independently.** Then try:
+
+```voxi
+V 16 16 16
+
+-- Use color indices you know are safe (e.g., 1=white, 2=red)
+-- Test whether color 9 is valid
+B 4 0 4 8 1 8 2
+
+-- Single point in the center
+P 8 1 8 1
+```
+
+If even `B 4 0 4 8 1 8 2` (a safe centered block with color 2) produces black, the `B` command syntax is wrong — likely argument order or 0-vs-1-indexed coordinates. Check the VOXI spec for whether coordinates are **inclusive** or **extent-based** and whether color is the **last** vs **4th** parameter.
+
+`★ Insight ─────────────────────────────────────`
+When a "fixed" diagnostic still fails, the fix didn't address the real bug. Black output on Step 2 (which removed the sphere) means the original error theory was wrong. The debugging principle here: **reduce to the absolute minimum** — a single `P 8 8 8 1` point — and add one element at a time until the first failure pinpoints the broken command.
+`─────────────────────────────────────────────────`

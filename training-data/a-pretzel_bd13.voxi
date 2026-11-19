@@ -1,0 +1,32 @@
+V 24 20 6
+
+-- left loop
+B 2 13 2 8 2 2 a
+B 2 8 2 2 7 2 a
+B 8 8 2 2 7 2 a
+B 2 8 2 8 2 2 a
+
+-- right loop
+B 14 13 2 8 2 2 a
+B 14 8 2 2 7 2 a
+B 20 8 2 2 7 2 a
+B 14 8 2 8 2 2 a
+
+-- crossing front strand (over)
+B 6 6 1 12 2 2 a
+
+-- crossing back strand (under)
+B 7 4 3 11 2 2 d
+
+-- left arm
+B 5 0 2 2 6 2 a
+
+-- right arm
+B 17 0 2 2 6 2 a
+
+-- salt
+B 5 14 1 2 2 1 8
+B 16 14 1 2 2 1 8
+B 2 11 1 2 2 1 8
+B 21 11 1 2 2 1 8
+B 10 5 1 2 2 1 8

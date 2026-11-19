@@ -1,0 +1,16 @@
+`★ Insight ─────────────────────────────────────`
+**The black voxel invisibility trap:** VOXI color `0` (black) is nearly identical to the renderer's dark background (`#13151f`), so any part of the model using black effectively vanishes. This is one of the most common pitfalls in VOXI — the model may be geometrically perfect, but visually completely absent. The fix is always to swap `0` → `f` (navy) or `9` (gray) for dark areas.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+
+STRENGTHS: The session history shows the model has structural ambition — feet, legs, and body parts have been laid out with proper VOXI commands. The orange feet (`color 7`) and gray legs (`color 9`) show awareness of penguin anatomy. If the geometry is correct underneath, this model is one color-swap away from being recognizable!
+
+ISSUES:
+- **Critical — Entire model is invisible:** All 6 views are completely black. The penguin body (and likely the head, wings, and most torso parts) are rendered in `color 0` (black), which disappears against the dark `#13151f` renderer background. Replace every `color 0` usage with `f` (navy) for the back/head/wings — e.g., change `B 11 3 14 4 4 3 0` → `B 11 3 14 4 4 3 f`. The navy-black contrast will give the penguin its characteristic dark plumage while remaining visible.
+- **White belly missing (or also invisible):** A penguin's most recognizable feature is its white front. Even if belly voxels exist with `color 8` (white), they're not visible — suggesting they may either be missing or also rendered as `0`. Add `B 13 3 13 6 14 2 8` for a white chest panel on the front face.
+- **Orange beak absent from renders:** No beak is visible in any angle, not even from the front. Ensure the beak uses `color 7` (orange) and protrudes forward on the Z-axis: `B 14 20 11 4 3 3 7` would place a small orange beak at face-height pointing outward.
+
+PRIORITY_FIX: **Replace all `color 0` body/head/wing voxels with `color f` (navy).** This single change will make the entire penguin visible in one fix. Audit every `B`, `S`, `E`, or `C` command in your VOXI file and change any trailing `0` color argument to `f` for dark penguin parts. The orange feet (`7`) and gray legs (`9`) already survive — only the black (`0`) parts need rescuing.

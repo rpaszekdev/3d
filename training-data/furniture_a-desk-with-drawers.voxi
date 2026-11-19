@@ -1,0 +1,23 @@
+V 24 24 24
+
+-- tabletop (wood)
+B 2 12 3 20 2 18 d
+
+-- left front leg (brown)
+B 2 0 3 2 12 2 a
+
+-- left back leg (brown)
+B 2 0 19 2 12 2 a
+
+-- drawer unit right side (gray cabinet body)
+B 16 0 3 6 12 18 9
+
+-- drawer fronts (wood, slightly protruding)
+B 16 9 2 6 3 2 d
+B 16 5 2 6 3 2 d
+B 16 1 2 6 3 2 d
+
+-- drawer handles (black)
+B 18 10 1 2 1 1 0
+B 18 6 1 2 1 1 0
+B 18 2 1 2 1 1 0

@@ -1,0 +1,3087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVM — Your CV in 10 Seconds</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0b1222;
+  --paper: #fafbfc;
+  --warm: #f6f4f0;
+  --blue: #1d4ed8;
+  --blue-hover: #1e40af;
+  --blue-light: #eff6ff;
+  --blue-muted: #93c5fd;
+  --green: #15803d;
+  --green-light: #f0fdf4;
+  --red: #b91c1c;
+  --amber: #a16207;
+  --amber-light: #fefce8;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --card: #ffffff;
+  --display: 'Newsreader', Georgia, serif;
+  --body: 'Outfit', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,0.16);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--body); background: var(--paper); color: var(--ink);
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+
+/* ── Utility ─────────────────────── */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.fade-in { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { transform: translateY(20px); } }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+
+/* ── Nav ─────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 64px; display: flex; align-items: center;
+  padding: 0 32px; background: rgba(250,251,252,0.85);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border-bottom: 1px solid rgba(226,232,240,0.6);
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.nav-logo-mark {
+  width: 32px; height: 32px; background: var(--blue); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 600; color: #fff;
+  letter-spacing: 1px;
+}
+.nav-logo-text { font-family: var(--body); font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+.nav-links { margin-left: auto; display: flex; gap: 32px; align-items: center; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--ink); }
+.nav-cta {
+  background: var(--ink); color: #fff; padding: 8px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; text-decoration: none; border: none; cursor: pointer;
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: #1e293b; }
+
+/* ── Hero: Single screen ─────────── */
+.hero-split {
+  height: 100vh; display: flex; flex-direction: column;
+  padding-top: 64px; background: linear-gradient(180deg, #eef4fb 0%, #dbe8f8 40%, #cddcf2 100%);
+  position: relative; overflow: hidden;
+}
+.hero-split::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.5), transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Top: headline + demo (compact) ── */
+.hero-top {
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px 24px; position: relative; z-index: 1;
+  flex: 1; min-height: 0;
+}
+.hero-top-inner { text-align: center; max-width: 800px; width: 100%; }
+
+/* When showing result or generating, give the top area more room */
+.hero-split.expanded .hero-top { flex: 1; padding-top: 12px; padding-bottom: 8px; }
+.hero-split.expanded .hero-bottom { flex: 0; padding-bottom: 16px; }
+.hero-split.expanded .mega-input { max-width: 560px; }
+.hero-split.expanded .mega-input textarea { min-height: 48px; max-height: 60px; padding: 10px 16px 4px; font-size: 13px; }
+.hero-split.expanded .hero-bottom-label { display: none; }
+.hero-split.expanded .hero-bottom-note { display: none; }
+
+/* ── Result Mode: full CV + action bar ── */
+.hero-split.result-mode { padding-top: 24px; height: auto; min-height: 100vh; overflow-y: auto; }
+.hero-split.result-mode .hero-top { padding: 24px 24px 16px; align-items: center; justify-content: center; }
+.hero-split.result-mode .hero-top-inner { max-width: 500px; display: flex; flex-direction: column; align-items: center; }
+.hero-split.result-mode .cv-preview-wrap { max-height: none; overflow: visible; }
+.hero-split.result-mode .cv-preview-wrap::after { display: none; }
+.hero-split.result-mode .cv-preview-wrap canvas { width: 380px; max-width: 85vw; }
+.hero-split.result-mode .result-ats,
+.hero-split.result-mode .result-actions,
+.hero-split.result-mode .result-regen,
+.hero-split.result-mode .expand-btn,
+.hero-split.result-mode .signin-gate { display: none !important; }
+.hero-split.result-mode .hero-bottom { flex: 0; padding: 16px 24px 24px; }
+.hero-split.result-mode .mega-input { display: none; }
+.hero-split.result-mode .hero-bottom-label { display: none; }
+.hero-split.result-mode .hero-bottom-note { display: none; }
+
+/* Result action bar (replaces prompt input) */
+.result-action-bar {
+  display: none; width: 100%; max-width: 680px;
+  padding: 14px 20px; background: #ffffff;
+  border: 1.5px solid #c7d5e6; border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(29,78,216,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  align-items: center; justify-content: center; gap: 10px;
+}
+.hero-split.result-mode .result-action-bar { display: flex; }
+.result-action-bar button {
+  padding: 12px 28px; border-radius: 10px; font-family: var(--body);
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.result-action-bar .rab-download {
+  background: var(--blue); color: #fff; border: none;
+  box-shadow: 0 2px 8px rgba(29,78,216,0.3);
+}
+.result-action-bar .rab-download:hover { background: var(--blue-hover); transform: translateY(-1px); }
+.result-action-bar .rab-edit {
+  background: #fff; color: var(--ink); border: 1.5px solid #d1d9e6;
+}
+.result-action-bar .rab-edit:hover { border-color: var(--ink); }
+.result-action-bar .rab-regen {
+  background: transparent; color: var(--muted); border: 1px solid #e2e8f0;
+  font-size: 13px; padding: 10px 18px;
+}
+.result-action-bar .rab-regen:hover { color: var(--ink); border-color: #cbd5e1; }
+.hero-top h1 {
+  font-family: var(--display); font-size: 40px; font-weight: 600;
+  line-height: 1.15; color: var(--ink); letter-spacing: -1px;
+}
+.hero-top h1 em { font-style: italic; color: var(--blue); }
+.hero-top .subtitle {
+  font-size: 15px; color: #475569; margin-top: 8px;
+  line-height: 1.5; max-width: 480px; margin-left: auto; margin-right: auto;
+}
+.demo-video {
+  margin-top: 16px; background: #ffffff; border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08); overflow: hidden;
+  box-shadow: 0 8px 30px rgba(29,78,216,0.1), 0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  max-width: 720px; margin-left: auto; margin-right: auto;
+  display: flex; flex-direction: column; align-items: center;
+}
+.demo-video-chrome {
+  height: 26px; background: #f1f5f9; display: flex; align-items: center;
+  padding: 0 10px; gap: 5px; border-bottom: 1px solid #e2e8f0;
+}
+.demo-video-chrome i { width: 7px; height: 7px; border-radius: 50%; }
+.demo-video-chrome i:nth-child(1) { background: #ff5f57; }
+.demo-video-chrome i:nth-child(2) { background: #febc2e; }
+.demo-video-chrome i:nth-child(3) { background: #28c840; }
+.demo-video-chrome span { margin-left: auto; font-family: var(--mono); font-size: 8px; color: #94a3b8; }
+.demo-video-body {
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px; position: relative;
+}
+.demo-video-body canvas { display: block; width: 100%; height: auto; }
+.play-btn {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(29,78,216,0.9); border: 2px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s;
+}
+.play-btn:hover { background: rgba(29,78,216,1); transform: translate(-50%, -50%) scale(1.1); }
+.play-btn::after {
+  content: ''; width: 0; height: 0;
+  border-left: 14px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+  margin-left: 3px;
+}
+.hero-badges {
+  display: flex; gap: 8px; margin-top: 12px; justify-content: center; flex-wrap: wrap;
+}
+.badge {
+  display: flex; align-items: center; gap: 4px; padding: 4px 10px;
+  background: rgba(255,255,255,0.6); border: 1px solid rgba(29,78,216,0.1);
+  border-radius: 16px; font-size: 10px; font-weight: 500; color: #475569;
+}
+.badge::before { content: '✓'; font-weight: 700; color: var(--blue); }
+
+/* ── Bottom: ChatGPT input (docked) ── */
+.hero-bottom {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; padding: 0 24px 32px; position: relative; z-index: 1;
+}
+.hero-bottom-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  color: #64748b; letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.mega-input {
+  width: 100%; max-width: 680px; background: #ffffff;
+  border: 1.5px solid #c7d5e6; border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(29,78,216,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s;
+}
+.mega-input:focus-within {
+  border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,78,216,0.1), 0 4px 20px rgba(29,78,216,0.12);
+}
+.mega-input textarea {
+  width: 100%; min-height: 80px; max-height: 120px; padding: 16px 20px 8px;
+  border: none; font-family: var(--body); font-size: 14px;
+  line-height: 1.6; color: var(--ink); background: transparent;
+  resize: none; outline: none;
+}
+.mega-input textarea::placeholder { color: #94a3b8; }
+.mega-input-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px 10px 16px; border-top: 1px solid #edf2f7;
+  background: #f8fafc;
+}
+.mega-input-bar .toggles { display: flex; gap: 8px; align-items: center; }
+.toggle-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px; background: #fff; border: 1.5px solid #c7d5e6;
+  border-radius: 10px; font-family: var(--body); font-size: 13px;
+  font-weight: 600; color: #475569; cursor: pointer; transition: all 0.25s;
+  user-select: none;
+}
+.toggle-btn:hover { border-color: var(--blue); color: var(--blue); background: #f0f7ff; }
+.toggle-btn.active {
+  background: var(--blue-light); border-color: var(--blue); color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.08);
+}
+.toggle-btn .icon { font-size: 16px; }
+.mega-input-bar .action-btn .icon { font-size: 13px; }
+.mega-input-bar .generate-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 24px; background: var(--blue); color: #fff;
+  border: none; border-radius: 10px; font-family: var(--body);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; box-shadow: 0 2px 8px rgba(29,78,216,0.4);
+}
+.mega-input-bar .generate-btn:hover {
+  background: var(--blue-hover); transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(29,78,216,0.5);
+}
+.mega-input-bar .generate-btn .arrow { font-size: 16px; transition: transform 0.2s; }
+.mega-input-bar .generate-btn:hover .arrow { transform: translateX(3px); }
+.hero-bottom-note {
+  margin-top: 10px; font-size: 11px; color: #94a3b8;
+}
+
+/* ── Template Grid (STATE 2) ──────── */
+.template-grid {
+  display: none; max-width: 580px; margin: 0 auto;
+}
+.template-grid.visible { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.template-grid-label {
+  grid-column: 1/-1; text-align: center; font-size: 13px; color: #475569;
+  margin-bottom: 4px;
+}
+.template-card {
+  aspect-ratio: 3/4; background: #fff; border: 1.5px solid #d1d9e6;
+  border-radius: 10px; overflow: hidden; cursor: pointer;
+  transition: all 0.2s; display: flex; flex-direction: column;
+}
+.template-card:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.template-card.selected { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(29,78,216,0.2); }
+.template-card canvas { flex: 1; width: 100%; object-fit: cover; }
+.template-card-label { padding: 4px 6px; font-size: 9px; font-weight: 600; color: #64748b; text-align: center; border-top: 1px solid #edf2f7; background: #f8fafc; }
+.template-card-add {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #f8fafc; border: 2px dashed #c7d5e6; gap: 6px;
+}
+.template-card-add:hover { border-color: var(--blue); background: #eff6ff; }
+.template-card-add .plus { font-size: 24px; color: #94a3b8; line-height: 1; }
+.template-card-add .txt { font-size: 8px; color: #94a3b8; text-align: center; line-height: 1.3; font-weight: 600; }
+
+/* ── Live Render Area (STATE 3) ──── */
+.live-render { display: none; text-align: center; }
+.live-render.visible { display: flex; flex-direction: column; align-items: center; }
+.cv-preview-wrap {
+  max-height: 50vh; overflow: hidden; position: relative;
+  border-radius: 12px; border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 12px 40px rgba(29,78,216,0.14), 0 2px 8px rgba(0,0,0,0.06);
+}
+.cv-preview-wrap::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 60px; background: linear-gradient(transparent, rgba(255,255,255,0.95));
+  pointer-events: none;
+}
+.cv-preview-wrap canvas {
+  width: 300px; max-width: 80vw; height: auto; display: block;
+}
+.live-render .status {
+  margin-top: 10px; font-family: var(--mono); font-size: 11px; color: var(--blue);
+}
+
+/* ── Result Panel (STATE 4) ──────── */
+.result-panel { display: none; text-align: center; }
+.result-panel.visible { display: flex; flex-direction: column; align-items: center; }
+
+/* ── Expand button ── */
+.expand-btn {
+  margin-top: 10px; display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 18px; background: #fff; border: 1.5px solid #d1d9e6;
+  border-radius: 8px; font-family: var(--body); font-size: 12px;
+  font-weight: 600; color: #475569; cursor: pointer; transition: all 0.2s;
+}
+.expand-btn:hover { border-color: var(--blue); color: var(--blue); background: #f0f7ff; }
+
+/* ── Fullscreen Modal ── */
+.cv-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 999;
+  background: rgba(11,18,34,0.65); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.cv-modal-overlay.open { display: flex; }
+.cv-modal {
+  background: #fff; border-radius: 16px; overflow: auto;
+  max-height: 94vh; max-width: 480px; width: 100%;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.35); position: relative;
+}
+.cv-modal canvas { display: block; width: 100%; height: auto; }
+.cv-modal-close {
+  position: fixed; top: 16px; right: 16px; z-index: 1000;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.92); border: 1px solid #d1d9e6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; color: #475569;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15); transition: all 0.2s;
+}
+.cv-modal-close:hover { background: #fff; color: #111; transform: scale(1.05); }
+.result-ats {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 14px;
+  padding: 8px 20px; background: #f0fdf4; border-radius: 20px;
+  font-size: 14px; font-weight: 600; color: #16a34a;
+  border: 1px solid rgba(22, 163, 61, 0.15);
+}
+.result-actions { margin-top: 18px; display: flex; gap: 12px; justify-content: center; }
+.result-actions button {
+  padding: 10px 24px; border-radius: 10px; font-family: var(--body);
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-download { background: var(--blue); color: #fff; border: none; box-shadow: 0 2px 8px rgba(29,78,216,0.3); }
+.btn-download:hover { background: var(--blue-hover); }
+.btn-edit { background: #fff; color: var(--ink); border: 1.5px solid #d1d9e6; }
+.btn-edit:hover { border-color: var(--ink); }
+
+/* ── Sign-in Gate ────────────────── */
+.signin-gate { display: none; max-width: 400px; margin: 16px auto 0; }
+.signin-gate.visible { display: block; }
+.signin-gate-box {
+  background: #fff; border: 1.5px solid #d1d9e6; border-radius: 14px;
+  padding: 24px; text-align: center; box-shadow: var(--shadow-md);
+}
+.signin-gate-box h3 { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.signin-gate-box p { font-size: 12px; color: #94a3b8; margin-bottom: 16px; }
+.signin-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 12px; margin-bottom: 8px;
+  border-radius: 10px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.signin-google { background: #fff; color: #334155; border: 1.5px solid #d1d9e6; }
+.signin-google:hover { border-color: var(--ink); }
+.signin-email { background: var(--ink); color: #fff; border: 1.5px solid var(--ink); }
+.signin-email:hover { background: #1e293b; }
+.signin-note { font-size: 11px; color: #94a3b8; margin-top: 10px; }
+.result-regen { margin-top: 12px; display: flex; gap: 8px; justify-content: center; }
+.result-regen button {
+  padding: 6px 14px; background: transparent; border: 1px solid #d1d9e6;
+  border-radius: 8px; font-size: 12px; color: #64748b; cursor: pointer;
+  font-family: var(--body); transition: all 0.2s;
+}
+.result-regen button:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ── Job posting (inline expand) ── */
+.job-toggle {
+  margin-top: 8px; display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--blue); cursor: pointer;
+  font-weight: 500; transition: color 0.2s;
+}
+.job-toggle:hover { color: var(--blue-hover); }
+.job-input {
+  width: 100%; max-width: 680px; margin-top: 8px;
+  overflow: hidden; max-height: 0; opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.job-input.open { max-height: 140px; opacity: 1; }
+.job-input textarea {
+  width: 100%; min-height: 70px; padding: 12px 16px;
+  border: 1.5px solid #c7d5e6; border-radius: 12px;
+  font-family: var(--body); font-size: 13px; line-height: 1.6;
+  color: var(--ink); background: #ffffff; resize: none; outline: none;
+}
+.job-input textarea:focus { border-color: var(--blue); }
+.job-input textarea::placeholder { color: #94a3b8; }
+
+/* ── CV Preview (used in variations) ── */
+.cv-frame {
+  background: var(--card); border-radius: 12px;
+  box-shadow: var(--shadow-xl); overflow: hidden;
+  border: 1px solid var(--border);
+}
+.cv-frame canvas { display: block; width: 100%; height: auto; }
+
+/* ── Form Section ────────────────── */
+.form-section {
+  padding: 80px 0; background: var(--warm);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.form-header { text-align: center; margin-bottom: 48px; }
+.form-header h2 {
+  font-family: var(--display); font-size: 36px; font-weight: 600;
+  color: var(--ink); letter-spacing: -0.5px;
+}
+.form-header p { font-size: 16px; color: var(--muted); margin-top: 10px; }
+
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  max-width: 880px; margin: 0 auto;
+}
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.form-label .optional {
+  font-weight: 400; text-transform: none; letter-spacing: 0;
+  color: #94a3b8; font-size: 11px;
+}
+.form-textarea {
+  width: 100%; min-height: 200px; padding: 16px 20px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-family: var(--body); font-size: 14px; line-height: 1.7;
+  color: var(--ink); background: var(--card); resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+}
+.form-textarea:focus {
+  border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+}
+.form-textarea::placeholder { color: #94a3b8; }
+
+.form-submit { text-align: center; margin-top: 36px; }
+.btn-generate {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 48px; background: var(--blue); color: #fff;
+  border: none; border-radius: 12px; font-family: var(--body);
+  font-size: 17px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; box-shadow: 0 2px 8px rgba(29,78,216,0.3);
+}
+.btn-generate:hover {
+  background: var(--blue-hover); transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(29,78,216,0.4);
+}
+.btn-generate:active { transform: translateY(0); }
+.btn-generate .arrow { font-size: 20px; transition: transform 0.2s; }
+.btn-generate:hover .arrow { transform: translateX(4px); }
+.form-note {
+  text-align: center; margin-top: 14px;
+  font-size: 13px; color: #94a3b8;
+}
+
+/* ── Variations Section ──────────── */
+.variations-section { padding: 80px 0; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 {
+  font-family: var(--display); font-size: 36px; font-weight: 600;
+  color: var(--ink); letter-spacing: -0.5px;
+}
+.section-header p { font-size: 16px; color: var(--muted); margin-top: 10px; }
+
+.variations-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.variation-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 14px; overflow: hidden; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.variation-card:hover {
+  border-color: var(--blue); transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.variation-card canvas { display: block; width: 100%; height: 180px; object-fit: cover; background: #f1f5f9; }
+.variation-info { padding: 14px 16px; }
+.variation-info h3 { font-size: 14px; font-weight: 600; color: var(--ink); }
+.variation-info p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.variation-info .ats-badge {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 8px;
+  padding: 3px 10px; background: var(--green-light); border-radius: 12px;
+  font-size: 11px; font-weight: 600; color: var(--green);
+}
+
+/* ── ATS Section ─────────────────── */
+.ats-section { padding: 80px 0; background: var(--ink); color: #fff; }
+.ats-section h2 { font-family: var(--display); font-size: 36px; font-weight: 600; text-align: center; }
+.ats-section .subtitle { text-align: center; color: #94a3b8; margin-top: 10px; font-size: 16px; }
+.ats-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  max-width: 900px; margin: 48px auto 0;
+}
+.ats-score-circle {
+  width: 200px; height: 200px; border-radius: 50%;
+  border: 6px solid rgba(255,255,255,0.08);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto;
+  background: radial-gradient(circle, rgba(29,78,216,0.15), transparent);
+}
+.ats-score-num { font-family: var(--display); font-size: 64px; font-weight: 600; color: #fff; line-height: 1; }
+.ats-score-label { font-size: 13px; color: var(--blue-muted); font-weight: 500; margin-top: 4px; }
+.ats-keywords { display: flex; flex-direction: column; gap: 10px; }
+.ats-keyword {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+  background: rgba(255,255,255,0.04); border-radius: 8px;
+  font-size: 14px; color: rgba(255,255,255,0.8);
+}
+.ats-keyword .check { color: #4ade80; font-weight: 700; }
+.ats-keyword .miss { color: #f87171; font-weight: 700; }
+
+/* ── Chat Section ────────────────── */
+.chat-section { padding: 80px 0; background: var(--warm); border-top: 1px solid var(--border); }
+.chat-demo {
+  max-width: 640px; margin: 48px auto 0;
+  background: var(--card); border-radius: 16px;
+  border: 1.5px solid var(--border); box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.chat-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.chat-header h3 { font-size: 15px; font-weight: 600; }
+.chat-header span { font-size: 12px; color: var(--muted); }
+.chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 14px; max-height: 360px; overflow-y: auto; }
+.chat-msg {
+  padding: 10px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5;
+  max-width: 85%; animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0;
+}
+.chat-msg.user { background: #f1f5f9; align-self: flex-end; color: var(--ink); }
+.chat-msg.ai { background: var(--blue-light); align-self: flex-start; color: var(--ink); border-left: 3px solid var(--blue); }
+.chat-msg.ai strong { color: var(--blue); }
+.chat-input {
+  display: flex; padding: 14px 16px; border-top: 1px solid var(--border); gap: 10px;
+}
+.chat-input input {
+  flex: 1; padding: 10px 16px; border: 1.5px solid var(--border);
+  border-radius: 10px; font-family: var(--body); font-size: 14px;
+  outline: none; color: var(--ink);
+}
+.chat-input input:focus { border-color: var(--blue); }
+.chat-input button {
+  padding: 10px 20px; background: var(--blue); color: #fff;
+  border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+  font-size: 14px; transition: background 0.2s;
+}
+.chat-input button:hover { background: var(--blue-hover); }
+
+/* ── Pricing ─────────────────────── */
+.pricing-section { padding: 80px 0; }
+.pricing-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  max-width: 720px; margin: 48px auto 0;
+}
+.pricing-card {
+  padding: 36px; background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 16px; transition: all 0.3s;
+}
+.pricing-card.featured {
+  border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue), var(--shadow-lg);
+  position: relative;
+}
+.pricing-card.featured::before {
+  content: 'BEST VALUE'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--blue); color: #fff; padding: 4px 14px; border-radius: 6px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 1px;
+}
+.pricing-card h3 { font-family: var(--display); font-size: 22px; font-weight: 600; }
+.pricing-card .price { font-size: 42px; font-weight: 700; margin: 16px 0; color: var(--ink); }
+.pricing-card .price span { font-size: 16px; font-weight: 400; color: var(--muted); }
+.pricing-card .features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.pricing-card .features li { font-size: 14px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.pricing-card .features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+.pricing-card .btn {
+  display: block; width: 100%; padding: 14px; text-align: center;
+  border-radius: 10px; font-size: 15px; font-weight: 600;
+  text-decoration: none; cursor: pointer; transition: all 0.2s;
+}
+.pricing-card .btn-primary { background: var(--blue); color: #fff; border: none; }
+.pricing-card .btn-primary:hover { background: var(--blue-hover); }
+.pricing-card .btn-secondary { background: #fff; color: var(--ink); border: 1.5px solid var(--border); }
+.pricing-card .btn-secondary:hover { border-color: var(--ink); }
+
+/* ── Footer ──────────────────────── */
+footer {
+  padding: 48px 0; border-top: 1px solid var(--border);
+  text-align: center; font-size: 13px; color: var(--muted);
+}
+footer a { color: var(--blue); text-decoration: none; }
+
+/* ── AI Editor Overlay ────────────── */
+.editor-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0c0f17; display: none; flex-direction: column;
+  animation: editorSlideIn 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.editor-overlay.open { display: flex; }
+@keyframes editorSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.editor-bar {
+  height: 48px; display: flex; align-items: center; padding: 0 16px;
+  background: #12151f; border-bottom: 1px solid #1e2231; flex-shrink: 0; gap: 12px;
+}
+.editor-bar-logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #60a5fa; letter-spacing: 1px; }
+.editor-bar-title { font-size: 13px; color: #64748b; margin-left: 8px; }
+.editor-bar-sep { flex: 1; }
+.editor-bar-ctx {
+  display: flex; align-items: center; gap: 6px; padding: 4px 12px;
+  background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.15);
+  border-radius: 6px; font-family: var(--mono); font-size: 11px; color: #60a5fa;
+  transition: all 0.3s;
+}
+.editor-bar-ctx:empty { display: none; }
+.editor-bar-ctx .dot { width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; animation: ctxPulse 2s ease infinite; }
+@keyframes ctxPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+.editor-bar-close {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid #1e2231; border-radius: 6px;
+  color: #64748b; font-size: 18px; cursor: pointer; transition: all 0.2s;
+}
+.editor-bar-close:hover { background: #1e2231; color: #f1f5f9; border-color: #334155; }
+
+.editor-split { flex: 1; display: flex; overflow: hidden; }
+
+/* Left: Chat */
+.editor-chat {
+  width: 380px; min-width: 320px; display: flex; flex-direction: column;
+  background: #0c0f17; border-right: 1px solid #1e2231;
+}
+.editor-chat-messages {
+  flex: 1; overflow-y: auto; padding: 20px 16px; display: flex;
+  flex-direction: column; gap: 12px;
+  scrollbar-width: thin; scrollbar-color: #1e2231 transparent;
+}
+.editor-chat-messages::-webkit-scrollbar { width: 4px; }
+.editor-chat-messages::-webkit-scrollbar-thumb { background: #1e2231; border-radius: 2px; }
+
+.echat-msg {
+  padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.55;
+  max-width: 92%; animation: fadeUp 0.3s ease forwards;
+}
+.echat-msg.user { align-self: flex-end; background: #1a1f2e; color: #e2e8f0; border-bottom-right-radius: 3px; }
+.echat-msg.ai { align-self: flex-start; background: #111827; color: #cbd5e1; border-left: 2px solid #3b82f6; border-bottom-left-radius: 3px; }
+.echat-msg.ai strong { color: #60a5fa; }
+.echat-msg.system { align-self: center; background: transparent; color: #475569; font-size: 11px; font-family: var(--mono); text-align: center; padding: 6px 0; }
+
+.echat-suggestion { margin-top: 8px; padding: 10px 12px; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.12); border-radius: 8px; font-size: 12px; line-height: 1.6; color: #94a3b8; white-space: pre-wrap; }
+.echat-suggestion-actions { display: flex; gap: 6px; margin-top: 8px; }
+.echat-suggestion-actions button {
+  padding: 5px 14px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; font-family: var(--body);
+}
+.echat-apply { background: #1d4ed8; color: #fff; border: none; box-shadow: 0 1px 4px rgba(29,78,216,0.3); }
+.echat-apply:hover { background: #2563eb; }
+.echat-reject { background: transparent; color: #64748b; border: 1px solid #1e2231; }
+.echat-reject:hover { color: #e2e8f0; border-color: #334155; }
+
+.echat-context {
+  padding: 8px 14px; margin: 0 16px 8px; display: flex; align-items: center; gap: 8px;
+  background: rgba(59,130,246,0.06); border: 1px dashed rgba(59,130,246,0.2);
+  border-radius: 8px; font-size: 11px; color: #60a5fa; font-family: var(--mono);
+}
+.echat-context:empty { display: none; }
+
+.editor-chat-input {
+  padding: 12px 16px; border-top: 1px solid #1e2231; display: flex; gap: 8px; background: #0e1119;
+}
+.editor-chat-input textarea {
+  flex: 1; min-height: 38px; max-height: 120px; padding: 8px 12px;
+  background: #161a26; border: 1px solid #1e2231; border-radius: 8px;
+  color: #e2e8f0; font-family: var(--body); font-size: 13px; line-height: 1.5;
+  resize: none; outline: none; transition: border-color 0.2s;
+}
+.editor-chat-input textarea:focus { border-color: #3b82f6; }
+.editor-chat-input textarea::placeholder { color: #475569; }
+.editor-chat-send {
+  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+  background: #1d4ed8; border: none; border-radius: 8px; color: #fff;
+  cursor: pointer; transition: all 0.2s; font-size: 16px; flex-shrink: 0; align-self: flex-end;
+}
+.editor-chat-send:hover { background: #2563eb; transform: translateY(-1px); }
+
+/* Right: CV */
+.editor-cv { flex: 1; display: flex; flex-direction: column; background: #1a1d27; overflow: hidden; }
+.editor-cv-toolbar {
+  height: 40px; display: flex; align-items: center; padding: 0 16px;
+  background: #12151f; border-bottom: 1px solid #1e2231; gap: 8px; flex-shrink: 0;
+}
+.editor-cv-toolbar button {
+  padding: 4px 12px; background: transparent; border: 1px solid #1e2231;
+  border-radius: 5px; color: #64748b; font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; font-family: var(--body);
+}
+.editor-cv-toolbar button:hover { border-color: #334155; color: #e2e8f0; }
+.editor-cv-toolbar .tb-sep { flex: 1; }
+
+.editor-cv-body {
+  flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 32px 24px;
+  background: radial-gradient(ellipse at center, #1f2333, #1a1d27);
+  scrollbar-width: thin; scrollbar-color: #1e2231 transparent;
+}
+
+.editor-cv-paper {
+  width: 420px; min-height: 580px; background: #fff; border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative; flex-shrink: 0;
+}
+.editor-cv-paper canvas { display: block; width: 100%; height: auto; border-radius: 4px; }
+
+/* Section overlays */
+.editor-section-overlay { position: absolute; inset: 0; pointer-events: none; }
+.editor-section-hit {
+  position: absolute; cursor: pointer; pointer-events: all;
+  border: 2px solid transparent; border-radius: 4px; transition: all 0.2s;
+}
+.editor-section-hit:hover { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.04); }
+.editor-section-hit.selected { border-color: #3b82f6; background: rgba(59,130,246,0.08); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+.editor-section-hit .section-label {
+  position: absolute; top: -18px; left: 0; padding: 1px 7px;
+  background: #3b82f6; color: #fff; font-size: 9px; font-weight: 600;
+  font-family: var(--mono); border-radius: 3px 3px 0 0;
+  opacity: 0; transition: opacity 0.2s; letter-spacing: 0.5px; white-space: nowrap;
+}
+.editor-section-hit:hover .section-label,
+.editor-section-hit.selected .section-label { opacity: 1; }
+.editor-section-hit .section-actions {
+  position: absolute; top: -18px; right: 0; display: flex; gap: 3px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.editor-section-hit:hover .section-actions,
+.editor-section-hit.selected .section-actions { opacity: 1; }
+.editor-section-hit .section-actions button {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  background: #1e293b; border: none; border-radius: 3px; color: #94a3b8;
+  font-size: 10px; cursor: pointer; transition: all 0.15s;
+}
+.editor-section-hit .section-actions button.del-btn:hover { background: #dc2626; color: #fff; }
+.editor-section-hit .section-actions button.edit-btn:hover { background: #2563eb; color: #fff; }
+
+/* ── Responsive ──────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .hero-top h1 { font-size: 32px; }
+  .mega-input textarea { min-height: 120px; font-size: 14px; }
+  .mega-input-bar { flex-direction: column; gap: 10px; }
+  .mega-input-bar .actions { width: 100%; justify-content: center; }
+  .variations-grid { grid-template-columns: 1fr 1fr; }
+  .pricing-cards { grid-template-columns: 1fr; }
+  .ats-grid { grid-template-columns: 1fr; }
+  nav { padding: 0 16px; }
+  .nav-links a { display: none; }
+  .demo-video { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">CV</div>
+    <div class="nav-logo-text">CVM</div>
+  </div>
+  <div class="nav-links">
+    <a href="#generate">Generate</a>
+    <a href="#variations">Variations</a>
+    <a href="#ats">ATS Score</a>
+    <a href="#pricing">Pricing</a>
+    <button class="nav-cta" onclick="document.getElementById('generate').scrollIntoView({behavior:'smooth'})">Get Started</button>
+  </div>
+</nav>
+
+<!-- Hero: Full-screen, 4-state -->
+<section class="hero-split" id="generate">
+
+  <!-- TOP AREA: video / templates / live render / result -->
+  <div class="hero-top">
+    <div class="hero-top-inner">
+
+      <!-- Headline (hidden on landing, shown on other states) -->
+      <h1 id="hero-headline" style="display:none">Your perfect CV<br>in <em>10 seconds.</em></h1>
+      <p class="subtitle" id="hero-subtitle" style="display:none">Paste your info. Get an AI-tailored CV — optimized for ATS, designed to impress.</p>
+
+      <!-- STATE 1: Demo Video -->
+      <div class="demo-video fade-in delay-2" id="state-video">
+        <div class="demo-video-chrome"><i></i><i></i><i></i><span>demo.mp4</span></div>
+        <div class="demo-video-body">
+          <canvas id="hero-cv" width="640" height="260"></canvas>
+          <div class="play-btn" id="play-btn"></div>
+        </div>
+      </div>
+
+      <!-- STATE 2a: Template Grid (Style toggle) -->
+      <div class="template-grid" id="state-templates">
+        <div class="template-grid-label">Choose a style, or let AI decide</div>
+        <!-- Card 0: Add your own -->
+        <div class="template-card template-card-add" onclick="handleTemplateClick(-1)" id="tmpl-add">
+          <span class="plus">＋</span>
+          <span class="txt">YOUR<br>STYLE</span>
+          <span class="txt" style="color:#64748b">describe it<br>or screenshot</span>
+        </div>
+        <!-- Cards 1-7: templates -->
+        <div class="template-card" onclick="handleTemplateClick(0)" data-tmpl="0"><canvas id="tmpl-0"></canvas><div class="template-card-label">Modern</div></div>
+        <div class="template-card" onclick="handleTemplateClick(1)" data-tmpl="1"><canvas id="tmpl-1"></canvas><div class="template-card-label">Coral</div></div>
+        <div class="template-card" onclick="handleTemplateClick(2)" data-tmpl="2"><canvas id="tmpl-2"></canvas><div class="template-card-label">Centered</div></div>
+        <div class="template-card" onclick="handleTemplateClick(3)" data-tmpl="3"><canvas id="tmpl-3"></canvas><div class="template-card-label">Minimal</div></div>
+        <div class="template-card" onclick="handleTemplateClick(4)" data-tmpl="4"><canvas id="tmpl-4"></canvas><div class="template-card-label">Earth</div></div>
+        <div class="template-card" onclick="handleTemplateClick(5)" data-tmpl="5"><canvas id="tmpl-5"></canvas><div class="template-card-label">Hacker</div></div>
+        <div class="template-card" onclick="handleTemplateClick(6)" data-tmpl="6"><canvas id="tmpl-6"></canvas><div class="template-card-label">Swiss</div></div>
+      </div>
+
+      <!-- STATE 2b: Job Posting (Job toggle) -->
+      <div id="state-job" style="display:none;max-width:540px;margin:0 auto">
+        <textarea id="job-textarea" style="width:100%;min-height:160px;padding:20px;border:1.5px solid #c7d5e6;border-radius:14px;font-family:var(--body);font-size:14px;line-height:1.7;color:var(--ink);background:#fff;resize:none;outline:none;box-shadow:0 4px 16px rgba(29,78,216,0.06)" placeholder="Paste the job description here. CVM will tailor your CV to match keywords, reorder sections, and optimize for this specific role."></textarea>
+        <p style="text-align:center;margin-top:8px;font-size:12px;color:#94a3b8">Paste a job posting — AI will match keywords and tailor your CV</p>
+      </div>
+
+      <!-- STATE 3: Live Render -->
+      <div class="live-render" id="state-render">
+        <div class="cv-preview-wrap">
+          <canvas id="live-cv"></canvas>
+        </div>
+        <div class="status" id="render-status">Starting...</div>
+      </div>
+
+      <!-- STATE 4: Result + Sign-in -->
+      <div class="result-panel" id="state-result">
+        <div class="cv-preview-wrap">
+          <canvas id="result-cv"></canvas>
+        </div>
+        <button class="expand-btn" onclick="expandCV()">⤢ View full CV</button>
+        <div class="result-ats" id="result-ats">✓ ATS Match: 92%</div>
+        <div class="result-actions">
+          <button class="btn-download" onclick="showSignIn()">↓ Download PDF</button>
+          <button class="btn-edit" onclick="openEditor()">✎ Edit with AI</button>
+        </div>
+        <div class="signin-gate" id="signin-gate">
+          <div class="signin-gate-box">
+            <h3>Sign in to continue</h3>
+            <p>Free to view · Sign in to download or edit</p>
+            <button class="signin-btn signin-google">
+              <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.6 9.2l-.1-1.8H9v3.4h4.8C13.5 12.2 12.3 13 11 13.5v2.5h2.8c1.6-1.5 2.5-3.6 2.5-6.3z" fill="#4285F4"/><path d="M9 18c2.4 0 4.5-.8 6-2.2l-2.8-2.2c-.8.5-1.9.9-3.2.9-2.5 0-4.6-1.7-5.3-3.9H.8v2.3C2.3 16 5.4 18 9 18z" fill="#34A853"/><path d="M3.7 10.7c-.2-.6-.3-1.1-.3-1.7s.1-1.2.3-1.7V5H.8C.3 6-.1 7.2-.1 8.5s.3 2.5.8 3.5l2.9-1.3z" fill="#FBBC05"/><path d="M9 3.6c1.3 0 2.5.5 3.5 1.4l2.6-2.6C13.5.9 11.4 0 9 0 5.4 0 2.3 2 .8 5l2.9 2.3C4.4 5.3 6.5 3.6 9 3.6z" fill="#EA4335"/></svg>
+              Continue with Google
+            </button>
+            <button class="signin-btn signin-email">✉ Continue with Email</button>
+            <div class="signin-note">No credit card required · Your data stays private</div>
+          </div>
+        </div>
+        <div class="result-regen">
+          <button onclick="resetToInput()">↻ Regenerate</button>
+          <button onclick="showTemplates()">Try different style</button>
+        </div>
+      </div>
+
+      <!-- Badges (hidden on landing — video says it all) -->
+      <div class="hero-badges fade-in delay-3" id="hero-badges" style="display:none">
+        <div class="badge">ATS Optimized</div>
+        <div class="badge">4 Variations</div>
+        <div class="badge">PDF Export</div>
+        <div class="badge">AI Tailored</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Input bar (always visible) -->
+  <div class="hero-bottom">
+    <div class="hero-bottom-label" id="input-label">Try it yourself</div>
+
+    <div class="mega-input" id="mega-input">
+      <textarea id="cv-input" onfocus="onInputFocus()" placeholder="Paste your CV, LinkedIn profile, or just type freely — your name, experience, skills, education. Any format works. AI will structure it beautifully."></textarea>
+      <input type="file" id="file-upload" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" style="display:none" onchange="handleFileUpload(event)">
+      <div class="mega-input-bar">
+        <div class="toggles">
+          <button class="toggle-btn" id="toggle-style" onclick="toggleMiddle('style')">
+            <span class="icon">🎨</span> Style
+          </button>
+          <button class="toggle-btn" id="toggle-job" onclick="toggleMiddle('job')">
+            <span class="icon">📋</span> Job Posting
+          </button>
+          <button class="toggle-btn" id="provider-toggle" onclick="toggleProvider()" style="border-color:#3b82f6;color:#3b82f6;margin-left:auto;font-size:11px;padding:8px 14px">
+            🔷 Qwen
+          </button>
+        </div>
+        <button class="generate-btn" id="gen-btn" onclick="generateCV()">
+          Generate CV <span class="arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="result-action-bar" id="result-action-bar">
+      <button class="rab-download" onclick="downloadCV()">↓ Download PDF</button>
+      <button class="rab-edit" onclick="openEditor()">✎ Edit with AI</button>
+      <button class="rab-regen" onclick="resetToInput()">↻ New CV</button>
+    </div>
+
+    <p class="hero-bottom-note">Free to generate · No signup · 10 seconds · Your data stays in your browser</p>
+  </div>
+
+</section>
+
+<!-- Variations -->
+<section class="variations-section" id="variations">
+  <div class="container">
+    <div class="section-header">
+      <h2>Pick your favorite from 4 variations.</h2>
+      <p>Each is unique — different layouts, emphasis, and visual styles. The right one is always one click away.</p>
+    </div>
+    <div class="variations-grid" id="variations-grid"></div>
+  </div>
+</section>
+
+<!-- ATS Score -->
+<section class="ats-section" id="ats">
+  <div class="container">
+    <h2>ATS Match Score: your proof it works.</h2>
+    <p class="subtitle">Not just a pretty PDF — a strategic tool matched to the specific job you're applying for.</p>
+    <div class="ats-grid">
+      <div style="display:flex;align-items:center;justify-content:center">
+        <div class="ats-score-circle fade-in">
+          <div class="ats-score-num">92</div>
+          <div class="ats-score-label">% match</div>
+        </div>
+      </div>
+      <div class="ats-keywords fade-in delay-2">
+        <div class="ats-keyword"><span class="check">✓</span> React — found in skills + experience</div>
+        <div class="ats-keyword"><span class="check">✓</span> Node.js — found in experience section</div>
+        <div class="ats-keyword"><span class="check">✓</span> AWS — found in skills</div>
+        <div class="ats-keyword"><span class="check">✓</span> Microservices — found in experience</div>
+        <div class="ats-keyword"><span class="check">✓</span> Team player — inferred from volunteer work</div>
+        <div class="ats-keyword"><span class="check">✓</span> Dutch — found in languages</div>
+        <div class="ats-keyword"><span class="miss">✗</span> GCP — not found (optional requirement)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Chat Fixes -->
+<section class="chat-section" id="chat">
+  <div class="container">
+    <div class="section-header">
+      <h2>Fix anything by just talking.</h2>
+      <p>No edit mode. No drag-and-drop. Just type what you want changed — like messaging a CV writer.</p>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-header">
+        <h3>Chat</h3>
+        <span>Talk naturally — no syntax needed</span>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg user" style="animation-delay:0s">Add my AWS certification from 2023</div>
+        <div class="chat-msg ai" style="animation-delay:0.2s"><strong>Done!</strong> Added AWS Solutions Architect (2023) to certifications.</div>
+        <div class="chat-msg user" style="animation-delay:0.4s">Make the work experience section longer with more detail</div>
+        <div class="chat-msg ai" style="animation-delay:0.6s"><strong>Expanded.</strong> Added 3 bullet points about inventory management, team collaboration, and new hire training.</div>
+        <div class="chat-msg user" style="animation-delay:0.8s">I actually speak Dutch conversationally, not beginner</div>
+        <div class="chat-msg ai" style="animation-delay:1s"><strong>Updated.</strong> Changed Dutch from "beginner" to "conversational." ATS score improved to 94%.</div>
+      </div>
+      <div class="chat-input">
+        <input type="text" placeholder='Type a change... (e.g. "remove the photo")'>
+        <button>Send</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <h2>Simple, honest pricing.</h2>
+      <p>No hidden fees. No auto-renewals. See your CV first, pay only if you love it.</p>
+    </div>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <h3>Single CV</h3>
+        <div class="price">$15 <span>one-time</span></div>
+        <ul class="features">
+          <li>4 design variations</li>
+          <li>ATS optimization + score</li>
+          <li>PDF download, no watermark</li>
+          <li>Chat editing (10 messages)</li>
+          <li>Tailored to one job posting</li>
+        </ul>
+        <button class="btn btn-secondary">Download PDF</button>
+      </div>
+      <div class="pricing-card featured">
+        <h3>Unlimited</h3>
+        <div class="price">$29 <span>/ month</span></div>
+        <ul class="features">
+          <li>Unlimited CVs for any job</li>
+          <li>All 4 variations per generation</li>
+          <li>Unlimited chat editing</li>
+          <li>ATS score for every application</li>
+          <li>Saved profile — generate in 5 seconds</li>
+          <li>Priority generation speed</li>
+        </ul>
+        <button class="btn btn-primary">Start Free Trial</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>CVM — AI-powered CV generation. Built with <a href="#">VOXI DSL</a>.</p>
+    <p style="margin-top:6px">No data stored. No account needed. Your info stays in your browser.</p>
+  </div>
+</footer>
+
+<!-- ── AI Editor Overlay ────────────── -->
+<div class="editor-overlay" id="editor-overlay">
+  <div class="editor-bar">
+    <span class="editor-bar-logo">CVM</span>
+    <span class="editor-bar-title">AI Editor</span>
+    <div class="editor-bar-sep"></div>
+    <div class="editor-bar-ctx" id="editor-ctx-badge"></div>
+    <button class="editor-bar-close" onclick="closeEditor()" title="Back to preview">✕</button>
+  </div>
+  <div class="editor-split">
+    <!-- Left: Chat -->
+    <div class="editor-chat">
+      <div class="editor-chat-messages" id="editor-messages">
+        <div class="echat-msg system">Click any section on the CV to load it into context</div>
+      </div>
+      <div class="echat-context" id="editor-context-indicator"></div>
+      <div class="editor-chat-input">
+        <textarea id="editor-chat-textarea" placeholder="Ask AI to improve, rewrite, or fix..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();editorSendMessage()}"></textarea>
+        <button class="editor-chat-send" onclick="editorSendMessage()">→</button>
+      </div>
+    </div>
+    <!-- Right: CV -->
+    <div class="editor-cv">
+      <div class="editor-cv-toolbar">
+        <button onclick="editorRegenerate()">↻ Regenerate</button>
+        <button onclick="editorUndo()">↩ Undo</button>
+        <div class="tb-sep"></div>
+        <button onclick="editorDownload()">↓ Download PDF</button>
+      </div>
+      <div class="editor-cv-body">
+        <div class="editor-cv-paper" id="editor-paper">
+          <canvas id="editor-canvas"></canvas>
+          <div class="editor-section-overlay" id="editor-sections"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Full CVM Renderer (ported from cvm-maker) ───
+
+const imageStore = { photo: null };
+
+// Simple letter-circle icons — clean at any size
+const ICON_LETTERS = {
+  email: '✉', phone: '✆', location: '◉', web: '◎',
+  github: 'G', linkedin: 'in', calendar: '▦', briefcase: '◈'
+};
+const ICONS = {};
+for (const [name, letter] of Object.entries(ICON_LETTERS)) {
+  ICONS[name] = function(ctx, x, y, s, c) {
+    ctx.fillStyle = c;
+    ctx.font = `${s * 0.85}px -apple-system, system-ui, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(letter, x, y);
+  };
+}
+
+function roundedRect(ctx,x,y,w,h,r){r=Math.min(r||0,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function drawStar(ctx,cx,cy,r,filled,color){const sp=5,oR=r,iR=r*0.45;ctx.beginPath();for(let i=0;i<sp*2;i++){const rad=(i*Math.PI/sp)-Math.PI/2;const rr=i%2===0?oR:iR;const px=cx+rr*Math.cos(rad),py=cy+rr*Math.sin(rad);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();if(filled){ctx.fillStyle=color;ctx.fill();}else{ctx.strokeStyle=color;ctx.lineWidth=1;ctx.stroke();}}
+
+function parse(code) {
+  let W=595,H=842,bg='#ffffff';
+  const els=[];
+  for(const raw of code.split('\n')){
+    const t=raw.trim();
+    if(!t||t.startsWith('--')||t.startsWith('//'))continue;
+    const tk=[];let j=0;
+    while(j<t.length){if(t[j]===' '||t[j]==='\t'){j++;continue;}if(t[j]==='"'){const e=t.indexOf('"',j+1);if(e===-1){tk.push(t.slice(j+1));j=t.length;}else{tk.push(t.slice(j+1,e));j=e+1;}}else{const e=t.indexOf(' ',j);if(e===-1){tk.push(t.slice(j));j=t.length;}else{tk.push(t.slice(j,e));j=e+1;}}}
+    if(!tk.length)continue;
+    const c=tk[0].toUpperCase();
+    if(c==='CANVAS'||c==='C'){W=+tk[1]||595;H=+tk[2]||842;bg=tk[3]||'#ffffff';}
+    else if(c==='RECT'||c==='R')els.push({type:'rect',x:+tk[1]||0,y:+tk[2]||0,w:+tk[3]||100,h:+tk[4]||50,z:+tk[5]||0,color:tk[6]||'#888',radius:+tk[7]||0});
+    else if(c==='TEXT'||c==='T')els.push({type:'text',x:+tk[1]||0,y:+tk[2]||0,content:tk[3]||'',size:+tk[4]||16,z:+tk[5]||0,color:tk[6]||'#000',weight:(tk[7]||'normal').toLowerCase()});
+    else if(c==='IMG'||c==='I')els.push({type:'img',x:+tk[1]||0,y:+tk[2]||0,w:+tk[3]||200,h:+tk[4]||150,z:+tk[5]||0,label:tk[6]||'image'});
+    else if(c==='LINE'||c==='L')els.push({type:'line',x1:+tk[1]||0,y1:+tk[2]||0,x2:+tk[3]||100,y2:+tk[4]||0,z:+tk[5]||0,color:tk[6]||'#000',width:+tk[7]||1});
+    else if(c==='ELLIPSE'||c==='E')els.push({type:'ellipse',cx:+tk[1]||0,cy:+tk[2]||0,rx:+tk[3]||50,ry:+tk[4]||50,z:+tk[5]||0,color:tk[6]||'#888'});
+    else if(c==='PHOTO')els.push({type:'photo',x:+tk[1]||0,y:+tk[2]||0,size:+tk[3]||80,z:+tk[4]||0,borderColor:tk[5]||'#fff',borderWidth:+tk[6]||3});
+    else if(c==='SECTION')els.push({type:'section',x:+tk[1]||0,y:+tk[2]||0,w:+tk[3]||200,z:+tk[4]||0,color:tk[5]||'#1e293b',title:tk[6]||'Section'});
+    else if(c==='DIVIDER')els.push({type:'divider',x1:+tk[1]||0,y1:+tk[2]||0,x2:+tk[3]||200,y2:+tk[4]||0,z:+tk[5]||0,color:tk[6]||'#d0d0d0',style:(tk[7]||'solid').toLowerCase()});
+    else if(c==='SKILL-BAR'){const f=(tk[6]||'0').replace('%','');els.push({type:'skillbar',x:+tk[1]||0,y:+tk[2]||0,w:+tk[3]||150,h:+tk[4]||8,z:+tk[5]||0,fill:Math.min(100,Math.max(0,+f||0)),color:tk[7]||'#3b82f6',bgColor:tk[8]||'#e2e8f0',label:tk[9]||''});}
+    else if(c==='PILL')els.push({type:'pill',x:+tk[1]||0,y:+tk[2]||0,z:+tk[3]||0,color:tk[4]||'#3b82f6',textColor:tk[5]||'#fff',label:tk[6]||'Tag'});
+    else if(c==='RATING')els.push({type:'rating',x:+tk[1]||0,y:+tk[2]||0,z:+tk[3]||0,color:tk[4]||'#f59e0b',max:+tk[5]||5,filled:+tk[6]||3});
+    else if(c==='TIMELINE')els.push({type:'timeline',x:+tk[1]||0,y:+tk[2]||0,h:+tk[3]||200,z:+tk[4]||0,color:tk[5]||'#d0d0d0'});
+    else if(c==='CONTACT')els.push({type:'contact',x:+tk[1]||0,y:+tk[2]||0,z:+tk[3]||0,color:tk[4]||'#666',icon:(tk[5]||'email').toLowerCase(),text:tk[6]||''});
+    else if(c==='ICON')els.push({type:'icon',x:+tk[1]||0,y:+tk[2]||0,size:+tk[3]||16,z:+tk[4]||0,color:tk[5]||'#666',name:(tk[6]||'email').toLowerCase()});
+  }
+  els.sort((a,b)=>a.z-b.z);
+  return{W,H,bg,els};
+}
+
+function drawEl(ctx,el){
+  ctx.save();
+  switch(el.type){
+    case 'rect':ctx.fillStyle=el.color;if(el.radius>0){roundedRect(ctx,el.x,el.y,el.w,el.h,el.radius);ctx.fill();}else ctx.fillRect(el.x,el.y,el.w,el.h);break;
+    case 'text':{const s=el.weight==='italic'?'italic ':'';const w=el.weight==='bold'?'bold ':el.weight==='light'?'300 ':'';ctx.font=`${s}${w}${el.size}px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif`;ctx.fillStyle=el.color;ctx.textBaseline='top';ctx.fillText(el.content,el.x,el.y);break;}
+    case 'img':ctx.fillStyle='#ddd';ctx.fillRect(el.x,el.y,el.w,el.h);ctx.strokeStyle='#bbb';ctx.strokeRect(el.x,el.y,el.w,el.h);ctx.fillStyle='#999';ctx.font='12px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(el.label,el.x+el.w/2,el.y+el.h/2);ctx.textAlign='start';ctx.textBaseline='alphabetic';break;
+    case 'line':ctx.strokeStyle=el.color;ctx.lineWidth=el.width;ctx.beginPath();ctx.moveTo(el.x1,el.y1);ctx.lineTo(el.x2,el.y2);ctx.stroke();break;
+    case 'ellipse':ctx.fillStyle=el.color;ctx.beginPath();ctx.ellipse(el.cx,el.cy,el.rx,el.ry,0,0,Math.PI*2);ctx.fill();break;
+    case 'photo':{const r=el.size/2,cx=el.x+r,cy=el.y+r;if(imageStore.photo){ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();const img=imageStore.photo,sc=Math.max(el.size/img.width,el.size/img.height),dw=img.width*sc,dh=img.height*sc;ctx.drawImage(img,cx-dw/2,cy-dh/2,dw,dh);ctx.restore();}else{ctx.fillStyle='#c0c8d0';ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8090a0';ctx.beginPath();ctx.arc(cx,cy-r*0.15,r*0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx,cy+r*0.55,r*0.5,r*0.35,0,Math.PI,0);ctx.fill();}if(el.borderWidth>0){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle=el.borderColor;ctx.lineWidth=el.borderWidth;ctx.stroke();}break;}
+    case 'section':ctx.font='bold 13px -apple-system,system-ui,sans-serif';ctx.fillStyle=el.color;ctx.textBaseline='top';ctx.fillText(el.title.toUpperCase(),el.x,el.y);const rY=el.y+18;ctx.strokeStyle=el.color;ctx.globalAlpha=0.3;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(el.x,rY);ctx.lineTo(el.x+el.w,rY);ctx.stroke();ctx.globalAlpha=1;break;
+    case 'divider':ctx.strokeStyle=el.color;ctx.lineWidth=1;if(el.style==='dashed')ctx.setLineDash([6,4]);else if(el.style==='dotted')ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(el.x1,el.y1);ctx.lineTo(el.x2,el.y2);ctx.stroke();ctx.setLineDash([]);break;
+    case 'skillbar':{const r=Math.min(el.h/2,6);ctx.fillStyle=el.bgColor;roundedRect(ctx,el.x,el.y,el.w,el.h,r);ctx.fill();const fw=Math.max(el.h,el.w*el.fill/100);ctx.fillStyle=el.color;roundedRect(ctx,el.x,el.y,fw,el.h,r);ctx.fill();if(el.label){ctx.font=`${Math.max(8,el.h-4)}px -apple-system,system-ui,sans-serif`;ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.fillText(el.label,el.x+6,el.y+el.h/2);}break;}
+    case 'pill':{ctx.font='12px -apple-system,system-ui,sans-serif';const tw=ctx.measureText(el.label).width,pw=tw+20,ph=24;ctx.fillStyle=el.color;roundedRect(ctx,el.x,el.y,pw,ph,12);ctx.fill();ctx.fillStyle=el.textColor;ctx.textBaseline='middle';ctx.fillText(el.label,el.x+10,el.y+ph/2);break;}
+    case 'rating':{const sz=10,g=4;for(let s=0;s<el.max;s++){drawStar(ctx,el.x+s*(sz*2+g)+sz,el.y+sz,sz,s<el.filled,el.color);}break;}
+    case 'timeline':ctx.strokeStyle=el.color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(el.x,el.y);ctx.lineTo(el.x,el.y+el.h);ctx.stroke();ctx.fillStyle=el.color;ctx.beginPath();ctx.arc(el.x,el.y,4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(el.x,el.y+el.h,4,0,Math.PI*2);ctx.fill();break;
+    case 'contact':{const is=14,fn=ICONS[el.icon]||ICONS.email;fn(ctx,el.x,el.y,is,el.color);ctx.font='11px -apple-system,system-ui,sans-serif';ctx.fillStyle=el.color;ctx.textBaseline='top';const txt=el.text.length>22?el.text.slice(0,21)+'…':el.text;ctx.fillText(txt,el.x+is+4,el.y+2);break;}
+    case 'icon':{const fn=ICONS[el.name]||ICONS.email;fn(ctx,el.x,el.y,el.size,el.color);break;}
+  }
+  ctx.restore();
+}
+
+function draw(canvas,code){
+  const{W,H,bg,els}=parse(code);
+  const d=window.devicePixelRatio||2;
+  canvas.width=W*d;canvas.height=H*d;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(d,d);
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  for(const el of els) drawEl(ctx,el);
+}
+
+
+// ── Parse semantic DSL → CVDocument ──────────────
+
+function parseSemantic(code) {
+  const doc = {
+    style: 'sidebar-left',
+    colors: { primary: '#1e293b', accent: '#3b82f6' },
+    name: '', title: '', summary: '', hasPhoto: false,
+    contacts: [],
+    sections: [],
+  };
+  let currentSection = null;
+  let currentEntry = null;
+
+  for (const raw of code.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith('--') || line.startsWith('//')) continue;
+
+    // Tokenize: split by spaces but respect quotes
+    const tokens = [];
+    let i = 0;
+    while (i < line.length) {
+      if (line[i] === ' ' || line[i] === '\t') { i++; continue; }
+      if (line[i] === '"') {
+        const end = line.indexOf('"', i + 1);
+        if (end === -1) { tokens.push(line.slice(i + 1)); i = line.length; }
+        else { tokens.push(line.slice(i + 1, end)); i = end + 1; }
+      } else {
+        const end = line.indexOf(' ', i);
+        if (end === -1) { tokens.push(line.slice(i)); i = line.length; }
+        else { tokens.push(line.slice(i, end)); i = end + 1; }
+      }
+    }
+    if (!tokens.length) continue;
+    const cmd = tokens[0].toUpperCase();
+
+    switch (cmd) {
+      case 'STYLE':
+        doc.style = (tokens[1] || 'sidebar-left').toLowerCase();
+        if (tokens[2]) doc.colors.primary = tokens[2];
+        if (tokens[3]) doc.colors.accent = tokens[3];
+        break;
+      case 'NAME': doc.name = tokens[1] || ''; break;
+      case 'TITLE': doc.title = tokens[1] || ''; break;
+      case 'SUMMARY': doc.summary = tokens[1] || ''; break;
+      case 'PHOTO': doc.hasPhoto = true; break;
+      case 'EMAIL': doc.contacts.push({ type: 'email', value: tokens[1] || '' }); break;
+      case 'PHONE': doc.contacts.push({ type: 'phone', value: tokens[1] || '' }); break;
+      case 'LOCATION': doc.contacts.push({ type: 'location', value: tokens[1] || '' }); break;
+      case 'LINK': {
+        const t = (tokens.length >= 3) ? tokens[1].toLowerCase() : 'web';
+        const v = tokens.length >= 3 ? tokens[2] : tokens[1] || '';
+        doc.contacts.push({ type: t, value: v });
+        break;
+      }
+      case 'SECTION':
+        currentSection = { title: tokens[1] || 'Section', items: [] };
+        doc.sections.push(currentSection);
+        currentEntry = null;
+        break;
+      case 'ENTRY':
+        if (!currentSection) { currentSection = { title: 'Experience', items: [] }; doc.sections.push(currentSection); }
+        currentEntry = { type: 'entry', title: tokens[1] || '', org: tokens[2] || '', dates: tokens[3] || '', bullets: [] };
+        currentSection.items.push(currentEntry);
+        break;
+      case 'BULLET':
+        if (currentEntry && currentEntry.bullets) currentEntry.bullets.push(tokens[1] || '');
+        break;
+      case 'SKILL':
+        if (!currentSection) { currentSection = { title: 'Skills', items: [] }; doc.sections.push(currentSection); }
+        currentSection.items.push({ type: 'skill', name: tokens[1] || '' });
+        break;
+      case 'LANG':
+        if (!currentSection) { currentSection = { title: 'Languages', items: [] }; doc.sections.push(currentSection); }
+        currentSection.items.push({ type: 'lang', name: tokens[1] || '', level: tokens[2] || '' });
+        break;
+      case 'CERT':
+        if (!currentSection) { currentSection = { title: 'Certifications', items: [] }; doc.sections.push(currentSection); }
+        currentSection.items.push({ type: 'cert', name: tokens[1] || '', date: tokens[2] || '' });
+        break;
+      case 'INTEREST':
+        if (!currentSection) { currentSection = { title: 'Interests', items: [] }; doc.sections.push(currentSection); }
+        currentSection.items.push({ type: 'interest', name: tokens[1] || '' });
+        break;
+      case 'RATING':
+        if (!currentSection) { currentSection = { title: 'Skills', items: [] }; doc.sections.push(currentSection); }
+        currentSection.items.push({ type: 'rating', name: tokens[1] || '', value: parseInt(tokens[2]) || 3 });
+        break;
+      // Silently ignore unknown commands
+    }
+  }
+  return doc;
+}
+
+// ── Infer section type from contents ─────────────
+
+function inferSectionType(section) {
+  if (!section.items.length) return 'empty';
+  const types = new Set(section.items.map(i => i.type));
+  if (types.has('skill') || types.has('rating')) return 'skills';
+  if (types.has('lang')) return 'languages';
+  if (types.has('interest')) return 'interests';
+  if (types.has('cert')) return 'certifications';
+  return 'entries'; // experience, education, projects
+}
+
+// ── Template configs ─────────────────────────────
+
+const CV_TEMPLATES = {
+  'sidebar-left': {
+    canvas: { w: 420, h: 580 },
+    sidebar: { side: 'left', width: 146, padding: 14, photoSize: 64 },
+    main: { padding: 16 },
+    routing: {
+      sidebar: ['skills', 'languages', 'interests', 'certifications'],
+      main: ['entries'],
+      fallback: 'main',
+    },
+    fonts: {
+      name: 17, title: 9, sectionHead: 10, entryTitle: 9, entryOrg: 8,
+      date: 7, bullet: 7, body: 8, contact: 8, skill: 8, lang: 8,
+    },
+    spacing: { sectionGap: 10, entryGap: 8, bulletGap: 2, lineH: 1.35 },
+  },
+  'sidebar-right': {
+    canvas: { w: 420, h: 580 },
+    sidebar: { side: 'right', width: 146, padding: 14, photoSize: 64 },
+    main: { padding: 16 },
+    routing: {
+      sidebar: ['skills', 'languages', 'interests', 'certifications'],
+      main: ['entries'],
+      fallback: 'main',
+    },
+    fonts: {
+      name: 17, title: 9, sectionHead: 10, entryTitle: 9, entryOrg: 8,
+      date: 7, bullet: 7, body: 8, contact: 8, skill: 8, lang: 8,
+    },
+    spacing: { sectionGap: 10, entryGap: 8, bulletGap: 2, lineH: 1.35 },
+  },
+  'centered': {
+    canvas: { w: 420, h: 580 },
+    sidebar: null,
+    main: { padding: 28 },
+    routing: { sidebar: [], main: ['entries', 'skills', 'languages', 'interests', 'certifications'], fallback: 'main' },
+    fonts: {
+      name: 20, title: 10, sectionHead: 10, entryTitle: 9, entryOrg: 8,
+      date: 7, bullet: 7, body: 8, contact: 8, skill: 8, lang: 8,
+    },
+    spacing: { sectionGap: 10, entryGap: 8, bulletGap: 2, lineH: 1.35 },
+  },
+  'minimal': {
+    canvas: { w: 420, h: 580 },
+    sidebar: null,
+    main: { padding: 32 },
+    routing: { sidebar: [], main: ['entries', 'skills', 'languages', 'interests', 'certifications'], fallback: 'main' },
+    fonts: {
+      name: 22, title: 10, sectionHead: 9, entryTitle: 9, entryOrg: 8,
+      date: 7, bullet: 7, body: 8, contact: 8, skill: 8, lang: 8,
+    },
+    spacing: { sectionGap: 12, entryGap: 8, bulletGap: 2, lineH: 1.35 },
+  },
+  'two-column': {
+    canvas: { w: 420, h: 580 },
+    sidebar: null,
+    main: { padding: 16 },
+    twoCol: true,
+    routing: {
+      left: ['entries'],
+      right: ['skills', 'languages', 'interests', 'certifications'],
+      fallback: 'left',
+    },
+    fonts: {
+      name: 16, title: 9, sectionHead: 9, entryTitle: 8, entryOrg: 7,
+      date: 7, bullet: 7, body: 7, contact: 7, skill: 7, lang: 7,
+    },
+    spacing: { sectionGap: 8, entryGap: 6, bulletGap: 2, lineH: 1.3 },
+  },
+};
+
+// ── Semantic Renderer ────────────────────────────
+
+function draw(canvas, code) {
+  const doc = (typeof code === 'string') ? parseSemantic(code) : code;
+  const tplKey = CV_TEMPLATES[doc.style] ? doc.style : 'sidebar-left';
+  const tpl = CV_TEMPLATES[tplKey];
+  const W = tpl.canvas.w, H = tpl.canvas.h;
+  const f = tpl.fonts, sp = tpl.spacing;
+  const dpr = window.devicePixelRatio || 2;
+
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // Helpers
+  const font = (size, weight) => `${weight || 'normal'} ${size}px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif`;
+  const rRect = (x, y, w, h, r) => { roundedRect(ctx, x, y, w, h, r || 0); ctx.fill(); };
+
+  // ── Background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Route sections
+  const sidebarSections = [];
+  const mainSections = [];
+
+  if (tpl.twoCol) {
+    const leftTypes = new Set(tpl.routing.left);
+    const rightTypes = new Set(tpl.routing.right);
+    doc.sections.forEach(sec => {
+      const t = inferSectionType(sec);
+      if (rightTypes.has(t)) sidebarSections.push(sec);
+      else mainSections.push(sec);
+    });
+  } else {
+    const sideTypes = new Set(tpl.routing.sidebar);
+    doc.sections.forEach(sec => {
+      const t = inferSectionType(sec);
+      if (tpl.sidebar && sideTypes.has(t)) sidebarSections.push(sec);
+      else mainSections.push(sec);
+    });
+  }
+
+  // ── Draw sidebar (if template has one)
+  let sideX, sideW, mainX, mainW;
+
+  if (tpl.sidebar) {
+    const sb = tpl.sidebar;
+    sideX = sb.side === 'left' ? 0 : W - sb.width;
+    sideW = sb.width;
+    mainX = sb.side === 'left' ? sb.width : 0;
+    mainW = W - sb.width;
+
+    // Sidebar background
+    ctx.fillStyle = doc.colors.primary;
+    ctx.fillRect(sideX, 0, sideW, H);
+
+    let sy = sb.padding;
+
+    // Photo
+    if (doc.hasPhoto) {
+      const ps = sb.photoSize, cx = sideX + sideW / 2, cy = sy + ps / 2;
+      ctx.fillStyle = lightenColor(doc.colors.primary, 0.15);
+      ctx.beginPath(); ctx.arc(cx, cy, ps / 2, 0, Math.PI * 2); ctx.fill();
+      // Silhouette
+      ctx.fillStyle = lightenColor(doc.colors.primary, 0.25);
+      ctx.beginPath(); ctx.arc(cx, cy - ps * 0.08, ps * 0.18, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx, cy + ps * 0.3, ps * 0.28, ps * 0.18, 0, Math.PI, 0); ctx.fill();
+      // Border
+      ctx.strokeStyle = doc.colors.accent;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, ps / 2, 0, Math.PI * 2); ctx.stroke();
+      sy += ps + 10;
+    }
+
+    // Contact info in sidebar
+    if (doc.contacts.length) {
+      sy = drawSidebarSection(ctx, 'Contact', doc.contacts.map(c => {
+        const icons = { email: '✉', phone: '✆', location: '◉', web: '◎', github: 'G', linkedin: 'in' };
+        return { icon: icons[c.type] || '◎', text: c.value };
+      }), sideX + sb.padding, sy, sideW - sb.padding * 2, doc.colors, f, sp);
+      sy += sp.sectionGap;
+    }
+
+    // Sidebar sections
+    sidebarSections.forEach(sec => {
+      const t = inferSectionType(sec);
+      sy = drawSidebarSectionBlock(ctx, sec, t, sideX + sb.padding, sy, sideW - sb.padding * 2, doc.colors, f, sp);
+      sy += sp.sectionGap;
+    });
+  } else if (tpl.twoCol) {
+    const pad = tpl.main.padding;
+    const colGap = 14;
+    mainX = pad;
+    mainW = (W - pad * 2 - colGap) / 2;
+    sideX = mainX + mainW + colGap;
+    sideW = mainW;
+  } else {
+    mainX = tpl.main.padding;
+    mainW = W - tpl.main.padding * 2;
+  }
+
+  // ── Draw main area
+  let my = tpl.sidebar ? (tpl.main.padding || 16) : (tpl.main.padding || 28);
+
+  // Name + Title
+  if (!tpl.sidebar && doc.hasPhoto) {
+    // Centered photo
+    const ps = 48, cx = W / 2, cy = my + ps / 2;
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath(); ctx.arc(cx, cy, ps / 2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath(); ctx.arc(cx, cy - ps * 0.08, ps * 0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, cy + ps * 0.25, ps * 0.22, ps * 0.15, 0, Math.PI, 0); ctx.fill();
+    my += ps + 8;
+  }
+
+  // Name
+  ctx.font = font(f.name, 'bold');
+  ctx.fillStyle = tpl.sidebar ? doc.colors.primary : '#111111';
+  const nameText = truncate(ctx, doc.name || 'Your Name', mainW);
+  if (!tpl.sidebar && !tpl.twoCol) {
+    ctx.textAlign = 'center';
+    ctx.fillText(nameText, tpl.twoCol ? mainX + mainW / 2 : W / 2, my);
+    ctx.textAlign = 'left';
+  } else {
+    ctx.fillText(nameText, mainX, my);
+  }
+  my += f.name + 3;
+
+  // Title
+  if (doc.title) {
+    ctx.font = font(f.title, 'normal');
+    ctx.fillStyle = '#94a3b8';
+    const titleText = truncate(ctx, doc.title, mainW);
+    if (!tpl.sidebar && !tpl.twoCol) {
+      ctx.textAlign = 'center';
+      ctx.fillText(titleText, W / 2, my);
+      ctx.textAlign = 'left';
+    } else {
+      ctx.fillText(titleText, mainX, my);
+    }
+    my += f.title + 6;
+  }
+
+  // Contact line (for non-sidebar layouts)
+  if (!tpl.sidebar && doc.contacts.length) {
+    ctx.font = font(f.contact - 1, 'normal');
+    ctx.fillStyle = '#64748b';
+    const contactStr = doc.contacts.slice(0, 3).map(c => c.value).join('  ·  ');
+    const ct = truncate(ctx, contactStr, mainW);
+    if (!tpl.twoCol) {
+      ctx.textAlign = 'center';
+      ctx.fillText(ct, W / 2, my);
+      ctx.textAlign = 'left';
+    } else {
+      ctx.fillText(ct, mainX, my);
+    }
+    my += f.contact + 4;
+  }
+
+  // Divider after header
+  ctx.strokeStyle = tpl.sidebar ? '#e2e8f0' : (doc.colors.primary || '#111111');
+  ctx.lineWidth = tpl.sidebar ? 1 : 2;
+  ctx.beginPath();
+  if (!tpl.sidebar && !tpl.twoCol) {
+    ctx.moveTo(mainX, my); ctx.lineTo(W - tpl.main.padding, my);
+  } else {
+    ctx.moveTo(mainX, my); ctx.lineTo(mainX + mainW, my);
+  }
+  ctx.stroke();
+  my += 8;
+
+  // Summary
+  if (doc.summary) {
+    ctx.font = font(f.body, 'italic');
+    ctx.fillStyle = '#64748b';
+    my = wrapText(ctx, doc.summary, mainX, my, mainW, f.body * sp.lineH);
+    my += 6;
+  }
+
+  // Main sections
+  mainSections.forEach(sec => {
+    my = drawMainSection(ctx, sec, mainX, my, mainW, doc.colors, f, sp, tpl);
+    my += sp.sectionGap;
+  });
+
+  // Two-column: right column
+  if (tpl.twoCol && sidebarSections.length) {
+    let ry = tpl.main.padding;
+    // Right column header area (skip — just sections)
+    ctx.font = font(f.name - 4, 'bold');
+    // Skip to after the header height
+    ry = tpl.main.padding + f.name + f.title + 30;
+    sidebarSections.forEach(sec => {
+      ry = drawMainSection(ctx, sec, sideX, ry, sideW, doc.colors, f, sp, tpl);
+      ry += sp.sectionGap;
+    });
+  }
+
+  return doc;
+}
+
+// ── Sidebar drawing helpers ──────────────────────
+
+function drawSidebarSection(ctx, title, items, x, y, w, colors, f, sp) {
+  // Section header
+  ctx.font = `bold ${f.sectionHead}px -apple-system,system-ui,sans-serif`;
+  ctx.fillStyle = '#f1f5f9';
+  ctx.fillText(title.toUpperCase(), x, y);
+  y += f.sectionHead + 2;
+  ctx.strokeStyle = colors.accent || '#3b82f6';
+  ctx.globalAlpha = 0.4; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke();
+  ctx.globalAlpha = 1;
+  y += 6;
+
+  items.forEach(item => {
+    ctx.font = `${f.contact}px -apple-system,system-ui,sans-serif`;
+    ctx.fillStyle = '#cbd5e1';
+    // Icon
+    ctx.fillText(item.icon, x, y);
+    // Text (truncated)
+    const textX = x + 14;
+    const maxW = w - 14;
+    let txt = item.text;
+    if (ctx.measureText(txt).width > maxW) {
+      while (txt.length > 1 && ctx.measureText(txt + '..').width > maxW) txt = txt.slice(0, -1);
+      txt += '..';
+    }
+    ctx.fillText(txt, textX, y);
+    y += f.contact + 4;
+  });
+  return y;
+}
+
+function drawSidebarSectionBlock(ctx, section, type, x, y, w, colors, f, sp) {
+  // Header
+  ctx.font = `bold ${f.sectionHead}px -apple-system,system-ui,sans-serif`;
+  ctx.fillStyle = '#f1f5f9';
+  ctx.fillText(section.title.toUpperCase(), x, y);
+  y += f.sectionHead + 2;
+  ctx.strokeStyle = colors.accent || '#3b82f6';
+  ctx.globalAlpha = 0.4; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke();
+  ctx.globalAlpha = 1;
+  y += 6;
+
+  if (type === 'skills') {
+    // Pills
+    let px = x, py = y;
+    section.items.forEach(item => {
+      const label = item.name || '';
+      ctx.font = `${f.skill}px -apple-system,system-ui,sans-serif`;
+      const tw = ctx.measureText(label).width + 14;
+      if (px + tw > x + w && px > x) { px = x; py += 20; }
+      ctx.fillStyle = colors.accent || '#3b82f6';
+      roundedRect(ctx, px, py, tw, 16, 8); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(label, px + 7, py + 12);
+      px += tw + 4;
+    });
+    y = py + 22;
+  } else if (type === 'languages') {
+    section.items.forEach(item => {
+      ctx.font = `${f.lang}px -apple-system,system-ui,sans-serif`;
+      ctx.fillStyle = '#cbd5e1';
+      const txt = item.level ? `${item.name} (${item.level})` : item.name;
+      ctx.fillText(txt, x, y);
+      y += f.lang + 4;
+    });
+  } else if (type === 'interests') {
+    section.items.forEach(item => {
+      ctx.font = `${f.body}px -apple-system,system-ui,sans-serif`;
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillText('· ' + item.name, x, y);
+      y += f.body + 3;
+    });
+  } else if (type === 'certifications') {
+    section.items.forEach(item => {
+      ctx.font = `${f.body}px -apple-system,system-ui,sans-serif`;
+      ctx.fillStyle = '#cbd5e1';
+      const txt = item.date ? `${item.name} (${item.date})` : item.name;
+      ctx.fillText(txt, x, y);
+      y += f.body + 4;
+    });
+  }
+  return y;
+}
+
+// ── Main area drawing ────────────────────────────
+
+function drawMainSection(ctx, section, x, y, w, colors, f, sp, tpl) {
+  const type = inferSectionType(section);
+
+  // Section header
+  ctx.font = `bold ${f.sectionHead}px -apple-system,system-ui,sans-serif`;
+  ctx.fillStyle = colors.primary || '#1e293b';
+  ctx.fillText(section.title.toUpperCase(), x, y);
+  y += f.sectionHead + 2;
+  ctx.strokeStyle = colors.primary || '#1e293b';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke();
+  y += 6;
+
+  if (type === 'entries') {
+    section.items.forEach((entry, idx) => {
+      if (idx > 0) y += sp.entryGap - 2;
+      // Title + Org
+      ctx.font = `bold ${f.entryTitle}px -apple-system,system-ui,sans-serif`;
+      ctx.fillStyle = '#1e293b';
+      let titleStr = entry.title;
+      if (entry.org) titleStr += ' — ' + entry.org;
+      const truncTitle = titleStr;
+      if (ctx.measureText(truncTitle).width > w) {
+        ctx.fillText(truncate(ctx, truncTitle, w), x, y);
+      } else {
+        ctx.fillText(truncTitle, x, y);
+      }
+      y += f.entryTitle + 2;
+
+      // Date
+      if (entry.dates) {
+        ctx.font = `${f.date}px -apple-system,system-ui,sans-serif`;
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(entry.dates, x, y);
+        y += f.date + 3;
+      }
+
+      // Bullets
+      entry.bullets.forEach(bullet => {
+        ctx.font = `${f.bullet}px -apple-system,system-ui,sans-serif`;
+        ctx.fillStyle = '#64748b';
+        const bx = x + 8;
+        const bw = w - 12;
+        // Bullet dot
+        ctx.fillStyle = '#94a3b8';
+        ctx.beginPath(); ctx.arc(x + 3, y - 2, 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#64748b';
+        // Wrap long bullets
+        const bt = truncate(ctx, bullet, bw);
+        ctx.fillText(bt, bx, y);
+        y += f.bullet + sp.bulletGap + 1;
+      });
+    });
+  } else if (type === 'skills') {
+    let px = x, py = y;
+    section.items.forEach(item => {
+      const label = item.name || '';
+      ctx.font = `${f.skill}px -apple-system,system-ui,sans-serif`;
+      const tw = ctx.measureText(label).width + 14;
+      if (px + tw > x + w && px > x) { px = x; py += 20; }
+      ctx.fillStyle = colors.accent || '#3b82f6';
+      roundedRect(ctx, px, py, tw, 16, 8); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(label, px + 7, py + 12);
+      px += tw + 4;
+    });
+    y = py + 22;
+  } else if (type === 'languages') {
+    section.items.forEach(item => {
+      ctx.font = `${f.lang}px -apple-system,system-ui,sans-serif`;
+      ctx.fillStyle = '#4a5568';
+      const txt = item.level ? `${item.name} — ${item.level}` : item.name;
+      ctx.fillText(txt, x, y);
+      y += f.lang + 3;
+    });
+  } else if (type === 'certifications') {
+    section.items.forEach(item => {
+      ctx.font = `${f.body}px -apple-system,system-ui,sans-serif`;
+      ctx.fillStyle = '#334155';
+      ctx.fillText(item.date ? `${item.name} (${item.date})` : item.name, x, y);
+      y += f.body + 3;
+    });
+  } else if (type === 'interests') {
+    let px = x;
+    section.items.forEach(item => {
+      ctx.font = `${f.body}px -apple-system,system-ui,sans-serif`;
+      const tw = ctx.measureText(item.name).width + 8;
+      if (px + tw > x + w && px > x) { px = x; y += f.body + 6; }
+      ctx.fillStyle = '#64748b';
+      ctx.fillText(item.name, px, y);
+      px += tw;
+    });
+    y += f.body + 4;
+  }
+  return y;
+}
+
+// ── Text wrapping helper ─────────────────────────
+
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  const words = text.split(' ');
+  let line = '';
+  for (const word of words) {
+    const test = line ? line + ' ' + word : word;
+    if (ctx.measureText(test).width > maxW && line) {
+      ctx.fillText(line, x, y);
+      y += lineH;
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) { ctx.fillText(line, x, y); y += lineH; }
+  return y;
+}
+
+// ── Color helper ─────────────────────────────────
+
+function truncate(ctx, text, maxW) {
+  if (!text) return '';
+  if (ctx.measureText(text).width <= maxW) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(t + '...').width > maxW) t = t.slice(0, -1);
+  return t + '...';
+}
+
+function lightenColor(hex, amount) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, ((num >> 16) & 0xff) + Math.round(255 * amount));
+  const g = Math.min(255, ((num >> 8) & 0xff) + Math.round(255 * amount));
+  const b = Math.min(255, (num & 0xff) + Math.round(255 * amount));
+  return `rgb(${r},${g},${b})`;
+}
+
+// ── CV Templates ────────────────────────────────
+
+const HERO_CV = `CANVAS 640 260 #0f172a
+-- Mini demo: shows the flow in a compact preview
+RECT 0 0 640 260 0 #0f172a
+-- Left: input form mockup
+RECT 20 20 200 220 1 #1e293b 10
+TEXT 36 32 "Your Info" 10 2 #60a5fa bold
+RECT 36 48 168 60 2 #0f172a 6
+RECT 46 56 100 4 2 #475569
+RECT 46 66 120 4 2 #475569
+RECT 46 76 90 4 2 #475569
+RECT 46 86 110 4 2 #475569
+RECT 36 120 168 28 2 #1d4ed8 6
+TEXT 72 128 "Generate →" 10 3 #ffffff bold
+TEXT 56 160 "10 seconds..." 9 2 #475569
+-- Arrow
+RECT 234 120 40 4 2 #1d4ed8
+RECT 268 112 4 20 2 #1d4ed8
+-- Center: 4 variations
+RECT 290 20 140 100 1 #1e293b 8
+RECT 296 26 128 70 2 #ffffff
+RECT 296 26 44 70 3 #1e293b
+TEXT 348 32 "Sarah" 8 3 #1e293b bold
+RECT 348 44 60 3 3 #94a3b8
+RECT 348 52 50 3 3 #64748b
+TEXT 320 106 "V1" 8 2 #60a5fa
+RECT 440 20 140 100 1 #1e293b 8
+RECT 446 26 128 70 2 #ffffff
+ELLIPSE 510 50 12 12 3 #e2e8f0
+TEXT 488 68 "Sarah" 8 3 #1e293b bold
+TEXT 470 106 "V2" 8 2 #475569
+RECT 290 130 140 100 1 #1e293b 8
+RECT 296 136 128 70 2 #fafafa
+RECT 380 136 44 70 3 #1a1a2e
+TEXT 304 142 "Sarah" 8 3 #1a1a2e bold
+TEXT 320 216 "V3" 8 2 #475569
+RECT 440 130 140 100 1 #1e293b 8
+RECT 446 136 128 70 2 #ffffff
+TEXT 454 142 "SARAH" 9 3 #111111 bold
+LINE 454 156 540 156 3 #111111 1
+TEXT 470 216 "V4" 8 2 #475569
+TEXT 340 246 "4 variations · pick your favorite" 8 2 #475569`;
+
+const HERO_CV_FULL = `CANVAS 560 720 #ffffff
+RECT 0 0 196 720 0 #1e293b
+ELLIPSE 98 64 36 36 1 #475569
+RECT 28 120 140 8 1 #f1f5f9
+RECT 28 138 116 4 1 #94a3b8
+RECT 28 148 124 4 1 #94a3b8
+RECT 28 158 108 4 1 #94a3b8
+RECT 28 180 58 8 1 #f1f5f9
+RECT 28 198 52 14 1 #1d4ed8 6
+RECT 86 198 52 14 1 #1d4ed8 6
+RECT 28 218 58 14 1 #3b82f6 6
+RECT 92 218 48 14 1 #3b82f6 6
+RECT 28 244 52 14 1 #8b5cf6 6
+RECT 86 244 52 14 1 #8b5cf6 6
+RECT 28 276 80 8 1 #f1f5f9
+RECT 28 294 116 4 1 #4a5a6a
+RECT 28 306 100 4 1 #94a3b8
+RECT 28 316 108 4 1 #94a3b8
+TEXT 214 28 "Sarah Mitchell" 24 1 #1e293b bold
+TEXT 214 60 "Full Stack Developer" 14 1 #94a3b8
+RECT 214 88 14 5 1 #64748b
+RECT 234 88 80 5 1 #94a3b8
+RECT 328 88 14 5 1 #64748b
+RECT 348 88 90 5 1 #94a3b8
+LINE 214 104 544 104 1 #e2e8f0 1
+RECT 214 118 120 8 1 #1e293b
+LINE 214 132 544 132 1 #1e293b 1
+RECT 214 146 86 5 1 #334155
+RECT 214 158 110 4 1 #94a3b8
+RECT 220 174 270 3 1 #64748b
+RECT 220 184 280 3 1 #64748b
+RECT 220 194 250 3 1 #64748b
+RECT 220 208 260 3 1 #64748b
+LINE 220 224 544 224 1 #f1f5f9 1
+RECT 214 236 86 5 1 #334155
+RECT 214 248 100 4 1 #94a3b8
+RECT 220 264 260 3 1 #64748b
+RECT 220 274 270 3 1 #64748b
+RECT 220 284 240 3 1 #64748b
+RECT 214 310 100 8 1 #1e293b
+LINE 214 324 544 324 1 #1e293b 1
+RECT 214 338 90 5 1 #334155
+RECT 214 350 140 4 1 #94a3b8
+RECT 214 368 80 5 1 #334155
+RECT 214 380 130 4 1 #94a3b8
+RECT 214 400 100 8 1 #1e293b
+LINE 214 414 544 414 1 #1e293b 1
+RECT 214 428 80 5 1 #334155
+RECT 214 440 200 4 1 #94a3b8
+RECT 220 456 260 3 1 #64748b
+RECT 220 466 250 3 1 #64748b
+RECT 214 488 80 5 1 #334155
+RECT 214 500 180 4 1 #94a3b8
+RECT 220 516 240 3 1 #64748b`;
+
+const VARIATIONS = [
+  { name: 'Modern Dark', desc: 'Dark sidebar, pill badges, card layout', ats: 92, code: HERO_CV_FULL },
+  { name: 'Classic Centered', desc: 'Centered header, clean typography', ats: 89, code: `CANVAS 560 720 #ffffff
+ELLIPSE 280 56 32 32 1 #e2e8f0
+TEXT 196 100 "Sarah Mitchell" 22 1 #1e293b bold
+TEXT 210 128 "Full Stack Developer" 13 1 #94a3b8
+LINE 180 150 380 150 1 #1e293b 2
+RECT 200 166 12 4 1 #64748b
+RECT 218 166 80 4 1 #94a3b8
+RECT 310 166 12 4 1 #64748b
+RECT 328 166 80 4 1 #94a3b8
+LINE 40 186 520 186 1 #e2e8f0 1
+RECT 40 200 100 7 1 #1e293b
+LINE 40 214 520 214 1 #1e293b 1
+RECT 40 228 70 4 1 #334155
+RECT 40 240 90 3 1 #94a3b8
+RECT 46 256 260 3 1 #64748b
+RECT 46 266 270 3 1 #64748b
+RECT 46 276 240 3 1 #64748b
+LINE 40 296 520 296 1 #f1f5f9 1
+RECT 40 310 70 4 1 #334155
+RECT 40 322 80 3 1 #94a3b8
+RECT 46 338 250 3 1 #64748b
+RECT 46 348 260 3 1 #64748b
+RECT 40 378 80 7 1 #1e293b
+LINE 40 392 520 392 1 #1e293b 1
+RECT 40 406 80 4 1 #334155
+RECT 40 418 120 3 1 #94a3b8
+RECT 40 438 70 4 1 #334155
+RECT 40 450 110 3 1 #94a3b8` },
+  { name: 'Coral Accent', desc: 'Right sidebar, warm coral tones', ats: 90, code: `CANVAS 560 720 #fafafa
+RECT 400 0 160 720 0 #1a1a2e
+TEXT 36 28 "Sarah" 28 1 #1a1a2e bold
+TEXT 36 60 "Mitchell" 24 1 #f97066 bold
+TEXT 36 92 "Full Stack Developer" 11 1 #888888
+RECT 36 120 330 5 1 #e0e0e0
+RECT 36 140 100 6 1 #1a1a2e
+LINE 36 152 360 152 1 #1a1a2e 1
+RECT 36 166 70 4 1 #334155
+RECT 36 178 80 3 1 #999999
+RECT 42 194 250 3 1 #555555
+RECT 42 204 260 3 1 #555555
+RECT 36 228 70 4 1 #334155
+RECT 36 240 80 3 1 #999999
+RECT 42 256 240 3 1 #555555
+RECT 42 266 250 3 1 #555555
+RECT 420 28 120 6 1 #f97066 bold
+LINE 420 42 548 42 1 #2a2a42 1
+RECT 420 58 120 4 1 #c4c4d8
+RECT 420 72 110 4 1 #c4c4d8
+RECT 420 100 100 6 1 #f97066
+LINE 420 114 548 114 1 #2a2a42 1
+RECT 420 130 80 3 1 #e4e4f0
+RECT 420 144 120 3 1 #2a2a42
+RECT 420 144 114 3 2 #f97066
+RECT 420 162 80 3 1 #e4e4f0
+RECT 420 176 120 3 1 #2a2a42
+RECT 420 176 100 3 2 #f97066` },
+  { name: 'Minimal White', desc: 'Typography-first, ultra clean', ats: 87, code: `CANVAS 560 720 #ffffff
+TEXT 48 40 "SARAH" 32 1 #111111 bold
+TEXT 48 76 "MITCHELL" 32 1 #111111 bold
+LINE 48 108 240 108 1 #111111 3
+TEXT 48 128 "Full Stack Developer" 13 1 #888888
+TEXT 360 52 "sarah@example.com" 10 1 #888888
+TEXT 360 68 "London, UK" 10 1 #888888
+LINE 48 160 512 160 1 #e0e0e0 1
+RECT 48 178 100 6 1 #111111
+RECT 48 196 70 4 1 #111111 bold
+TEXT 130 196 "Full Stack Developer, TechFlow" 10 1 #444444
+RECT 48 218 70 4 1 #111111
+TEXT 130 218 "Junior Developer, DataPulse" 10 1 #444444
+LINE 48 244 512 244 1 #e0e0e0 1
+RECT 48 262 80 6 1 #111111
+TEXT 48 282 "Python  JavaScript  React  Docker  AWS  Node.js" 10 1 #444444
+LINE 48 306 512 306 1 #e0e0e0 1
+RECT 48 324 80 6 1 #111111
+RECT 48 344 70 4 1 #111111 bold
+TEXT 200 344 "University College London" 10 1 #888888
+RECT 48 366 60 4 1 #111111
+TEXT 200 366 "BSc Computer Science" 10 1 #888888` },
+];
+
+// ── Render Hero CV + Template Thumbnails ─────────
+
+draw(document.getElementById('hero-cv'), HERO_CV);
+
+// Render 7 template thumbnails from VARIATIONS + extras
+const TMPL_CODES = [
+  HERO_CV_FULL, // 0: Modern
+  VARIATIONS[2]?.code || HERO_CV_FULL, // 1: Coral
+  VARIATIONS[1]?.code || HERO_CV_FULL, // 2: Centered
+  VARIATIONS[3]?.code || HERO_CV_FULL, // 3: Minimal
+  // Generate simple placeholder codes for extras
+  `CANVAS 420 580 #ffffff\nRECT 0 0 146 580 0 #292524\nELLIPSE 73 50 28 28 1 #44403c\nRECT 20 96 106 6 1 #fafaf9\nRECT 20 152 40 11 1 #b45309 5\nRECT 66 152 40 11 1 #b45309 5\nTEXT 158 18 "Name" 16 2 #292524 bold\nTEXT 158 38 "Title" 10 2 #a8a29e\nRECT 158 78 80 6 2 #292524\nLINE 158 90 406 90 2 #292524 1`,
+  `CANVAS 420 580 #0a0a0a\nRECT 20 20 380 50 0 #111111\nTEXT 36 34 "> name" 16 1 #00ff41 bold\nTEXT 36 56 "developer" 10 1 #00aa2a\nRECT 20 90 380 3 1 #1a1a1a\nTEXT 36 100 "$ experience" 9 1 #555555\nTEXT 36 120 ">> Built systems" 8 1 #aaaaaa`,
+  `CANVAS 420 580 #ffffff\nLINE 146 0 146 580 0 #f0f0f0 1\nRECT 0 0 420 6 1 #dc2626\nTEXT 20 30 "Name" 28 1 #111111 bold\nRECT 20 62 30 4 1 #dc2626\nTEXT 20 80 "Profile" 9 1 #dc2626 bold\nTEXT 146 80 "Description text here" 9 1 #333333\nLINE 20 100 400 100 1 #e0e0e0 1`,
+];
+TMPL_CODES.forEach((code, i) => {
+  const c = document.getElementById(`tmpl-${i}`);
+  if (c) try { draw(c, code); } catch(e) {}
+});
+
+// ── Render Variation Cards ──────────────────────
+
+const grid = document.getElementById('variations-grid');
+VARIATIONS.forEach((v, i) => {
+  const card = document.createElement('div');
+  card.className = 'variation-card fade-in';
+  card.style.animationDelay = `${i * 0.1}s`;
+  const canvas = document.createElement('canvas');
+  canvas.width = 560;
+  canvas.height = 720;
+  card.innerHTML = `
+    <div style="height:180px;overflow:hidden;background:#f8fafc"></div>
+    <div class="variation-info">
+      <h3>${v.name}</h3>
+      <p>${v.desc}</p>
+      <div class="ats-badge">ATS ${v.ats}%</div>
+    </div>
+  `;
+  // Replace placeholder with canvas
+  const holder = card.querySelector('div');
+  holder.innerHTML = '';
+  holder.appendChild(canvas);
+  canvas.style.width = '100%';
+  canvas.style.height = '180px';
+  canvas.style.objectFit = 'cover';
+  draw(canvas, v.code);
+  grid.appendChild(card);
+});
+
+// ── Scroll Animations ───────────────────────────
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.animationPlayState = 'running';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  observer.observe(el);
+});
+
+// ── File Upload ─────────────────────────────────
+
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const textarea = document.getElementById('cv-input');
+  const btn = event.target.previousElementSibling;
+  const origText = btn.innerHTML;
+  btn.innerHTML = '<span class="icon">⟳</span> Reading...';
+
+  try {
+    if (file.name.endsWith('.txt')) {
+      // Plain text — direct read
+      const text = await file.text();
+      textarea.value = text;
+
+    } else if (file.name.endsWith('.pdf')) {
+      // PDF — use pdf.js from CDN
+      if (!window.pdfjsLib) {
+        // Load pdf.js on first use
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.min.mjs';
+          script.type = 'module';
+          // Fallback: use the legacy build
+          const s2 = document.createElement('script');
+          s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+          s2.onload = resolve;
+          s2.onerror = reject;
+          document.head.appendChild(s2);
+        });
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+
+      for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n\n';
+      }
+
+      textarea.value = fullText.trim();
+
+    } else if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+      // DOCX — read as text (basic extraction, strips formatting)
+      const text = await file.text();
+      // For .docx (ZIP-based), extract what we can
+      if (text.startsWith('PK')) {
+        // It's a ZIP/DOCX — try to extract readable text
+        textarea.value = `[Uploaded: ${file.name}]\n\nFor best results, please copy-paste the text content of your DOCX file directly into this box. DOCX binary parsing requires a server-side tool.`;
+      } else {
+        textarea.value = text;
+      }
+    } else {
+      // Fallback: try as text
+      const text = await file.text();
+      textarea.value = text;
+    }
+
+    btn.innerHTML = '<span class="icon">✓</span> Loaded!';
+    setTimeout(() => { btn.innerHTML = origText; }, 2000);
+
+  } catch (err) {
+    console.error('Upload error:', err);
+    btn.innerHTML = origText;
+    alert(`Could not read file: ${err.message}\n\nTry copy-pasting the text instead.`);
+  }
+
+  // Reset input so same file can be re-uploaded
+  event.target.value = '';
+}
+
+// ── Drag & drop on textarea ─────────────────────
+
+const cvInput = document.getElementById('cv-input');
+cvInput?.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  cvInput.style.borderColor = '#1d4ed8';
+  cvInput.style.background = '#eff6ff';
+});
+cvInput?.addEventListener('dragleave', () => {
+  cvInput.style.borderColor = '';
+  cvInput.style.background = '';
+});
+cvInput?.addEventListener('drop', (e) => {
+  e.preventDefault();
+  cvInput.style.borderColor = '';
+  cvInput.style.background = '';
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    handleFileUpload({ target: { files: [file], previousElementSibling: document.querySelector('.action-btn:nth-child(3)'), value: '' } });
+  }
+});
+
+// ── Paste screenshot (Cmd+V) ────────────────────
+
+// Store pasted screenshot for direct vision API use during generation
+var _cvScreenshot = null;
+
+document.addEventListener('paste', async (e) => {
+  const textarea = document.getElementById('cv-input');
+  const active = document.activeElement;
+  const isTextInput = active?.tagName === 'INPUT' || (active?.tagName === 'TEXTAREA' && active !== textarea);
+  if (isTextInput) return;
+
+  const items = Array.from(e.clipboardData?.items || []);
+  const imageItem = items.find(i => i.type.startsWith('image/'));
+  if (!imageItem) return;
+
+  e.preventDefault();
+  const blob = imageItem.getAsFile();
+  if (!blob) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const base64 = ev.target.result;
+    _cvScreenshot = base64;
+
+    let preview = document.getElementById('paste-preview');
+    if (!preview) {
+      preview = document.createElement('div');
+      preview.id = 'paste-preview';
+      preview.style.cssText = 'max-width:680px;margin:0 auto 8px;display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border:1.5px solid #c7d5e6;border-radius:12px;font-size:13px;color:#64748b;';
+      textarea.closest('.mega-input').parentNode.insertBefore(preview, textarea.closest('.mega-input'));
+    }
+    preview.innerHTML = `
+      <img src="${base64}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">
+      <div style="flex:1">
+        <div style="font-weight:600;color:#16a34a">CV screenshot ready</div>
+        <div style="font-size:11px;color:#94a3b8">Will be sent directly to AI when you generate</div>
+      </div>
+      <button onclick="this.closest('#paste-preview').remove();_cvScreenshot=null;" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px">✕</button>
+    `;
+  };
+  reader.readAsDataURL(blob);
+});
+
+// ── State Machine ───────────────────────────────
+
+let appState = 'landing'; // landing | templates | generating | result
+let selectedTemplate = null;
+var lastVoxi = '';
+
+function setState(newState) {
+  appState = newState;
+  document.getElementById('state-video').style.display = newState === 'landing' ? '' : 'none';
+  document.getElementById('state-templates').classList.toggle('visible', newState === 'templates');
+  document.getElementById('state-render').classList.toggle('visible', newState === 'generating');
+  document.getElementById('state-result').classList.toggle('visible', newState === 'result');
+  document.getElementById('hero-badges').style.display = newState === 'landing' ? '' : 'none';
+  document.getElementById('signin-gate').classList.remove('visible');
+
+  // Expand layout for generating/result states to give CV more room
+  const hero = document.querySelector('.hero-split');
+  hero.classList.toggle('expanded', newState === 'generating');
+  hero.classList.toggle('result-mode', newState === 'result');
+
+  // Hide/show nav
+  document.querySelector('nav').style.display = newState === 'result' ? 'none' : '';
+
+  const hl = document.getElementById('hero-headline');
+  const st = document.getElementById('hero-subtitle');
+  const il = document.getElementById('input-label');
+
+  if (newState === 'landing') {
+    // Landing: video + prompt only, no text
+    hl.style.display = 'none';
+    st.style.display = 'none';
+    il.textContent = 'Try it yourself';
+  } else if (newState === 'templates') {
+    hl.style.display = '';
+    st.style.display = '';
+    hl.style.fontSize = '';
+    hl.innerHTML = 'Pick a style.';
+    st.textContent = 'Choose a template or let AI decide. First card = paste your own design.';
+    il.textContent = 'Your information';
+  } else if (newState === 'generating') {
+    hl.style.display = '';
+    st.style.display = '';
+    hl.style.fontSize = '28px';
+    hl.innerHTML = 'Building your CV...';
+    st.textContent = 'Watch it render in real-time.';
+    il.textContent = '';
+  } else if (newState === 'result') {
+    hl.style.display = 'none';
+    st.style.display = 'none';
+    il.textContent = '';
+  }
+}
+
+let activeMiddle = null; // null | 'style' | 'job'
+
+function toggleMiddle(panel) {
+  const styleBtn = document.getElementById('toggle-style');
+  const jobBtn = document.getElementById('toggle-job');
+  const templates = document.getElementById('state-templates');
+  const jobPanel = document.getElementById('state-job');
+  const video = document.getElementById('state-video');
+  const badges = document.getElementById('hero-badges');
+  const hl = document.getElementById('hero-headline');
+  const st = document.getElementById('hero-subtitle');
+
+  if (activeMiddle === panel) {
+    // Toggle off — back to video (landing: no text, just video + prompt)
+    activeMiddle = null;
+    styleBtn.classList.remove('active');
+    jobBtn.classList.remove('active');
+    templates.classList.remove('visible');
+    jobPanel.style.display = 'none';
+    video.style.display = '';
+    badges.style.display = 'none';
+    hl.style.display = 'none';
+    st.style.display = 'none';
+  } else {
+    activeMiddle = panel;
+    styleBtn.classList.toggle('active', panel === 'style');
+    jobBtn.classList.toggle('active', panel === 'job');
+    templates.classList.toggle('visible', panel === 'style');
+    jobPanel.style.display = panel === 'job' ? 'block' : 'none';
+    video.style.display = 'none';
+    badges.style.display = 'none';
+
+    hl.style.display = '';
+    st.style.display = '';
+    hl.style.fontSize = '';
+    if (panel === 'style') {
+      hl.innerHTML = 'Pick a style.';
+      st.textContent = 'Choose a template, describe your own, or let AI decide.';
+    } else {
+      hl.innerHTML = 'Tailor to a job.';
+      st.textContent = 'Paste a job posting — AI will optimize keywords and sections.';
+      document.getElementById('job-textarea').focus();
+    }
+  }
+}
+
+function onInputFocus() {
+  // No auto-switch — user controls via toggle buttons
+}
+
+function showTemplates() {
+  toggleMiddle('style');
+}
+
+function resetToInput() {
+  activeMiddle = null;
+  setState('landing');
+  toggleMiddle('style');
+  document.getElementById('cv-input').focus();
+}
+
+function showSignIn() {
+  document.getElementById('signin-gate').classList.add('visible');
+}
+
+function downloadCV() {
+  const canvas = document.getElementById('result-cv');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'my-cv.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ── Template Selection ──────────────────────────
+
+const TEMPLATE_STYLES = [
+  'Dark left sidebar (#1e293b), PHOTO, PILLs for skills, CONTACT icons. Blue accents (#3b82f6).',
+  'Dark RIGHT sidebar (#1a1a2e). Content LEFT. Coral accent (#f97066) for name and highlights.',
+  'NO sidebar. Centered layout. PHOTO centered. Single column. Clean gray tones.',
+  'Pure white, bold uppercase name, thick rule. No sidebar, no colors. Typography-only.',
+  'Warm earth tones. Left sidebar (#292524). Amber accents (#b45309).',
+  'Dark background (#0a0a0a). Green terminal text (#00ff41). Hacker aesthetic.',
+  'Swiss grid. Red accents (#dc2626). Left labels column. Precise typography.',
+];
+
+function handleTemplateClick(idx) {
+  if (idx === -1) {
+    // "Add your own" — trigger screenshot paste or file upload
+    document.getElementById('file-upload').click();
+    return;
+  }
+  selectedTemplate = idx;
+  document.querySelectorAll('.template-card').forEach((c, i) => {
+    c.classList.toggle('selected', c.dataset.tmpl == idx);
+  });
+}
+
+// ── (job toggle removed — handled by toggleMiddle) ──
+
+// ── Qwen API — Real CV Generation ───────────────
+
+// ── AI Provider Switch ───────────────────────────
+var AI_PROVIDER = 'qwen'; // 'qwen' or 'sonnet'
+
+var QWEN_API = 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
+// ponytail: BYOK, keys live in .env (gitignored); paste once per browser, kept in localStorage
+function apiKey(name) {
+  var k = localStorage.getItem(name) || prompt(name + ':') || '';
+  if (k) localStorage.setItem(name, k);
+  return k;
+}
+var QWEN_KEY = apiKey('qwen_api_key');
+
+var CLAUDE_API = 'https://api.anthropic.com/v1/messages';
+var CLAUDE_KEY = apiKey('anthropic_api_key');
+
+function toggleProvider() {
+  AI_PROVIDER = AI_PROVIDER === 'qwen' ? 'sonnet' : 'qwen';
+  const btn = document.getElementById('provider-toggle');
+  if (btn) {
+    btn.textContent = AI_PROVIDER === 'sonnet' ? '⚡ Sonnet' : '🔷 Qwen';
+    btn.style.borderColor = AI_PROVIDER === 'sonnet' ? '#d97706' : '#3b82f6';
+    btn.style.color = AI_PROVIDER === 'sonnet' ? '#d97706' : '#3b82f6';
+  }
+}
+
+var VOXI_SYSTEM = `You generate CVs in CVM DSL. Output ONLY raw CVM code — no markdown, no explanation, no code fences.
+
+## All Commands
+CANVAS w h bg — ALWAYS: CANVAS 420 580 #ffffff
+RECT x y w h z color [radius] — filled rectangle (radius for rounded corners)
+TEXT x y "text" size z color [bold|italic|light] — text (KEEP UNDER 35 CHARS)
+LINE x1 y1 x2 y2 z color [width] — line
+ELLIPSE cx cy rx ry z color — filled ellipse
+PHOTO x y size z [border-color] [border-width] — circular photo placeholder
+SECTION x y w z color "Title" — section header with auto-underline
+DIVIDER x1 y1 x2 y2 z [color] [dashed|dotted] — separator line
+PILL x y z bg-color text-color "Label" — rounded tag (auto-width)
+SKILL-BAR x y w h z fill% color [bg-color] — progress bar (0-100)
+RATING x y z color max filled — star rating
+CONTACT x y z color icon "text" — icon+text (icons: email phone location web github linkedin)
+TIMELINE x y h z color — vertical line with dots
+
+## CRITICAL RULES
+- Canvas is 420x580. NEVER exceed x=410 or y=570.
+- TEXT must be under 35 characters. Truncate with "..."
+- z=0 back, higher=front. Sidebar z=0, content z=1, text z=2.
+- Right column x: 155-400. Sidebar x: 12-135.
+
+## EXAMPLE — follow this EXACT structure:
+CANVAS 420 580 #ffffff
+RECT 0 0 146 580 0 #1e293b
+PHOTO 38 16 70 1 #334155 2
+SECTION 16 98 114 1 #f1f5f9 "Contact"
+CONTACT 16 120 1 #cbd5e1 email "sarah@example.com"
+CONTACT 16 140 1 #cbd5e1 location "London, UK"
+DIVIDER 16 162 130 162 1 #334155
+SECTION 16 174 114 1 #f1f5f9 "Skills"
+PILL 16 196 1 #3b82f6 #ffffff "Python"
+PILL 76 196 1 #3b82f6 #ffffff "React"
+PILL 16 224 1 #60a5fa #ffffff "Docker"
+PILL 76 224 1 #60a5fa #ffffff "AWS"
+DIVIDER 16 252 130 252 1 #334155
+SECTION 16 264 114 1 #f1f5f9 "Languages"
+TEXT 16 286 "English (native)" 9 1 #cbd5e1
+TEXT 16 300 "Dutch (beginner)" 9 1 #cbd5e1
+TEXT 158 16 "Sarah Mitchell" 18 2 #1e293b bold
+TEXT 158 40 "Full Stack Developer" 10 2 #94a3b8
+DIVIDER 158 58 406 58 2 #e2e8f0
+SECTION 158 68 248 2 #1e293b "Experience"
+TEXT 158 92 "Senior Dev — TechFlow" 10 2 #334155 bold
+TEXT 158 106 "2021-2024" 8 2 #94a3b8
+TEXT 162 120 "Microservice arch, 2M req/day" 8 2 #64748b
+TEXT 162 132 "Next.js rebuild, -60% bundle" 8 2 #64748b
+TEXT 162 144 "Docker + AWS infrastructure" 8 2 #64748b
+TEXT 158 164 "Frontend — DataPulse" 10 2 #334155 bold
+TEXT 158 178 "2019-2021" 8 2 #94a3b8
+TEXT 162 192 "React dashboard, D3 charts" 8 2 #64748b
+TEXT 162 204 "ETL pipelines, 500GB/day" 8 2 #64748b
+SECTION 158 228 248 2 #1e293b "Education"
+TEXT 158 252 "BSc CS — UCL" 10 2 #334155 bold
+TEXT 158 266 "2018-2022" 8 2 #94a3b8
+
+Generate a CV using these CVM commands. Follow the EXAMPLE layout exactly — change content based on user info but keep coordinates and structure.`;
+
+/** Stream generation — routes to Qwen or Claude based on AI_PROVIDER */
+async function streamQwen(userPrompt, onChunk) {
+  if (AI_PROVIDER === 'sonnet') return streamClaude(userPrompt, onChunk);
+  return streamQwenDirect(userPrompt, onChunk);
+}
+
+async function streamQwenDirect(userPrompt, onChunk) {
+  const res = await fetch(QWEN_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${QWEN_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'qwen-max-2025-01-25',
+      messages: [
+        { role: 'system', content: VOXI_SYSTEM },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 4000,
+      stream: true,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Qwen API error: ${res.status} — ${err}`);
+  }
+
+  return processSSE(res, (json) => json.choices?.[0]?.delta?.content, onChunk);
+}
+
+async function streamClaude(userPrompt, onChunk) {
+  const res = await fetch(CLAUDE_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CLAUDE_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      system: VOXI_SYSTEM,
+      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: 4000,
+      stream: true,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Claude API error: ${res.status} — ${err}`);
+  }
+
+  // Claude SSE format differs from OpenAI-compatible
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let accumulated = '';
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('data:')) continue;
+      const payload = trimmed.slice(5).trim();
+      if (payload === '[DONE]') continue;
+      try {
+        const json = JSON.parse(payload);
+        if (json.type === 'content_block_delta' && json.delta?.text) {
+          accumulated += json.delta.text;
+          let clean = accumulated;
+          if (clean.startsWith('```')) { const fl = clean.indexOf('\n'); if (fl !== -1) clean = clean.slice(fl + 1); }
+          if (clean.endsWith('```')) clean = clean.slice(0, -3);
+          onChunk(clean);
+        }
+      } catch(e) {}
+    }
+  }
+  return accumulated;
+}
+
+/** Generic SSE processor for OpenAI-compatible APIs */
+async function processSSE(res, extractDelta, onChunk) {
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let accumulated = '';
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || !trimmed.startsWith('data:')) continue;
+      const payload = trimmed.slice(5).trim();
+      if (payload === '[DONE]') continue;
+
+      try {
+        const json = JSON.parse(payload);
+        const delta = extractDelta(json);
+        if (delta) {
+          accumulated += delta;
+          let clean = accumulated;
+          if (clean.startsWith('```')) { const fl = clean.indexOf('\n'); if (fl !== -1) clean = clean.slice(fl + 1); }
+          if (clean.endsWith('```')) clean = clean.slice(0, -3);
+          onChunk(clean);
+        }
+      } catch (e) {}
+    }
+  }
+  return accumulated;
+}
+
+/** Non-streaming fallback — routes to correct provider */
+async function callQwen(userPrompt) {
+  if (AI_PROVIDER === 'sonnet') {
+    const res = await fetch(CLAUDE_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLAUDE_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        system: VOXI_SYSTEM,
+        messages: [{ role: 'user', content: userPrompt }],
+        max_tokens: 4000,
+      }),
+    });
+    if (!res.ok) throw new Error(`Claude: ${res.status}`);
+    const data = await res.json();
+    let voxi = data.content[0].text.trim();
+    if (voxi.startsWith('```')) { const l=voxi.split('\n'); if(l[0].startsWith('```'))l.shift(); if(l[l.length-1]?.trim()==='```')l.pop(); voxi=l.join('\n'); }
+    return voxi;
+  }
+
+  const res = await fetch(QWEN_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${QWEN_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'qwen-max-2025-01-25',
+      messages: [
+        { role: 'system', content: VOXI_SYSTEM },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 4000,
+    }),
+  });
+  if (!res.ok) throw new Error(`Qwen: ${res.status}`);
+  const data = await res.json();
+  let voxi = data.choices[0].message.content.trim();
+  if (voxi.startsWith('```')) { const l=voxi.split('\n'); if(l[0].startsWith('```'))l.shift(); if(l[l.length-1]?.trim()==='```')l.pop(); voxi=l.join('\n'); }
+  return voxi;
+}
+
+// Single call generates all 4 separated by ---SPLIT---
+const VARIATION_PROMPT = `Generate exactly 4 DIFFERENT CV variations using CVM DSL. Each variation MUST:
+- Start with CANVAS 420 580 #ffffff
+- Be separated by a line containing ONLY: ---SPLIT---
+- Use different layout styles:
+  V1: Dark left sidebar (#1e293b) with PHOTO, PILLs for skills, CONTACT icons. Right column with SECTION headers.
+  V2: Dark RIGHT sidebar (#1a1a2e, RECT 274 0 146 580). Content LEFT x=14..260. Coral accent (#f97066).
+  V3: NO sidebar. Centered layout. PHOTO centered at x=175. Single column x=30..390. Black+gray only.
+  V4: Warm earth tones. Left sidebar (#292524). Amber accents (#b45309). Same structure as V1 but warm.
+- Use PHOTO, SECTION, PILL, CONTACT, DIVIDER commands (not just RECT/TEXT).
+- Keep ALL text under 35 characters.
+Output ONLY CVM code. No markdown. No explanation.`;
+
+async function generateCV() {
+  const btn = document.getElementById('gen-btn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Generating...';
+  btn.disabled = true; btn.style.opacity = '0.7';
+
+  const cvInfo = document.getElementById('cv-input').value.trim();
+  const jobDesc = document.getElementById('job-textarea')?.value?.trim() || '';
+
+  if (!cvInfo && !_cvScreenshot) {
+    btn.innerHTML = orig; btn.disabled = false; btn.style.opacity = '1';
+    alert('Paste your CV info or screenshot first!');
+    return;
+  }
+
+  // → STATE 3: Generating
+  setState('generating');
+  const liveCanvas = document.getElementById('live-cv');
+  const statusEl = document.getElementById('render-status');
+
+  // Screenshot handling — Claude: single shot vision+CVM, Qwen: two-step
+  if (_cvScreenshot) {
+    try {
+      if (AI_PROVIDER === 'sonnet') {
+        // Claude: single vision call — image + system prompt → CVM directly
+        statusEl.textContent = 'Reading & generating with Sonnet...';
+        const base64Data = _cvScreenshot.split(',')[1]; // strip data:image/...;base64,
+        const mediaType = _cvScreenshot.match(/data:(.*?);/)?.[1] || 'image/png';
+        const res = await fetch(CLAUDE_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': CLAUDE_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            system: VOXI_SYSTEM,
+            messages: [{ role: 'user', content: [
+              { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+              { type: 'text', text: `Look at this CV/resume. Extract ALL information and generate a CV in CVM format.${jobDesc ? '\n\nTailor for this job:\n' + jobDesc : ''}` }
+            ]}],
+            max_tokens: 4000,
+          }),
+        });
+        if (!res.ok) throw new Error(`Claude Vision: ${res.status}`);
+        const data = await res.json();
+        let voxi = data.content[0].text.trim();
+        if (voxi.startsWith('```')) { const fl = voxi.indexOf('\n'); voxi = voxi.slice(fl + 1); }
+        if (voxi.endsWith('```')) voxi = voxi.slice(0, -3).trim();
+        lastVoxi = voxi;
+        draw(liveCanvas, voxi);
+        setState('result');
+        draw(document.getElementById('result-cv'), voxi);
+      } else {
+        // Qwen: two-step — VL extracts text, then text model generates CVM
+        statusEl.textContent = 'Step 1/2 — Reading your CV...';
+        const visionRes = await fetch(QWEN_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${QWEN_KEY}` },
+          body: JSON.stringify({
+            model: 'qwen-vl-plus',
+            messages: [{ role: 'user', content: [
+              { type: 'image_url', image_url: { url: _cvScreenshot } },
+              { type: 'text', text: 'Extract ALL text from this CV/resume image. Output plain text, line by line: name, title, contact info, experience (company, dates, bullets), education, skills, languages, certifications. Be thorough.' }
+            ]}],
+            max_tokens: 2000,
+          }),
+        });
+        if (!visionRes.ok) throw new Error(`Vision API: ${visionRes.status}`);
+        const vData = await visionRes.json();
+        const extractedText = vData.choices[0].message.content.trim();
+        document.getElementById('cv-input').value = extractedText;
+
+        statusEl.textContent = 'Step 2/2 — Generating CV...';
+        let userPrompt = `Generate a single professional CV for this person:\n\n${extractedText}`;
+        if (jobDesc) userPrompt += `\n\nTailor for this job posting:\n${jobDesc}`;
+
+        let finalVoxi = '', lineCount = 0, lastRender = 0;
+        await streamQwen(userPrompt, (partialVoxi) => {
+          finalVoxi = partialVoxi;
+          lineCount = partialVoxi.split('\n').filter(l => l.trim() && !l.startsWith('--')).length;
+          const now = Date.now();
+          if (now - lastRender < 50) return;
+          lastRender = now;
+          try { draw(liveCanvas, partialVoxi); statusEl.textContent = `Rendering... ${lineCount} elements`; } catch(e) {}
+        });
+        draw(liveCanvas, finalVoxi);
+        lastVoxi = finalVoxi;
+        setState('result');
+        draw(document.getElementById('result-cv'), finalVoxi);
+      }
+      _cvScreenshot = null;
+      const preview = document.getElementById('paste-preview');
+      if (preview) preview.remove();
+    } catch (err) {
+      statusEl.textContent = `Error: ${err.message}`;
+      statusEl.style.color = '#dc2626';
+    }
+    btn.innerHTML = orig; btn.disabled = false; btn.style.opacity = '1';
+    return;
+  }
+
+  let userPrompt = `Generate a single professional CV for this person:\n\n${cvInfo}`;
+  if (jobDesc) userPrompt += `\n\nTailor for this job posting:\n${jobDesc}`;
+  if (selectedTemplate !== null && TEMPLATE_STYLES[selectedTemplate]) {
+    userPrompt += `\n\nUSE THIS STYLE: ${TEMPLATE_STYLES[selectedTemplate]}`;
+  }
+
+  let finalVoxi = '';
+  let lineCount = 0;
+  let lastRender = 0;
+
+  try {
+    await streamQwen(userPrompt, (partialVoxi) => {
+      finalVoxi = partialVoxi;
+      lineCount = partialVoxi.split('\n').filter(l => l.trim() && !l.trim().startsWith('--')).length;
+      const now = Date.now();
+      if (now - lastRender < 50) return;
+      lastRender = now;
+      try {
+        draw(liveCanvas, partialVoxi);
+        statusEl.textContent = `Rendering... ${lineCount} elements`;
+        statusEl.style.color = '#1d4ed8';
+      } catch(e) {}
+    });
+
+    // Final render
+    draw(liveCanvas, finalVoxi);
+    lastVoxi = finalVoxi;
+
+    // → STATE 4: Result
+    setState('result');
+    const resultCanvas = document.getElementById('result-cv');
+    draw(resultCanvas, finalVoxi);
+
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+    statusEl.style.color = '#dc2626';
+  }
+
+  btn.innerHTML = orig; btn.disabled = false; btn.style.opacity = '1';
+}
+
+// ── Play button demo animation ──────────────────
+
+document.getElementById('play-btn')?.addEventListener('click', function() {
+  this.style.display = 'none';
+});
+
+// ── Expand CV Modal ─────────────────────────────
+
+function expandCV() {
+  const overlay = document.getElementById('cv-modal-overlay');
+  const modalCanvas = document.getElementById('modal-cv');
+  if (lastVoxi) {
+    draw(modalCanvas, lastVoxi);
+  }
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('cv-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on overlay click (not modal itself)
+document.getElementById('cv-modal-overlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('editor-overlay').classList.contains('open')) {
+      closeEditor();
+    } else {
+      closeModal();
+    }
+  }
+});
+
+</script>
+<script>
+// ══════════════════════════════════════════════════════
+// ── AI EDITOR ─────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+
+const editorState = {
+  voxi: '',
+  history: [],
+  sections: [],
+  selectedSection: null,
+  chatHistory: [],
+};
+
+function openEditor() {
+  if (!lastVoxi) { alert('Generate a CV first!'); return; }
+  editorState.voxi = lastVoxi;
+  editorState.history = [lastVoxi];
+  editorState.selectedSection = null;
+  editorState.chatHistory = [];
+
+  document.getElementById('editor-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  editorRender();
+  setTimeout(() => editorBuildSections(), 50); // wait for canvas layout
+
+  const msgs = document.getElementById('editor-messages');
+  msgs.innerHTML = '<div class="echat-msg system">Click a section on the CV to select it, then ask AI to improve it</div>';
+  document.getElementById('editor-context-indicator').innerHTML = '';
+  document.getElementById('editor-ctx-badge').innerHTML = '';
+}
+
+function closeEditor() {
+  document.getElementById('editor-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (editorState.voxi) {
+    lastVoxi = editorState.voxi;
+    try { draw(document.getElementById('result-cv'), lastVoxi); } catch(e) {}
+  }
+}
+
+function editorRender() {
+  try { draw(document.getElementById('editor-canvas'), editorState.voxi); } catch(e) {}
+}
+
+function editorBuildSections() {
+  const lines = editorState.voxi.split('\n');
+  const parsed = parse(editorState.voxi);
+  const sections = [];
+  const sectionEls = parsed.els.filter(el => el.type === 'section');
+
+  if (sectionEls.length === 0) {
+    sections.push({ name: 'Full CV', y: 0, h: parsed.H, startLine: 0, endLine: lines.length - 1, lines: [...lines] });
+  } else {
+    // Header: everything above first section
+    const firstSecY = Math.min(...sectionEls.map(s => s.y));
+    if (firstSecY > 30) {
+      const hLines = [];
+      lines.forEach((l, i) => {
+        const t = l.trim(); if (!t || t.startsWith('--')) return;
+        const tk = t.split(/\s+/);
+        const cmd = tk[0]?.toUpperCase();
+        if (cmd === 'CANVAS') return;
+        let yVal = parseFloat(tk[2]) || 0;
+        if ((cmd === 'ELLIPSE' || cmd === 'E') && tk[4]) yVal -= parseFloat(tk[4]) || 0;
+        if (yVal < firstSecY && cmd !== 'SECTION') hLines.push(i);
+      });
+      if (hLines.length) {
+        sections.push({ name: 'Header', y: 0, h: firstSecY, startLine: Math.min(...hLines), endLine: Math.max(...hLines), lines: hLines.map(i => lines[i]) });
+      }
+    }
+
+    sectionEls.sort((a, b) => a.y - b.y);
+    sectionEls.forEach((sec, idx) => {
+      const nextY = idx < sectionEls.length - 1 ? sectionEls[idx + 1].y : parsed.H;
+      const sLines = [];
+      lines.forEach((l, i) => {
+        const t = l.trim(); if (!t || t.startsWith('--')) return;
+        const tk = t.split(/\s+/);
+        const cmd = tk[0]?.toUpperCase();
+        if (cmd === 'CANVAS') return;
+        let yVal = parseFloat(tk[2]) || 0;
+        if ((cmd === 'ELLIPSE' || cmd === 'E') && tk[4]) yVal -= parseFloat(tk[4]) || 0;
+        if (yVal >= sec.y - 5 && yVal < nextY - 5) sLines.push(i);
+      });
+      sections.push({
+        name: sec.title || 'Section',
+        y: sec.y - 8, h: nextY - sec.y + 8,
+        startLine: sLines.length ? Math.min(...sLines) : 0,
+        endLine: sLines.length ? Math.max(...sLines) : 0,
+        lines: sLines.map(i => lines[i])
+      });
+    });
+  }
+
+  editorState.sections = sections;
+
+  // Build hit regions
+  const overlay = document.getElementById('editor-sections');
+  const canvas = document.getElementById('editor-canvas');
+  const displayH = canvas.offsetHeight || 580;
+  const scale = displayH / parsed.H;
+
+  overlay.innerHTML = '';
+  sections.forEach(sec => {
+    const div = document.createElement('div');
+    div.className = 'editor-section-hit';
+    div.style.top = (sec.y * scale) + 'px';
+    div.style.left = '0';
+    div.style.right = '0';
+    div.style.height = Math.max(20, sec.h * scale) + 'px';
+    div.dataset.section = sec.name;
+
+    const safeName = sec.name.replace(/'/g, "\\'");
+    div.innerHTML = `<span class="section-label">${sec.name}</span>
+      <span class="section-actions">
+        <button class="edit-btn" title="Edit text" onclick="event.stopPropagation();editorEditSection('${safeName}')">✎</button>
+        <button class="del-btn" title="Delete" onclick="event.stopPropagation();editorDeleteSection('${safeName}')">✕</button>
+      </span>`;
+    div.addEventListener('click', () => editorSelectSection(sec.name));
+    overlay.appendChild(div);
+  });
+}
+
+function editorSelectSection(name) {
+  editorState.selectedSection = name;
+  const sec = editorState.sections.find(s => s.name === name);
+  document.querySelectorAll('.editor-section-hit').forEach(el => {
+    el.classList.toggle('selected', el.dataset.section === name);
+  });
+  document.getElementById('editor-ctx-badge').innerHTML = `<span class="dot"></span>${name} · ${sec ? sec.lines.length : 0} elements`;
+  document.getElementById('editor-context-indicator').innerHTML = `<span style="color:#475569">Context:</span> "${name}" section loaded`;
+  editorAddMessage('system', `"${name}" section loaded into context`);
+}
+
+function editorAddMessage(role, content, suggestion) {
+  const msgs = document.getElementById('editor-messages');
+  const div = document.createElement('div');
+  div.className = `echat-msg ${role}`;
+
+  if (role === 'ai' && suggestion) {
+    const escapedVoxi = btoa(unescape(encodeURIComponent(suggestion.voxi)));
+    div.innerHTML = `${content}<div class="echat-suggestion">${suggestion.preview}</div>
+      <div class="echat-suggestion-actions">
+        <button class="echat-apply" onclick="editorApplyB64(this,'${escapedVoxi}')">✓ Apply</button>
+        <button class="echat-reject" onclick="this.closest('.echat-suggestion-actions').innerHTML='<span style=color:#64748b;font-size:11px>Dismissed</span>'">✗ Reject</button>
+      </div>`;
+  } else {
+    div.textContent = content;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function editorSendMessage() {
+  const ta = document.getElementById('editor-chat-textarea');
+  const msg = ta.value.trim();
+  if (!msg) return;
+  ta.value = '';
+  editorAddMessage('user', msg);
+
+  const sec = editorState.sections.find(s => s.name === editorState.selectedSection);
+  const contextLines = sec ? sec.lines.join('\n') : '';
+
+  const systemPrompt = `You edit CVs in CVM DSL. Selected section: "${editorState.selectedSection || 'none'}".
+
+Section code:
+${contextLines || '(none selected)'}
+
+Full CV:
+${editorState.voxi}
+
+Reply with a SHORT explanation. Then output the COMPLETE updated CV wrapped in ---VOXI_START--- and ---VOXI_END---.
+Keep CANVAS 420 580. All TEXT under 35 chars. Only change what user asked.`;
+
+  editorState.chatHistory.push({ role: 'user', content: msg });
+
+  const typing = document.createElement('div');
+  typing.className = 'echat-msg ai';
+  typing.innerHTML = '<span style="animation:ctxPulse 1s ease infinite;color:#60a5fa">Thinking...</span>';
+  document.getElementById('editor-messages').appendChild(typing);
+  document.getElementById('editor-messages').scrollTop = 99999;
+
+  try {
+    const res = await fetch(QWEN_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${QWEN_KEY}` },
+      body: JSON.stringify({
+        model: 'qwen-max-2025-01-25',
+        messages: [{ role: 'system', content: systemPrompt }, ...editorState.chatHistory],
+        temperature: 0.6, max_tokens: 4000,
+      }),
+    });
+    if (!res.ok) throw new Error(`API: ${res.status}`);
+    const data = await res.json();
+    const reply = data.choices[0].message.content.trim();
+    typing.remove();
+
+    const voxiMatch = reply.match(/---VOXI_START---([\s\S]*?)---VOXI_END---/);
+    let explanation = reply, newVoxi = null;
+
+    if (voxiMatch) {
+      newVoxi = voxiMatch[1].trim();
+      if (newVoxi.startsWith('```')) newVoxi = newVoxi.slice(newVoxi.indexOf('\n') + 1);
+      if (newVoxi.endsWith('```')) newVoxi = newVoxi.slice(0, -3).trim();
+      explanation = reply.replace(/---VOXI_START---[\s\S]*?---VOXI_END---/, '').trim() || 'Updated:';
+    }
+
+    editorState.chatHistory.push({ role: 'assistant', content: reply });
+
+    if (newVoxi) {
+      const ct = newVoxi.split('\n').filter(l => l.trim() && !l.startsWith('--')).length;
+      editorAddMessage('ai', `<strong>Done.</strong> ${explanation}`, { preview: `Updated CV (${ct} elements)`, voxi: newVoxi });
+    } else {
+      editorAddMessage('ai', reply);
+    }
+  } catch (err) {
+    typing.remove();
+    editorAddMessage('ai', `Error: ${err.message}`);
+  }
+}
+
+function editorApplyB64(btn, b64) {
+  const newVoxi = decodeURIComponent(escape(atob(b64)));
+  editorState.history.push(editorState.voxi);
+  editorState.voxi = newVoxi;
+  editorRender();
+  setTimeout(() => editorBuildSections(), 50);
+  btn.closest('.echat-suggestion-actions').innerHTML = '<span style="color:#4ade80;font-size:11px;font-weight:600">✓ Applied</span>';
+  editorAddMessage('system', 'Changes applied');
+  if (editorState.selectedSection) {
+    setTimeout(() => {
+      const s = editorState.sections.find(s => s.name === editorState.selectedSection);
+      if (s) editorSelectSection(s.name);
+    }, 100);
+  }
+}
+
+function editorUndo() {
+  if (editorState.history.length <= 1) return;
+  editorState.history.pop();
+  editorState.voxi = editorState.history[editorState.history.length - 1];
+  editorRender();
+  setTimeout(() => editorBuildSections(), 50);
+  editorAddMessage('system', 'Undid last change');
+}
+
+function editorDeleteSection(name) {
+  const sec = editorState.sections.find(s => s.name === name);
+  if (!sec || !confirm(`Delete "${name}" section?`)) return;
+  editorState.history.push(editorState.voxi);
+  const lines = editorState.voxi.split('\n');
+  const toRemove = new Set();
+  for (let i = sec.startLine; i <= sec.endLine; i++) toRemove.add(i);
+  editorState.voxi = lines.filter((_, i) => !toRemove.has(i)).join('\n');
+  editorRender();
+  setTimeout(() => editorBuildSections(), 50);
+  editorAddMessage('system', `Deleted "${name}" section`);
+  editorState.selectedSection = null;
+  document.getElementById('editor-ctx-badge').innerHTML = '';
+  document.getElementById('editor-context-indicator').innerHTML = '';
+}
+
+function editorEditSection(name) {
+  const sec = editorState.sections.find(s => s.name === name);
+  if (!sec) return;
+  const texts = [];
+  sec.lines.forEach(line => {
+    const m = line.match(/TEXT\s+\d+\s+\d+\s+"([^"]*)"/i);
+    if (m) texts.push(m[1]);
+  });
+  if (!texts.length) { editorAddMessage('system', `No text in "${name}". Ask AI to modify it.`); return; }
+
+  const newText = prompt(`Edit "${name}" text (one per line):`, texts.join('\n'));
+  if (newText === null || newText === texts.join('\n')) return;
+
+  editorState.history.push(editorState.voxi);
+  const newItems = newText.split('\n').filter(Boolean);
+  const lines = editorState.voxi.split('\n');
+  let idx = 0;
+  for (let i = sec.startLine; i <= sec.endLine && idx < newItems.length; i++) {
+    const m = lines[i]?.match(/(TEXT\s+\d+\s+\d+\s+)"([^"]*)"/i);
+    if (m) { lines[i] = lines[i].replace(`"${m[2]}"`, `"${newItems[idx].slice(0, 35)}"`); idx++; }
+  }
+  editorState.voxi = lines.join('\n');
+  editorRender();
+  setTimeout(() => editorBuildSections(), 50);
+  editorAddMessage('system', `Updated text in "${name}"`);
+}
+
+async function editorRegenerate() {
+  editorAddMessage('system', 'Regenerating...');
+  editorState.history.push(editorState.voxi);
+  const cvInfo = document.getElementById('cv-input').value.trim();
+  try {
+    const nv = await callQwen(`Generate a single professional CV:\n\n${cvInfo || 'Same person'}`);
+    editorState.voxi = nv;
+    editorRender();
+    setTimeout(() => editorBuildSections(), 50);
+    editorAddMessage('system', 'CV regenerated');
+  } catch (err) { editorAddMessage('ai', `Failed: ${err.message}`); }
+}
+
+function editorDownload() {
+  const c = document.getElementById('editor-canvas');
+  const a = document.createElement('a');
+  a.download = 'cv-edited.png';
+  a.href = c.toDataURL('image/png');
+  a.click();
+}
+</script>
+
+<!-- Fullscreen CV Modal -->
+<div class="cv-modal-overlay" id="cv-modal-overlay">
+  <button class="cv-modal-close" onclick="closeModal()">✕</button>
+  <div class="cv-modal">
+    <canvas id="modal-cv"></canvas>
+  </div>
+</div>
+</body>
+</html>

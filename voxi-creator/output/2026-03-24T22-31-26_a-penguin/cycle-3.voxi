@@ -1,0 +1,60 @@
+V 32 32 32
+
+-- feet (orange, wide, visible at ground level)
+B 10 0 13 5 3 4 7
+B 17 0 13 5 3 4 7
+
+-- lower legs
+B 11 3 14 4 4 3 9
+B 18 3 14 4 4 3 9
+
+-- main body back (blue)
+E 16 13 15 7 10 6 3
+
+-- main body front / belly (white)
+E 16 12 13 5 9 4 8
+
+-- left wing (blue, flat and elongated)
+B 6 5 13 4 14 4 3
+B 7 5 13 2 12 3 9
+
+-- right wing (blue, flat and elongated)
+B 22 5 13 4 14 4 3
+B 23 5 13 2 12 3 9
+
+-- neck
+B 13 21 13 6 4 5 3
+
+-- head (blue sphere)
+S 16 27 15 5 3
+
+-- white face patch
+E 16 26 12 3 4 3 8
+
+-- left eye white
+P 13 28 12 8
+P 14 28 12 8
+
+-- right eye white
+P 18 28 12 8
+P 19 28 12 8
+
+-- left pupil (dark gray visible against white)
+P 13 28 11 9
+P 14 28 11 9
+
+-- right pupil
+P 18 28 11 9
+P 19 28 11 9
+
+-- beak upper (orange/yellow protruding forward)
+B 14 26 10 4 2 4 7
+
+-- beak lower
+B 14 24 10 4 2 3 6
+
+-- belly white highlight rows
+B 14 8 12 4 2 2 8
+B 14 11 12 4 2 2 8
+B 14 14 12 4 2 2 8
+B 14 17 12 4 2 2 8

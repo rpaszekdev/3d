@@ -1,0 +1,22 @@
+V 24 24 24
+
+-- base plate
+C 12 1 12 5 2 d
+
+-- stem
+C 12 3 12 1 2 d
+
+-- cup
+C 12 5 12 3 2 d
+
+-- candle body
+C 12 12 12 2 10 8
+
+-- wick
+B 12 18 12 1 1 1 0
+
+-- outer flame
+E 12 21 12 1 3 1 7
+
+-- inner flame
+E 12 21 12 1 2 1 6

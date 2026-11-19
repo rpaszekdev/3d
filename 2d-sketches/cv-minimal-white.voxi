@@ -1,0 +1,84 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 1: Minimal White — Clean, airy, lots of space
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #ffffff
+
+-- ── Header ───────────────────────────────────────────────
+TEXT 60 60 "ROBERT" 36 1 #111111 bold
+TEXT 60 100 "PASZEK" 36 1 #111111 bold
+LINE 60 120 260 120 1 #111111 3
+TEXT 60 148 "Software Engineer" 14 1 #888888
+
+TEXT 500 68 "robert@example.com" 10 1 #888888
+TEXT 500 86 "github.com/robertpaszek" 10 1 #888888
+TEXT 500 104 "London, UK" 10 1 #888888
+
+LINE 60 180 780 180 1 #e0e0e0 1
+
+-- ── Profile ──────────────────────────────────────────────
+TEXT 60 210 "Software engineer focused on spatial computing, DSL design," 11 1 #444444
+TEXT 60 228 "and creative tooling. Building bridges between human spatial" 11 1 #444444
+TEXT 60 246 "intuition and machine understanding." 11 1 #444444
+
+LINE 60 276 780 276 1 #e0e0e0 1
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 60 306 "EXPERIENCE" 10 1 #111111 bold
+
+TEXT 60 340 "Senior Software Engineer" 13 1 #111111 bold
+TEXT 60 360 "Spatial Labs" 11 1 #888888
+TEXT 660 340 "2023 — Present" 10 1 #aaaaaa
+TEXT 60 384 "Designed VOXI DSL for 3D voxel scene description." 10 1 #444444
+TEXT 60 400 "Built real-time renderer. Reduced LLM tokens by 85%." 10 1 #444444
+
+TEXT 60 436 "Full Stack Developer" 13 1 #111111 bold
+TEXT 60 456 "TechFlow" 11 1 #888888
+TEXT 660 436 "2021 — 2023" 10 1 #aaaaaa
+TEXT 60 480 "Built microservice architecture serving 2M req/day." 10 1 #444444
+TEXT 60 496 "Led frontend rebuild in Next.js, reduced bundle 60%." 10 1 #444444
+
+TEXT 60 532 "Junior Developer" 13 1 #111111 bold
+TEXT 60 552 "DataPulse" 11 1 #888888
+TEXT 660 532 "2020 — 2021" 10 1 #aaaaaa
+TEXT 60 576 "Built ETL pipelines processing 500GB daily." 10 1 #444444
+TEXT 60 592 "Created internal dashboard with React + D3.js." 10 1 #444444
+
+LINE 60 626 780 626 1 #e0e0e0 1
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 60 656 "PROJECTS" 10 1 #111111 bold
+
+TEXT 60 690 "VOXI" 12 1 #111111 bold
+TEXT 120 690 "— Spatial Reasoning DSL for 3D scenes in ~100 tokens" 10 1 #444444
+
+TEXT 60 718 "Brain Converter" 12 1 #111111 bold
+TEXT 200 718 "— Natural language to 3D voxel scene translator" 10 1 #444444
+
+TEXT 60 746 "Video Depth Reasoning" 12 1 #111111 bold
+TEXT 250 746 "— Spatial structure extraction from video" 10 1 #444444
+
+TEXT 60 774 "Sketch-Lang" 12 1 #111111 bold
+TEXT 178 774 "— Minimal 2D vector drawing language with vision matrix" 10 1 #444444
+
+LINE 60 808 780 808 1 #e0e0e0 1
+
+-- ── Skills ───────────────────────────────────────────────
+TEXT 60 838 "SKILLS" 10 1 #111111 bold
+
+TEXT 60 868 "Python  JavaScript  TypeScript  Go  SQL  Rust" 10 1 #444444
+TEXT 60 890 "React  Next.js  FastAPI  Flask  Node  Django" 10 1 #444444
+TEXT 60 912 "Docker  Kubernetes  AWS  PostgreSQL  Redis  Firebase" 10 1 #444444
+
+LINE 60 942 780 942 1 #e0e0e0 1
+
+-- ── Education ────────────────────────────────────────────
+TEXT 60 972 "EDUCATION" 10 1 #111111 bold
+
+TEXT 60 1002 "MSc Computer Science" 11 1 #111111 bold
+TEXT 260 1002 "University College London" 10 1 #888888
+TEXT 660 1002 "2018 — 2020" 10 1 #aaaaaa
+
+TEXT 60 1028 "BSc Mathematics" 11 1 #111111 bold
+TEXT 260 1028 "University of Warsaw" 10 1 #888888
+TEXT 660 1028 "2014 — 2018" 10 1 #aaaaaa

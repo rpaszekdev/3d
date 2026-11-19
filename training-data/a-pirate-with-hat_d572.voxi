@@ -1,0 +1,54 @@
+V 24 32 24
+
+-- boots
+B 8 0 10 4 3 4 0
+B 12 0 10 4 3 4 0
+
+-- pants
+B 8 3 10 4 5 4 f
+B 12 3 10 4 5 4 f
+
+-- belt
+B 7 8 10 10 1 4 a
+
+-- shirt body
+B 7 9 10 10 6 4 1
+
+-- left arm
+B 5 9 10 2 6 4 1
+-- left hand
+B 5 15 10 2 2 4 d
+
+-- right arm
+B 17 9 10 2 6 4 1
+-- right hook (gray cylinder)
+C 18 14 12 1 3 9
+
+-- neck
+B 11 15 10 2 2 4 d
+
+-- head
+S 12 19 12 3 d
+
+-- eyes
+B 11 19 9 1 1 1 0
+B 13 19 9 1 1 1 0
+
+-- white teeth
+B 11 17 9 2 1 1 8
+
+-- beard stubble
+B 10 17 9 4 1 1 9
+
+-- hat brim
+B 6 22 9 12 1 6 0
+
+-- hat crown
+B 9 23 10 6 6 4 0
+
+-- skull on hat
+S 12 26 9 1 8
+
+-- crossbones
+B 10 26 9 4 1 1 8
+B 12 24 9 1 3 1 8

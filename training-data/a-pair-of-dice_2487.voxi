@@ -1,0 +1,43 @@
+V 28 12 22
+
+-- die one body
+B 2 1 8 6 6 6 8
+
+-- die one front face: showing 3
+S 7 6 8 1 0
+S 5 4 8 1 0
+S 3 2 8 1 0
+
+-- die one top face: showing 2
+S 3 7 10 1 0
+S 7 7 13 1 0
+
+-- die one right face: showing 4
+S 8 6 10 1 0
+S 8 2 10 1 0
+S 8 6 13 1 0
+S 8 2 13 1 0
+
+-- die two body
+B 16 1 8 6 6 6 8
+
+-- die two front face: showing 5
+S 17 6 8 1 0
+S 21 6 8 1 0
+S 19 4 8 1 0
+S 17 2 8 1 0
+S 21 2 8 1 0
+
+-- die two top face: showing 4
+S 17 7 10 1 0
+S 21 7 10 1 0
+S 17 7 13 1 0
+S 21 7 13 1 0
+
+-- die two right face: showing 6
+S 22 6 10 1 0
+S 22 4 10 1 0
+S 22 2 10 1 0
+S 22 6 13 1 0
+S 22 4 13 1 0
+S 22 2 13 1 0

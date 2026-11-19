@@ -1,0 +1,51 @@
+V 32 32 32
+
+-- branch overhead
+B 4 30 12 24 2 6 7
+
+-- left hand gripping
+S 12 30 15 2 d
+-- right hand gripping
+S 20 30 15 2 d
+
+-- left arm stretched up
+C 12 25 15 1 8 a
+-- right arm stretched up
+C 20 25 15 1 8 a
+
+-- head
+S 16 22 15 3 a
+-- face patch
+E 16 22 12 2 2 2 d
+-- left ear
+S 13 23 14 2 a
+-- right ear
+S 19 23 14 2 a
+-- eyes
+S 15 23 12 1 0
+S 17 23 12 1 0
+-- nostrils
+S 15 21 12 0 0
+S 17 21 12 0 0
+
+-- upper body
+E 16 17 15 4 3 3 a
+-- belly patch
+E 16 17 13 3 3 2 d
+
+-- lower torso
+E 16 13 15 3 3 3 a
+
+-- left leg hanging
+C 14 8 15 1 6 a
+-- right leg hanging
+C 18 8 15 1 6 a
+
+-- left foot
+E 14 5 15 2 1 3 d
+-- right foot
+E 18 5 15 2 1 3 d
+
+-- tail curling back
+E 16 12 20 2 6 2 a
+E 17 9 22 1 4 1 a

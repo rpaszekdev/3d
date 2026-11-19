@@ -1,0 +1,16 @@
+V 24 24 24
+
+-- main bean bag body
+E 12 7 12 9 7 9 3
+
+-- top puffy dome
+E 12 13 12 6 4 6 1
+
+-- middle seam band
+E 12 7 12 9 1 9 9
+
+-- bottom flattened base
+B 4 0 4 16 2 16 c
+
+-- floor shadow
+B 5 0 5 14 1 14 0

@@ -1,0 +1,258 @@
+=== LOD Round-Trip Demo Report ===
+
+Goal: "Move the deer closer to graze near the castle moat. Rotate the knight to face the deer."
+Downsample factor: 4
+
+--- SCENE ANALYSIS (Claude) ---
+## Spatial Layout Analysis
+
+### Overview
+The scene is a 48×28×48 grid containing three objects: a terrain/castle landscape, an armored knight, and a deer. The objects occupy distinct spatial zones with clear separation.
+
+---
+
+### Terrain (Castle Landscape)
+The terrain is the dominant mass, spanning the center of the grid (X[8..39], Z[8..39]) from ground level up to Y=27 — nearly the full height of the scene. At 7,735 voxels, it dwarfs the other objects.
+
+In the **top view**, the interior cells with depth values `3` (around low-res cols 5–6, rows 7–8) mark the **tallest castle structures** — those depth-3 values mean surfaces are closest to the top camera, i.e., the highest elevation points. These sit roughly in the center-back of the terrain footprint, consistent with a castle on a hill.
+
+The surrounding terrain slopes away: depth values `6–9` indicate progressively lower or more distant surfaces, forming the hillside around the castle.
+
+---
+
+### Knight
+- Positioned **in front of and partially overlapping** the terrain's Z-front face: X[14..33], Z[5..25]
+- Base at Y=8, reaching up to Y=27 — stands at the same elevation as the terrain top
+- In the **front view**, the `6` (yellow) and `2` (green) values in the middle rows are the knight's sword and armor catching the view
+- The knight is **west-to-center horizontally** and **forward (low Z)** relative to the terrain — essentially standing before the castle entrance
+
+---
+
+### Deer
+- Positioned **behind and to the right** of the terrain: X[35..60], Z[35..43]
+- Base at Y=8, top at Y=34 — slightly **taller** than the terrain's top (Y=27), which is notable given its `26×27×9` bounds
+- In the **top view**, barely visible at the far upper-right edge (the `2` at row 2, col 11 is a lone deer voxel peeking past the grid edge)
+- The deer's Z[35..43] places it behind the castle (terrain Z ends at 39), partially occluded from the front
+
+---
+
+### Spatial Relationships
+
+```
+         Z-BACK (Z=48)
+              [DEER] — back-right, behind terrain
+         [TERRAIN/CASTLE] — central elevated mass
+              [KNIGHT] — front-center, facing castle
+         Z-FRONT (Z=0)
+```
+
+- **Knight → Terrain**: ~3 units of separation in Z (Z=25 vs Z=8 terrain front), knight is directly facing the castle
+- **Deer → Terrain**: The deer's X[35..60] extends beyond the terrain's X[8..39] boundary — it stands **to the right and behind** the castle, partially in open space past the terrain edge
+- **Knight → Deer**: Maximum separation diagonally — knight is front-left (low Z, mid X), deer is back-right (high Z, high X); roughly 30+ units apart
+
+The composition reads as a classic scene: a knight approaching a hilltop castle, with a deer in the wilderness behind and to the side.
+
+--- EDIT PROPOSAL (Claude) ---
+## Reasoning
+
+**Moving the deer to the moat:**
+
+The terrain's front face sits at Z=8 (high-res). The deer is currently at (35, 8, 35) — behind and to the right of the castle, partially out of the 48×28×48 bounds (X goes to 60). Moving it to approximately (22, 8, 6) places it just at the front moat area (Z=6–14), graze-able near the castle entrance, and brings it within bounds (X[22..47], Z[6..14]).
+
+- dx = 22 − 35 = **−13**
+- dz = 6 − 35 = **−29**
+
+**Rotating the knight to face the deer:**
+
+The knight currently stands at X[14..33], Z[5..25], facing toward the castle (roughly +Z). After the deer moves to the front-right (X≈22–47, Z≈6–14), the deer is now to the knight's **right** (+X direction). A single 90° Y-rotation swings the knight from facing the castle toward facing +X, pointing it at the relocated deer.
+
+`★ Insight ─────────────────────────────────────`
+- The MOVE action uses **high-res delta coordinates**, so even though the low-res view shows the deer at cell (8–9, 8–9), the actual shift must account for the full 1:1 voxel coordinate system.
+- ROTATE_Y90 rotates the *entire object* around its local Y-axis — useful here because the knight's facing is encoded in its geometry, not a stored orientation vector.
+- The deer was already partially out-of-bounds (X up to 60 in a 48-wide grid), so this move corrects that as a side effect.
+`─────────────────────────────────────────────────`
+
+```json
+[
+  {
+    "action": "MOVE",
+    "object": "deer",
+    "dx": -13,
+    "dy": 0,
+    "dz": -29
+  },
+  {
+    "action": "ROTATE_Y90",
+    "object": "knight"
+  }
+]
+```
+
+**Result:** The deer now grazes near the front-right of the castle moat (Z≈6, X≈22–47), just where the terrain meets open ground. The knight has pivoted 90° to face toward the deer rather than the castle gate — a watchful guardian's gaze.
+
+--- PARSED EDITS ---
+[
+  {
+    "action": "MOVE",
+    "object": "deer",
+    "dx": -13,
+    "dy": 0,
+    "dz": -29
+  },
+  {
+    "action": "ROTATE_Y90",
+    "object": "knight"
+  }
+]
+
+--- BEFORE ---
+Scene: 48x28x48 grid, 8114 total voxels, 3 objects
+
+  terrain:
+    Position: (8, 0, 8)
+    Bounds: 32x28x32
+    Voxels: 7735
+    Colors: 9(5677), 2(898), a(891) — gray/brown/green landscape with castle
+    Occupies: X[8..39] Y[0..27] Z[8..39]
+
+  knight:
+    Position: (14, 8, 5)
+    Bounds: 20x20x21
+    Voxels: 334
+    Colors: c(236), 9(44), 6(32) — armored figure with sword
+    Occupies: X[14..33] Y[8..27] Z[5..25]
+
+  deer:
+    Position: (35, 8, 35)
+    Bounds: 26x27x9
+    Voxels: 356
+    Colors: a(272), d(53), 9(11) — brown deer
+    Occupies: X[35..60] Y[8..34] Z[35..43]
+
+
+--- AFTER ---
+Scene: 48x28x48 grid, 8387 total voxels, 3 objects
+
+  terrain:
+    Position: (8, 0, 8)
+    Bounds: 32x28x32
+    Voxels: 7735
+    Colors: 9(5677), 2(898), a(891) — gray/brown/green landscape with castle
+    Occupies: X[8..39] Y[0..27] Z[8..39]
+
+  knight:
+    Position: (14, 8, 5)
+    Bounds: 21x20x20
+    Voxels: 334
+    Colors: c(236), 9(44), 6(32) — armored figure with sword
+    Occupies: X[14..34] Y[8..27] Z[5..24]
+
+  deer:
+    Position: (22, 8, 6)
+    Bounds: 26x27x9
+    Voxels: 356
+    Colors: a(272), d(53), 9(11) — brown deer
+    Occupies: X[22..47] Y[8..34] Z[6..14]
+
+
+--- BEFORE Text View (low-res) ---
+VOXI TEXT VIEW (12x7x12) — depth 0=close 9=far .=empty
+
+                          TOP (→X, ↑Z)
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+                          . . 8 9 9 8 8 8 9 8 . 2
+                          . . 8 6 6 6 6 6 9 9 . .
+                          . . 8 6 6 6 5 6 8 9 . .
+                          . . 9 8 6 6 6 6 8 9 . .
+                          . . 8 9 6 6 6 6 8 9 . .
+                          . . 6 9 8 3 3 5 6 9 . .
+                          . . 6 8 8 3 3 5 6 9 . .
+                          . . 6 8 9 9 8 6 6 8 . .
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+
+LEFT (→Z, ↑Y)             FRONT (→X, ↑Y)            RIGHT (→Z, ↑Y)
+. . . . . . . . . . . .   . . . . . . . . . . . .   . . . . . . . . . . . .
+. . 9 . . . . . . . . .   . . . . . . . . . . . 7   . . . . . . . . . 0 . .
+. . 9 . . . . 4 4 . . .   . . . . . 2 2 . . . . 7   . . . 4 4 . . . . 0 . .
+. . . . 5 . . 4 4 . . .   . . . . . 2 2 2 . . . .   . . . 3 3 . . 4 . . . .
+. . . 2 2 3 3 2 2 2 . .   . . 2 6 4 2 2 2 2 . . .   . . 2 2 2 3 3 3 3 . . .
+. . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 3 2 . .
+. . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 2 2 . .
+
+                          BOTTOM (→X, ↑Z)
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . 6
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+
+                          BACK (→X, ↑Y)
+                          . . . . . . . . . . . .
+                          2 . . . . . . . . . . .
+                          2 . . . . 6 6 . . . . .
+                          . . . . 6 3 6 . . . . .
+                          . . . 6 2 2 2 2 2 6 . .
+                          . . 2 3 2 2 2 2 2 2 . .
+                          . . 2 2 2 2 2 2 2 2 . .
+
+Voxels: 157
+
+--- AFTER Text View (low-res) ---
+VOXI TEXT VIEW (12x7x12) — depth 0=close 9=far .=empty
+
+                          TOP (→X, ↑Z)
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+                          . . 8 9 9 8 8 8 9 8 . .
+                          . . 8 6 6 6 6 6 9 9 . .
+                          . . 8 6 6 6 5 6 8 9 . .
+                          . . 9 8 6 6 6 6 8 9 . .
+                          . . 8 9 6 6 6 6 8 9 . .
+                          . . 6 9 8 3 3 5 6 9 . .
+                          . . 6 8 8 3 3 5 6 9 . .
+                          . . 6 8 9 9 8 6 0 3 3 .
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+
+LEFT (→Z, ↑Y)             FRONT (→X, ↑Y)            RIGHT (→Z, ↑Y)
+. . . . . . . . . 7 . .   . . . . . . . . 2 . . .   . . 2 . . . . . . . . .
+. . . . . . . . . 7 . .   . . . . . . . . 2 . . .   . . 2 . . . . . . . . .
+. . . . . . . 4 4 7 . .   . . . . . 2 2 . 2 2 2 .   . . 1 4 4 . . . . . . .
+. . . . 5 . . 5 4 7 . .   . . . . . 2 2 2 2 2 2 .   . . 1 3 3 . . 4 . . . .
+. . . 2 2 3 3 2 2 2 . .   . . 2 6 4 2 2 2 2 . . .   . . 2 2 2 3 3 3 3 . . .
+. . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 3 2 . .
+. . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 2 2 . .   . . 2 2 2 2 2 2 2 2 . .
+
+                          BOTTOM (→X, ↑Z)
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+                          . . 0 0 0 0 0 0 0 0 5 .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . 0 0 0 0 0 0 0 0 . .
+                          . . . . . . . . . . . .
+                          . . . . . . . . . . . .
+
+                          BACK (→X, ↑Y)
+                          . . . 7 . . . . . . . .
+                          . . . 7 . . . . . . . .
+                          . 7 7 7 . 6 6 . . . . .
+                          . 7 7 7 6 3 7 . . . . .
+                          . . . 6 2 2 2 2 2 6 . .
+                          . . 2 3 2 2 2 2 2 2 . .
+                          . . 2 2 2 2 2 2 2 2 . .
+
+Voxels: 162

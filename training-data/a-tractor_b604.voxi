@@ -1,0 +1,40 @@
+V 32 32 32
+
+-- rear large tires
+S 7 5 9 5 0
+S 25 5 9 5 0
+
+-- front small tires
+S 9 3 23 3 0
+S 23 3 23 3 0
+
+-- chassis frame
+B 8 3 7 16 2 17 9
+
+-- engine hood
+B 9 6 15 14 5 10 7
+
+-- cab body
+B 9 6 8 14 10 7 7
+
+-- cab roof
+B 8 16 7 16 2 10 7
+
+-- front windshield
+B 10 7 15 12 8 1 8
+
+-- rear window
+B 10 7 8 12 8 1 8
+
+-- exhaust stack
+C 11 11 23 1 6 9
+
+-- seat
+B 13 12 12 6 1 4 a
+
+-- headlights
+B 9 8 25 2 2 1 6
+B 21 8 25 2 2 1 6
+
+-- grill details
+B 10 6 25 12 4 1 9

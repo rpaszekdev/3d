@@ -1,0 +1,45 @@
+V 32 24 32
+
+-- outer castle walls
+B 5 0 5 22 9 22 9
+
+-- gate opening (black)
+B 13 0 4 6 7 3 0
+
+-- gate frame
+B 11 0 4 10 9 2 a
+
+-- corner towers
+C 5 0 5 3 14 9
+C 27 0 5 3 14 9
+C 5 0 27 3 14 9
+C 27 0 27 3 14 9
+
+-- tower roofs (dark green spheres)
+S 5 15 5 3 c
+S 27 15 5 3 c
+S 5 15 27 3 c
+S 27 15 27 3 c
+
+-- front wall battlements
+B 6 9 5 2 3 2 9
+B 11 9 5 2 3 2 9
+B 19 9 5 2 3 2 9
+B 24 9 5 2 3 2 9
+
+-- inner keep (taller, lighter stone)
+B 11 0 11 10 15 10 8
+
+-- keep battlements
+B 11 15 11 2 2 2 8
+B 15 15 11 2 2 2 8
+B 19 15 11 2 2 2 8
+B 11 15 19 2 2 2 8
+B 15 15 19 2 2 2 8
+B 19 15 19 2 2 2 8
+
+-- flag pole
+B 16 15 15 1 7 1 a
+
+-- flag
+B 17 19 15 3 2 1 1

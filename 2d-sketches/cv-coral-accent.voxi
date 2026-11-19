@@ -1,0 +1,176 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 7: Coral Accent — Right sidebar, coral highlights
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #fafafa
+
+-- ── Right Sidebar ────────────────────────────────────────
+RECT 580 0 260 1120 0 #1a1a2e
+
+-- ── Main Header ──────────────────────────────────────────
+RECT 0 0 580 120 0 #ffffff
+TEXT 50 40 "Robert" 34 1 #1a1a2e bold
+TEXT 50 80 "Paszek" 34 1 #f97066 bold
+TEXT 50 108 "Software Engineer" 12 1 #888888
+
+-- ── Sidebar: Contact ─────────────────────────────────────
+TEXT 608 40 "CONTACT" 9 1 #f97066 bold
+LINE 608 54 810 54 1 #2a2a42 1
+TEXT 608 72 "robert@example.com" 10 1 #c4c4d8
+TEXT 608 92 "github.com/robertpaszek" 10 1 #c4c4d8
+TEXT 608 112 "London, UK" 10 1 #c4c4d8
+
+-- ── Sidebar: Skills ──────────────────────────────────────
+TEXT 608 152 "LANGUAGES" 9 1 #f97066 bold
+LINE 608 166 810 166 1 #2a2a42 1
+
+TEXT 608 184 "Python" 10 1 #e4e4f0
+RECT 608 200 160 4 1 #2a2a42
+RECT 608 200 152 4 2 #f97066
+
+TEXT 608 218 "JavaScript" 10 1 #e4e4f0
+RECT 608 234 160 4 1 #2a2a42
+RECT 608 234 144 4 2 #f97066
+
+TEXT 608 252 "TypeScript" 10 1 #e4e4f0
+RECT 608 268 160 4 1 #2a2a42
+RECT 608 268 136 4 2 #f97066
+
+TEXT 608 286 "Go" 10 1 #e4e4f0
+RECT 608 302 160 4 1 #2a2a42
+RECT 608 302 112 4 2 #f97066
+
+TEXT 608 320 "SQL" 10 1 #e4e4f0
+RECT 608 336 160 4 1 #2a2a42
+RECT 608 336 128 4 2 #f97066
+
+TEXT 608 360 "Rust" 10 1 #e4e4f0
+RECT 608 376 160 4 1 #2a2a42
+RECT 608 376 96 4 2 #f97066
+
+-- ── Sidebar: Frameworks ──────────────────────────────────
+TEXT 608 410 "FRAMEWORKS" 9 1 #f97066 bold
+LINE 608 424 810 424 1 #2a2a42 1
+TEXT 608 442 "React" 9 1 #c4c4d8
+TEXT 660 442 "Next.js" 9 1 #c4c4d8
+TEXT 720 442 "FastAPI" 9 1 #c4c4d8
+TEXT 608 462 "Flask" 9 1 #c4c4d8
+TEXT 660 462 "Node" 9 1 #c4c4d8
+TEXT 710 462 "Django" 9 1 #c4c4d8
+
+-- ── Sidebar: Infrastructure ──────────────────────────────
+TEXT 608 500 "INFRASTRUCTURE" 9 1 #f97066 bold
+LINE 608 514 810 514 1 #2a2a42 1
+TEXT 608 532 "Docker" 9 1 #c4c4d8
+TEXT 668 532 "K8s" 9 1 #c4c4d8
+TEXT 710 532 "AWS" 9 1 #c4c4d8
+TEXT 608 552 "PostgreSQL" 9 1 #c4c4d8
+TEXT 690 552 "Redis" 9 1 #c4c4d8
+TEXT 608 572 "Firebase" 9 1 #c4c4d8
+
+-- ── Sidebar: Education ───────────────────────────────────
+TEXT 608 612 "EDUCATION" 9 1 #f97066 bold
+LINE 608 626 810 626 1 #2a2a42 1
+
+TEXT 608 644 "MSc Computer Science" 10 1 #e4e4f0 bold
+TEXT 608 662 "UCL — 2018-2020" 9 1 #8888a8
+
+TEXT 608 692 "BSc Mathematics" 10 1 #e4e4f0 bold
+TEXT 608 710 "Univ. Warsaw — 2014-2018" 9 1 #8888a8
+
+-- ── Sidebar: Certifications ──────────────────────────────
+TEXT 608 752 "CERTIFICATIONS" 9 1 #f97066 bold
+LINE 608 766 810 766 1 #2a2a42 1
+TEXT 608 784 "AWS Solutions Architect" 9 1 #c4c4d8
+TEXT 608 804 "GCP Data Engineer" 9 1 #c4c4d8
+TEXT 608 824 "CKA Kubernetes" 9 1 #c4c4d8
+
+-- ── Sidebar: Interests ───────────────────────────────────
+TEXT 608 864 "INTERESTS" 9 1 #f97066 bold
+LINE 608 878 810 878 1 #2a2a42 1
+TEXT 608 896 "Spatial computing" 9 1 #c4c4d8
+TEXT 608 914 "Computer graphics" 9 1 #c4c4d8
+TEXT 608 932 "Language design" 9 1 #c4c4d8
+TEXT 608 950 "Generative AI" 9 1 #c4c4d8
+
+-- ═════════════════════════════════════════════════════════
+-- LEFT COLUMN — Main Content
+-- ═════════════════════════════════════════════════════════
+
+-- ── Profile ──────────────────────────────────────────────
+TEXT 50 150 "PROFILE" 10 1 #1a1a2e bold
+LINE 50 164 540 164 1 #e0e0e0 1
+TEXT 50 184 "Software engineer focused on spatial computing," 10 1 #444444
+TEXT 50 200 "domain-specific languages, and creative tooling." 10 1 #444444
+TEXT 50 216 "Bridging human intuition and machine understanding" 10 1 #444444
+TEXT 50 232 "through compact, token-efficient DSLs." 10 1 #444444
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 50 270 "EXPERIENCE" 10 1 #1a1a2e bold
+LINE 50 284 540 284 1 #e0e0e0 1
+
+RECT 50 298 10 10 1 #f97066
+TEXT 72 296 "Senior Software Engineer" 12 1 #1a1a2e bold
+TEXT 72 316 "Spatial Labs — London" 10 1 #999999
+TEXT 420 296 "2023 — Present" 9 1 #f97066
+TEXT 72 340 "Designed VOXI DSL for 3D voxel scene description." 10 1 #444444
+TEXT 72 356 "Built real-time renderer with depth/shading modes." 10 1 #444444
+TEXT 72 372 "Reduced LLM scene-generation tokens by 85%." 10 1 #444444
+
+RECT 50 398 10 10 1 #f97066
+TEXT 72 396 "Full Stack Developer" 12 1 #1a1a2e bold
+TEXT 72 416 "TechFlow — Remote" 10 1 #999999
+TEXT 420 396 "2021 — 2023" 9 1 #f97066
+TEXT 72 440 "Microservice arch serving 2M req/day." 10 1 #444444
+TEXT 72 456 "Event-driven migration. Next.js, bundle -60%." 10 1 #444444
+
+RECT 50 482 10 10 1 #f97066
+TEXT 72 480 "Junior Developer" 12 1 #1a1a2e bold
+TEXT 72 500 "DataPulse — Warsaw" 10 1 #999999
+TEXT 420 480 "2020 — 2021" 9 1 #f97066
+TEXT 72 524 "ETL pipelines 500GB/day. React + D3 dashboard." 10 1 #444444
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 50 568 "PROJECTS" 10 1 #1a1a2e bold
+LINE 50 582 540 582 1 #e0e0e0 1
+
+-- Project cards
+RECT 50 596 240 120 0 #ffffff 8
+RECT 50 596 240 4 1 #f97066
+TEXT 64 612 "VOXI" 11 2 #1a1a2e bold
+TEXT 64 632 "Spatial Reasoning DSL" 9 2 #999999
+TEXT 64 654 "3D scenes in ~100 tokens" 9 1 #444444
+TEXT 64 670 "for LLM spatial reasoning." 9 1 #444444
+RECT 64 694 48 14 1 #fff1f0 6
+TEXT 70 697 "Python" 7 2 #f97066
+RECT 118 694 28 14 1 #fff1f0 6
+TEXT 124 697 "JS" 7 2 #f97066
+
+RECT 310 596 240 120 0 #ffffff 8
+RECT 310 596 240 4 1 #f97066
+TEXT 324 612 "Brain Converter" 11 2 #1a1a2e bold
+TEXT 324 632 "NL → 3D Scenes" 9 2 #999999
+TEXT 324 654 "LLM reasoning + DSL" 9 1 #444444
+TEXT 324 670 "output pipeline." 9 1 #444444
+RECT 324 694 56 14 1 #fff1f0 6
+TEXT 330 697 "FastAPI" 7 2 #f97066
+RECT 386 694 52 14 1 #fff1f0 6
+TEXT 392 697 "Claude" 7 2 #f97066
+
+RECT 50 730 240 120 0 #ffffff 8
+RECT 50 730 240 4 1 #f97066
+TEXT 64 746 "Video Depth" 11 2 #1a1a2e bold
+TEXT 64 766 "Spatial from Video" 9 2 #999999
+TEXT 64 788 "Monocular depth + LLM" 9 1 #444444
+TEXT 64 804 "temporal reasoning." 9 1 #444444
+RECT 64 828 56 14 1 #fff1f0 6
+TEXT 70 831 "PyTorch" 7 2 #f97066
+
+RECT 310 730 240 120 0 #ffffff 8
+RECT 310 730 240 4 1 #f97066
+TEXT 324 746 "Sketch-Lang" 11 2 #1a1a2e bold
+TEXT 324 766 "2D Vector DSL" 9 2 #999999
+TEXT 324 788 "Vision matrix for LLM" 9 1 #444444
+TEXT 324 804 "visual reasoning." 9 1 #444444
+RECT 324 828 68 14 1 #fff1f0 6
+TEXT 330 831 "JavaScript" 7 2 #f97066

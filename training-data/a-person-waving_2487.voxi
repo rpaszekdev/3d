@@ -1,0 +1,40 @@
+V 32 34 32
+
+-- shoes
+B 12 0 14 4 2 4 a
+B 18 0 14 4 2 4 a
+
+-- legs (pants)
+B 12 2 14 4 9 4 3
+B 18 2 14 4 9 4 3
+
+-- hips
+B 11 11 14 10 2 4 3
+
+-- torso (shirt)
+B 12 13 14 8 7 4 1
+
+-- neck
+B 15 20 15 2 2 2 d
+
+-- head
+S 16 24 16 4 d
+
+-- hair
+B 12 27 14 8 2 4 9
+
+-- right arm (at side)
+B 21 13 15 2 7 2 d
+S 22 12 16 2 d
+
+-- left arm raised (waving)
+B 8 18 15 3 3 3 d
+B 7 21 15 3 7 3 d
+S 9 28 16 2 d
+
+-- eyes
+B 14 25 13 2 1 1 0
+B 18 25 13 2 1 1 0
+
+-- smile
+B 14 23 13 4 1 1 0

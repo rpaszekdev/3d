@@ -1,0 +1,55 @@
+V 32 32 12
+
+-- large spinning wheel rim
+C 13 15 6 10 2 a
+
+-- wheel hub
+S 13 15 6 2 8
+
+-- horizontal spoke
+B 4 14 5 18 2 2 a
+
+-- vertical spoke
+B 12 6 5 2 18 2 a
+
+-- diagonal spokes (upper)
+B 6 20 5 3 3 2 a
+B 17 20 5 3 3 2 a
+
+-- diagonal spokes (lower)
+B 6 8 5 3 3 2 a
+B 17 8 5 3 3 2 a
+
+-- frame left post
+B 3 1 5 2 14 2 7
+
+-- frame right post
+B 20 1 5 2 14 2 7
+
+-- base beam
+B 3 1 5 18 2 2 7
+
+-- axle brackets
+B 2 13 4 4 4 4 7
+B 19 13 4 4 4 4 7
+
+-- rear stabilizer leg
+B 13 1 2 2 10 2 7
+
+-- spindle maiden left post
+B 24 8 5 2 10 2 a
+
+-- spindle maiden right post
+B 29 8 5 2 10 2 a
+
+-- maiden crossbeam
+B 24 16 5 7 2 2 a
+
+-- flyer/bobbin
+C 27 12 6 2 5 6
+
+-- drive band
+B 22 14 6 3 1 1 6
+
+-- treadle
+B 5 0 4 14 2 5 d

@@ -1,0 +1,24 @@
+V 24 20 12
+
+-- green outer rind
+E 12 2 6 10 10 4 c
+
+-- white inner rind
+E 12 2 6 9 9 3 8
+
+-- red flesh
+E 12 2 6 8 8 3 1
+
+-- flat cut bottom white
+B 2 0 3 20 3 6 8
+
+-- flat cut bottom red
+B 2 3 3 20 5 6 1
+
+-- seeds
+S 8 6 6 1 0
+S 12 9 6 1 0
+S 16 6 6 1 0
+S 10 4 6 1 0
+S 14 5 6 1 0
+S 11 7 6 1 0

@@ -1,0 +1,62 @@
+V 32 20 32
+
+-- chassis/undercarriage
+B 11 0 3 10 3 26 9
+
+-- cab (red, front section)
+B 11 3 2 10 10 9 1
+
+-- main body (red, rear section)
+B 11 3 10 10 8 18 1
+
+-- windshield (cyan)
+B 12 8 2 8 4 1 4
+
+-- cab left window
+B 11 8 3 1 4 7 4
+
+-- cab right window
+B 21 8 3 1 4 7 4
+
+-- front grille (yellow)
+B 13 3 1 6 4 2 6
+
+-- front bumper (gray)
+B 11 1 1 10 2 2 9
+
+-- front left wheel
+S 11 2 7 2 0
+
+-- front right wheel
+S 21 2 7 2 0
+
+-- rear left wheel
+S 11 2 22 2 0
+
+-- rear right wheel
+S 21 2 22 2 0
+
+-- emergency light bar (yellow)
+B 12 13 2 8 1 8 6
+
+-- siren left (red)
+S 14 15 4 1 1
+
+-- siren right (red)
+S 18 15 4 1 1
+
+-- ladder rack on body roof (gray)
+B 12 11 10 8 1 18 9
+
+-- ladder frame (gray)
+B 12 12 10 2 3 18 9
+B 18 12 10 2 3 18 9
+
+-- equipment compartment side doors (brown)
+B 11 3 10 1 7 18 a
+
+-- rear hose reel (orange)
+C 16 5 26 3 4 7
+
+-- roof-mounted water cannon (dark gray)
+B 14 14 9 4 2 4 9

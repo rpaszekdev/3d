@@ -1,0 +1,41 @@
+V 32 32 32
+
+-- hull
+B 6 0 3 20 5 26 3
+
+-- deck
+B 6 5 3 20 1 26 d
+
+-- keel
+B 12 -4 8 8 4 12 9
+
+-- cabin
+B 10 6 8 12 4 10 8
+
+-- cabin windows
+B 11 8 9 2 2 2 6
+B 16 8 9 2 2 2 6
+
+-- mast
+C 16 5 9 1 22 8
+
+-- boom
+B 13 7 8 8 1 1 9
+
+-- main sail
+B 15 8 8 2 14 10 8
+
+-- jib sail
+B 14 8 4 2 10 6 8
+
+-- bow tip
+B 14 1 2 4 3 2 6
+
+-- stern rail port
+B 8 6 27 2 3 1 9
+
+-- stern rail starboard
+B 22 6 27 2 3 1 9
+
+-- stern rail cross
+B 8 9 27 16 1 1 9

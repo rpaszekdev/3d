@@ -1,0 +1,54 @@
+V 32 32 32
+
+-- feet
+B 13 0 12 3 2 4 0
+B 18 0 12 3 2 4 0
+
+-- legs
+B 13 2 13 3 6 3 9
+B 18 2 13 3 6 3 9
+
+-- waist armor
+B 12 7 13 8 2 4 e
+
+-- torso armor
+B 12 9 13 8 7 4 e
+
+-- chest plate
+B 13 11 12 6 5 2 3
+
+-- shoulder guards
+B 10 14 13 3 3 4 e
+B 21 14 13 3 3 4 e
+
+-- arms
+B 10 9 13 3 5 3 e
+B 21 9 13 3 5 3 e
+
+-- hands
+B 11 8 13 2 2 2 d
+B 21 8 13 2 2 2 d
+
+-- neck
+B 15 16 14 2 2 2 d
+
+-- face
+S 16 19 14 3 d
+
+-- kabuto base
+B 13 19 12 6 3 4 e
+
+-- kabuto dome
+B 14 22 13 4 2 4 e
+
+-- kabuto crest
+B 15 24 14 2 3 2 1
+
+-- katana grip
+B 22 7 14 1 4 1 a
+
+-- katana guard
+B 21 10 14 3 1 1 9
+
+-- katana blade
+B 22 11 14 1 11 1 8

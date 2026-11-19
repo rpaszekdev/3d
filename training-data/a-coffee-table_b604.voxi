@@ -1,0 +1,13 @@
+V 24 24 24
+
+-- legs (dark wood)
+B 4 0 7 2 6 2 a
+B 18 0 7 2 6 2 a
+B 4 0 15 2 6 2 a
+B 18 0 15 2 6 2 a
+
+-- lower shelf
+B 5 3 8 14 1 8 a
+
+-- tabletop (light wood)
+B 4 6 7 16 2 10 d

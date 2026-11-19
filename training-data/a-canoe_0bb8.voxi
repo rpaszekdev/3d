@@ -1,0 +1,36 @@
+V 32 12 16
+
+-- hull body
+B 4 0 6 24 3 4 a
+
+-- interior cavity
+B 5 1 7 22 2 2 9
+
+-- bow taper
+B 2 0 7 2 2 2 a
+B 1 0 8 1 1 1 a
+
+-- stern taper
+B 28 0 7 2 2 2 a
+B 30 0 8 1 1 1 a
+
+-- port gunwale
+B 4 3 6 24 1 1 d
+
+-- starboard gunwale
+B 4 3 9 24 1 1 d
+
+-- bow cap rail
+B 2 2 7 2 1 2 d
+
+-- stern cap rail
+B 28 2 7 2 1 2 d
+
+-- forward thwart
+B 8 2 7 3 1 2 6
+
+-- center thwart
+B 14 2 7 4 1 2 6
+
+-- aft thwart
+B 21 2 7 3 1 2 6

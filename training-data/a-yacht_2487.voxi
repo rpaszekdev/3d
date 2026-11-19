@@ -1,0 +1,52 @@
+V 48 32 48
+
+-- hull
+B 8 2 20 32 4 8 3
+B 9 1 21 30 2 6 d
+
+-- hull sides taper
+B 8 4 21 32 2 6 3
+B 10 5 22 28 1 4 3
+
+-- deck
+B 10 6 21 28 1 6 8
+
+-- cabin lower
+B 16 7 22 16 4 5 8
+B 17 8 23 14 3 3 7
+
+-- cabin windows
+B 18 9 22 3 2 1 4
+B 23 9 22 3 2 1 4
+B 28 9 22 3 2 1 4
+
+-- cabin roof
+B 16 11 22 16 1 5 9
+
+-- mast base
+C 24 6 24 1 20 9
+
+-- boom
+B 18 14 24 12 1 1 9
+
+-- sail main
+B 20 8 23 6 14 1 8
+B 19 8 23 8 12 1 8
+B 18 8 23 9 10 1 8
+
+-- jib sail
+B 14 8 23 6 10 1 8
+B 13 8 23 7 8 1 8
+
+-- bow point
+B 8 4 22 4 2 4 3
+B 6 3 23 4 2 2 3
+
+-- stern
+B 38 4 22 4 4 4 d
+
+-- rudder
+B 40 1 24 1 4 1 9
+
+-- water line accent
+B 8 2 21 32 1 6 4

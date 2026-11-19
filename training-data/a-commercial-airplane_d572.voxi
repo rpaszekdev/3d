@@ -1,0 +1,57 @@
+V 32 16 32
+
+-- fuselage main body
+B 12 3 3 8 6 24 8
+
+-- nose section
+B 13 4 1 6 4 3 8
+
+-- tail section
+B 13 4 25 6 4 3 8
+
+-- nose cone tip
+B 14 5 0 4 3 2 3
+
+-- cockpit windows
+B 13 7 2 6 2 5 3
+
+-- passenger windows left
+B 12 7 7 1 1 14 3
+
+-- passenger windows right
+B 19 7 7 1 1 14 3
+
+-- main wing left
+B 0 3 10 12 2 9 9
+
+-- main wing right
+B 20 3 10 12 2 9 9
+
+-- winglet left
+B 0 3 10 1 4 2 9
+
+-- winglet right
+B 31 3 10 1 4 2 9
+
+-- vertical tail fin
+B 14 8 25 4 7 3 9
+
+-- horizontal tail left
+B 6 5 25 8 2 3 9
+
+-- horizontal tail right
+B 18 5 25 8 2 3 9
+
+-- left engine nacelle
+B 5 2 11 4 3 6 9
+
+-- right engine nacelle
+B 19 2 11 4 3 6 9
+
+-- engine inlets black
+B 5 3 11 4 2 1 0
+B 19 3 11 4 2 1 0
+
+-- engine exhaust
+B 6 3 17 3 2 1 7
+B 20 3 17 3 2 1 7

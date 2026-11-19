@@ -1,0 +1,35 @@
+V 32 36 18
+
+-- wardrobe frame
+B 6 0 15 20 34 1 9
+B 6 0 4 1 34 12 9
+B 25 0 4 1 34 12 9
+B 6 33 4 20 1 12 a
+B 6 0 4 20 1 12 a
+
+-- left door open (swung perpendicular)
+B 0 1 4 6 31 1 a
+-- right door open (swung perpendicular)
+B 26 1 4 6 31 1 a
+
+-- door handles
+S 6 16 4 1 6
+S 26 16 4 1 6
+
+-- hanging rod
+B 7 25 9 18 1 1 9
+
+-- hanging clothes
+B 8 14 7 2 11 4 1
+B 11 14 7 2 11 4 3
+B 14 14 7 2 11 4 2
+B 17 14 7 2 11 4 5
+B 20 14 7 2 11 4 6
+
+-- mid shelf divider
+B 7 12 5 18 1 10 a
+
+-- bottom drawers
+B 8 1 5 4 11 9 d
+B 13 1 5 4 11 9 d
+B 18 1 5 4 11 9 d

@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesh Engine — Direct Vertex + Face Generation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --dim: #8b949e;
+    --accent: #3fb950;
+    --accent2: #58a6ff;
+    --red: #f85149;
+    --orange: #d29922;
+    --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* ─── Left Panel ─── */
+  .editor-panel {
+    width: 460px;
+    min-width: 340px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+  }
+
+  .editor-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .editor-header h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+  .editor-header h1 span { color: var(--accent); }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .toolbar button {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .toolbar button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+  .toolbar button.primary:hover { opacity: 0.85; }
+  .toolbar button.export-btn { background: var(--accent2); color: #000; border-color: var(--accent2); font-weight: 600; }
+
+  .mode-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mode-tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--dim);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mode-tabs button:hover { color: var(--text); }
+  .mode-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  #editor {
+    flex: 1;
+    background: var(--bg);
+    color: var(--text);
+    border: none;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    tab-size: 2;
+  }
+
+  .status-bar {
+    padding: 8px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--dim);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .status-bar .error { color: var(--red); }
+  .status-bar .success { color: var(--accent); }
+
+  /* ─── Right: Viewport ─── */
+  .viewport {
+    flex: 1;
+    position: relative;
+    background: #0a0e14;
+  }
+
+  #canvas { width: 100%; height: 100%; display: block; }
+
+  .viewport-info {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--dim);
+    pointer-events: none;
+  }
+
+  .viewport-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .viewport-controls button {
+    background: rgba(22, 27, 34, 0.8);
+    border: 1px solid var(--border);
+    color: var(--dim);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: var(--mono);
+    cursor: pointer;
+  }
+
+  .viewport-controls button:hover { color: var(--accent); border-color: var(--accent); }
+  .viewport-controls button.active { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── Examples dropdown ─── */
+  .examples-dropdown { position: relative; }
+
+  .examples-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 100;
+    min-width: 240px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .examples-menu.open { display: block; }
+
+  .examples-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .examples-menu button:hover { background: var(--bg); }
+
+  /* ─── Reference ─── */
+  .ref-toggle {
+    padding: 10px 20px;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--dim);
+    user-select: none;
+  }
+
+  .ref-toggle:hover { color: var(--accent); }
+
+  .ref-content {
+    display: none;
+    padding: 12px 20px;
+    font-size: 11px;
+    font-family: var(--mono);
+    line-height: 1.5;
+    color: var(--dim);
+    max-height: 220px;
+    overflow-y: auto;
+    border-top: 1px solid var(--border);
+  }
+
+  .ref-content.open { display: block; }
+  .ref-content code { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="editor-panel">
+  <div class="editor-header">
+    <h1><span>Mesh</span> Engine</h1>
+    <div style="font-size:11px;color:var(--dim)">Vertices + Faces</div>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" onclick="buildScene()">▶ Build</button>
+    <button class="export-btn" onclick="exportOBJ()">↓ OBJ</button>
+    <div class="examples-dropdown">
+      <button onclick="toggleExamples()">Examples ▾</button>
+      <div class="examples-menu" id="examplesMenu">
+        <button onclick="loadExample('low_poly_mountain')">⛰️ Low-Poly Mountain</button>
+        <button onclick="loadExample('crystal')">💎 Crystal</button>
+        <button onclick="loadExample('terrain')">🌍 Terrain Grid</button>
+        <button onclick="loadExample('spaceship')">🚀 Low-Poly Spaceship</button>
+        <button onclick="loadExample('tree')">🌲 Low-Poly Tree</button>
+        <button onclick="loadExample('wave_surface')">🌊 Wave Surface</button>
+        <button onclick="loadExample('gem_ring')">💍 Gem + Ring</button>
+        <button onclick="loadExample('house')">🏠 Low-Poly House</button>
+      </div>
+    </div>
+    <button onclick="copyDSL()">Copy DSL</button>
+  </div>
+
+  <textarea id="editor" spellcheck="false">// Low-Poly Mountain — generated grid + deform
+// Generators create indexed meshes automatically
+// Then deform/color per-vertex with expressions
+
+mesh mountain = grid(8, 8, 6, 6)
+
+// Displace Y by distance from center
+deform mountain {
+  dist = sqrt(x*x + z*z)
+  y = max(0, 2.5 - dist * 0.9) * (1 + noise(x*1.5, z*1.5) * 0.3)
+}
+
+// Snow cap: white above y=1.5, grey-green below
+color mountain {
+  if (y > 1.5) rgb(0.95, 0.97, 1.0)
+  else if (y > 0.8) rgb(0.45, 0.52, 0.42)
+  else rgb(0.35, 0.55, 0.3)
+}
+
+// Flat lake
+mesh lake = grid(4, 4, 2, 2)
+translate lake (0, 0.05, 0)
+color lake { rgb(0.2, 0.45, 0.7) }
+
+merge mountain, lake</textarea>
+
+  <div class="ref-toggle" onclick="toggleRef()">▸ DSL Reference</div>
+  <div class="ref-content" id="refContent">
+<b>Generators</b>
+<code>mesh name = grid(w, d, segW, segD)</code>
+<code>mesh name = icosphere(r, subdivisions)</code>
+<code>mesh name = cylinder(r, h, segments)</code>
+<code>mesh name = cone(r, h, segments)</code>
+<code>mesh name = torus(R, r, segMajor, segMinor)</code>
+<code>mesh name = tube(r, h, segments)</code>  — open cylinder
+<code>mesh name = box(w, h, d)</code>
+
+<b>Raw Vertices + Faces</b>
+<code>mesh name = raw {
+  v (x, y, z)
+  v (x, y, z)
+  ...
+  f (0, 1, 2)   // vertex indices
+  f (0, 2, 3)
+}</code>
+
+<b>Transforms</b>
+<code>translate name (x, y, z)</code>
+<code>rotate name (rx, ry, rz)</code>  — degrees
+<code>scale name (sx, sy, sz)</code>  or  <code>scale name (s)</code>
+
+<b>Deform</b> — per-vertex math
+<code>deform name { y = sin(x*2) * 0.5 }</code>
+Available: x, y, z, i (index), dist, noise()
+
+<b>Color</b> — per-vertex color
+<code>color name { rgb(r, g, b) }</code>
+<code>color name {
+  if (y > 1) rgb(1,1,1)
+  else rgb(0.5, 0.5, 0.5)
+}</code>
+
+<b>Combine</b>
+<code>merge a, b, c</code>  — combine into one mesh
+
+<b>Copy</b>
+<code>mesh b = clone(a)</code>
+  </div>
+
+  <div class="status-bar">
+    <span id="status">Ready</span>
+    <span id="meshInfo"></span>
+  </div>
+</div>
+
+<div class="viewport">
+  <canvas id="canvas"></canvas>
+  <div class="viewport-controls">
+    <button id="btnWire" onclick="toggleWireframe()">wireframe</button>
+    <button id="btnFlat" onclick="toggleFlat()">flat</button>
+    <button id="btnVerts" onclick="toggleVerts()">vertices</button>
+  </div>
+  <div class="viewport-info">Scroll to zoom · Drag to orbit</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─────────────────────────────────────────────
+// 1. THREE.JS SETUP
+// ─────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0e14);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
+camera.position.set(6, 5, 8);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 1, 0);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+const key = new THREE.DirectionalLight(0xffffff, 1.0);
+key.position.set(5, 8, 6);
+key.castShadow = true;
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0x88ccaa, 0.3);
+fill.position.set(-4, 3, -2);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(10, 10, 0x1a2030, 0x1a2030);
+scene.add(grid);
+
+const axes = new THREE.AxesHelper(1.5);
+axes.position.set(-5, 0, -5);
+scene.add(axes);
+
+const sceneGroup = new THREE.Group();
+scene.add(sceneGroup);
+
+let showWireframe = false;
+let showFlat = true;
+let showVerts = false;
+
+function resize() {
+  const vp = document.querySelector('.viewport');
+  renderer.setSize(vp.clientWidth, vp.clientHeight);
+  camera.aspect = vp.clientWidth / vp.clientHeight;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+
+// ─────────────────────────────────────────────
+// 2. NOISE FUNCTION (simplex-like)
+// ─────────────────────────────────────────────
+
+function _hash(x, y) {
+  let h = x * 374761393 + y * 668265263;
+  h = (h ^ (h >> 13)) * 1274126177;
+  return (h ^ (h >> 16)) & 0x7fffffff;
+}
+
+function noise2D(x, y) {
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const fx = x - ix;
+  const fy = y - iy;
+  const sx = fx * fx * (3 - 2 * fx);
+  const sy = fy * fy * (3 - 2 * fy);
+
+  const n00 = _hash(ix, iy) / 0x7fffffff;
+  const n10 = _hash(ix + 1, iy) / 0x7fffffff;
+  const n01 = _hash(ix, iy + 1) / 0x7fffffff;
+  const n11 = _hash(ix + 1, iy + 1) / 0x7fffffff;
+
+  const nx0 = n00 * (1 - sx) + n10 * sx;
+  const nx1 = n01 * (1 - sx) + n11 * sx;
+  return (nx0 * (1 - sy) + nx1 * sy) * 2 - 1; // -1..1
+}
+
+
+// ─────────────────────────────────────────────
+// 3. MESH GENERATORS
+// ─────────────────────────────────────────────
+
+function genGrid(w, d, segW, segD) {
+  const verts = [];
+  const faces = [];
+  const hw = w / 2, hd = d / 2;
+
+  for (let iz = 0; iz <= segD; iz++) {
+    for (let ix = 0; ix <= segW; ix++) {
+      verts.push([
+        -hw + (ix / segW) * w,
+        0,
+        -hd + (iz / segD) * d
+      ]);
+    }
+  }
+
+  const cols = segW + 1;
+  for (let iz = 0; iz < segD; iz++) {
+    for (let ix = 0; ix < segW; ix++) {
+      const a = iz * cols + ix;
+      const b = a + 1;
+      const c = a + cols + 1;
+      const d2 = a + cols;
+      faces.push([a, d2, c]);
+      faces.push([a, c, b]);
+    }
+  }
+
+  return { verts, faces, colors: null };
+}
+
+function genIcosphere(r, subdivisions) {
+  // Start with icosahedron
+  const t = (1 + Math.sqrt(5)) / 2;
+  let verts = [
+    [-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
+    [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t],
+    [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]
+  ];
+
+  let faces = [
+    [0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],
+    [1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
+    [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],
+    [4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]
+  ];
+
+  // Normalize vertices to sphere
+  function normalize(v) {
+    const len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+    return [v[0]/len * r, v[1]/len * r, v[2]/len * r];
+  }
+
+  verts = verts.map(normalize);
+
+  // Subdivide
+  for (let s = 0; s < subdivisions; s++) {
+    const midCache = {};
+    const newFaces = [];
+
+    function midpoint(a, b) {
+      const key = Math.min(a, b) + ':' + Math.max(a, b);
+      if (midCache[key] !== undefined) return midCache[key];
+      const va = verts[a], vb = verts[b];
+      const mid = normalize([(va[0]+vb[0])/2, (va[1]+vb[1])/2, (va[2]+vb[2])/2]);
+      const idx = verts.length;
+      verts.push(mid);
+      midCache[key] = idx;
+      return idx;
+    }
+
+    for (const [a, b, c] of faces) {
+      const ab = midpoint(a, b);
+      const bc = midpoint(b, c);
+      const ca = midpoint(c, a);
+      newFaces.push([a, ab, ca]);
+      newFaces.push([b, bc, ab]);
+      newFaces.push([c, ca, bc]);
+      newFaces.push([ab, bc, ca]);
+    }
+
+    faces = newFaces;
+  }
+
+  return { verts, faces, colors: null };
+}
+
+function genCylinder(r, h, segments) {
+  const verts = [];
+  const faces = [];
+  const hh = h / 2;
+
+  // Bottom + top rings
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    const x = Math.cos(angle) * r;
+    const z = Math.sin(angle) * r;
+    verts.push([x, -hh, z]);
+  }
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    const x = Math.cos(angle) * r;
+    const z = Math.sin(angle) * r;
+    verts.push([x, hh, z]);
+  }
+
+  const ring = segments + 1;
+  for (let i = 0; i < segments; i++) {
+    faces.push([i, i + 1, ring + i + 1]);
+    faces.push([i, ring + i + 1, ring + i]);
+  }
+
+  // Caps
+  const bc = verts.length;
+  verts.push([0, -hh, 0]);
+  for (let i = 0; i < segments; i++) {
+    faces.push([bc, i + 1, i]);
+  }
+
+  const tc = verts.length;
+  verts.push([0, hh, 0]);
+  for (let i = 0; i < segments; i++) {
+    faces.push([tc, ring + i, ring + i + 1]);
+  }
+
+  return { verts, faces, colors: null };
+}
+
+function genCone(r, h, segments) {
+  const verts = [];
+  const faces = [];
+
+  // Base ring
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    verts.push([Math.cos(angle) * r, 0, Math.sin(angle) * r]);
+  }
+
+  // Tip
+  const tipIdx = verts.length;
+  verts.push([0, h, 0]);
+
+  // Side faces
+  for (let i = 0; i < segments; i++) {
+    faces.push([i, i + 1, tipIdx]);
+  }
+
+  // Base cap
+  const bc = verts.length;
+  verts.push([0, 0, 0]);
+  for (let i = 0; i < segments; i++) {
+    faces.push([bc, i + 1, i]);
+  }
+
+  return { verts, faces, colors: null };
+}
+
+function genTorus(R, r, segMajor, segMinor) {
+  const verts = [];
+  const faces = [];
+
+  for (let i = 0; i <= segMajor; i++) {
+    const theta = (i / segMajor) * Math.PI * 2;
+    const ct = Math.cos(theta), st = Math.sin(theta);
+    for (let j = 0; j <= segMinor; j++) {
+      const phi = (j / segMinor) * Math.PI * 2;
+      const cp = Math.cos(phi), sp = Math.sin(phi);
+      verts.push([
+        (R + r * cp) * ct,
+        r * sp,
+        (R + r * cp) * st
+      ]);
+    }
+  }
+
+  const ring = segMinor + 1;
+  for (let i = 0; i < segMajor; i++) {
+    for (let j = 0; j < segMinor; j++) {
+      const a = i * ring + j;
+      const b = a + 1;
+      const c = a + ring + 1;
+      const d = a + ring;
+      faces.push([a, d, c]);
+      faces.push([a, c, b]);
+    }
+  }
+
+  return { verts, faces, colors: null };
+}
+
+function genTube(r, h, segments) {
+  // Open-ended cylinder (no caps)
+  const verts = [];
+  const faces = [];
+  const hh = h / 2;
+
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    verts.push([Math.cos(angle) * r, -hh, Math.sin(angle) * r]);
+  }
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    verts.push([Math.cos(angle) * r, hh, Math.sin(angle) * r]);
+  }
+
+  const ring = segments + 1;
+  for (let i = 0; i < segments; i++) {
+    faces.push([i, i + 1, ring + i + 1]);
+    faces.push([i, ring + i + 1, ring + i]);
+  }
+
+  return { verts, faces, colors: null };
+}
+
+function genBox(w, h, d) {
+  const hw = w/2, hh = h/2, hd = d/2;
+  const verts = [
+    [-hw,-hh,-hd], [hw,-hh,-hd], [hw,hh,-hd], [-hw,hh,-hd],
+    [-hw,-hh, hd], [hw,-hh, hd], [hw,hh, hd], [-hw,hh, hd]
+  ];
+  const faces = [
+    [0,3,2],[0,2,1], // back
+    [4,5,6],[4,6,7], // front
+    [0,1,5],[0,5,4], // bottom
+    [2,3,7],[2,7,6], // top
+    [0,4,7],[0,7,3], // left
+    [1,2,6],[1,6,5], // right
+  ];
+  return { verts, faces, colors: null };
+}
+
+
+// ─────────────────────────────────────────────
+// 4. DSL PARSER + EVALUATOR
+// ─────────────────────────────────────────────
+
+function parseMeshDSL(code) {
+  const lines = code.replace(/\/\/.*$/gm, '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const meshes = {}; // name → { verts, faces, colors }
+  let i = 0;
+
+  function readBlock() {
+    // Read lines until matching }
+    let depth = 1;
+    const blockLines = [];
+    while (i < lines.length && depth > 0) {
+      const line = lines[i++];
+      for (const ch of line) {
+        if (ch === '{') depth++;
+        if (ch === '}') depth--;
+      }
+      if (depth > 0) blockLines.push(line);
+      else {
+        const trimmed = line.replace(/}$/, '').trim();
+        if (trimmed) blockLines.push(trimmed);
+      }
+    }
+    return blockLines;
+  }
+
+  function parseArgs(str) {
+    return str.match(/-?[\d.]+/g)?.map(Number) || [];
+  }
+
+  while (i < lines.length) {
+    const line = lines[i++];
+
+    // mesh name = generator(...)
+    const meshMatch = line.match(/^mesh\s+(\w+)\s*=\s*(\w+)\s*\(([^)]*)\)/);
+    if (meshMatch) {
+      const [, name, gen, argsStr] = meshMatch;
+      const args = parseArgs(argsStr);
+
+      switch (gen) {
+        case 'grid': meshes[name] = genGrid(args[0]||4, args[1]||4, args[2]||8, args[3]||8); break;
+        case 'icosphere': meshes[name] = genIcosphere(args[0]||1, args[1]||2); break;
+        case 'cylinder': meshes[name] = genCylinder(args[0]||1, args[1]||2, args[2]||16); break;
+        case 'cone': meshes[name] = genCone(args[0]||1, args[1]||2, args[2]||16); break;
+        case 'torus': meshes[name] = genTorus(args[0]||1, args[1]||0.3, args[2]||16, args[3]||8); break;
+        case 'tube': meshes[name] = genTube(args[0]||1, args[1]||2, args[2]||16); break;
+        case 'box': meshes[name] = genBox(args[0]||1, args[1]||1, args[2]||1); break;
+        case 'clone': {
+          const src = argsStr.trim();
+          if (!meshes[src]) throw new Error(`Cannot clone unknown mesh: ${src}`);
+          meshes[name] = {
+            verts: meshes[src].verts.map(v => [...v]),
+            faces: meshes[src].faces.map(f => [...f]),
+            colors: meshes[src].colors ? meshes[src].colors.map(c => [...c]) : null
+          };
+          break;
+        }
+        default: throw new Error(`Unknown generator: ${gen}`);
+      }
+      continue;
+    }
+
+    // mesh name = raw { ... }
+    const rawMatch = line.match(/^mesh\s+(\w+)\s*=\s*raw\s*\{/);
+    if (rawMatch) {
+      const name = rawMatch[1];
+      const block = readBlock();
+      const verts = [];
+      const faces = [];
+
+      for (const bl of block) {
+        const vm = bl.match(/^v\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+        if (vm) { verts.push([parseFloat(vm[1]), parseFloat(vm[2]), parseFloat(vm[3])]); continue; }
+
+        const fm = bl.match(/^f\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+        if (fm) { faces.push([parseInt(fm[1]), parseInt(fm[2]), parseInt(fm[3])]); continue; }
+
+        // Quad → two triangles
+        const qm = bl.match(/^f\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+        if (qm) {
+          const [, a, b, c, d] = qm.map(Number);
+          faces.push([a, b, c]);
+          faces.push([a, c, d]);
+          continue;
+        }
+      }
+
+      meshes[name] = { verts, faces, colors: null };
+      continue;
+    }
+
+    // translate name (x, y, z)
+    const transMatch = line.match(/^translate\s+(\w+)\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+    if (transMatch) {
+      const [, name, tx, ty, tz] = transMatch;
+      if (!meshes[name]) throw new Error(`Unknown mesh: ${name}`);
+      const dx = parseFloat(tx), dy = parseFloat(ty), dz = parseFloat(tz);
+      meshes[name].verts = meshes[name].verts.map(([x, y, z]) => [x + dx, y + dy, z + dz]);
+      continue;
+    }
+
+    // rotate name (rx, ry, rz) — degrees
+    const rotMatch = line.match(/^rotate\s+(\w+)\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+    if (rotMatch) {
+      const [, name, rxd, ryd, rzd] = rotMatch;
+      if (!meshes[name]) throw new Error(`Unknown mesh: ${name}`);
+      const rx = parseFloat(rxd) * Math.PI / 180;
+      const ry = parseFloat(ryd) * Math.PI / 180;
+      const rz = parseFloat(rzd) * Math.PI / 180;
+      const cx = Math.cos(rx), sx = Math.sin(rx);
+      const cy = Math.cos(ry), sy = Math.sin(ry);
+      const cz = Math.cos(rz), sz = Math.sin(rz);
+
+      meshes[name].verts = meshes[name].verts.map(([x, y, z]) => {
+        // Rz
+        let x1 = cz*x - sz*y, y1 = sz*x + cz*y, z1 = z;
+        // Ry
+        let x2 = cy*x1 + sy*z1, y2 = y1, z2 = -sy*x1 + cy*z1;
+        // Rx
+        let x3 = x2, y3 = cx*y2 - sx*z2, z3 = sx*y2 + cx*z2;
+        return [x3, y3, z3];
+      });
+      continue;
+    }
+
+    // scale name (sx, sy, sz) or scale name (s)
+    const scaleMatch = line.match(/^scale\s+(\w+)\s*\(([^)]+)\)/);
+    if (scaleMatch) {
+      const [, name, argsStr] = scaleMatch;
+      if (!meshes[name]) throw new Error(`Unknown mesh: ${name}`);
+      const args = parseArgs(argsStr);
+      const sx = args[0], sy = args[1] ?? args[0], sz = args[2] ?? args[0];
+      meshes[name].verts = meshes[name].verts.map(([x, y, z]) => [x * sx, y * sy, z * sz]);
+      continue;
+    }
+
+    // deform name { ... }
+    const deformMatch = line.match(/^deform\s+(\w+)\s*\{/);
+    if (deformMatch) {
+      const name = deformMatch[1];
+      if (!meshes[name]) throw new Error(`Unknown mesh: ${name}`);
+      const block = readBlock();
+      const mesh = meshes[name];
+
+      for (let vi = 0; vi < mesh.verts.length; vi++) {
+        let [x, y, z] = mesh.verts[vi];
+        const dist = Math.sqrt(x * x + z * z);
+        const idx = vi;
+
+        // Evaluate each line as an assignment
+        for (const bl of block) {
+          const assign = bl.match(/^(\w+)\s*=\s*(.+)/);
+          if (!assign) continue;
+          const [, varName, expr] = assign;
+          const val = evalExpr(expr, { x, y, z, i: idx, dist });
+
+          switch (varName) {
+            case 'x': x = val; break;
+            case 'y': y = val; break;
+            case 'z': z = val; break;
+          }
+        }
+
+        mesh.verts[vi] = [x, y, z];
+      }
+      continue;
+    }
+
+    // color name { ... }
+    const colorMatch = line.match(/^color\s+(\w+)\s*\{/);
+    if (colorMatch) {
+      const name = colorMatch[1];
+      if (!meshes[name]) throw new Error(`Unknown mesh: ${name}`);
+      const block = readBlock();
+      const mesh = meshes[name];
+      mesh.colors = [];
+
+      for (let vi = 0; vi < mesh.verts.length; vi++) {
+        const [x, y, z] = mesh.verts[vi];
+        const dist = Math.sqrt(x * x + z * z);
+        const color = evalColor(block, { x, y, z, i: vi, dist });
+        mesh.colors.push(color);
+      }
+      continue;
+    }
+
+    // merge a, b, c
+    const mergeMatch = line.match(/^merge\s+(.+)/);
+    if (mergeMatch) {
+      const names = mergeMatch[1].split(',').map(s => s.trim());
+      if (names.length < 2) continue;
+
+      const target = meshes[names[0]];
+      if (!target) throw new Error(`Unknown mesh: ${names[0]}`);
+
+      for (let n = 1; n < names.length; n++) {
+        const src = meshes[names[n]];
+        if (!src) throw new Error(`Unknown mesh: ${names[n]}`);
+
+        const offset = target.verts.length;
+        target.verts.push(...src.verts);
+        target.faces.push(...src.faces.map(([a, b, c]) => [a + offset, b + offset, c + offset]));
+
+        if (target.colors || src.colors) {
+          if (!target.colors) {
+            target.colors = target.verts.slice(0, offset).map(() => [0.7, 0.7, 0.7]);
+          }
+          if (src.colors) {
+            target.colors.push(...src.colors);
+          } else {
+            for (let j = 0; j < src.verts.length; j++) {
+              target.colors.push([0.7, 0.7, 0.7]);
+            }
+          }
+        }
+      }
+      continue;
+    }
+
+    // Skip empty
+    if (line.length === 0 || line === '{' || line === '}') continue;
+
+    throw new Error(`Cannot parse: "${line}"`);
+  }
+
+  // Return the last-defined mesh, or the merge target
+  const names = Object.keys(meshes);
+  if (names.length === 0) throw new Error('No meshes defined');
+  return meshes[names[names.length - 1]];
+}
+
+
+// ─────────────────────────────────────────────
+// 5. EXPRESSION EVALUATOR
+// ─────────────────────────────────────────────
+
+function evalExpr(expr, vars) {
+  // Simple math expression evaluator
+  // Supports: +, -, *, /, **, (, ), math functions, variables
+  let e = expr.trim();
+
+  // Replace known functions
+  e = e.replace(/\bnoise\s*\(([^,]+),\s*([^)]+)\)/g, (_, a, b) => {
+    const va = evalExpr(a, vars);
+    const vb = evalExpr(b, vars);
+    return noise2D(va, vb);
+  });
+
+  e = e.replace(/\bsqrt\s*\(([^)]+)\)/g, (_, a) => Math.sqrt(evalExpr(a, vars)));
+  e = e.replace(/\babs\s*\(([^)]+)\)/g, (_, a) => Math.abs(evalExpr(a, vars)));
+  e = e.replace(/\bsin\s*\(([^)]+)\)/g, (_, a) => Math.sin(evalExpr(a, vars)));
+  e = e.replace(/\bcos\s*\(([^)]+)\)/g, (_, a) => Math.cos(evalExpr(a, vars)));
+  e = e.replace(/\bmax\s*\(([^,]+),\s*([^)]+)\)/g, (_, a, b) => Math.max(evalExpr(a, vars), evalExpr(b, vars)));
+  e = e.replace(/\bmin\s*\(([^,]+),\s*([^)]+)\)/g, (_, a, b) => Math.min(evalExpr(a, vars), evalExpr(b, vars)));
+  e = e.replace(/\bfloor\s*\(([^)]+)\)/g, (_, a) => Math.floor(evalExpr(a, vars)));
+  e = e.replace(/\bPI\b/g, Math.PI);
+
+  // Replace variables
+  for (const [k, v] of Object.entries(vars)) {
+    e = e.replace(new RegExp('\\b' + k + '\\b', 'g'), v);
+  }
+
+  try {
+    return Function('"use strict"; return (' + e + ')')();
+  } catch (err) {
+    throw new Error(`Expression error: "${expr}" → ${err.message}`);
+  }
+}
+
+function evalColor(block, vars) {
+  // Evaluate if/else color blocks
+  for (const line of block) {
+    const rgbMatch = line.match(/rgb\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+
+    const ifMatch = line.match(/^if\s*\((.+?)\)\s*rgb\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+    if (ifMatch) {
+      const cond = evalExpr(ifMatch[1], vars);
+      if (cond) return [parseFloat(ifMatch[2]), parseFloat(ifMatch[3]), parseFloat(ifMatch[4])];
+      continue;
+    }
+
+    const elseIfMatch = line.match(/^else\s+if\s*\((.+?)\)\s*rgb\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+    if (elseIfMatch) {
+      const cond = evalExpr(elseIfMatch[1], vars);
+      if (cond) return [parseFloat(elseIfMatch[2]), parseFloat(elseIfMatch[3]), parseFloat(elseIfMatch[4])];
+      continue;
+    }
+
+    const elseMatch = line.match(/^else\s+rgb\s*\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/);
+    if (elseMatch) {
+      return [parseFloat(elseMatch[1]), parseFloat(elseMatch[2]), parseFloat(elseMatch[3])];
+    }
+
+    // Bare rgb — unconditional
+    if (rgbMatch && !line.match(/^(if|else)/)) {
+      return [parseFloat(rgbMatch[1]), parseFloat(rgbMatch[2]), parseFloat(rgbMatch[3])];
+    }
+  }
+
+  return [0.7, 0.7, 0.7]; // default grey
+}
+
+
+// ─────────────────────────────────────────────
+// 6. MESH → THREE.JS
+// ─────────────────────────────────────────────
+
+function buildThreeMesh(mesh) {
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const hasColors = !!mesh.colors;
+
+  for (const [a, b, c] of mesh.faces) {
+    const va = mesh.verts[a], vb = mesh.verts[b], vc = mesh.verts[c];
+    if (!va || !vb || !vc) continue;
+
+    positions.push(va[0], va[1], va[2]);
+    positions.push(vb[0], vb[1], vb[2]);
+    positions.push(vc[0], vc[1], vc[2]);
+
+    if (hasColors) {
+      const ca = mesh.colors[a] || [0.7,0.7,0.7];
+      const cb = mesh.colors[b] || [0.7,0.7,0.7];
+      const cc = mesh.colors[c] || [0.7,0.7,0.7];
+      colors.push(ca[0], ca[1], ca[2]);
+      colors.push(cb[0], cb[1], cb[2]);
+      colors.push(cc[0], cc[1], cc[2]);
+    }
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  if (hasColors) {
+    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3));
+  }
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshStandardMaterial({
+    color: hasColors ? 0xffffff : 0x3fb950,
+    vertexColors: hasColors,
+    roughness: 0.4,
+    metalness: 0.05,
+    side: THREE.DoubleSide,
+    flatShading: showFlat,
+  });
+
+  const obj = new THREE.Mesh(geo, mat);
+  obj.castShadow = true;
+  obj.receiveShadow = true;
+  return obj;
+}
+
+function buildWireframe(mesh) {
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+
+  for (const [a, b, c] of mesh.faces) {
+    const va = mesh.verts[a], vb = mesh.verts[b], vc = mesh.verts[c];
+    if (!va || !vb || !vc) continue;
+    positions.push(...va, ...vb, ...vb, ...vc, ...vc, ...va);
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  return new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0x3fb950, opacity: 0.3, transparent: true }));
+}
+
+function buildVertexPoints(mesh) {
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(mesh.verts.length * 3);
+  for (let i = 0; i < mesh.verts.length; i++) {
+    positions[i*3] = mesh.verts[i][0];
+    positions[i*3+1] = mesh.verts[i][1];
+    positions[i*3+2] = mesh.verts[i][2];
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  return new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 3, sizeAttenuation: false }));
+}
+
+
+// ─────────────────────────────────────────────
+// 7. OBJ EXPORT
+// ─────────────────────────────────────────────
+
+function meshToOBJ(mesh) {
+  let obj = '# Mesh Engine Export\n';
+  for (const v of mesh.verts) {
+    obj += `v ${v[0].toFixed(6)} ${v[1].toFixed(6)} ${v[2].toFixed(6)}\n`;
+  }
+  for (const [a, b, c] of mesh.faces) {
+    obj += `f ${a+1} ${b+1} ${c+1}\n`;
+  }
+  return obj;
+}
+
+
+// ─────────────────────────────────────────────
+// 8. BUILD + UI
+// ─────────────────────────────────────────────
+
+let lastMesh = null;
+
+window.buildScene = function() {
+  const code = document.getElementById('editor').value;
+  const statusEl = document.getElementById('status');
+  const meshInfoEl = document.getElementById('meshInfo');
+
+  try {
+    const t0 = performance.now();
+    const mesh = parseMeshDSL(code);
+    const t1 = performance.now();
+
+    if (mesh.faces.length === 0) {
+      statusEl.innerHTML = '<span class="error">No faces generated</span>';
+      return;
+    }
+
+    // Clear scene group
+    while (sceneGroup.children.length) {
+      const child = sceneGroup.children[0];
+      sceneGroup.remove(child);
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) child.material.dispose();
+    }
+
+    sceneGroup.add(buildThreeMesh(mesh));
+
+    if (showWireframe) sceneGroup.add(buildWireframe(mesh));
+    if (showVerts) sceneGroup.add(buildVertexPoints(mesh));
+
+    lastMesh = mesh;
+    statusEl.innerHTML = `<span class="success">Built in ${(t1-t0).toFixed(0)}ms</span>`;
+    meshInfoEl.textContent = `${mesh.verts.length} verts · ${mesh.faces.length} tris`;
+
+  } catch (e) {
+    statusEl.innerHTML = `<span class="error">${e.message}</span>`;
+    console.error(e);
+  }
+};
+
+window.exportOBJ = function() {
+  if (!lastMesh) { document.getElementById('status').innerHTML = '<span class="error">Build first!</span>'; return; }
+  const obj = meshToOBJ(lastMesh);
+  const blob = new Blob([obj], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mesh-model.obj'; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('status').innerHTML = '<span class="success">Exported OBJ!</span>';
+};
+
+window.copyDSL = function() {
+  navigator.clipboard.writeText(document.getElementById('editor').value);
+  document.getElementById('status').innerHTML = '<span class="success">Copied!</span>';
+};
+
+window.toggleWireframe = function() {
+  showWireframe = !showWireframe;
+  document.getElementById('btnWire').classList.toggle('active', showWireframe);
+  buildScene();
+};
+
+window.toggleFlat = function() {
+  showFlat = !showFlat;
+  document.getElementById('btnFlat').classList.toggle('active', showFlat);
+  buildScene();
+};
+
+window.toggleVerts = function() {
+  showVerts = !showVerts;
+  document.getElementById('btnVerts').classList.toggle('active', showVerts);
+  buildScene();
+};
+
+
+// ─── Examples ───
+const EXAMPLES = {
+
+low_poly_mountain: `// Low-Poly Mountain — grid + deform + color
+mesh mountain = grid(8, 8, 12, 12)
+
+deform mountain {
+  dist = sqrt(x*x + z*z)
+  y = max(0, 3.0 - dist * 0.85) * (1 + noise(x*1.5, z*1.5) * 0.35)
+}
+
+color mountain {
+  if (y > 2.0) rgb(0.95, 0.97, 1.0)
+  else if (y > 1.2) rgb(0.55, 0.55, 0.5)
+  else if (y > 0.3) rgb(0.35, 0.55, 0.3)
+  else rgb(0.3, 0.5, 0.25)
+}
+
+mesh water = grid(8, 8, 2, 2)
+translate water (0, 0.08, 0)
+color water { rgb(0.15, 0.4, 0.65) }
+
+merge mountain, water`,
+
+crystal: `// Crystal — raw vertices hand-placed
+mesh gem = raw {
+  v (0, 2.5, 0)
+  v (0.8, 0.5, 0)
+  v (0.25, 0.5, 0.76)
+  v (-0.65, 0.5, 0.47)
+  v (-0.65, 0.5, -0.47)
+  v (0.25, 0.5, -0.76)
+  v (0, -0.3, 0)
+
+  f (0, 1, 2)
+  f (0, 2, 3)
+  f (0, 3, 4)
+  f (0, 4, 5)
+  f (0, 5, 1)
+
+  f (6, 2, 1)
+  f (6, 3, 2)
+  f (6, 4, 3)
+  f (6, 5, 4)
+  f (6, 1, 5)
+}
+
+scale gem (1.2)
+color gem {
+  if (y > 1.5) rgb(0.6, 0.9, 1.0)
+  else if (y > 0) rgb(0.3, 0.7, 0.9)
+  else rgb(0.2, 0.4, 0.7)
+}`,
+
+terrain: `// Procedural Terrain — high-res grid + noise
+mesh ground = grid(10, 10, 32, 32)
+
+deform ground {
+  y = noise(x * 0.7, z * 0.7) * 1.2 + noise(x * 1.5, z * 1.5) * 0.4
+  y = max(y, -0.2)
+}
+
+color ground {
+  if (y > 1.0) rgb(0.95, 0.95, 1.0)
+  else if (y > 0.6) rgb(0.5, 0.5, 0.45)
+  else if (y > 0.1) rgb(0.3, 0.6, 0.25)
+  else rgb(0.25, 0.45, 0.2)
+}`,
+
+spaceship: `// Low-Poly Spaceship — raw mesh
+mesh ship = raw {
+  v (0, 0.3, 2.0)
+  v (-0.8, 0, 0)
+  v (0.8, 0, 0)
+  v (0, 0.6, 0)
+  v (0, 0, -1.5)
+  v (-1.5, -0.1, -1.2)
+  v (1.5, -0.1, -1.2)
+  v (-0.6, -0.1, -1.2)
+  v (0.6, -0.1, -1.2)
+  v (0, -0.2, 0.5)
+
+  f (0, 1, 3)
+  f (0, 3, 2)
+  f (0, 2, 9)
+  f (0, 9, 1)
+
+  f (3, 1, 4)
+  f (3, 4, 2)
+  f (9, 2, 4)
+  f (9, 4, 1)
+
+  f (1, 5, 7)
+  f (1, 7, 4)
+  f (2, 8, 6)
+  f (2, 4, 8)
+  f (5, 1, 7)
+  f (6, 8, 2)
+}
+
+color ship {
+  if (y > 0.4) rgb(0.3, 0.5, 0.8)
+  else if (y > 0.1) rgb(0.6, 0.6, 0.65)
+  else rgb(0.4, 0.4, 0.45)
+}`,
+
+tree: `// Low-Poly Tree — cylinder trunk + icosphere canopy
+mesh trunk = cylinder(0.2, 1.5, 6)
+translate trunk (0, 0.75, 0)
+color trunk { rgb(0.45, 0.3, 0.15) }
+
+mesh canopy = icosphere(1.2, 1)
+translate canopy (0, 2.2, 0)
+
+deform canopy {
+  dist = sqrt(x*x + z*z)
+  y = y + noise(x*2, z*2) * 0.25
+}
+
+color canopy {
+  if (y > 2.8) rgb(0.2, 0.6, 0.15)
+  else if (y > 2.0) rgb(0.25, 0.55, 0.2)
+  else rgb(0.3, 0.5, 0.2)
+}
+
+merge trunk, canopy`,
+
+wave_surface: `// Wave Surface — animated sine waves
+mesh waves = grid(8, 8, 40, 40)
+
+deform waves {
+  y = sin(x * 2.5) * cos(z * 2.5) * 0.5 + sin(x * 1.2 + z * 0.8) * 0.3
+}
+
+color waves {
+  if (y > 0.3) rgb(0.4, 0.85, 0.95)
+  else if (y > 0) rgb(0.2, 0.6, 0.85)
+  else if (y > -0.3) rgb(0.15, 0.45, 0.75)
+  else rgb(0.1, 0.3, 0.6)
+}`,
+
+gem_ring: `// Ring with gem — torus + raw crystal
+mesh band = torus(1.0, 0.12, 32, 12)
+color band { rgb(0.85, 0.75, 0.4) }
+
+mesh gem = raw {
+  v (0, 0.6, 0)
+  v (0.25, 0.15, 0)
+  v (0.08, 0.15, 0.24)
+  v (-0.2, 0.15, 0.15)
+  v (-0.2, 0.15, -0.15)
+  v (0.08, 0.15, -0.24)
+  v (0, -0.05, 0)
+
+  f (0, 1, 2)
+  f (0, 2, 3)
+  f (0, 3, 4)
+  f (0, 4, 5)
+  f (0, 5, 1)
+  f (6, 2, 1)
+  f (6, 3, 2)
+  f (6, 4, 3)
+  f (6, 5, 4)
+  f (6, 1, 5)
+}
+
+translate gem (0, 0.12, 1.0)
+scale gem (0.8)
+color gem {
+  if (y > 0.3) rgb(0.85, 0.1, 0.15)
+  else rgb(0.6, 0.05, 0.1)
+}
+
+merge band, gem`,
+
+house: `// Low-Poly House — boxes + cone roof
+mesh walls = box(2.5, 2, 3)
+translate walls (0, 1, 0)
+color walls { rgb(0.85, 0.8, 0.7) }
+
+mesh roof = cone(2.2, 1.2, 4)
+translate roof (0, 2, 0)
+rotate roof (0, 45, 0)
+color roof { rgb(0.7, 0.25, 0.2) }
+
+mesh door = box(0.6, 1.2, 0.1)
+translate door (0, 0.6, 1.55)
+color door { rgb(0.4, 0.25, 0.15) }
+
+mesh chimney = box(0.4, 1.0, 0.4)
+translate chimney (0.7, 2.8, -0.5)
+color chimney { rgb(0.5, 0.45, 0.4) }
+
+mesh ground = grid(6, 6, 2, 2)
+color ground { rgb(0.3, 0.55, 0.25) }
+
+merge walls, roof
+merge walls, door
+merge walls, chimney
+merge walls, ground`
+};
+
+window.loadExample = function(name) {
+  document.getElementById('editor').value = EXAMPLES[name];
+  document.getElementById('examplesMenu').classList.remove('open');
+  buildScene();
+};
+
+window.toggleExamples = function() {
+  document.getElementById('examplesMenu').classList.toggle('open');
+};
+
+window.toggleRef = function() {
+  const el = document.getElementById('refContent');
+  el.classList.toggle('open');
+  el.previousElementSibling.textContent = el.classList.contains('open') ? '▾ DSL Reference' : '▸ DSL Reference';
+};
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.examples-dropdown')) {
+    document.getElementById('examplesMenu').classList.remove('open');
+  }
+});
+
+document.getElementById('editor').addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    buildScene();
+  }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const ta = e.target;
+    const s = ta.selectionStart;
+    ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = s + 2;
+  }
+});
+
+// Initial flat shading active
+document.getElementById('btnFlat').classList.add('active');
+
+buildScene();
+
+</script>
+</body>
+</html>

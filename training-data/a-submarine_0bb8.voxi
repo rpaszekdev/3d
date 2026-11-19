@@ -1,0 +1,27 @@
+V 40 20 20
+-- main pressure hull
+E 20 8 10 17 4 5 f
+-- conning tower sail
+B 17 12 8 6 5 4 9
+-- periscope mast
+C 22 16 10 1 4 9
+-- front diving planes
+B 5 7 7 4 2 6 9
+-- rear vertical stabilizer
+B 32 4 9 4 8 2 9
+-- rear horizontal stabilizers
+B 32 7 5 5 2 10 9
+-- propeller hub
+S 38 8 10 2 9
+-- propeller vertical blade
+B 37 4 10 1 8 1 8
+-- propeller horizontal blade
+B 37 8 6 1 2 8 8
+-- port portholes
+S 11 8 5 1 6
+S 18 8 5 1 6
+S 25 8 5 1 6
+-- starboard portholes
+S 11 8 15 1 6
+S 18 8 15 1 6
+S 25 8 15 1 6

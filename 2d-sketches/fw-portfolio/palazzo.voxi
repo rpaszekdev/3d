@@ -1,0 +1,288 @@
+G palazzo
+-- ═══════════════════════════════════════════════════════
+-- ITALIAN PALAZZO — Venetian Gothic / Palazzo Vecchio style
+-- 20w × 28h × 16d  (x: 0-19, y: 0-27, z: 0-15)
+-- Origin at bottom-left-front corner
+-- Colors: 9=stone-gray d=tan/stucco 7=terracotta 0=black
+--         c=dark-green 6=yellow e=maroon 8=white a=brown
+-- ═══════════════════════════════════════════════════════
+
+-- ▸ GROUND FLOOR — rusticated stone base (y 0-7)
+-- Main facade wall (full depth for solidity)
+B 0 0 0 20 7 16 9
+-- Rustication grooves (horizontal bands, slightly darker)
+B 0 2 0 20 1 1 a
+B 0 5 0 20 1 1 a
+
+-- Five arched arcade openings (carved into facade front)
+-- Opening 1
+B 1 0 0 2 5 1 0
+-- Opening 2
+B 5 0 0 2 5 1 0
+-- Opening 3
+B 9 0 0 2 5 1 0
+-- Opening 4
+B 13 0 0 2 5 1 0
+-- Opening 5
+B 17 0 0 2 5 1 0
+
+-- Arch tops (dome caps over each opening)
+D 1 5 0 2 2 1 9
+D 5 5 0 2 2 1 9
+D 9 5 0 2 2 1 9
+D 13 5 0 2 2 1 9
+D 17 5 0 2 2 1 9
+
+-- Arch keystones (accent)
+P 2 6 0 d
+P 6 6 0 d
+P 10 6 0 d
+P 14 6 0 d
+P 18 6 0 d
+
+-- Arcade column piers (stone pillars between arches)
+B 0 0 0 1 7 1 9
+B 4 0 0 1 7 1 9
+B 8 0 0 1 7 1 9
+B 12 0 0 1 7 1 9
+B 16 0 0 1 7 1 9
+B 19 0 0 1 7 1 9
+
+-- Pilaster capitals (decorative tops of columns)
+B 0 6 0 1 1 1 d
+B 4 6 0 1 1 1 d
+B 8 6 0 1 1 1 d
+B 12 6 0 1 1 1 d
+B 16 6 0 1 1 1 d
+B 19 6 0 1 1 1 d
+
+-- ▸ FIRST FLOOR CORNICE (y=7) — separating ground & 2nd floor
+B 0 7 0 20 1 2 9
+-- Cornice overhang detail
+B 0 7 0 20 1 1 d
+
+-- ▸ SECOND FLOOR — bifore (paired Gothic windows) (y 8-15)
+B 0 8 0 20 8 16 d
+
+-- Facade window surrounds (dark reveals, tall Gothic arched pairs)
+-- Window group A (left) — two sub-windows with central column
+-- Left sub-arch A
+B 1 9 0 2 5 1 0
+D 1 14 0 2 2 1 d
+-- Right sub-arch A
+B 3 9 0 2 5 1 0
+D 3 14 0 2 2 1 d
+-- Central colonette A
+B 2 9 0 1 4 1 9
+P 2 13 0 d
+
+-- Window group B (center-left)
+B 7 9 0 2 5 1 0
+D 7 14 0 2 2 1 d
+B 9 9 0 2 5 1 0
+D 9 14 0 2 2 1 d
+B 8 9 0 1 4 1 9
+P 8 13 0 d
+
+-- Window group C (center-right)
+B 11 9 0 2 5 1 0
+D 11 14 0 2 2 1 d
+B 13 9 0 2 5 1 0
+D 13 14 0 2 2 1 d
+B 12 9 0 1 4 1 9
+P 12 13 0 d
+
+-- Window group D (right)
+B 15 9 0 2 5 1 0
+D 15 14 0 2 2 1 d
+B 17 9 0 2 5 1 0
+D 17 14 0 2 2 1 d
+B 16 9 0 1 4 1 9
+P 16 13 0 d
+
+-- Green shutters on 2nd floor windows
+-- Each window gets 1 dark-green shutter panel beside opening
+P 1 11 0 c
+P 2 11 0 c
+P 3 11 0 c
+P 4 11 0 c
+P 7 11 0 c
+P 8 11 0 c
+P 9 11 0 c
+P 10 11 0 c
+P 11 11 0 c
+P 12 11 0 c
+P 13 11 0 c
+P 14 11 0 c
+P 15 11 0 c
+P 16 11 0 c
+P 17 11 0 c
+P 18 11 0 c
+
+-- Iron balconies (wrought iron = color 0, thin shelf)
+B 0 9 0 5 1 1 0
+B 6 9 0 5 1 1 0
+B 10 9 0 5 1 1 0
+B 14 9 0 5 1 1 0
+-- Balcony rail posts
+P 1 10 0 0
+P 4 10 0 0
+P 7 10 0 0
+P 10 10 0 0
+P 11 10 0 0
+P 14 10 0 0
+P 15 10 0 0
+P 18 10 0 0
+
+-- ▸ SECOND FLOOR CORNICE (y=16) — heavier molding
+B 0 16 0 20 1 2 9
+B 0 16 0 20 1 1 8
+
+-- ▸ THIRD FLOOR — smaller single windows (y 17-21)
+B 0 17 0 20 5 16 d
+
+-- Third floor windows — 5 single pointed arches
+B 1 18 0 2 3 1 0
+D 1 21 0 2 1 1 d
+B 5 18 0 2 3 1 0
+D 5 21 0 2 1 1 d
+B 9 18 0 2 3 1 0
+D 9 21 0 2 1 1 d
+B 13 18 0 2 3 1 0
+D 13 21 0 2 1 1 d
+B 17 18 0 2 3 1 0
+D 17 21 0 2 1 1 d
+
+-- Third floor window surrounds (stone trim)
+B 0 18 0 1 4 1 9
+B 4 18 0 1 4 1 9
+B 8 18 0 1 4 1 9
+B 12 18 0 1 4 1 9
+B 16 18 0 1 4 1 9
+B 20 18 0 1 4 1 9
+
+-- ▸ UPPER CORNICE (y=22) — broad battlements base
+B 0 22 0 20 1 3 9
+-- Terracotta roof visible behind battlements (low pitch, hidden)
+B 1 22 4 18 2 10 7
+
+-- ▸ CRENELLATED ROOFLINE — merlons and crenels (y 23-25)
+-- Merlons (solid teeth) — Guelph-style: 4 per section
+-- Left merlons
+B 0 23 0 2 3 2 9
+B 3 23 0 2 3 2 9
+B 6 23 0 2 3 2 9
+B 9 23 0 2 3 2 9
+B 12 23 0 2 3 2 9
+B 15 23 0 2 3 2 9
+B 18 23 0 2 3 2 9
+-- Crenels (open gaps between merlons) — just air (0 depth band)
+-- Back row of merlons (rear parapet)
+B 0 23 14 2 3 2 9
+B 3 23 14 2 3 2 9
+B 6 23 14 2 3 2 9
+B 9 23 14 2 3 2 9
+B 12 23 14 2 3 2 9
+B 15 23 14 2 3 2 9
+B 18 23 14 2 3 2 9
+-- Side parapet merlons (left wall)
+B 0 23 0 2 3 2 9
+B 0 23 4 2 3 2 9
+B 0 23 8 2 3 2 9
+B 0 23 12 2 3 2 9
+-- Side parapet merlons (right wall)
+B 18 23 0 2 3 2 9
+B 18 23 4 2 3 2 9
+B 18 23 8 2 3 2 9
+B 18 23 12 2 3 2 9
+
+-- ▸ COAT OF ARMS / DECORATIVE MEDALLION — center facade, 3rd floor
+-- Shield background (tan/stone)
+B 8 19 0 4 3 1 d
+-- Shield outline (dark stone)
+B 8 19 0 1 3 1 9
+B 11 19 0 1 3 1 9
+B 9 19 0 2 1 1 9
+-- Heraldic symbol (red cross on white field)
+P 9 20 0 1
+P 10 20 0 1
+P 9 21 0 1
+
+-- ▸ CLOCK FACE — center of 2nd floor facade (yellow sphere)
+-- Clock surround (stone circle)
+S 10 12 0 2 9
+-- Clock face (yellow)
+S 10 12 0 1 6
+-- Clock hands (black points)
+P 10 13 0 0
+P 11 12 0 0
+
+-- ▸ CORNER TOWER — rising from left corner (x 0-4, y 0-27)
+-- Tower base blends with ground floor (already covered by main wall)
+-- Tower shaft above main cornice
+B 0 8 0 4 20 4 9
+-- Tower window slits (arrow loops)
+P 2 11 3 0
+P 2 15 3 0
+P 2 19 3 0
+P 2 23 3 0
+-- Tower side windows
+P 0 11 2 0
+P 0 15 2 0
+P 0 19 2 0
+-- Tower cornices
+B 0 14 0 4 1 4 9
+B 0 18 0 4 1 4 9
+B 0 22 0 4 1 4 d
+-- Tower battlements (crenellations at top)
+B 0 25 0 2 3 2 9
+B 0 25 2 2 3 2 9
+B 2 25 0 2 3 2 9
+B 2 25 2 2 3 2 9
+-- Tower cap — small cone/pyramid finial
+K 2 28 2 2 3 7
+
+-- ▸ DECORATIVE DETAILS — string courses & quoins
+-- Corner quoins (alternating stone blocks on main corners)
+B 0 8 0 1 1 1 8
+B 0 10 0 1 1 1 8
+B 0 12 0 1 1 1 8
+B 0 14 0 1 1 1 8
+B 0 16 0 1 1 1 8
+B 19 8 0 1 1 1 8
+B 19 10 0 1 1 1 8
+B 19 12 0 1 1 1 8
+B 19 14 0 1 1 1 8
+B 19 16 0 1 1 1 8
+
+-- String course between arches (2nd floor horizontal band)
+B 0 13 0 20 1 1 9
+
+-- ▸ REAR WALL — back of palazzo (z=15)
+B 0 0 15 20 22 1 9
+
+-- ▸ SIDE WALLS (fully enclosed palazzo volume)
+-- Left wall
+B 0 0 0 1 22 16 9
+-- Right wall
+B 19 0 0 1 22 16 9
+
+-- ▸ INTERIOR FLOOR SLABS (visible through arcade openings)
+-- Ground floor interior
+B 1 0 1 18 1 14 a
+-- Second floor slab
+B 1 7 1 18 1 14 d
+-- Third floor slab
+B 1 15 1 18 1 14 d
+
+-- ▸ LAMP BRACKETS — wrought iron lamps flanking main entrance
+-- Left bracket
+P 3 6 0 0
+P 3 7 0 0
+S 3 7 0 1 6
+-- Right bracket
+P 16 6 0 0
+P 16 7 0 0
+S 16 7 0 1 6
+
+/G

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXI Creator</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+  --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+  --accent: #6c8cff; --canvas-bg: #13151f;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg); color: var(--text); height: 100vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.header {
+  height: 40px; display: flex; align-items: center; gap: 10px;
+  padding: 0 16px; border-bottom: 1px solid var(--border); background: var(--surface);
+  flex-shrink: 0;
+}
+.header h1 { font-size: 14px; font-weight: 600; }
+.header .accent { color: var(--accent); }
+.header .spacer { flex: 1; }
+.header button {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+  color: var(--text); padding: 4px 10px; font-size: 11px; cursor: pointer;
+}
+.header button:hover { border-color: var(--accent); }
+.chat-area {
+  flex: 1; overflow-y: auto; padding: 16px 24px; display: flex;
+  flex-direction: column; gap: 16px;
+}
+.msg { max-width: 85%; display: flex; flex-direction: column; gap: 6px; }
+.msg.user { align-self: flex-end; }
+.msg.sketch { align-self: flex-start; }
+.msg-bubble {
+  padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5;
+  word-wrap: break-word;
+}
+.msg.user .msg-bubble { background: var(--surface2); border-radius: 12px 12px 4px 12px; }
+.msg.sketch .msg-bubble {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 4px; padding: 12px;
+}
+.sketch-label {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
+}
+.sketch-canvas-wrap {
+  background: var(--canvas-bg); border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border); position: relative;
+}
+.sketch-canvas-wrap canvas { display: block; max-width: 700px; width: 100%; height: auto; }
+.sketch-actions { display: flex; gap: 6px; margin-top: 6px; }
+.sketch-actions button {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+  color: var(--text-dim); padding: 3px 10px; font-size: 11px; cursor: pointer;
+}
+.sketch-actions button:hover { border-color: var(--accent); color: var(--text); }
+.dsl-toggle { cursor: pointer; font-size: 11px; color: var(--text-dim); user-select: none; }
+.dsl-toggle:hover { color: var(--accent); }
+.dsl-code {
+  display: none; margin-top: 6px; background: var(--surface2); border-radius: 6px;
+  padding: 8px; font-size: 11px; font-family: 'SF Mono', 'Fira Code', monospace;
+  white-space: pre-wrap; color: var(--text-dim); max-height: 200px; overflow-y: auto;
+  border: 1px solid var(--border);
+}
+.dsl-code.open { display: block; }
+.input-bar {
+  flex-shrink: 0; border-top: 1px solid var(--border); background: var(--surface);
+  padding: 10px 16px; display: flex; flex-direction: column; gap: 8px;
+}
+.mode-toggle { display: flex; gap: 0; }
+.mode-toggle button {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+  padding: 4px 14px; font-size: 11px; cursor: pointer; font-weight: 600;
+}
+.mode-toggle button:first-child { border-radius: 5px 0 0 5px; }
+.mode-toggle button:last-child { border-radius: 0 5px 5px 0; border-left: none; }
+.mode-toggle button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+#input-text {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); padding: 10px 12px; font-size: 14px; resize: none; outline: none;
+  font-family: inherit; line-height: 1.4;
+}
+#input-text:focus { border-color: var(--accent); }
+#input-text.code-mode {
+  font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px;
+  min-height: 120px; white-space: pre; tab-size: 4;
+}
+#btn-send {
+  background: var(--accent); border: none; border-radius: 8px; color: #fff;
+  padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; align-self: flex-end;
+}
+#btn-send:hover { opacity: 0.9; }
+.tooltip {
+  position: fixed; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 8px; font-size: 11px; color: var(--text);
+  pointer-events: none; z-index: 100; display: none;
+  font-family: 'SF Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VOXI <span class="accent">Creator</span></h1>
+  <div class="spacer"></div>
+  <button id="btn-clear">Clear</button>
+</div>
+
+<div class="chat-area" id="chat-area"></div>
+
+<div class="input-bar">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mode-toggle">
+      <button class="active" data-mode="chat">Chat</button>
+      <button data-mode="sketch">Sketch</button>
+    </div>
+    <span style="font-size:11px;color:var(--text-dim)" id="input-hint">Enter to send</span>
+  </div>
+  <div class="input-row">
+    <textarea id="input-text" rows="1" placeholder="Describe a UI..."></textarea>
+    <button id="btn-send">Send</button>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ── VOXI 3D Engine ─────────────────────────────────────────────────
+const VOXI_COLORS = [
+  0x111111, 0xe53935, 0x43a047, 0x1e88e5, 0x00bcd4, 0xab47bc, 0xfdd835, 0xff9800,
+  0xeeeeee, 0x9e9e9e, 0x8d6e4a, 0xff9eb5, 0x2e7d32, 0xd4b896, 0x8b1a1a, 0x1a3a6b,
+];
+const VOXI_CKEYS = '0123456789abcdef';
+
+function parseVoxi(code) {
+  let W = 32, H = 32, D = 32;
+  const vm = new Map();
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix >= 0 && ix < W && iy >= 0 && iy < H && iz >= 0 && iz < D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c || 9, 0), 15));
+  };
+  const addBox = (px, py, pz, w, h, d, c) => {
+    for (let x = px; x < px + w; x++) for (let y = py; y < py + h; y++)
+      for (let z = pz; z < pz + d; z++) set(x, y, z, c);
+  };
+  const addSphere = (cx, cy, cz, r, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++) for (let y = cy - r; y <= cy + r; y++)
+      for (let z = cz - r; z <= cz + r; z++)
+        if ((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2 <= r2) set(x, y, z, c);
+  };
+  const addCyl = (cx, cy, cz, r, h, c) => {
+    const r2 = r * r;
+    for (let x = cx - r; x <= cx + r; x++) for (let z = cz - r; z <= cz + r; z++)
+      if ((x - cx) ** 2 + (z - cz) ** 2 <= r2)
+        for (let y = cy; y < cy + h; y++) set(x, y, z, c);
+  };
+  const addCone = (cx, cy, cz, r, h, c) => {
+    for (let y = 0; y < h; y++) {
+      const rr = r * (1 - y / h), rr2 = rr * rr;
+      for (let x = cx - r; x <= cx + r; x++) for (let z = cz - r; z <= cz + r; z++)
+        if ((x - cx) ** 2 + (z - cz) ** 2 <= rr2) set(cx + (x - cx), cy + y, cz + (z - cz), c);
+    }
+  };
+  const addEllipsoid = (cx, cy, cz, rx, ry, rz, c) => {
+    for (let x = cx - rx; x <= cx + rx; x++) for (let y = cy - ry; y <= cy + ry; y++)
+      for (let z = cz - rz; z <= cz + rz; z++)
+        if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + ((z - cz) / rz) ** 2 <= 1) set(x, y, z, c);
+  };
+  const addDome = (px, py, pz, w, h, d, c) => {
+    const rx = w / 2, ry = h, rz = d / 2, cx = px + rx, cz = pz + rz;
+    for (let x = px; x < px + w; x++) for (let y = py; y < py + h; y++)
+      for (let z = pz; z < pz + d; z++)
+        if (((x - cx + .5) / rx) ** 2 + ((y - py) / ry) ** 2 + ((z - cz + .5) / rz) ** 2 <= 1) set(x, y, z, c);
+  };
+  const groups = {};
+  let currentGroup = null, currentGroupName = null, scale = 1;
+  function scaled(cmd, n) {
+    if (scale === 1) return n;
+    const s = [...n];
+    switch (cmd) {
+      case 'B': case 'D': s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); s[4]=Math.max(1,Math.round(s[4]*scale)); s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+      case 'S': s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); break;
+      case 'C': case 'K': s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); s[4]=Math.max(1,Math.round(s[4]*scale)); break;
+      case 'P': s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale); break;
+      case 'E': s[0]=Math.round(s[0]*scale); s[1]=Math.round(s[1]*scale); s[2]=Math.round(s[2]*scale);
+        s[3]=Math.max(1,Math.round(s[3]*scale)); s[4]=Math.max(1,Math.round(s[4]*scale)); s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+    }
+    return s;
+  }
+  function execCmd(cmd, n) {
+    const sn = scaled(cmd, n);
+    switch (cmd) {
+      case 'B': addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'S': addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]); break;
+      case 'C': addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'K': addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'P': set(sn[0],sn[1],sn[2],sn[3]); break;
+      case 'E': addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'D': addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      default: return false;
+    }
+    return true;
+  }
+  function placeGroup(name, ox, oy, oz) {
+    const g = groups[name]; if (!g) return;
+    const sox=Math.round(ox*scale), soy=Math.round(oy*scale), soz=Math.round(oz*scale);
+    for (const entry of g) {
+      const sn = scaled(entry.cmd, entry.args);
+      sn[0]+=sox; sn[1]+=soy; sn[2]+=soz;
+      execCmd(entry.cmd, sn);
+    }
+  }
+  const allLines = code.split('\n');
+  for (let i = 0; i < allLines.length; i++) {
+    const line = allLines[i].trim();
+    if (!line || line.startsWith('--') || line.startsWith('//')) continue;
+    const p = line.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+    if (cmd === 'G') { currentGroupName = p[1]||`g${i}`; currentGroup = []; continue; }
+    if (cmd === '/G') { if (currentGroup && currentGroupName) groups[currentGroupName]=currentGroup; currentGroup=null; currentGroupName=null; continue; }
+    if (cmd === '@') { placeGroup(p[1], Number(p[2])||0, Number(p[3])||0, Number(p[4])||0); continue; }
+    if (cmd === 'V') { W=Number(p[1])||32; H=Number(p[2])||32; D=Number(p[3])||32; continue; }
+    if (cmd === 'R') { scale=Number(p[1])||1; continue; }
+    const parseArg = (s, isColor) => {
+      if (isColor && /^[a-f]$/i.test(s)) return VOXI_CKEYS.indexOf(s.toLowerCase());
+      return Number(s);
+    };
+    const rawArgs = p.slice(1);
+    const n = rawArgs.map((s, idx) => parseArg(s, idx === rawArgs.length - 1));
+    execCmd(cmd, n);
+    if (currentGroup) currentGroup.push({ cmd, args: n });
+  }
+  return { W, H, D, vm };
+}
+
+function renderVoxiRotated(voxiCode, outW, outH, yaw, pitch) {
+  const { W, H, D, vm } = parseVoxi(voxiCode);
+  if (vm.size === 0) return null;
+  const yr = yaw * Math.PI / 180, pr = pitch * Math.PI / 180;
+  const cosY = Math.cos(yr), sinY = Math.sin(yr), cosP = Math.cos(pr), sinP = Math.sin(pr);
+  const cx = W / 2, cy = H / 2, cz = D / 2;
+  function rotate(x, y, z) {
+    let dx = x - cx, dy = y - cy, dz = z - cz;
+    const rx = dx * cosY + dz * sinY, rz = -dx * sinY + dz * cosY;
+    dx = rx; dz = rz;
+    const ry = dy * cosP - dz * sinP, rz2 = dy * sinP + dz * cosP;
+    return [dx, ry, rz2];
+  }
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  for (const c of [[0,0,0],[W,0,0],[0,H,0],[0,0,D],[W,H,0],[W,0,D],[0,H,D],[W,H,D]]) {
+    const [rx, ry, rz] = rotate(c[0], c[1], c[2]);
+    minX = Math.min(minX, rx); maxX = Math.max(maxX, rx);
+    minY = Math.min(minY, ry); maxY = Math.max(maxY, ry);
+    minZ = Math.min(minZ, rz); maxZ = Math.max(maxZ, rz);
+  }
+  const sceneW = maxX - minX || 1, sceneH = maxY - minY || 1;
+  const scaleF = Math.min(outW / sceneW, outH / sceneH) * 0.92;
+  const zbuf = new Float32Array(outW * outH).fill(Infinity);
+  const colorBuf = new Int8Array(outW * outH).fill(-1);
+  const depthBuf = new Float32Array(outW * outH).fill(0);
+  for (const [k, c] of vm) {
+    const [vx, vy, vz] = k.split(',').map(Number);
+    const [rx, ry, rz] = rotate(vx + 0.5, vy + 0.5, vz + 0.5);
+    const sx = Math.round((rx - minX) * scaleF + (outW - sceneW * scaleF) / 2);
+    const sy = Math.round((maxY - ry) * scaleF + (outH - sceneH * scaleF) / 2);
+    const voxSize = Math.max(1, Math.round(scaleF));
+    for (let dy = 0; dy < voxSize; dy++) for (let dx = 0; dx < voxSize; dx++) {
+      const px = sx + dx, py = sy + dy;
+      if (px < 0 || px >= outW || py < 0 || py >= outH) continue;
+      const idx = py * outW + px;
+      if (rz < zbuf[idx]) { zbuf[idx] = rz; colorBuf[idx] = c; depthBuf[idx] = (rz - minZ) / (maxZ - minZ || 1); }
+    }
+  }
+  return { colorBuf, depthBuf, width: outW, height: outH, voxelCount: vm.size };
+}
+
+// ── UI Sketch Parser ───────────────────────────────────────────────
+function parseUI(code) {
+  let canvasW = 1440, canvasH = 900, canvasBg = '#1a1a1a';
+  const elements = [];
+  const lines = code.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (!trimmed || trimmed.startsWith('--') || trimmed.startsWith('//')) continue;
+    const tokens = [];
+    let j = 0;
+    while (j < trimmed.length) {
+      if (trimmed[j] === ' ' || trimmed[j] === '\t') { j++; continue; }
+      if (trimmed[j] === '"') {
+        const end = trimmed.indexOf('"', j + 1);
+        if (end === -1) { tokens.push(trimmed.slice(j + 1)); j = trimmed.length; }
+        else { tokens.push(trimmed.slice(j + 1, end)); j = end + 1; }
+      } else {
+        const end = trimmed.indexOf(' ', j);
+        if (end === -1) { tokens.push(trimmed.slice(j)); j = trimmed.length; }
+        else { tokens.push(trimmed.slice(j, end)); j = end + 1; }
+      }
+    }
+    const cmd = tokens[0].toUpperCase();
+    if (cmd === 'CANVAS' || cmd === 'C') {
+      canvasW = Number(tokens[1]) || 1440; canvasH = Number(tokens[2]) || 900; canvasBg = tokens[3] || '#1a1a1a'; continue;
+    }
+    if (cmd === 'RECT' || cmd === 'R') {
+      elements.push({ type: 'rect', line: i, x: Number(tokens[1])||0, y: Number(tokens[2])||0,
+        w: Number(tokens[3])||100, h: Number(tokens[4])||50, z: Number(tokens[5])||0,
+        color: tokens[6]||'#888', radius: Number(tokens[7])||0 });
+    } else if (cmd === 'TEXT' || cmd === 'T') {
+      elements.push({ type: 'text', line: i, x: Number(tokens[1])||0, y: Number(tokens[2])||0,
+        content: tokens[3]||'', size: Number(tokens[4])||16, z: Number(tokens[5])||0,
+        color: tokens[6]||'#fff', weight: (tokens[7]||'normal').toLowerCase() });
+    } else if (cmd === 'IMG' || cmd === 'I') {
+      elements.push({ type: 'img', line: i, x: Number(tokens[1])||0, y: Number(tokens[2])||0,
+        w: Number(tokens[3])||200, h: Number(tokens[4])||150, z: Number(tokens[5])||0, label: tokens[6]||'image' });
+    } else if (cmd === 'LINE' || cmd === 'L') {
+      elements.push({ type: 'line', line: i, x1: Number(tokens[1])||0, y1: Number(tokens[2])||0,
+        x2: Number(tokens[3])||100, y2: Number(tokens[4])||0, z: Number(tokens[5])||0,
+        color: tokens[6]||'#fff', width: Number(tokens[7])||1 });
+    } else if (cmd === 'ELLIPSE' || cmd === 'E') {
+      elements.push({ type: 'ellipse', line: i, cx: Number(tokens[1])||0, cy: Number(tokens[2])||0,
+        rx: Number(tokens[3])||50, ry: Number(tokens[4])||50, z: Number(tokens[5])||0, color: tokens[6]||'#888' });
+    } else if (cmd === 'VOXI') {
+      const vx = Number(tokens[1])||0, vy = Number(tokens[2])||0, vw = Number(tokens[3])||200, vh = Number(tokens[4])||200;
+      const vz = Number(tokens[5])||0, vyaw = Number(tokens[6])||35, vpitch = Number(tokens[7])||25;
+      const voxiLines = []; const startLine = i; i++;
+      while (i < lines.length) { if (lines[i].trim().toUpperCase() === '/VOXI') break; voxiLines.push(lines[i]); i++; }
+      elements.push({ type: 'voxi', line: startLine, x: vx, y: vy, w: vw, h: vh, z: vz,
+        yaw: vyaw, pitch: vpitch, voxiCode: voxiLines.join('\n'), _cachedRender: null });
+    }
+  }
+  elements.sort((a, b) => a.z - b.z);
+  return { canvasW, canvasH, canvasBg, elements };
+}
+
+// ── Drawing ────────────────────────────────────────────────────────
+function roundRect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2); ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function shadeColor(hex, factor) {
+  let r, g, b;
+  if (hex && hex.startsWith('#')) {
+    const h = hex.slice(1);
+    if (h.length === 3) { r = parseInt(h[0]+h[0],16); g = parseInt(h[1]+h[1],16); b = parseInt(h[2]+h[2],16); }
+    else { r = parseInt(h.slice(0,2),16); g = parseInt(h.slice(2,4),16); b = parseInt(h.slice(4,6),16); }
+  } else { r = g = b = 128; }
+  return `rgb(${Math.round(r*factor)},${Math.round(g*factor)},${Math.round(b*factor)})`;
+}
+
+function drawElement(ctx, el, maxZ) {
+  ctx.save();
+  switch (el.type) {
+    case 'rect':
+      ctx.fillStyle = el.color;
+      if (el.radius > 0) { roundRect(ctx, el.x, el.y, el.w, el.h, el.radius); ctx.fill(); }
+      else ctx.fillRect(el.x, el.y, el.w, el.h);
+      break;
+    case 'text': {
+      const weight = el.weight === 'bold' ? 'bold ' : '';
+      ctx.font = `${weight}${el.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
+      ctx.fillStyle = el.color || '#fff'; ctx.textBaseline = 'top'; ctx.fillText(el.content, el.x, el.y);
+      break;
+    }
+    case 'img':
+      ctx.fillStyle = '#2a2a2a'; ctx.fillRect(el.x, el.y, el.w, el.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.strokeRect(el.x, el.y, el.w, el.h);
+      ctx.beginPath(); ctx.moveTo(el.x, el.y); ctx.lineTo(el.x+el.w, el.y+el.h);
+      ctx.moveTo(el.x+el.w, el.y); ctx.lineTo(el.x, el.y+el.h); ctx.stroke();
+      ctx.font = '12px -apple-system, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(el.label||'image', el.x+el.w/2, el.y+el.h/2); ctx.textAlign = 'start';
+      break;
+    case 'line':
+      ctx.strokeStyle = el.color; ctx.lineWidth = el.width || 1;
+      ctx.beginPath(); ctx.moveTo(el.x1, el.y1); ctx.lineTo(el.x2, el.y2); ctx.stroke();
+      break;
+    case 'ellipse':
+      ctx.fillStyle = el.color; ctx.beginPath();
+      ctx.ellipse(el.cx, el.cy, el.rx, el.ry, 0, 0, Math.PI * 2); ctx.fill();
+      break;
+    case 'voxi': {
+      if (!el._cachedRender || el._cachedRender._code !== el.voxiCode) {
+        el._cachedRender = renderVoxiRotated(el.voxiCode, el.w, el.h, el.yaw, el.pitch);
+        if (el._cachedRender) el._cachedRender._code = el.voxiCode;
+      }
+      const vr = el._cachedRender; if (!vr) break;
+      const imgData = ctx.createImageData(vr.width, vr.height); const d = imgData.data;
+      for (let pi = 0; pi < vr.width * vr.height; pi++) {
+        const ci = vr.colorBuf[pi]; if (ci < 0) continue;
+        const hex = VOXI_COLORS[ci]; const idx = pi * 4;
+        d[idx] = (hex >> 16) & 0xff; d[idx+1] = (hex >> 8) & 0xff; d[idx+2] = hex & 0xff; d[idx+3] = 255;
+      }
+      const off = document.createElement('canvas'); off.width = vr.width; off.height = vr.height;
+      off.getContext('2d').putImageData(imgData, 0, 0); ctx.drawImage(off, el.x, el.y);
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+function renderDSL(code, canvas) {
+  const { canvasW, canvasH, canvasBg, elements } = parseUI(code);
+  canvas.width = canvasW; canvas.height = canvasH;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = canvasBg; ctx.fillRect(0, 0, canvasW, canvasH);
+  const maxZ = elements.reduce((m, e) => Math.max(m, e.z), 0);
+  for (const el of elements) drawElement(ctx, el, maxZ);
+  return elements;
+}
+
+// ── State ──────────────────────────────────────────────────────────
+let messages = [];
+let sketchCount = 0;
+let inputMode = 'chat';
+const chatArea = document.getElementById('chat-area');
+const inputText = document.getElementById('input-text');
+const inputHint = document.getElementById('input-hint');
+const tooltip = document.getElementById('tooltip');
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('voxi-creator');
+    if (saved) {
+      const data = JSON.parse(saved);
+      messages = data.messages || [];
+      sketchCount = data.sketchCount || 0;
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('voxi-creator', JSON.stringify({ messages, sketchCount }));
+  } catch (e) { /* ignore */ }
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
+}
+
+function addMessage(type, content) {
+  const msg = { type, content, id: Date.now() + Math.random() };
+  if (type === 'sketch') { sketchCount++; msg.version = sketchCount; }
+  if (type === 'image') { msg.imageData = content; }
+  messages.push(msg);
+  saveState();
+  renderMessage(msg);
+  scrollToBottom();
+}
+
+function renderMessage(msg) {
+  const div = document.createElement('div');
+  div.className = `msg ${msg.type}`;
+  div.dataset.id = msg.id;
+
+  if (msg.type === 'image') {
+    div.className = 'msg user';
+    div.innerHTML = `<div class="msg-bubble"><img src="${msg.imageData || msg.content}" style="max-width:100%;border-radius:8px;display:block;" alt="Reference screenshot"><div style="font-size:11px;color:var(--text-dim);margin-top:6px;">Screenshot reference</div></div>`;
+    chatArea.appendChild(div);
+    return;
+  } else if (msg.type === 'user') {
+    div.innerHTML = `<div class="msg-bubble">${escapeHtml(msg.content)}</div>`;
+  } else {
+    const label = `Sketch v${msg.version}`;
+    const canvasId = `sketch-canvas-${msg.id}`;
+    const dslId = `dsl-${msg.id}`;
+    div.innerHTML = `
+      <div class="msg-bubble">
+        <div class="sketch-label">${label}</div>
+        <div class="sketch-canvas-wrap"><canvas id="${canvasId}"></canvas></div>
+        <div class="sketch-actions">
+          <button onclick="copyDSL('${msg.id}')">Copy DSL</button>
+          <button onclick="saveDSL('${msg.id}')">Save</button>
+          <button onclick="editDSL('${msg.id}')">Edit</button>
+        </div>
+        <div class="dsl-toggle" onclick="toggleDSL('${dslId}')">Show DSL code</div>
+        <div class="dsl-code" id="${dslId}">${escapeHtml(msg.content)}</div>
+      </div>`;
+    chatArea.appendChild(div);
+    // Render the canvas
+    try {
+      const canvas = document.getElementById(canvasId);
+      const elements = renderDSL(msg.content, canvas);
+      setupCanvasTooltip(canvas, elements, msg.content);
+    } catch (e) {
+      console.error('Render error:', e);
+    }
+    return;
+  }
+  chatArea.appendChild(div);
+}
+
+function renderAllMessages() {
+  chatArea.innerHTML = '';
+  for (const msg of messages) renderMessage(msg);
+  scrollToBottom();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Canvas Tooltip ─────────────────────────────────────────────────
+function setupCanvasTooltip(canvas, elements, code) {
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+    let hit = null;
+    for (let i = elements.length - 1; i >= 0; i--) {
+      const el = elements[i];
+      if (el.type === 'rect' || el.type === 'img' || el.type === 'voxi') {
+        if (mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h) { hit = el; break; }
+      } else if (el.type === 'ellipse') {
+        if (((mx - el.cx) / el.rx) ** 2 + ((my - el.cy) / el.ry) ** 2 <= 1) { hit = el; break; }
+      } else if (el.type === 'text') {
+        if (mx >= el.x && mx <= el.x + 200 && my >= el.y && my <= el.y + el.size) { hit = el; break; }
+      }
+    }
+    if (hit) {
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.clientX + 12) + 'px'; tooltip.style.top = (e.clientY - 8) + 'px';
+      if (hit.type === 'text') tooltip.textContent = `TEXT "${hit.content}" z=${hit.z}`;
+      else if (hit.type === 'rect') tooltip.textContent = `RECT ${hit.w}x${hit.h} z=${hit.z} ${hit.color}`;
+      else tooltip.textContent = `${hit.type.toUpperCase()} z=${hit.z}`;
+    } else { tooltip.style.display = 'none'; }
+  });
+  canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+}
+
+// ── Actions ────────────────────────────────────────────────────────
+function copyDSL(id) {
+  const msg = messages.find(m => String(m.id) === String(id));
+  if (msg) navigator.clipboard.writeText(msg.content);
+}
+function saveDSL(id) {
+  const msg = messages.find(m => String(m.id) === String(id));
+  if (msg) navigator.clipboard.writeText(msg.content);
+}
+function editDSL(id) {
+  const msg = messages.find(m => String(m.id) === String(id));
+  if (msg) {
+    inputText.value = msg.content;
+    setMode('sketch');
+    inputText.focus();
+  }
+}
+function toggleDSL(dslId) {
+  const el = document.getElementById(dslId);
+  if (el) {
+    el.classList.toggle('open');
+    const toggle = el.previousElementSibling;
+    if (toggle) toggle.textContent = el.classList.contains('open') ? 'Hide DSL code' : 'Show DSL code';
+  }
+}
+window.copyDSL = copyDSL;
+window.saveDSL = saveDSL;
+window.editDSL = editDSL;
+window.toggleDSL = toggleDSL;
+
+// ── Input Mode ─────────────────────────────────────────────────────
+function setMode(mode) {
+  inputMode = mode;
+  document.querySelectorAll('.mode-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  if (mode === 'sketch') {
+    inputText.classList.add('code-mode');
+    inputText.placeholder = 'Paste DSL code here...';
+    inputText.rows = 6;
+    inputHint.textContent = 'Cmd+Enter to render';
+  } else {
+    inputText.classList.remove('code-mode');
+    inputText.placeholder = 'Describe a UI...';
+    inputText.rows = 1;
+    inputHint.textContent = 'Enter to send';
+  }
+}
+
+document.querySelectorAll('.mode-toggle button').forEach(b => {
+  b.addEventListener('click', () => setMode(b.dataset.mode));
+});
+
+function send() {
+  const val = inputText.value.trim();
+  if (!val) return;
+  if (inputMode === 'chat') {
+    addMessage('user', val);
+    // Send to Claude for DSL generation
+    generateFromPrompt(val);
+  } else {
+    addMessage('sketch', val);
+  }
+  inputText.value = '';
+  if (inputMode === 'sketch') inputText.rows = 6;
+}
+
+document.getElementById('btn-send').addEventListener('click', send);
+
+inputText.addEventListener('keydown', (e) => {
+  if (inputMode === 'chat' && e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault(); send();
+  } else if (inputMode === 'sketch' && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault(); send();
+  }
+});
+
+// Paste screenshot (Cmd+V with image on clipboard) → send to server for analysis
+document.addEventListener('paste', (e) => {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      const file = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = () => {
+        addMessage('image', reader.result);
+        // Auto-generate DSL from screenshot
+        addMessage('user', 'Analyzing screenshot...');
+        generateFromImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+  }
+});
+
+const API_BASE = window.location.origin;
+
+async function generateFromImage(imageData, extraPrompt) {
+  try {
+    const res = await fetch(`${API_BASE}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageData, prompt: extraPrompt || '' }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      addMessage('user', 'Error: ' + data.error);
+    } else if (data.dsl) {
+      addMessage('sketch', data.dsl);
+    }
+  } catch (e) {
+    addMessage('user', 'Server not running. Start with: node server.js');
+  }
+}
+
+async function generateFromPrompt(prompt) {
+  try {
+    const res = await fetch(`${API_BASE}/prompt`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      addMessage('user', 'Error: ' + data.error);
+    } else if (data.dsl) {
+      addMessage('sketch', data.dsl);
+    }
+  } catch (e) {
+    addMessage('user', 'Server not running. Start with: node server.js');
+  }
+}
+
+// Auto-resize for chat mode
+inputText.addEventListener('input', () => {
+  if (inputMode === 'chat') {
+    inputText.rows = 1;
+    const lines = inputText.value.split('\n').length;
+    inputText.rows = Math.min(lines, 4);
+  }
+});
+
+// ── Clear ──────────────────────────────────────────────────────────
+document.getElementById('btn-clear').addEventListener('click', () => {
+  messages = []; sketchCount = 0;
+  saveState(); chatArea.innerHTML = '';
+});
+
+// ── Init ───────────────────────────────────────────────────────────
+loadState();
+renderAllMessages();
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+V 16 24 16
+
+-- base platform
+B 3 0 4 10 2 8 d
+-- pedestal stem
+B 7 2 7 2 4 2 d
+-- body block
+B 6 6 6 4 3 4 d
+-- neck leaning forward
+B 6 9 5 3 4 3 d
+-- head
+B 5 13 4 5 3 5 d
+-- muzzle protruding
+B 6 13 2 3 2 3 d
+-- nostril detail
+B 7 13 1 1 1 1 9
+-- ear
+B 8 16 5 2 3 2 d
+-- mane ridge
+B 5 13 7 1 4 1 9
+-- eye
+B 7 14 3 1 1 1 0

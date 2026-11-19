@@ -1,0 +1,51 @@
+V 32 32 32
+
+-- Feet (orange, front-center)
+B 11 0 11 5 2 6 7
+B 17 0 11 5 2 6 7
+
+-- Legs (navy)
+B 12 2 13 4 5 4 f
+B 17 2 13 4 5 4 f
+
+-- Main body (navy ellipsoid, centered)
+E 16 13 16 7 10 6 f
+
+-- White belly slab pressed onto front face of body (low Z)
+B 13 4 10 6 16 3 8
+
+-- Left wing (navy flat plate, left flank)
+B 7 7 12 3 13 7 f
+
+-- Right wing (navy flat plate, right flank)
+B 22 7 12 3 13 7 f
+
+-- Neck (navy)
+B 13 22 12 6 3 6 f
+
+-- Head (navy sphere)
+S 16 27 15 5 f
+
+-- White face patch around eyes (front of head)
+B 12 25 10 8 5 2 8
+
+-- White eye highlights
+P 13 27 10 8
+P 19 27 10 8
+
+-- Pupils (navy dark)
+P 13 27 9 f
+P 19 27 9 f
+
+-- Eyebrow accent (gray)
+P 13 28 10 9
+P 19 28 10 9
+
+-- Upper beak (orange, protruding front)
+B 14 25 8 4 2 4 7
+
+-- Lower beak (orange, slightly smaller)
+B 15 23 8 2 2 3 7
+
+-- Belly highlight stripe (lighter tan detail)
+B 14 10 10 4 8 2 d

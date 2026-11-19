@@ -1,0 +1,48 @@
+V 32 48 32
+
+-- rocks base
+B 5 0 5 22 3 22 9
+B 3 0 8 5 2 8 a
+B 24 0 8 5 2 8 a
+B 8 0 3 12 2 5 a
+B 8 0 24 12 2 5 a
+
+-- tower base wide
+C 16 3 16 5 4 8
+
+-- tower lower white
+C 16 7 16 4 7 8
+
+-- red band
+B 12 13 12 8 3 8 1
+
+-- tower mid white
+C 16 16 16 4 6 8
+
+-- red band
+B 12 21 12 8 3 8 1
+
+-- tower upper white
+C 16 24 16 4 5 8
+
+-- gallery deck
+C 16 29 16 6 2 9
+
+-- lantern room glass
+B 12 31 12 8 5 8 4
+
+-- beacon light
+S 16 33 16 2 6
+
+-- roof
+B 12 36 12 8 1 8 e
+B 13 37 13 6 1 6 e
+B 14 38 14 4 1 4 e
+B 15 39 15 2 2 2 e
+
+-- door
+B 15 3 11 2 3 1 0
+
+-- windows
+B 15 10 11 2 2 1 4
+B 15 18 11 2 2 1 4

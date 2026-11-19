@@ -1,0 +1,32 @@
+V 32 48 32
+
+-- foundation
+B 9 0 9 14 3 14 9
+
+-- tower
+C 16 15 16 3 30 d
+
+-- cap roof
+B 12 30 12 8 4 8 c
+
+-- door
+B 14 3 12 4 5 1 a
+
+-- windows
+B 14 10 12 4 3 1 8
+B 14 20 12 4 3 1 8
+
+-- hub
+S 16 34 13 2 7
+
+-- blade top
+B 15 34 12 2 9 2 8
+
+-- blade bottom
+B 15 25 12 2 9 2 8
+
+-- blade left
+B 7 32 12 9 2 2 8
+
+-- blade right
+B 16 32 12 9 2 2 8

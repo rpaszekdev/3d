@@ -1,0 +1,38 @@
+V 24 24 24
+
+-- chest base (brown wood)
+B 7 0 9 10 5 7 a
+
+-- chest interior (dark red lining)
+B 8 1 10 8 4 5 e
+
+-- front horizontal metal band
+B 7 2 9 10 1 1 9
+
+-- corner reinforcements
+B 7 0 9 1 5 1 9
+B 16 0 9 1 5 1 9
+B 7 0 15 1 5 1 9
+B 16 0 15 1 5 1 9
+
+-- lid open (standing upright at back)
+B 7 5 15 10 6 1 a
+
+-- lid metal band
+B 7 8 15 10 1 1 9
+
+-- lid corner bands
+B 7 5 15 1 6 1 9
+B 16 5 15 1 6 1 9
+
+-- gold coin pile inside
+S 12 3 12 3 6
+
+-- colorful gems
+S 10 4 11 1 1
+S 14 4 11 1 3
+S 12 5 12 1 5
+S 11 5 13 1 4
+
+-- front lock plate
+B 11 1 8 2 2 1 9

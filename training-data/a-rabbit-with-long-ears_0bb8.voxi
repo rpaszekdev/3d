@@ -1,0 +1,41 @@
+V 24 32 24
+
+-- body
+E 12 5 12 5 4 4 8
+
+-- head
+S 12 12 12 3 8
+
+-- left ear outer
+B 9 15 11 2 9 2 8
+-- left ear inner (pink)
+B 10 15 11 1 7 1 b
+
+-- right ear outer
+B 13 15 11 2 9 2 8
+-- right ear inner (pink)
+B 14 15 11 1 7 1 b
+
+-- left eye
+B 10 13 9 1 1 1 0
+
+-- right eye
+B 14 13 9 1 1 1 0
+
+-- nose
+B 12 11 9 1 1 1 b
+
+-- front left leg
+B 9 0 10 2 3 2 8
+
+-- front right leg
+B 13 0 10 2 3 2 8
+
+-- back left leg
+B 8 0 13 2 4 3 8
+
+-- back right leg
+B 14 0 13 2 4 3 8
+
+-- tail
+S 12 4 16 2 8

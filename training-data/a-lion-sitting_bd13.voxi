@@ -1,0 +1,55 @@
+V 24 24 24
+
+-- haunches (sitting, wide base)
+E 12 4 13 6 4 5 6
+
+-- torso
+E 12 9 12 4 5 3 6
+
+-- chest/belly
+E 12 6 11 3 3 2 d
+
+-- mane (large, behind head)
+S 12 13 13 6 7
+
+-- head
+S 12 13 10 4 6
+
+-- snout/muzzle
+E 12 11 8 2 2 2 d
+
+-- nose
+S 12 10 7 1 0
+
+-- left eye
+B 10 14 8 1 1 1 0
+
+-- right eye
+B 14 14 8 1 1 1 0
+
+-- left ear
+B 9 17 12 2 2 1 6
+
+-- right ear
+B 14 17 12 2 2 1 6
+
+-- front left leg
+B 8 0 10 3 6 3 6
+
+-- front right leg
+B 14 0 10 3 6 3 6
+
+-- front left paw
+B 7 0 9 4 2 4 d
+
+-- front right paw
+B 13 0 9 4 2 4 d
+
+-- tail base
+B 17 2 14 2 2 2 6
+
+-- tail curve
+B 19 4 14 2 2 2 7
+
+-- tail tip
+S 20 6 14 2 a

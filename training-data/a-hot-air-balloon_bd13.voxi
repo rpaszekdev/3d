@@ -1,0 +1,29 @@
+V 32 48 32
+
+-- basket
+B 13 2 13 6 4 6 a
+
+-- basket rim
+B 12 6 12 8 1 8 7
+
+-- ropes (four corners, basket to balloon)
+C 14 12 14 1 12 9
+C 18 12 14 1 12 9
+C 14 12 18 1 12 9
+C 18 12 18 1 12 9
+
+-- burner flame
+S 16 22 16 2 6
+S 16 24 16 1 1
+
+-- balloon envelope
+E 16 30 16 10 12 10 1
+
+-- color panels (vertical stripes)
+E 16 30 13 4 12 4 6
+E 16 30 19 4 12 4 2
+E 13 30 16 4 12 4 5
+E 19 30 16 4 12 4 3
+
+-- top crown
+S 16 41 16 4 8

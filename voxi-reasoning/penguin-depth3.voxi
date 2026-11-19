@@ -1,0 +1,15 @@
+V 24 24 24
+-- Depth-reconstructed (12 voxels, 3 views)
+
+P 9 4 11 9
+P 6 8 9 f
+P 4 9 9 f
+P 4 9 10 f
+P 4 9 11 f
+P 5 11 10 0
+P 6 12 9 0
+P 6 12 10 0
+P 6 12 11 f
+P 8 15 11 f
+P 8 16 11 0
+P 8 17 11 0

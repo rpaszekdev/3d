@@ -1,0 +1,350 @@
+G cathedral
+
+-- ============================================================
+-- FOUNDATIONS & BASE PLATFORM
+-- ============================================================
+-- Wide stepped base / podium
+B 0 0 0 40 2 30 9
+-- First step up
+B 1 2 1 38 1 28 8
+-- Second step
+B 2 3 2 36 1 26 8
+
+-- ============================================================
+-- MAIN NAVE WALLS (tan stone with white marble trim)
+-- ============================================================
+-- Left nave wall (outer)
+B 2 4 2 4 18 26 d
+-- Right nave wall (outer)
+B 34 4 2 4 18 26 d
+-- Back wall (west facade side)
+B 2 4 2 36 18 3 d
+-- Apse rear wall (east end)
+B 2 4 25 36 18 3 d
+
+-- Nave interior clearance handled by geometry layering
+
+-- ============================================================
+-- STONE TRIM COURSES on nave walls
+-- ============================================================
+-- Base cornice (bottom of nave wall)
+B 2 4 2 36 1 26 9
+-- Mid cornice (halfway up nave)
+B 2 12 2 36 1 26 9
+-- Top cornice (top of nave walls)
+B 2 21 2 36 1 26 9
+
+-- Left wall vertical pilaster strips
+B 2 4 2 1 18 1 8
+B 2 4 8 1 18 1 8
+B 2 4 14 1 18 1 8
+B 2 4 20 1 18 1 8
+B 2 4 26 1 18 1 8
+
+-- Right wall vertical pilasters
+B 37 4 2 1 18 1 8
+B 37 4 8 1 18 1 8
+B 37 4 14 1 18 1 8
+B 37 4 20 1 18 1 8
+B 37 4 26 1 18 1 8
+
+-- ============================================================
+-- ARCHED WINDOWS ALONG LEFT NAVE WALL
+-- ============================================================
+-- Window 1 (left wall, bay 1)
+B 3 13 4 2 6 3 9
+-- Window arch cap
+D 3 18 4 2 2 3 8
+-- Window 2
+B 3 13 10 2 6 3 9
+D 3 18 10 2 2 3 8
+-- Window 3
+B 3 13 16 2 6 3 9
+D 3 18 16 2 2 3 8
+-- Window 4
+B 3 13 22 2 6 3 9
+D 3 18 22 2 2 3 8
+
+-- ============================================================
+-- ARCHED WINDOWS ALONG RIGHT NAVE WALL
+-- ============================================================
+B 35 13 4 2 6 3 9
+D 35 18 4 2 2 3 8
+B 35 13 10 2 6 3 9
+D 35 18 10 2 2 3 8
+B 35 13 16 2 6 3 9
+D 35 18 16 2 2 3 8
+B 35 13 22 2 6 3 9
+D 35 18 22 2 2 3 8
+
+-- ============================================================
+-- WEST FACADE (marble white, highly decorated)
+-- ============================================================
+-- Main facade slab
+B 2 4 2 36 22 3 8
+-- Facade vertical divisions (pilasters)
+B 2 4 2 2 22 3 9
+B 14 4 2 2 22 3 9
+B 26 4 2 2 22 3 9
+B 36 4 2 2 22 3 9
+-- Horizontal string courses
+B 2 10 2 36 1 3 9
+B 2 17 2 36 1 3 9
+B 2 22 2 36 1 3 9
+
+-- THREE ARCHED PORTALS (central taller, two flanking)
+-- Central portal arch surround
+B 16 4 2 8 10 3 d
+-- Central arch opening (recessed, darker)
+B 17 5 1 6 8 2 9
+-- Central arch top dome
+D 16 13 1 8 3 2 8
+-- Portal arch trim ring
+B 16 4 2 1 10 3 8
+B 23 4 2 1 10 3 8
+
+-- Left portal
+B 5 4 2 6 8 3 d
+B 6 5 1 4 6 2 9
+D 5 11 1 6 2 2 8
+-- Left portal trim
+B 5 4 2 1 8 3 8
+B 10 4 2 1 8 3 8
+
+-- Right portal
+B 29 4 2 6 8 3 d
+B 30 5 1 4 6 2 9
+D 29 11 1 6 2 2 8
+B 29 4 2 1 8 3 8
+B 34 4 2 1 8 3 8
+
+-- Tympanum relief panels above portals (dark green decorative)
+B 6 12 2 4 3 1 c
+B 17 13 2 6 3 1 c
+B 30 12 2 4 3 1 c
+
+-- ============================================================
+-- ROSE WINDOW on west facade (upper center)
+-- ============================================================
+-- Rose window circular frame
+S 20 20 2 4 8
+-- Inner ring
+S 20 20 2 3 9
+-- Center boss
+S 20 20 2 1 6
+-- Petal spokes (radial elements approximated)
+B 19 20 2 2 1 1 8
+B 20 17 2 1 4 1 8
+B 17 19 2 4 1 1 8
+B 18 17 2 1 1 1 8
+B 21 17 2 1 1 1 8
+B 18 22 2 1 1 1 8
+B 21 22 2 1 1 1 8
+
+-- ============================================================
+-- CROSSING TOWER / DRUM BASE (where dome sits)
+-- ============================================================
+-- Octagonal drum base approximated with layered boxes
+B 10 22 8 20 3 14 d
+-- Drum cornice
+B 10 25 8 20 1 14 9
+-- Drum second level
+B 11 26 9 18 6 12 d
+-- Drum upper cornice
+B 11 32 9 18 1 12 9
+-- Drum window arches (all four sides)
+-- North drum window
+B 14 27 9 12 5 2 8
+D 14 31 9 12 2 2 9
+-- South drum window
+B 14 27 19 12 5 2 8
+D 14 31 19 12 2 2 9
+-- East drum window
+B 11 27 12 2 5 8 8
+D 11 31 12 2 2 8 9
+-- West drum window
+B 27 27 12 2 5 8 8
+D 27 31 12 2 2 8 9
+
+-- Drum pilasters
+B 11 26 9 1 6 1 8
+B 28 26 9 1 6 1 8
+B 11 26 20 1 6 1 8
+B 28 26 20 1 6 1 8
+
+-- ============================================================
+-- MAIN DOME (terracotta with white marble ribs)
+-- ============================================================
+-- Dome primary shell (terracotta orange)
+D 10 33 8 20 12 14 7
+-- Second dome layer (slightly smaller, ellipsoidal crown effect)
+E 20 38 15 9 8 6 7
+-- Dome marble ribs (8 ribs approximated with 4 visible arcs)
+-- North rib
+B 19 33 8 2 10 1 8
+-- South rib
+B 19 33 21 2 10 1 8
+-- West rib
+B 10 33 14 1 10 2 8
+-- East rib
+B 29 33 14 1 10 2 8
+-- Diagonal ribs
+B 12 34 10 1 8 1 8
+B 27 34 10 1 8 1 8
+B 12 34 19 1 8 1 8
+B 27 34 19 1 8 1 8
+
+-- ============================================================
+-- DOME LANTERN (white marble)
+-- ============================================================
+-- Lantern base
+C 19 44 14 3 3 8
+-- Lantern drum
+C 20 47 15 2 2 8
+-- Lantern cone cap
+K 20 49 15 2 2 8
+-- Lantern windows (tiny openings)
+B 19 46 14 1 1 1 9
+B 21 46 14 1 1 1 9
+B 19 46 16 1 1 1 9
+B 21 46 16 1 1 1 9
+
+-- ============================================================
+-- GOLD CROSS AT TOP
+-- ============================================================
+-- Cross vertical shaft
+B 20 49 15 1 4 1 6
+-- Cross horizontal arm
+B 18 51 15 4 1 1 6
+-- Cross orb below
+S 20 49 15 1 6
+
+-- ============================================================
+-- APSE (semicircular east end)
+-- ============================================================
+-- Apse half-drum (back of cathedral)
+D 10 4 20 20 18 10 d
+-- Apse exterior trim ring
+B 10 4 20 20 1 10 9
+B 10 12 20 20 1 10 9
+B 10 21 20 20 1 10 9
+-- Apse window arches
+B 14 13 24 4 6 2 8
+D 14 18 24 4 2 2 9
+B 22 13 24 4 6 2 8
+D 22 18 24 4 2 2 9
+
+-- ============================================================
+-- SIDE CHAPELS (north and south flanking the nave)
+-- ============================================================
+-- North side chapel (left side)
+B 2 4 2 6 12 8 d
+-- Chapel roof / pitched top
+B 2 15 2 6 2 8 9
+B 2 16 3 6 1 6 d
+B 2 17 4 6 1 4 d
+B 2 18 5 6 1 2 d
+-- Chapel arched doorway
+B 4 4 2 3 7 2 8
+D 4 10 2 3 2 2 9
+-- Chapel window
+B 3 13 3 3 4 2 8
+D 3 16 3 3 2 2 9
+
+-- South side chapel (right side)
+B 32 4 2 6 12 8 d
+B 32 15 2 6 2 8 9
+B 32 16 3 6 1 6 d
+B 32 17 4 6 1 4 d
+B 32 18 5 6 1 2 d
+B 33 4 2 3 7 2 8
+D 33 10 2 3 2 2 9
+B 34 13 3 3 4 2 8
+D 34 16 3 3 2 2 9
+
+-- Second north chapel (midway along nave)
+B 2 4 10 6 12 6 d
+B 2 15 10 6 2 6 9
+B 2 16 11 6 1 4 d
+B 2 17 12 6 1 2 d
+B 4 4 10 3 7 2 8
+D 4 10 10 3 2 2 9
+B 3 13 11 3 4 2 8
+D 3 16 11 3 2 2 9
+
+-- Second south chapel
+B 32 4 10 6 12 6 d
+B 32 15 10 6 2 6 9
+B 32 16 11 6 1 4 d
+B 32 17 12 6 1 2 d
+B 33 4 10 3 7 2 8
+D 33 10 10 3 2 2 9
+B 34 13 11 3 4 2 8
+D 34 16 11 3 2 2 9
+
+-- ============================================================
+-- FLYING BUTTRESSES (decorative arching supports)
+-- ============================================================
+-- Left side buttress piers
+B 2 4 5 3 14 2 9
+B 2 4 13 3 14 2 9
+B 2 4 21 3 14 2 9
+-- Left side buttress arch spans
+B 2 17 5 3 1 2 8
+B 2 17 13 3 1 2 8
+B 2 17 21 3 1 2 8
+
+-- Right side buttress piers
+B 35 4 5 3 14 2 9
+B 35 4 13 3 14 2 9
+B 35 4 21 3 14 2 9
+-- Right buttress arch spans
+B 35 17 5 3 1 2 8
+B 35 17 13 3 1 2 8
+B 35 17 21 3 1 2 8
+
+-- ============================================================
+-- NAVE ROOF (above side aisles, below drum)
+-- ============================================================
+-- Central nave roof ridge
+B 10 22 2 20 2 26 9
+-- Sloped roof sections (approximated with stacked layers)
+B 8 20 2 24 1 26 d
+B 8 21 3 24 1 24 d
+B 9 22 4 22 1 22 d
+
+-- ============================================================
+-- DECORATIVE PINNACLES on facade corners
+-- ============================================================
+-- Four corner pinnacles on facade
+K 2 22 2 1 4 8
+K 13 22 2 1 4 8
+K 26 22 2 1 4 8
+K 37 22 2 1 4 8
+-- Pinnacle balls
+S 2 26 2 1 8
+S 13 26 2 1 8
+S 26 26 2 1 8
+S 37 26 2 1 8
+
+-- ============================================================
+-- CAMPANILE / BELL TOWER STUB (left of facade)
+-- ============================================================
+-- Tower base
+B 0 3 10 6 30 6 9
+-- Tower cornice bands
+B 0 10 10 6 1 6 8
+B 0 18 10 6 1 6 8
+B 0 26 10 6 1 6 8
+-- Tower belfry openings
+B 1 27 11 2 4 2 8
+B 3 27 11 2 4 2 8
+D 1 30 11 2 2 2 9
+D 3 30 11 2 2 2 9
+-- Tower pyramid cap
+K 0 32 10 3 6 9
+-- Tower finial
+B 2 37 12 1 3 1 8
+P 2 40 12 6
+
+/G

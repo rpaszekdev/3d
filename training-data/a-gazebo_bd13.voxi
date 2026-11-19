@@ -1,0 +1,32 @@
+V 32 32 32
+
+-- platform/deck
+B 6 0 6 20 2 20 d
+
+-- corner columns
+C 7 2 7 1 12 d
+C 25 2 7 1 12 d
+C 7 2 25 1 12 d
+C 25 2 25 1 12 d
+
+-- side columns
+C 16 2 7 1 12 d
+C 16 2 25 1 12 d
+C 7 2 16 1 12 d
+C 25 2 16 1 12 d
+
+-- railings
+B 7 7 7 18 1 1 8
+B 7 7 24 18 1 1 8
+B 7 7 8 1 1 16 8
+B 24 7 8 1 1 16 8
+
+-- tiered roof
+B 5 14 5 22 2 22 3
+B 7 16 7 18 2 18 3
+B 9 18 9 14 2 14 3
+B 11 20 11 10 2 10 3
+B 13 22 13 6 2 6 3
+
+-- roof peak finial
+S 16 25 16 2 6

@@ -1,0 +1,31 @@
+V 20 26 20
+
+-- base pedestal
+B 5 0 6 10 2 8 9
+
+-- column stem
+C 10 2 10 2 6 9
+
+-- neck
+B 8 8 8 4 4 4 8
+
+-- head body
+B 7 10 6 6 7 5 9
+
+-- snout extending toward viewer
+B 7 13 3 6 3 5 9
+
+-- mane ridge
+B 7 11 9 2 6 2 c
+
+-- ear left
+B 9 17 7 2 3 2 9
+
+-- ear right
+B 12 17 7 2 3 2 9
+
+-- eye
+S 8 13 5 1 0
+
+-- nostril detail
+B 8 13 2 2 1 2 7

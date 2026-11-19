@@ -1,0 +1,61 @@
+V 40 20 20
+
+-- lower deck body
+B 2 1 4 36 8 12 1
+
+-- upper deck body
+B 2 9 5 36 7 10 1
+
+-- lower deck windows
+B 4 4 3 4 3 1 8
+B 10 4 3 4 3 1 8
+B 16 4 3 4 3 1 8
+B 22 4 3 4 3 1 8
+B 28 4 3 4 3 1 8
+
+-- upper deck windows
+B 4 11 4 4 3 1 8
+B 10 11 4 4 3 1 8
+B 16 11 4 4 3 1 8
+B 22 11 4 4 3 1 8
+B 28 11 4 4 3 1 8
+
+-- front face lower
+B 2 1 14 36 8 2 e
+
+-- front face upper
+B 2 9 14 36 7 2 e
+
+-- front windshield lower
+B 6 2 15 12 4 1 8
+
+-- front windshield upper
+B 6 10 15 12 4 1 8
+
+-- destination board
+B 4 14 14 20 2 2 6
+
+-- front grille
+B 10 1 14 8 2 2 9
+
+-- headlights
+S 7 2 16 1 6
+S 31 2 16 1 6
+
+-- wheels
+C 7 1 5 3 2 0
+C 31 1 5 3 2 0
+C 7 1 11 3 2 0
+C 31 1 11 3 2 0
+
+-- wheel arches
+B 4 1 4 6 3 1 e
+B 28 1 4 6 3 1 e
+B 4 1 10 6 3 1 e
+B 28 1 10 6 3 1 e
+
+-- door
+B 33 1 13 5 7 2 c
+
+-- roof
+B 2 16 5 36 1 10 e

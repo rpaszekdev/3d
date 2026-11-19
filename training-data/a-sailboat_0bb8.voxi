@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- water
+B 0 0 0 32 2 32 3
+
+-- hull body
+B 4 2 12 24 4 8 a
+
+-- keel
+B 8 1 14 16 2 4 e
+
+-- deck
+B 5 6 13 22 1 6 d
+
+-- mast
+B 15 6 15 2 20 2 a
+
+-- boom
+B 15 7 14 10 1 1 a
+
+-- main sail row 1
+B 16 8 14 8 2 1 8
+
+-- main sail row 2
+B 16 10 14 6 2 1 8
+
+-- main sail row 3
+B 16 12 14 5 2 1 8
+
+-- main sail row 4
+B 16 14 14 3 2 1 8
+
+-- main sail row 5
+B 16 16 14 2 2 1 8
+
+-- main sail top
+B 16 18 14 1 2 1 8
+
+-- jib row 1
+B 8 7 14 6 2 1 8
+
+-- jib row 2
+B 9 9 14 5 2 1 8
+
+-- jib row 3
+B 11 11 14 3 2 1 8
+
+-- jib row 4
+B 12 13 14 2 2 1 8
+
+-- jib top
+B 13 15 14 1 2 1 8

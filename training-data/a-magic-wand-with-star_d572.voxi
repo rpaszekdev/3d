@@ -1,0 +1,42 @@
+V 32 32 32
+
+-- handle base
+S 16 1 16 2 a
+-- handle grip
+C 16 5 16 2 7 a
+-- handle band
+B 13 8 15 6 2 2 8
+
+-- wand shaft
+C 16 15 16 1 13 d
+
+-- shaft tip glow
+S 16 22 16 1 6
+
+-- star center
+S 16 26 16 3 6
+
+-- star horizontal arm
+B 11 25 15 10 2 2 6
+
+-- star vertical arm
+B 15 21 15 2 10 2 6
+
+-- star diagonal NW
+B 11 28 15 3 3 2 6
+
+-- star diagonal NE
+B 18 28 15 3 3 2 6
+
+-- star diagonal SW
+B 11 22 15 3 3 2 6
+
+-- star diagonal SE
+B 18 22 15 3 3 2 6
+
+-- sparkle particles
+S 10 30 14 1 5
+S 22 28 14 1 5
+S 16 31 14 1 5
+S 23 23 14 1 6
+S 9 24 14 1 6

@@ -1,0 +1,30 @@
+V 24 16 22
+
+-- front legs
+B 2 0 2 2 3 2 a
+B 20 0 2 2 3 2 a
+
+-- back legs
+B 2 0 17 2 3 2 a
+B 20 0 17 2 3 2 a
+
+-- bed base platform
+B 2 3 2 20 1 17 a
+
+-- headboard
+B 1 0 17 22 10 2 a
+
+-- footboard
+B 1 0 2 22 4 1 a
+
+-- mattress
+B 3 4 3 18 3 14 8
+
+-- blanket covering lower half
+B 3 7 3 18 1 9 d
+
+-- left pillow
+B 4 7 13 7 2 3 b
+
+-- right pillow
+B 13 7 13 7 2 3 b

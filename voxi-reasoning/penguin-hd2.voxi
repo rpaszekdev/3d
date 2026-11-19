@@ -1,0 +1,52 @@
+V 32 48 24
+-- King Penguin HD — iteration 3 (final)
+
+-- Body (black oval)
+E 16 18 12 10 16 8 0
+
+-- White belly
+E 16 17 7 7 14 4 8
+
+-- Neck (black, smooth)
+E 16 36 12 7 4 7 0
+
+-- Head (black)
+S 16 42 12 6 0
+
+-- Yellow ear patches (wider, prominent)
+B 8 39 9 3 7 7 6
+B 22 39 9 3 7 7 6
+
+-- Yellow chest patch (pushed forward)
+E 16 33 7 6 4 3 6
+
+-- Eyes (wider)
+P 13 44 5 8
+P 14 44 5 8
+P 18 44 5 8
+P 19 44 5 8
+
+-- Beak (orange)
+B 13 40 0 6 3 5 7
+B 14 42 0 4 2 3 7
+
+-- Left flipper (tapered, angled down)
+B 4 22 9 4 14 6 0
+B 2 28 9 3 10 6 0
+B 1 33 10 2 6 5 0
+
+-- Right flipper (tapered, angled down)
+B 24 22 9 4 14 6 0
+B 27 28 9 3 10 6 0
+B 29 33 10 2 6 5 0
+
+-- Tail (centered)
+B 13 4 18 6 6 4 0
+
+-- Legs
+B 11 1 10 4 4 4 0
+B 20 1 10 4 4 4 0
+
+-- Feet (orange)
+B 9 0 7 6 1 9 7
+B 20 0 7 6 1 9 7

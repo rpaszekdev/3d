@@ -1,0 +1,43 @@
+V 24 26 24
+
+-- wooden cross structure
+B 11 0 11 2 20 2 a
+B 4 13 11 16 2 2 a
+
+-- shirt torso
+B 9 7 10 6 7 4 1
+
+-- pants legs
+B 9 1 10 3 6 4 c
+B 13 1 10 3 6 4 c
+
+-- shirt sleeves
+B 4 12 10 5 3 4 1
+B 15 12 10 5 3 4 1
+
+-- straw hands
+B 4 12 10 2 3 2 6
+B 19 12 10 2 3 2 6
+
+-- straw feet
+B 9 0 10 3 2 4 6
+B 13 0 10 3 2 4 6
+
+-- straw collar
+B 10 14 10 4 2 4 6
+
+-- head
+S 12 20 12 3 d
+
+-- hat brim
+B 8 20 10 8 1 4 0
+
+-- hat crown
+B 10 21 11 4 4 2 0
+
+-- face eyes
+B 11 21 10 1 1 1 0
+B 13 21 10 1 1 1 0
+
+-- face mouth
+B 11 19 10 3 1 1 5

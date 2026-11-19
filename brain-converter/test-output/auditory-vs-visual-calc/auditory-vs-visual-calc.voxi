@@ -1,0 +1,61 @@
+V 46 53 63
+-- Language: auditory vs visual calculation
+-- Threshold: |t| >= 2.5
+-- 22 significant clusters
+
+-- REGION FUNCTIONS:
+--   L-cerebellum: motor coordination, timing
+--   L-SPL: visuospatial, reaching
+--   L-amygdala: emotion, threat detection, salience
+--   R-fusiform: face perception (FFA)
+--   ACC: conflict monitoring, error detection
+--   SMA: motor planning, sequencing
+--   R-premotor: motor preparation
+--   R-cerebellum: motor coordination, timing
+--   R-thalamus: sensory relay, attention gating
+--   L-DLPFC: working memory, executive control
+
+-- cluster-1: L-cerebellum, 1314 vox, peak t=-11.4, MNI (-30,-75,-6)
+E 16 15 12 10 7 9 4
+-- cluster-2: L-cerebellum, 1289 vox, peak t=-9.7, MNI (-27,-75,57)
+E 17 36 12 12 7 9 4
+-- cluster-3: L-SPL, 757 vox, peak t=12.1, MNI (-27,-15,84)
+E 17 45 32 5 5 9 5
+-- cluster-4: L-amygdala, 642 vox, peak t=9.6, MNI (-21,-18,-27)
+E 19 8 31 5 6 8 9
+-- cluster-5: unknown, 139 vox, peak t=-7.3, MNI (21,-51,57)
+E 33 36 20 4 4 3 8
+-- cluster-6: R-fusiform, 84 vox, peak t=-5.9, MNI (27,-51,-12)
+E 35 13 20 4 2 2 2
+-- cluster-7: ACC, 83 vox, peak t=-5.7, MNI (15,0,-24)
+E 31 9 37 4 2 3 3
+-- cluster-8: SMA, 61 vox, peak t=-5.5, MNI (0,12,75)
+E 26 42 41 2 3 2 3
+-- cluster-9: R-premotor, 58 vox, peak t=-5.2, MNI (24,0,57)
+E 34 36 37 3 2 2 3
+-- cluster-10: SMA, 43 vox, peak t=-5.1, MNI (18,3,81)
+E 32 44 38 3 2 2 3
+-- cluster-11: R-cerebellum, 26 vox, peak t=-3.5, MNI (24,-69,21)
+E 34 24 14 1 2 2 4
+-- cluster-12: ACC, 23 vox, peak t=-4.2, MNI (0,15,-15)
+E 26 12 42 1 2 3 3
+-- cluster-13: unknown, 17 vox, peak t=-3.2, MNI (-24,60,63)
+E 18 38 57 2 2 1 8
+-- cluster-14: unknown, 15 vox, peak t=-4.3, MNI (-9,-42,84)
+S 23 45 23 1 8
+-- cluster-15: R-thalamus, 14 vox, peak t=-4.1, MNI (18,-9,3)
+E 32 18 34 1 1 2 9
+-- cluster-16: unknown, 12 vox, peak t=-4.7, MNI (-9,-39,-36)
+S 23 5 24 1 8
+-- cluster-17: R-cerebellum, 12 vox, peak t=3.4, MNI (6,-51,15)
+E 28 22 20 1 2 1 4
+-- cluster-18: R-cerebellum, 12 vox, peak t=-3.1, MNI (6,-81,30)
+E 28 27 10 2 2 1 4
+-- cluster-19: SMA, 11 vox, peak t=3.6, MNI (-12,-9,63)
+E 22 38 34 2 1 1 3
+-- cluster-20: unknown, 11 vox, peak t=-3.9, MNI (-12,36,78)
+S 22 43 49 1 8
+-- cluster-21: L-DLPFC, 10 vox, peak t=3.1, MNI (-27,21,75)
+E 17 42 44 1 2 1 3
+-- cluster-22: unknown, 10 vox, peak t=-3.3, MNI (0,-12,90)
+S 26 47 33 1 8

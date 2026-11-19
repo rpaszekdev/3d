@@ -1,0 +1,148 @@
+V 50 8 38
+-- House Floor Plan
+-- Colors: 9=walls, 1=bedrooms, 8=bathrooms, 2=kitchen, 6=living/dining, 4=hallway/entry, 3=porch/balcony, 7=storage/utility
+
+-- ===================== FLOOR (y=0) =====================
+
+-- Exterior walls (thick, 2 voxels)
+B 0 1 0 50 6 2 9
+B 0 1 36 50 6 2 9
+B 0 1 0 2 6 38 9
+B 48 1 0 2 6 38 9
+
+-- ===================== ROOM FLOORS (y=0) =====================
+
+-- Bedroom 1 (left, large) — red
+B 2 0 10 13 1 18 1
+
+-- Walk-in Closet (top-left) — red
+B 2 0 30 7 1 6 1
+
+-- Bedroom 3 (top, left-center) — red
+B 9 0 30 7 1 6 1
+
+-- Bedroom 4 (top, center) — red
+B 16 0 30 8 1 6 1
+
+-- Hallway (center) — cyan
+B 15 0 19 9 1 11 4
+
+-- Bathroom 2 (center-bottom) — white
+B 15 0 10 9 1 9 8
+
+-- Entry (right of center) — cyan
+B 24 0 22 8 1 8 4
+
+-- Front Porch (top, right of center) — blue
+B 24 0 32 8 1 6 3
+
+-- Bathroom 1 (right) — white
+B 32 0 22 7 1 8 8
+
+-- Storage (top-right) — orange
+B 34 0 32 8 1 6 7
+
+-- Utilities (far top-right) — orange
+B 42 0 32 6 1 6 7
+
+-- Kitchen (right) — green
+B 39 0 22 9 1 10 2
+
+-- Dining Room (bottom-right, large) — yellow
+B 24 0 2 24 1 20 6
+
+-- Sitting Room (bottom-center) — yellow
+B 15 0 2 9 1 8 6
+
+-- Balcony (bottom-left) — blue
+B 2 0 2 13 1 8 3
+
+-- ===================== INTERIOR WALLS (y=1-6) =====================
+
+-- Horizontal walls (running along X)
+
+-- Top bedrooms south wall (z=30)
+B 2 1 29 22 6 1 9
+
+-- Hallway / bedroom divider (z=28, partial)
+B 9 1 28 15 5 1 9
+
+-- Hallway south wall (z=19)
+B 2 1 19 22 6 1 9
+
+-- Bathroom 2 south wall / Sitting Room north (z=10)
+B 2 1 10 46 6 1 9
+
+-- Entry area south wall (z=22)
+B 24 1 22 24 6 1 9
+
+-- Storage south wall (z=32)
+B 24 1 32 24 6 1 9
+
+-- Vertical walls (running along Z)
+
+-- Bedroom 1 east wall / Hallway west (x=15)
+B 15 1 10 1 6 20 9
+
+-- Walk-in closet east wall (x=9)
+B 9 1 29 1 6 8 9
+
+-- Bedrm 3/4 divider (x=16)
+B 16 1 29 1 6 8 9
+
+-- Hallway east / Entry west (x=24)
+B 24 1 19 1 6 13 9
+
+-- Entry east / Bathroom 1 west (x=32)
+B 32 1 22 1 6 10 9
+
+-- Bathroom 1 east / Kitchen west (x=39)
+B 39 1 22 1 6 10 9
+
+-- Storage/Utilities divider (x=42)
+B 42 1 32 1 6 6 9
+
+-- Kitchen east / Dining continuation (x=48, already outer wall)
+
+-- ===================== DOORWAYS (gaps in walls, y=1-3) =====================
+
+-- Bedroom 1 to Hallway (x=15, z=22)
+B 15 1 22 1 3 3 0
+
+-- Hallway to Bedroom 3 (z=29, x=11)
+B 11 1 29 3 3 1 0
+
+-- Hallway to Bedroom 4 (z=29, x=18)
+B 18 1 29 3 3 1 0
+
+-- Hallway to Bathroom 2 (z=19, x=18)
+B 18 1 19 3 3 1 0
+
+-- Hallway to Entry (x=24, z=25)
+B 24 1 25 1 3 3 0
+
+-- Entry to Dining Room (z=22, x=28)
+B 28 1 22 3 3 1 0
+
+-- Entry to Bathroom 1 (x=32, z=25)
+B 32 1 25 1 3 3 0
+
+-- Bathroom 1 to Kitchen (x=39, z=25)
+B 39 1 25 1 3 3 0
+
+-- Kitchen to Dining Room (z=22, x=42)
+B 42 1 22 3 3 1 0
+
+-- Bedroom 1 to Walk-in Closet (z=29, x=4)
+B 4 1 29 3 3 1 0
+
+-- Sitting Room to Dining Room (x=24... actually open plan)
+-- Sitting Room to Hallway (z=10, x=18)
+B 18 1 10 3 3 1 0
+
+-- Sitting Room to Balcony (z=10, x=8... no wall between them at bottom)
+-- Front door (Entry to Porch, z=32, x=27)
+B 27 1 32 3 3 1 0
+
+-- Dining to Sitting (open, clear wall section)
+B 24 1 10 1 3 8 0

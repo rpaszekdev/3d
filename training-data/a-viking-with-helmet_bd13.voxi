@@ -1,0 +1,53 @@
+V 24 24 24
+
+-- legs
+B 9 0 10 3 5 3 9
+B 13 0 10 3 5 3 9
+
+-- torso
+B 8 5 10 8 6 3 1
+
+-- chainmail/armor
+B 8 5 10 8 2 3 7
+B 9 10 10 6 1 3 7
+
+-- arms
+B 5 5 10 3 5 3 9
+B 16 5 10 3 5 3 9
+
+-- hands
+S 6 5 10 1 8
+S 18 5 10 1 8
+
+-- neck
+B 11 11 10 2 2 2 8
+
+-- head
+S 12 14 11 3 8
+
+-- beard
+B 10 11 10 4 2 2 d
+
+-- eyes
+S 11 15 8 1 0
+S 13 15 8 1 0
+
+-- helmet base
+B 9 16 9 6 2 4 9
+
+-- helmet top dome
+S 12 19 11 3 9
+
+-- helmet horns
+C 7 17 11 1 4 6
+C 17 17 11 1 4 6
+
+-- axe handle
+C 20 7 11 1 6 6
+
+-- axe blade
+B 20 11 10 2 4 1 9
+
+-- shield
+B 4 5 13 2 6 1 1
+B 4 6 13 2 4 1 8

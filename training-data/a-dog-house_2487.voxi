@@ -1,0 +1,46 @@
+V 24 20 24
+
+-- floor
+B 7 0 8 10 1 8 a
+
+-- back wall
+B 7 1 15 10 8 1 6
+
+-- left wall
+B 7 1 8 1 8 8 6
+
+-- right wall
+B 16 1 8 1 8 8 6
+
+-- front wall left of door
+B 7 1 8 3 8 1 6
+
+-- front wall right of door
+B 14 1 8 3 8 1 6
+
+-- front wall above door
+B 10 5 8 4 4 1 6
+
+-- door opening
+B 10 1 7 4 4 1 0
+
+-- front step
+B 10 0 6 4 1 2 9
+
+-- name sign
+B 10 7 7 4 1 1 d
+
+-- roof layer 1 overhang
+B 6 9 7 12 1 10 1
+
+-- roof layer 2
+B 7 10 8 10 1 8 1
+
+-- roof layer 3
+B 8 11 9 8 1 6 1
+
+-- roof layer 4
+B 9 12 10 6 1 4 1
+
+-- roof peak ridge
+B 10 13 11 4 1 2 e

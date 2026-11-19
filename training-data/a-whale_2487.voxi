@@ -1,0 +1,36 @@
+V 32 32 32
+
+-- body
+E 16 12 16 12 7 8 3
+
+-- head
+E 10 12 16 5 6 7 3
+
+-- tail stock
+E 24 10 16 4 4 5 d
+
+-- tail flukes left
+B 26 12 14 4 2 3 d
+B 26 12 17 4 2 3 d
+
+-- belly
+E 16 8 16 10 4 7 8
+
+-- pectoral fin left
+B 14 8 12 2 1 5 d
+-- pectoral fin right
+B 14 8 18 2 1 5 d
+
+-- dorsal fin
+B 18 17 15 2 4 2 d
+
+-- eye left
+S 11 14 13 1 0
+-- eye right
+S 11 14 19 1 0
+
+-- mouth line
+B 7 10 14 3 1 4 0
+
+-- blowhole
+S 13 18 16 1 9

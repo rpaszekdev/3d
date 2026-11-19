@@ -1,0 +1,36 @@
+V 32 32 32
+
+-- Fins/flippers
+B 10 0 13 12 2 6 0
+
+-- Legs (wetsuit)
+B 13 2 15 3 6 2 0
+B 17 2 15 3 6 2 0
+
+-- Torso (blue wetsuit)
+B 12 8 14 8 8 4 3
+
+-- Scuba tank (back)
+B 14 9 18 4 6 2 9
+
+-- Arms
+B 6 12 15 6 3 2 3
+B 21 12 15 6 3 2 3
+
+-- Gloves
+B 5 12 15 2 3 2 8
+B 24 12 15 2 3 2 8
+
+-- Head with hood
+S 16 20 16 3 0
+
+-- Dive mask visor
+B 13 19 13 5 3 2 4
+
+-- Air hose
+B 15 17 13 3 2 1 9
+
+-- Bubbles rising
+S 17 25 14 1 8
+S 16 27 13 1 8
+S 18 29 14 1 8

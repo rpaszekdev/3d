@@ -1,0 +1,23 @@
+V 32 18 32
+
+-- snow ground
+B 0 0 0 32 2 32 8
+
+-- main igloo dome (white hemisphere)
+S 16 2 18 8 8
+
+-- snow brick seams (gray horizontal lines)
+B 8 4 13 16 1 1 9
+B 8 6 13 16 1 1 9
+
+-- entrance tunnel outer
+B 13 0 9 6 6 9 8
+
+-- entrance tunnel hollow (dark interior)
+B 14 2 9 4 4 9 0
+
+-- warm glow at entrance junction
+B 15 2 17 2 3 1 7
+
+-- ventilation hole at apex
+S 16 10 18 1 0

@@ -1,0 +1,46 @@
+V 32 32 32
+-- orange feet
+B 9 0 13 5 2 6 7
+B 18 0 13 5 2 6 7
+-- navy legs
+B 10 2 14 5 5 4 f
+B 19 2 14 5 5 4 f
+-- main body navy (tuxedo back)
+B 7 7 12 18 18 10 f
+-- white belly patch
+B 11 8 11 10 14 3 8
+-- left wing navy
+B 5 6 13 5 14 4 f
+-- right wing navy
+B 22 6 13 5 14 4 f
+-- wing tips slightly rounded
+B 5 5 14 5 3 3 f
+B 22 5 14 5 3 3 f
+-- neck
+B 12 24 12 8 4 8 f
+-- head sphere navy
+S 16 30 15 6 f
+-- white face patch
+B 12 27 12 8 6 4 8
+-- upper beak orange
+B 13 30 9 6 2 5 7
+-- lower beak orange
+B 13 28 9 6 2 5 7
+-- beak tip
+B 14 27 8 4 2 4 7
+-- left eye dark
+P 13 31 12 0
+P 12 31 12 0
+-- left eye shine
+P 12 32 12 8
+-- right eye dark
+P 19 31 12 0
+P 20 31 12 0
+-- right eye shine
+P 20 32 12 8
+-- head crest/tuft
+B 14 35 14 6 2 4 f
+-- white chest upper
+B 11 22 11 10 3 3 8
+-- belly lower taper
+B 12 7 11 8 3 3 8

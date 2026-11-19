@@ -1,0 +1,65 @@
+V 32 40 32
+
+-- boots
+B 12 0 13 4 4 4 0
+B 17 0 13 4 4 4 0
+
+-- greaves (lower leg armor)
+B 13 4 13 3 6 4 9
+B 17 4 13 3 6 4 9
+
+-- knee cops
+S 14 10 15 2 9
+S 18 10 15 2 9
+
+-- cuisses (thigh armor)
+B 12 11 13 4 5 4 9
+B 17 11 13 4 5 4 9
+
+-- tassets (hip plates)
+B 11 15 13 10 3 5 9
+
+-- breastplate
+B 11 18 12 10 9 6 9
+
+-- breastplate trim
+B 12 19 11 8 6 1 8
+
+-- right pauldron
+B 8 24 13 5 3 5 9
+
+-- left pauldron
+B 19 24 13 5 3 5 9
+
+-- right upper arm
+B 9 18 13 4 6 4 9
+
+-- left upper arm
+B 19 18 13 4 6 4 9
+
+-- right vambrace
+B 10 13 13 3 5 4 9
+
+-- left vambrace
+B 19 13 13 3 5 4 9
+
+-- gorget (neck)
+C 16 27 15 2 2 9
+
+-- great helm
+E 16 32 15 5 6 5 9
+
+-- visor slit
+B 13 30 10 6 2 1 7
+
+-- helm plume
+B 15 37 14 2 3 2 1
+
+-- sword blade
+B 24 3 15 1 14 1 8
+
+-- sword crossguard
+B 22 16 15 4 1 1 6
+
+-- shield
+B 7 14 12 2 9 7 3

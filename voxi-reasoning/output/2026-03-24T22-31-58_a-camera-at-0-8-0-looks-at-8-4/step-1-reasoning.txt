@@ -1,0 +1,85 @@
+## Spatial Reasoning: Camera Visibility Problem
+
+Let me work through this step by step before sketching.
+
+**Camera vector analysis:**
+- Camera: `(0,8,0)` → Look-at: `(8,4,8)`
+- Direction: `(8, -4, 8)` — camera is looking **right (+X), down (-Y), and deep (+Z)**
+- Camera is above-left-front relative to the cube
+
+**Cube bounds:** 4×4×4 at `(6,1,6)` → spans `X:[6,10], Y:[1,5], Z:[6,10]`
+
+**Relative position of camera to cube center `(8,3,8)`:**
+- Camera offset: `(-8, +5, -8)` — camera is to the LEFT, ABOVE, and IN FRONT
+
+**Therefore, visible faces:**
+1. **Left face** (X=6, facing −X toward camera)
+2. **Top face** (Y=5, facing +Y toward camera which is above)
+3. **Front face** (Z=6, facing −Z toward camera which is in front)
+
+**Ray intersection check:** Parametric ray `(8t, 8−4t, 8t)`:
+- Hits `X=6` at `t=0.75` → Y=5, Z=6 → the **top-left-front corner** of the cube!
+- So the look-at point `(8,4,8)` is **inside the cube** — the cube is dead center of view.
+
+**Floor occlusion analysis:**
+For floor point `(fx, 0, fz)`, ray is blocked if any `t ∈ [3/8, 7/8]` (Y constraint for cube) gives `6 ≤ t·fx ≤ 10` AND `6 ≤ t·fz ≤ 10`:
+- Minimum floor X/Z that gets occluded: `6/(7/8) ≈ 6.86` → integer 7
+- Maximum: `10/(3/8) ≈ 26.7` → beyond grid
+- **Occluded floor region: roughly X:[7,12], Z:[7,12]** (extended shadow behind cube)
+
+Now let me sketch this:
+
+```voxi
+V 16 16 16
+
+-- === BASE FLOOR: gray ===
+B 0 0 0 16 1 16 9
+
+-- === ORANGE CUBE 4x4x4 at (6,1,6) ===
+-- Spans X:[6,10], Y:[1,5], Z:[6,10]
+B 6 1 6 4 4 4 7
+
+-- === VISIBLE FACES (highlighted) ===
+
+-- LEFT FACE (X=6 plane): camera is at X=0, left of cube → faces camera → RED
+B 6 1 6 1 4 4 1
+
+-- TOP FACE (Y=5 plane): camera is at Y=8, above cube top Y=5 → looks down → GREEN
+B 6 5 6 4 1 4 2
+
+-- FRONT FACE (Z=6 plane): camera is at Z=0, in front of cube Z=6 → faces camera → MAGENTA
+B 6 1 6 4 4 1 5
+
+-- === CAMERA POSITION at (0,8,0) ===
+-- Yellow sphere, radius 1 — at front-left, mid-high
+S 0 8 0 1 6
+
+-- === LINE OF SIGHT: (0,8,0) → (8,4,8) ===
+-- t=0.25: (2,7,2), t=0.5: (4,6,4), t=0.75: (6,5,6) hits cube corner!
+P 2 7 2 4
+P 4 6 4 4
+P 6 5 6 4
+
+-- === OCCLUDED FLOOR REGIONS (blue=3, camera cannot see these) ===
+
+-- Floor directly under cube: X:[6,10], Z:[6,10] at Y=0
+B 6 0 6 4 1 4 3
+
+-- Extended shadow: cube blocks view of floor BEHIND and to the RIGHT
+-- Camera shadow extends: X:[10,12], Z:[6,12]
+B 10 0 6 2 1 6 3
+-- and: X:[6,12], Z:[10,12]
+B 6 0 10 6 1 2 3
+```
+
+CHECK
+
+`★ Insight ─────────────────────────────────────`
+The look-at direction ray at `t=0.75` hits exactly `(6,5,6)` — the top-left-front corner of the cube. This is why all THREE visible faces meet at that corner: it's the most "camera-facing" vertex of the cube. This is a key geometric property: the number of visible faces equals the number of coordinate axes along which the camera is offset from the cube.
+
+The floor shadow extends further than the cube's footprint because the camera is elevated — rays from a high camera project a larger shadow. A camera at the same Y as the cube would see zero top face and infinite floor shadow behind it.
+`─────────────────────────────────────────────────`
+
+`💡 Skill Tip ──────────────────────────────────`
+Next time, try `/plan` — for multi-face visibility + occlusion problems, it's worth pre-planning the ray math before sketching to ensure the VOXI visualization encodes the right answer.
+`─────────────────────────────────────────────────`

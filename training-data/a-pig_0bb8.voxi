@@ -1,0 +1,43 @@
+V 24 20 24
+
+-- body
+E 12 7 15 5 4 6 b
+
+-- head
+S 12 9 6 4 b
+
+-- snout
+E 12 7 4 2 2 1 d
+
+-- left nostril
+B 11 7 3 1 1 1 9
+
+-- right nostril
+B 13 7 3 1 1 1 9
+
+-- left eye
+S 10 11 5 1 0
+
+-- right eye
+S 14 11 5 1 0
+
+-- left ear
+B 9 12 5 2 3 1 5
+
+-- right ear
+B 13 12 5 2 3 1 5
+
+-- front left leg
+C 9 3 11 1 6 b
+
+-- front right leg
+C 15 3 11 1 6 b
+
+-- back left leg
+C 9 3 17 1 6 b
+
+-- back right leg
+C 15 3 17 1 6 b
+
+-- tail
+S 13 11 21 1 b

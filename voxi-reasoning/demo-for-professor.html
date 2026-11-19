@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mind's Eye — How LLMs See in 3D</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: #0d1117; color: #e6edf3; line-height: 1.7; }
+
+  .slide { min-height: 100vh; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid #21262d; }
+  .slide.hero { align-items: center; text-align: center; }
+
+  h1 { font-size: 3em; margin-bottom: 20px; color: #fff; }
+  h2 { font-size: 2em; margin-bottom: 30px; color: #58a6ff; }
+  h3 { font-size: 1.4em; margin: 20px 0 10px; color: #79c0ff; }
+  p, li { font-size: 1.15em; max-width: 900px; }
+  p { margin-bottom: 16px; }
+  ul { margin: 10px 0 20px 30px; }
+  li { margin-bottom: 8px; }
+  em { color: #ff7b72; font-style: normal; font-weight: bold; }
+  strong { color: #ffa657; }
+
+  .subtitle { font-size: 1.4em; color: #8b949e; margin-bottom: 40px; }
+  .big-number { font-size: 5em; color: #58a6ff; font-weight: bold; line-height: 1; }
+  .stat-label { font-size: 1.2em; color: #8b949e; }
+
+  pre {
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+    padding: 20px; margin: 20px 0; overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85em;
+    line-height: 1.5; color: #c9d1d9;
+  }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; background: #161b22; padding: 2px 6px; border-radius: 4px; color: #79c0ff; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; }
+
+  .card {
+    background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+    padding: 30px; margin: 10px 0;
+  }
+  .card h3 { margin-top: 0; }
+
+  .highlight-box {
+    background: #0d1f3c; border-left: 4px solid #58a6ff;
+    padding: 20px 24px; margin: 20px 0; border-radius: 0 8px 8px 0;
+  }
+
+  .result-good { color: #3fb950; font-weight: bold; }
+  .result-bad { color: #f85149; }
+
+  .flow-diagram {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin: 30px 0; font-size: 1.1em; flex-wrap: wrap;
+  }
+  .flow-box {
+    background: #161b22; border: 2px solid #58a6ff; border-radius: 12px;
+    padding: 16px 24px; text-align: center; min-width: 140px;
+  }
+  .flow-box.brain { border-color: #d2a8ff; }
+  .flow-box.sketch { border-color: #79c0ff; }
+  .flow-box.eye { border-color: #ffa657; }
+  .flow-arrow { color: #484f58; font-size: 1.8em; }
+
+  table { border-collapse: collapse; margin: 20px 0; width: 100%; max-width: 800px; }
+  th, td { padding: 12px 20px; text-align: left; border-bottom: 1px solid #21262d; }
+  th { color: #58a6ff; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+
+  .depth-demo {
+    font-family: 'SF Mono', monospace; font-size: 0.9em; line-height: 1.3;
+    letter-spacing: 2px;
+  }
+
+  .nav {
+    position: fixed; bottom: 20px; right: 20px; z-index: 100;
+    display: flex; gap: 10px;
+  }
+  .nav a {
+    background: #21262d; color: #58a6ff; border: 1px solid #30363d;
+    padding: 8px 16px; border-radius: 6px; text-decoration: none;
+    font-size: 0.9em;
+  }
+  .nav a:hover { background: #30363d; }
+
+  .annotation { color: #7ee787; font-style: italic; }
+
+  @media (max-width: 900px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .slide { padding: 40px 30px; }
+    h1 { font-size: 2em; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 1: TITLE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide hero" id="s1">
+  <h1>Mind's Eye</h1>
+  <p class="subtitle">Giving LLMs the ability to see in 3D — using only text</p>
+  <p style="color:#8b949e; margin-top: 40px;">Robert Paszek — Spatial Reasoning DSL Research</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 2: THE PROBLEM -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <h2>The Problem: AI Can't Think in 3D</h2>
+
+  <table>
+    <tr><th>Spatial Task</th><th>Humans</th><th>Best AI</th><th>Benchmark</th></tr>
+    <tr><td>Mental rotation</td><td>Trivial</td><td class="result-bad">Random chance</td><td>Mind the Gap</td></tr>
+    <tr><td>Perspective-taking</td><td>Intuitive</td><td class="result-bad">27.5%</td><td>GPT-4o</td></tr>
+    <tr><td>Multi-hop spatial</td><td>High</td><td class="result-bad">Consistently low</td><td>SpartQA</td></tr>
+    <tr><td>Abstract rule induction</td><td>60–98%</td><td class="result-bad">0–37%</td><td>ARC-AGI-2</td></tr>
+  </table>
+
+  <div class="highlight-box">
+    <p><strong>The gap is enormous.</strong> AI models that can write poetry and prove theorems
+    perform at <em>random chance</em> on tasks a child can do — like mentally rotating an object
+    or answering "what's to the left of the blue box?"</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 3: THE INSIGHT -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <h2>The Insight</h2>
+
+  <p>LLMs are <em>text machines</em>. They can't see images. But they're extremely good at reading structured data — tables, code, matrices.</p>
+
+  <div class="highlight-box">
+    <p><strong>What if we translated 3D scenes into structured text?</strong></p>
+    <p>Instead of giving AI vision, we give it a <em>text-based camera</em> that converts
+    3D geometry into grids of numbers it can already understand.</p>
+  </div>
+
+  <p>This is the Mind's Eye — a system where an LLM:</p>
+  <ul>
+    <li><strong>Writes</strong> 3D scenes in a simple voxel language (VOXI)</li>
+    <li><strong>Sees</strong> them rendered as ASCII depth maps (numbers 0–9)</li>
+    <li><strong>Verifies</strong> its spatial reasoning by inspecting the renders</li>
+    <li><strong>Revises</strong> and iterates until confident</li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 4: THE LOOP -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <h2>The Reasoning Loop</h2>
+
+  <div class="flow-diagram">
+    <div class="flow-box brain">
+      <strong>BRAIN</strong><br>
+      <span style="font-size:0.85em; color:#8b949e">LLM writes VOXI code</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box sketch">
+      <strong>SKETCH</strong><br>
+      <span style="font-size:0.85em; color:#8b949e">3D voxel grid</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box eye">
+      <strong>EYE</strong><br>
+      <span style="font-size:0.85em; color:#8b949e">Raycast → ASCII</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box brain">
+      <strong>VERIFY</strong><br>
+      <span style="font-size:0.85em; color:#8b949e">Check & revise</span>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top: 30px;">
+    <div class="card">
+      <h3>Step 1: LLM writes a scene</h3>
+<pre style="margin:0">V 16 16 16
+-- A house
+B 4 0 4 8 6 8 7   -- walls (orange)
+B 3 6 3 10 1 10 1  -- roof (red)
+B 6 0 4 2 3 1 a   -- door (brown)
+B 9 3 4 1 1 1 4   -- window (cyan)
+B 0 0 0 16 1 16 2  -- grass (green)</pre>
+    </div>
+    <div class="card">
+      <h3>Step 2: Mind's Eye renders it</h3>
+<pre style="margin:0" class="depth-demo">FRONT (→X, ↑Y)
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . . . . . . . . . . . . . .
+. . . 2 2 2 2 2 2 2 2 2 2 . . .
+. . . . 3 3 3 3 3 3 3 3 . . . .  <span class="annotation">← roof</span>
+. . . . 3 3 3 3 4 3 3 3 . . . .  <span class="annotation">← window (4=deeper)</span>
+. . . . 3 3 3 3 3 3 3 3 . . . .
+. . . . 3 3 3 3 3 3 3 3 . . . .
+. . . . 3 3 5 5 3 3 3 3 . . . .  <span class="annotation">← door (5=recessed)</span>
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0  <span class="annotation">← ground (0=closest)</span></pre>
+    </div>
+  </div>
+
+  <p style="margin-top: 20px;">The numbers <strong>are depth</strong>. <code>0</code> = right at the camera. <code>9</code> = far away. <code>.</code> = empty air.
+  The LLM reads these numbers and understands where everything is in 3D space.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 5: HOW DEPTH WORKS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <h2>How Depth Numbers Work</h2>
+
+  <div class="two-col">
+    <div>
+      <h3>A sphere seen from the front</h3>
+<pre class="depth-demo">
+ . . . . . . . . . . . . . . . .
+ . . . . . . . . 5 . . . . . . .
+ . . . . . 4 4 3 3 3 4 4 . . . .
+ . . . . 4 3 2 2 2 2 2 3 4 . . .
+ . . . 4 3 2 2 2 2 2 2 2 3 4 . .
+ . . . 3 2 2 2 2 2 2 2 2 2 3 . .
+ . . 5 3 2 2 2 2 <span style="color:#3fb950;font-weight:bold">1</span> 2 2 2 2 3 5 .
+ . . . 3 2 2 2 2 2 2 2 2 2 3 . .
+ . . . 4 3 2 2 2 2 2 2 2 3 4 . .
+ . . . . 4 3 2 2 2 2 2 3 4 . . .
+ . . . . . 4 4 3 3 3 4 4 . . . .
+ . . . . . . . . 5 . . . . . . .
+</pre>
+    </div>
+    <div>
+      <h3>What the numbers mean</h3>
+      <div style="margin: 20px 0;">
+<pre style="font-size: 1em; line-height: 2;">
+Camera  ──────────────→  Scene
+
+  ║
+  ║ center ray ─── <span style="color:#3fb950">1</span> ───→ ● hits nose
+  ║
+  ║ mid ray ────── 3 ───────→ ● hits middle
+  ║
+  ║ edge ray ──── 5 ──────────→ ● barely grazes
+  ║
+  ║ miss ray ──── . ─────────────→   (nothing)
+  ║
+</pre>
+      </div>
+      <p><span style="color:#3fb950; font-weight:bold;">1</span> at the center = closest point (the "nose").<br>
+      Numbers increase toward the edges as the surface curves <strong>away</strong> from the camera.</p>
+      <p style="margin-top:16px;">Same object, different angle = <em>different depth map</em>. That's how you get 3D understanding from 2D views.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 6: CAMERA COMMANDS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <h2>Camera Commands — How the LLM Explores</h2>
+
+  <div class="three-col">
+    <div class="card">
+      <h3>LOOK</h3>
+      <p>View from any of 6 directions:<br>front, back, left, right, top, bottom</p>
+      <p style="color:#8b949e; font-size:0.9em;">Like walking around a sculpture</p>
+    </div>
+    <div class="card">
+      <h3>ZOOM</h3>
+      <p>Crop to a spherical region around a point, with 3 orthogonal views</p>
+      <p style="color:#8b949e; font-size:0.9em;">Like leaning in to inspect a detail</p>
+    </div>
+    <div class="card">
+      <h3>SLICE</h3>
+      <p>Cut through the scene at any plane, showing <em>actual colors</em></p>
+      <p style="color:#8b949e; font-size:0.9em;">Like an MRI scan — reveals internals</p>
+    </div>
+    <div class="card">
+      <h3>WHAT</h3>
+      <p>Click a pixel → get 3D coordinate, color, depth, and which source line made it</p>
+      <p style="color:#8b949e; font-size:0.9em;">Traces a ray back to source code</p>
+    </div>
+    <div class="card">
+      <h3>WIDE</h3>
+      <p>All 6 views at once, arranged like an unfolded cube</p>
+      <p style="color:#8b949e; font-size:0.9em;">Complete overview in one shot</p>
+    </div>
+    <div class="card">
+      <h3>PAINT / ERASE</h3>
+      <p>Edit voxels through the camera view — place or remove material</p>
+      <p style="color:#8b949e; font-size:0.9em;">Direct manipulation through text</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 7: RESULTS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <h2>Benchmark Results</h2>
+
+  <div class="three-col" style="text-align:center; margin-bottom: 40px;">
+    <div class="card">
+      <div class="big-number">+30%</div>
+      <div class="stat-label">SpartQA spatial reasoning<br>(Sonnet: 60% → 90%)</div>
+    </div>
+    <div class="card">
+      <div class="big-number">+40%</div>
+      <div class="stat-label">Real video understanding<br>(CATER: 40% → 80%)</div>
+    </div>
+    <div class="card">
+      <div class="big-number">100%</div>
+      <div class="stat-label">Temporal-spatial tasks<br>(10/10 with tool)</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>Test</th><th>Without Mind's Eye</th><th>With Mind's Eye</th><th>Improvement</th></tr>
+    <tr>
+      <td>SpartQA (Sonnet)</td>
+      <td>60%</td>
+      <td class="result-good">90%</td>
+      <td class="result-good">+30 points</td>
+    </tr>
+    <tr>
+      <td>Real Video (CATER)</td>
+      <td>40%</td>
+      <td class="result-good">80%</td>
+      <td class="result-good">+40 points</td>
+    </tr>
+    <tr>
+      <td>Temporal-Spatial (animated)</td>
+      <td>90%</td>
+      <td class="result-good">100%</td>
+      <td class="result-good">+10 points</td>
+    </tr>
+    <tr>
+      <td>SpartQA (Haiku — weaker model)</td>
+      <td>75%</td>
+      <td class="result-bad">65%</td>
+      <td class="result-bad">−10 points</td>
+    </tr>
+  </table>
+
+  <div class="highlight-box">
+    <p><strong>Key finding:</strong> The Mind's Eye is a <em>cognitive amplifier</em> — it helps capable models
+    significantly (+30–40%) but can hurt weaker ones (−10%). The model needs enough capability
+    to translate between text and VOXI correctly.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 8: WHAT'S NOVEL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <h2>What Makes This Different</h2>
+
+  <table>
+    <tr><th>Existing System</th><th>Their Approach</th><th>Our Approach</th></tr>
+    <tr><td>SpatialVLA</td><td>Embed depth as features in vision model</td><td>Skip vision entirely — LLM reads numbers</td></tr>
+    <tr><td>VoxPoser (Stanford)</td><td>LLM generates voxel grids for robots</td><td>Convert scenes INTO text for perception</td></tr>
+    <tr><td>3D-GPT</td><td>LLM writes Blender scripts</td><td>Bidirectional: write AND read back</td></tr>
+    <tr><td>RT-2</td><td>Tokenize actions as numbers</td><td>Tokenize perception as numbers</td></tr>
+  </table>
+
+  <div class="highlight-box">
+    <p><strong>Nobody else does the closed loop:</strong></p>
+    <p style="font-size:1.3em; text-align:center; margin: 10px 0;">
+      Scene → depth text → LLM reads → LLM reasons → LLM acts → verify → repeat
+    </p>
+    <p>The research community (VoxPoser paper, 2023) recommends this architecture as theory.
+    <em>We built it.</em></p>
+  </div>
+
+  <h3 style="margin-top: 30px;">Four unique contributions:</h3>
+  <ul>
+    <li><strong>Text-based 3D perception</strong> — depth matrices as text, no vision model needed</li>
+    <li><strong>LLM-controlled camera</strong> — ZOOM, SLICE, WHAT: bidirectional inspection loop</li>
+    <li><strong>Source tracing</strong> — WHAT command bridges pixel → 3D coord → source line of code</li>
+    <li><strong>No GPU constraint</strong> — entire system runs as pure text processing</li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 9: LIVE DEMO INSTRUCTIONS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <h2>Live Demo</h2>
+
+  <p>Run these in the terminal to show the system working:</p>
+
+  <div class="card">
+    <h3>1. Create a scene and see it from the front</h3>
+<pre>echo "LOOK front" | node minds-eye.js --code "V 16 16 16
+S 8 8 8 6 7"</pre>
+    <p style="color:#8b949e;">Shows an orange sphere with depth gradient — 1 at center, 5 at edges</p>
+  </div>
+
+  <div class="card">
+    <h3>2. Slice through it like an MRI</h3>
+<pre>echo "SLICE y=8" | node minds-eye.js --code "V 16 16 16
+S 8 8 8 6 7"</pre>
+    <p style="color:#8b949e;">Shows a circular cross-section — all 7s (orange), proving it's solid</p>
+  </div>
+
+  <div class="card">
+    <h3>3. Click a pixel to trace it back to source code</h3>
+<pre>echo "WHAT front 8 7" | node minds-eye.js --code "V 16 16 16
+S 8 8 8 6 7"</pre>
+    <p style="color:#8b949e;">Reports: 3D position (8,8,2), color orange, depth 2, created by line "S 8 8 8 6 7"</p>
+  </div>
+
+  <div class="card">
+    <h3>4. Open the 3D renderer</h3>
+<pre>cd voxi-reasoning && node render-service.js &
+open http://localhost:3334</pre>
+    <p style="color:#8b949e;">Full 3D WebGL view you can rotate with the mouse</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10: SUMMARY -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="slide hero" id="s10">
+  <h2 style="color:#fff;">Summary</h2>
+  <div style="max-width:700px; text-align:left; margin: 0 auto;">
+    <p><strong>Problem:</strong> LLMs fail at spatial reasoning (random chance on rotation tasks)</p>
+    <p><strong>Solution:</strong> Give them a text-based 3D camera — the Mind's Eye</p>
+    <p><strong>How:</strong> VOXI DSL → voxel grid → ASCII depth maps → LLM reads numbers</p>
+    <p><strong>Result:</strong> +30% on language-based spatial tasks, +40% on real video</p>
+    <p><strong>Novel:</strong> No vision model needed — the entire loop is text in, text out</p>
+  </div>
+  <p style="margin-top:60px; color:#484f58;">Built with VOXI — a voxel description language for spatial reasoning</p>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a><a href="#s4">4</a><a href="#s5">5</a>
+  <a href="#s6">6</a><a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a><a href="#s10">10</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+`★ Insight ─────────────────────────────────────`
+This is a classic **color-background collision** bug in voxel art. The renderer uses `#13151f` (near-black dark navy) as its background, so any voxels using color `0` (black) or `f` (navy) will be nearly or completely invisible — they literally blend into the void. This is why the entire penguin disappears: a real penguin's black body is the **worst possible** color choice for this renderer.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+STRENGTHS: The VOXI code shows solid structural thinking — separate feet, legs, and presumably a body/head layered in the correct Y-axis stack. The orange feet (color `7`) are a correct detail choice and *would* show up if the body were visible. The overall architecture of the penguin model is likely reasonable.
+
+ISSUES:
+- **Complete invisibility — body uses color `0` (black) or `f` (navy)**: Every single view is a blank black canvas. The penguin's primary body color blends entirely into the `#13151f` dark background. Replace the main body with `9` (gray) as a stand-in test, then use `f` only for small accent pieces on a lighter-bodied model. For example, change `B 11 2 12 4 6 5 f` to `B 11 2 12 4 6 5 9` to make legs visible.
+- **White belly is missing or also invisible**: A classic penguin requires a white (`8`) front panel — e.g. `B 13 4 10 6 10 3 8` — to create the iconic tuxedo contrast. Without it, even a visible dark body reads as a generic blob, not a penguin.
+- **Head/body likely uses black (color `0`)**: The VOXI session summary is cut off, but the full invisibility across all 6 angles suggests the torso and head use `0`. Replace with `9` (gray) for dark parts: e.g. `S 16 20 12 5 9` for a gray head sphere, then overlay `8` (white) face details on top.
+
+PRIORITY_FIX: **Replace all black (`0`) and navy (`f`) body/torso/head colors with `9` (gray) immediately.** This single change will make the entire model visible and jump the score from 1 to 5+ in one iteration. Penguins in voxel art need a *dark gray* body (`9`) rather than true black, reserving `f`/`0` only for tiny accent details — or avoid them entirely against this renderer's dark background.

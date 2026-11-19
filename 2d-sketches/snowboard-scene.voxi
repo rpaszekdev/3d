@@ -1,0 +1,173 @@
+V 96 56 64
+-- ═══════════════════════════════════════════════
+-- ALPINE SNOWBOARD — Voxel Art Scene
+-- 96 wide × 56 tall × 64 deep
+-- ═══════════════════════════════════════════════
+
+-- ▸ SKY — gradient from navy to blue
+B 0 40 0 96 16 64 f
+B 0 44 0 96 12 64 3
+
+-- ▸ BASE SNOW FIELD — white ground plane
+B 0 0 0 96 8 64 8
+-- Snow shadows (subtle cyan tint on surface)
+B 10 8 10 30 1 20 4
+B 50 8 30 25 1 15 4
+B 70 8 5 20 1 25 4
+
+-- ═══════════════════════════════════════════════
+-- MOUNTAIN 1 — Main peak (left-center, tallest)
+-- ═══════════════════════════════════════════════
+-- Rock base
+K 30 8 32 18 30 9
+-- Snow cap
+K 30 22 32 12 20 8
+-- Summit snow
+K 30 30 32 6 12 8
+-- Exposed rock face (south side)
+B 22 12 28 6 14 2 a
+B 24 18 29 4 10 2 9
+-- Ice/shadow on north face
+B 32 14 34 5 12 2 4
+B 34 18 35 3 8 2 4
+
+-- ═══════════════════════════════════════════════
+-- MOUNTAIN 2 — Right peak (shorter, wider)
+-- ═══════════════════════════════════════════════
+K 65 8 40 16 24 9
+K 65 16 40 11 18 8
+K 65 24 40 5 10 8
+-- Rock bands
+B 58 10 37 5 10 2 a
+B 60 14 38 4 8 2 9
+-- North shadow
+B 70 12 42 4 10 2 4
+
+-- ═══════════════════════════════════════════════
+-- MOUNTAIN 3 — Far background peak (subtle, distant)
+-- ═══════════════════════════════════════════════
+K 48 8 55 14 20 9
+K 48 16 55 9 14 8
+K 48 24 55 4 8 8
+-- Atmospheric haze (lighter gray = distance)
+B 40 8 53 20 16 2 9
+
+-- ═══════════════════════════════════════════════
+-- MOUNTAIN 4 — Small ridge (far left)
+-- ═══════════════════════════════════════════════
+K 10 8 45 10 16 9
+K 10 14 45 7 12 8
+K 10 20 45 3 6 8
+
+-- ═══════════════════════════════════════════════
+-- MOUNTAIN 5 — Foreground ridge (close, dark)
+-- ═══════════════════════════════════════════════
+K 80 8 15 12 14 a
+K 80 12 15 8 10 9
+K 80 16 15 4 6 8
+
+-- ═══════════════════════════════════════════════
+-- PINE TREES — scattered on lower slopes
+-- ═══════════════════════════════════════════════
+
+-- Tree group 1 (left foreground)
+G tree
+K 0 0 0 2 6 c
+B 0 0 0 1 2 1 a
+/G
+@ tree 8 8 8
+@ tree 12 8 6
+@ tree 6 8 10
+@ tree 14 8 12
+@ tree 10 8 14
+@ tree 16 8 9
+
+-- Tree group 2 (right side)
+@ tree 75 8 10
+@ tree 78 8 8
+@ tree 72 8 12
+@ tree 80 8 14
+@ tree 76 8 16
+
+-- Tree group 3 (mid-ground)
+@ tree 40 8 20
+@ tree 44 8 18
+@ tree 42 8 22
+@ tree 38 8 24
+
+-- Single trees (scattered)
+@ tree 55 8 12
+@ tree 20 8 20
+@ tree 60 8 22
+@ tree 25 8 16
+
+-- ═══════════════════════════════════════════════
+-- SNOWBOARDER — center foreground, in action pose
+-- ═══════════════════════════════════════════════
+
+-- Board (angled, orange for visibility)
+B 46 8 6 5 1 1 7
+B 45 9 6 1 1 1 0
+
+-- Legs (black pants)
+B 47 9 6 1 2 1 0
+B 49 9 6 1 2 1 0
+
+-- Body/torso (red jacket)
+B 47 11 6 3 3 1 1
+
+-- Arms (spread for balance)
+B 45 12 6 2 1 1 1
+B 50 13 6 2 1 1 1
+
+-- Head (skin + helmet)
+B 48 14 6 1 2 1 0
+P 48 15 6 d
+
+-- Goggles
+P 48 15 5 6
+
+-- Snow spray behind boarder
+P 44 9 7 8
+P 43 9 8 8
+P 43 10 7 8
+P 42 9 7 4
+P 42 10 8 4
+P 44 10 8 8
+
+-- ═══════════════════════════════════════════════
+-- SNOW PARTICLES — falling flakes (scattered)
+-- ═══════════════════════════════════════════════
+P 15 35 10 8
+P 30 42 20 8
+P 50 38 30 8
+P 70 44 15 8
+P 25 30 40 8
+P 60 36 50 8
+P 85 40 25 8
+P 40 46 35 8
+P 10 48 45 8
+P 55 32 55 8
+P 75 34 8 8
+P 20 50 30 8
+P 45 43 42 8
+P 90 38 18 8
+P 35 45 52 8
+P 65 41 38 8
+P 5 37 22 8
+P 80 47 48 8
+P 50 50 12 8
+P 28 33 58 8
+
+-- ═══════════════════════════════════════════════
+-- POWDER SNOW DRIFTS — foreground detail
+-- ═══════════════════════════════════════════════
+D 0 7 0 20 4 12 8
+D 30 7 2 15 3 10 8
+D 55 7 0 18 3 8 8
+D 80 7 3 16 4 10 8
+
+-- Wind-blown snow ridges
+B 0 8 0 96 1 3 4
+B 20 9 1 10 1 2 8
+B 60 9 2 12 1 2 8

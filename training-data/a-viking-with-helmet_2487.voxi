@@ -1,0 +1,35 @@
+V 24 32 24
+
+-- boots
+B 9 0 9 3 3 5 e
+B 12 0 9 3 3 5 e
+
+-- legs
+B 9 3 9 3 6 5 a
+B 12 3 9 3 6 5 a
+
+-- torso
+B 8 9 8 8 9 5 3
+
+-- chest armor
+B 9 10 7 6 6 2 9
+
+-- arms
+B 5 9 9 3 8 5 9
+B 16 9 9 3 8 5 9
+
+-- head
+S 12 21 12 3 b
+
+-- beard
+B 10 16 8 4 5 2 7
+
+-- helmet base
+B 9 23 8 6 3 5 9
+
+-- nose guard
+B 11 19 7 2 5 2 9
+
+-- horns
+B 5 23 9 4 2 4 8
+B 15 23 9 4 2 4 8

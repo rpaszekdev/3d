@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How TripoAI Generates 3D from Images — Interactive Explainer</title>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+}}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #08080d; --card: #111118; --card2: #1a1a24;
+    --border: #222233; --accent: #6c5ce7; --accent2: #00cec9;
+    --red: #ff6b6b; --green: #51cf66; --yellow: #ffd43b; --orange: #ff922b;
+    --text: #e8e8f0; --muted: #7a7a8e;
+    --purple: #9b59b6; --teal: #1abc9c; --pink: #e91e8a;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: 1000; width: 0%; transition: width 0.15s; }
+
+  #nav-dots { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); cursor: pointer; transition: all 0.3s; opacity: 0.5; border: none; }
+  .nav-dot.active { background: var(--accent); opacity: 1; transform: scale(1.5); }
+  .nav-dot:hover { opacity: 0.8; }
+
+  .section { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 80px 32px; position: relative; }
+  .section-inner { max-width: 1200px; width: 100%; }
+
+  h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.08; margin-bottom: 20px;
+       background: linear-gradient(135deg, #fff 0%, var(--accent2) 50%, var(--accent) 100%);
+       -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; margin-bottom: 16px; color: #fff; }
+  h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: #fff; }
+  .label { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .subtitle { font-size: 1.15rem; color: var(--muted); font-weight: 300; max-width: 640px; line-height: 1.65; }
+  p { line-height: 1.7; color: var(--text); margin-bottom: 12px; }
+  .small-text { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  .highlight { color: var(--accent2); font-weight: 600; }
+  .highlight-p { color: var(--accent); font-weight: 600; }
+  .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; }
+  .mb-16 { margin-bottom: 16px; } .mb-8 { margin-bottom: 8px; }
+
+  .card { background: var(--card); border-radius: 16px; padding: 28px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+  .card-glow { box-shadow: 0 0 40px rgba(108,92,231,0.08); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .viewer-canvas {
+    width: 100%; aspect-ratio: 1; border-radius: 12px; background: #0d0d14;
+    border: 1px solid var(--border); cursor: grab; display: block;
+  }
+  .viewer-canvas:active { cursor: grabbing; }
+  .model-label { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 8px; font-weight: 500; }
+
+  /* Pipeline cards */
+  .pipe-row { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; }
+  .pipe-step { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; text-align: center; min-width: 160px; opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.22,1,0.36,1); }
+  .pipe-step.visible { opacity: 1; transform: translateY(0); }
+  .pipe-icon { font-size: 2.2rem; margin-bottom: 10px; }
+  .pipe-label { font-size: 0.9rem; font-weight: 700; }
+  .pipe-sub { font-size: 0.72rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .pipe-arrow { font-size: 1.6rem; color: var(--accent); padding: 0 8px; opacity: 0; transition: opacity 0.6s 0.3s; }
+  .pipe-arrow.visible { opacity: 1; }
+
+  .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; margin-bottom: 10px; }
+
+  .scroll-hint { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 0.8rem; display: flex; flex-direction: column; align-items: center; gap: 2px; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+  .citation { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--muted); padding: 12px 16px; background: rgba(108,92,231,0.06); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; margin-top: 16px; line-height: 1.7; }
+  .citation a { color: var(--accent2); text-decoration: none; }
+  .citation a:hover { text-decoration: underline; }
+
+  /* Hero particles container */
+  #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+  .hero-content { position: relative; z-index: 1; }
+
+  .code-inline { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; background: var(--card2); padding: 2px 8px; border-radius: 4px; color: var(--accent2); }
+
+  /* Smooth section reveal */
+  .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.22,1,0.36,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Playback controls */
+  .scene-controls {
+    display: flex; align-items: center; gap: 10px; margin-top: 10px;
+    padding: 8px 12px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 0.78rem;
+  }
+  .scene-controls button {
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    width: 32px; height: 28px; cursor: pointer; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .scene-controls button:hover { background: #5a4bd4; }
+  .scene-controls button.active { background: var(--accent2); }
+  .scene-controls input[type="range"] {
+    flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+    background: var(--border); border-radius: 2px; outline: none;
+  }
+  .scene-controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 2px solid #fff;
+  }
+  .scene-controls .phase-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--accent2); min-width: 120px; text-align: right;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="nav-dots"></div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S0: HERO                                              -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s0" data-label="Input">
+  <canvas id="hero-canvas"></canvas>
+  <div class="section-inner hero-content text-center" style="text-align:center;">
+    <div class="label">Interactive Scientific Explainer</div>
+    <h1>How TripoAI Turns a Single Image into a 3D Model</h1>
+    <p class="subtitle" style="margin:0 auto 24px auto;">
+      A scroll-driven visual journey through the DINOv1 encoder, triplane representation,
+      NeRF volume rendering, and marching cubes mesh extraction — the full pipeline in under 0.5 seconds.
+    </p>
+    <div class="citation">
+      Based on: <a href="https://arxiv.org/abs/2403.02151" target="_blank">TripoSR (2403.02151)</a> &bull;
+      <a href="https://arxiv.org/abs/2311.04400" target="_blank">LRM (2311.04400)</a> &bull;
+      <a href="https://arxiv.org/abs/2502.06608" target="_blank">TripoSG (2502.06608)</a>
+    </div>
+    <div class="scroll-hint">scroll to explore<br>&#x25BC;</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S1: PIPELINE OVERVIEW                                 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s1" data-label="Pipeline">
+  <div class="section-inner">
+    <div class="text-center" style="text-align:center; margin-bottom: 48px;">
+      <div class="label">The Pipeline</div>
+      <h2>Three Stages — Image to Mesh</h2>
+      <p class="subtitle" style="margin:0 auto;">
+        TripoSR's feed-forward architecture reconstructs 3D objects in <span class="highlight">&lt; 0.5 seconds</span>
+        — no per-shape optimization needed. Here's the full pipeline:
+      </p>
+    </div>
+    <div class="pipe-row" id="pipeline-row">
+      <div class="pipe-step" data-delay="0">
+        <div class="pipe-icon">&#128247;</div>
+        <div class="pipe-label">Image Encoder</div>
+        <div class="pipe-sub">DINOv1 ViT-B/16<br>224×224 → 768-dim tokens</div>
+      </div>
+      <div class="pipe-arrow">&#x27A1;</div>
+      <div class="pipe-step" data-delay="200">
+        <div class="pipe-icon">&#9638;</div>
+        <div class="pipe-label">Triplane Decoder</div>
+        <div class="pipe-sub">Transformer cross-attention<br>→ 3 × 64×64 feature planes</div>
+      </div>
+      <div class="pipe-arrow">&#x27A1;</div>
+      <div class="pipe-step" data-delay="400">
+        <div class="pipe-icon">&#127922;</div>
+        <div class="pipe-label">NeRF + Mesh</div>
+        <div class="pipe-sub">Volume rendering training<br>Marching cubes extraction</div>
+      </div>
+    </div>
+    <div class="mt-32" style="max-width:700px; margin-left:auto; margin-right:auto;">
+      <p class="small-text" style="text-align:center;">
+        The LRM foundation (500M params) demonstrated that a single large transformer can replace
+        per-shape optimization entirely. TripoSR inherits this architecture and adds training improvements
+        (better data rendering, channel upsampling) to achieve state-of-the-art quality.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S2: IMAGE ENCODING — DINOv1 ViT                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s2" data-label="Encoder">
+  <div class="section-inner">
+    <div class="grid-2">
+      <div>
+        <div class="step-badge">1</div>
+        <div class="label">Image Encoder</div>
+        <h2>DINOv1 Vision Transformer</h2>
+        <p>The input image (224×224) is split into a <span class="highlight">14×14 grid of 16px patches</span>.
+           Each patch is linearly projected to a 768-dimensional token.</p>
+        <p>The ViT processes all 196 patch tokens through 12 transformer layers with self-attention.
+           Each token "looks at" every other token — this is how the model understands
+           <span class="highlight-p">spatial relationships</span> across the image.</p>
+        <p class="small-text mt-16">DINOv1 was pretrained with self-supervised learning (no labels needed).
+           TripoSR chose it over DINOv2 because v1 produced better 3D reconstruction quality in their ablation studies.</p>
+        <div class="citation">
+          Key insight: The 196 output tokens encode rich geometric priors — edges, surfaces, depth cues —
+          learned entirely from unlabeled images via self-distillation.
+        </div>
+      </div>
+      <div>
+        <canvas class="viewer-canvas" id="canvas-patches" style="aspect-ratio: 4/3;"></canvas>
+        <div class="scene-controls" data-scene="s2">
+          <button class="play-btn" title="Play/Pause">&#9654;</button>
+          <input type="range" min="0" max="100" value="0" class="scene-slider">
+          <span class="phase-label">Image</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S3: TRIPLANE DECODER                                  -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s3" data-label="Triplane">
+  <div class="section-inner">
+    <div class="grid-2">
+      <div>
+        <canvas class="viewer-canvas" id="canvas-triplane"></canvas>
+        <div class="model-label">Drag to rotate &bull; Scroll to zoom</div>
+      </div>
+      <div>
+        <div class="step-badge">2</div>
+        <div class="label">Triplane Decoder</div>
+        <h2>3D Feature Planes</h2>
+        <p>The transformer decoder takes the 196 image tokens and produces a
+           <span class="highlight">triplane representation</span>: three orthogonal 2D feature maps
+           aligned to the XY, XZ, and YZ planes.</p>
+        <p>To query a 3D point <span class="code-inline">(x,y,z)</span>, we project it onto each plane,
+           bilinearly sample the feature, and <span class="highlight-p">sum the three feature vectors</span>.
+           This aggregated feature is fed to a small MLP that predicts density and color.</p>
+        <p class="small-text mt-16">Triplanes are memory-efficient: instead of a dense 3D voxel grid
+           (N³ memory), triplanes use only 3×N² — a massive reduction that makes high resolution feasible.</p>
+        <div class="citation">
+          Triplane resolution: 3 × 64×64 × 40 channels = 491K parameters<br>
+          Equivalent voxel grid: 64³ × 40 = 10.5M parameters (21× more)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S4: NeRF VOLUME RENDERING                             -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s4" data-label="NeRF">
+  <div class="section-inner">
+    <div class="grid-2">
+      <div>
+        <div class="step-badge">3a</div>
+        <div class="label">Volume Rendering</div>
+        <h2>NeRF Ray Marching</h2>
+        <p>During training, TripoSR renders images via <span class="highlight">neural radiance field (NeRF)</span>
+           volume rendering. For each pixel, a ray is cast into the scene.</p>
+        <p>Along each ray, we sample <span class="highlight-p">N points</span> and query the triplane MLP
+           for density (σ) and color (c) at each sample. The final pixel color is computed by
+           alpha-compositing front-to-back:</p>
+        <p class="code-inline" style="display:block; padding:12px; margin:8px 0;">
+          C = Σ Tᵢ · αᵢ · cᵢ &nbsp; where &nbsp; αᵢ = 1 - exp(-σᵢ · δᵢ)
+        </p>
+        <p class="small-text">Tᵢ is the accumulated transmittance (how much light reaches sample i),
+           and δᵢ is the distance between consecutive samples.</p>
+        <div class="citation">
+          At inference time, NeRF rendering is NOT used — the triplane is decoded directly to a mesh
+          via marching cubes. NeRF is only the training supervision signal.
+        </div>
+      </div>
+      <div>
+        <canvas class="viewer-canvas" id="canvas-nerf" style="aspect-ratio: 4/3;"></canvas>
+        <div class="scene-controls" data-scene="s4">
+          <button class="play-btn" title="Play/Pause">&#9654;</button>
+          <input type="range" min="0" max="100" value="0" class="scene-slider">
+          <span class="phase-label">Frustum</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S5: MARCHING CUBES                                    -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s5" data-label="Mesh">
+  <div class="section-inner">
+    <div class="grid-2">
+      <div>
+        <canvas class="viewer-canvas" id="canvas-marching" style="aspect-ratio: 4/3;"></canvas>
+        <div class="scene-controls" data-scene="s5">
+          <button class="play-btn" title="Play/Pause">&#9654;</button>
+          <input type="range" min="0" max="100" value="0" class="scene-slider">
+          <span class="phase-label">Grid sweep</span>
+        </div>
+      </div>
+      <div>
+        <div class="step-badge">3b</div>
+        <div class="label">Mesh Extraction</div>
+        <h2>Marching Cubes</h2>
+        <p>Once trained, the density field is evaluated on a <span class="highlight">regular 3D grid</span>.
+           The marching cubes algorithm walks through each cell and classifies the 8 corners as
+           inside (density > threshold) or outside.</p>
+        <p>Each of the <span class="highlight-p">256 possible corner configurations</span> maps to a
+           predefined set of triangles that approximate the surface crossing through that cell.
+           The triangles stitch together into a watertight mesh.</p>
+        <p class="small-text mt-16">The algorithm processes cells independently — making it trivially
+           parallelizable on GPU. TripoSR uses FlexiCubes (a differentiable variant) for better
+           mesh quality near thin features.</p>
+        <div class="citation">
+          Marching cubes was introduced by Lorensen & Cline (1987). Despite being nearly 40 years old,
+          it remains the dominant algorithm for extracting meshes from implicit fields.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- S6: FINAL RESULT                                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s6" data-label="Result">
+  <div class="section-inner">
+    <div class="text-center" style="text-align:center; margin-bottom: 40px;">
+      <div class="label">The Result</div>
+      <h2>From Voxels to Smooth Mesh</h2>
+      <p class="subtitle" style="margin:0 auto;">
+        Compare the raw voxelized output (left) with a smoothed representation (right).
+        Real TripoSR outputs are smooth meshes with vertex colors — the voxel version is our DSL approximation.
+      </p>
+    </div>
+    <div class="scene-controls" style="max-width:400px;margin:0 auto 20px auto;justify-content:center;">
+      <span style="font-size:0.72rem;color:var(--muted);">Model:</span>
+      <button class="mode-btn active" id="model-cat" style="flex:1;width:auto;font-size:0.7rem;">Cat</button>
+      <button class="mode-btn" id="model-fox" style="flex:1;width:auto;font-size:0.7rem;">Fox</button>
+    </div>
+    <div class="grid-2">
+      <div>
+        <canvas class="viewer-canvas" id="canvas-voxel"></canvas>
+        <div class="model-label">Voxelized (V4 DSL) — 32³ grid</div>
+      </div>
+      <div>
+        <canvas class="viewer-canvas" id="canvas-smooth"></canvas>
+        <div class="scene-controls" data-scene="s6mode">
+          <button class="mode-btn" id="mode-mc" title="Marching Cubes" style="flex:1;width:auto;font-size:0.7rem;">Marching Cubes</button>
+          <button class="mode-btn" id="mode-spheres" title="Sphere Cloud" style="flex:1;width:auto;font-size:0.7rem;">Spheres</button>
+          <span class="phase-label" id="smooth-label">Marching Cubes — blur 1.2</span>
+        </div>
+        <div class="scene-controls mt-8" style="margin-top:6px;" data-scene="s6blur">
+          <span style="font-size:0.7rem;color:var(--muted);white-space:nowrap;">Blur σ</span>
+          <input type="range" min="5" max="30" value="12" class="scene-slider" id="blur-slider">
+          <span class="phase-label" id="blur-value">1.2</span>
+        </div>
+      </div>
+    </div>
+    <div class="mt-32" style="max-width:800px; margin:0 auto;">
+      <div class="card card-glow">
+        <h3>TripoSG: The Next Generation</h3>
+        <p class="small-text">TripoSG (2025) replaces the NeRF density field with a
+           <span class="highlight">Signed Distance Function (SDF)</span> and uses rectified flow
+           for the 3D generative model. Key improvements:</p>
+        <ul class="small-text" style="margin-left: 20px; margin-top: 8px;">
+          <li><strong>SDF representation</strong> — smoother surfaces, better thin structures</li>
+          <li><strong>Normal + Eikonal losses</strong> — enforce geometric consistency</li>
+          <li><strong>3D VAE</strong> — learned latent space for the triplane</li>
+          <li><strong>Rectified flow</strong> — faster, more stable training than diffusion</li>
+        </ul>
+      </div>
+      <div class="citation mt-16">
+        Papers: <a href="https://arxiv.org/abs/2403.02151" target="_blank">TripoSR</a> &bull;
+        <a href="https://arxiv.org/abs/2311.04400" target="_blank">LRM</a> &bull;
+        <a href="https://arxiv.org/abs/2502.06608" target="_blank">TripoSG</a> &bull;
+        <a href="https://arxiv.org/abs/2104.14294" target="_blank">DINO</a> &bull;
+        <a href="https://arxiv.org/abs/2003.08934" target="_blank">NeRF</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- EMBEDDED V4 CAT MODEL                                 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<script>
+window.__CAT_V4 = `-- Cat
+V 32 32 32
+B 10 0 11 1 1 4 0
+B 16 0 11 1 1 4 0
+B 9 0 12 1 5 2 0
+B 11 0 12 1 5 2 0
+B 15 0 12 1 5 2 0
+B 17 0 12 1 5 2 0
+B 9 1 11 3 6 1 0
+B 15 1 11 3 6 1 0
+B 10 1 13 1 1 2 0
+B 16 1 13 1 1 2 0
+B 10 2 13 1 2 1 0
+B 16 2 13 1 2 1 0
+B 13 3 4 1 2 1 0
+B 8 3 12 1 6 2 0
+B 10 3 12 1 1 1 0
+B 16 3 12 1 1 1 0
+B 18 3 12 1 6 2 0
+B 9 3 14 3 2 1 0
+B 15 3 14 3 2 1 0
+B 12 4 1 3 1 3 0
+B 12 4 4 1 2 4 0
+B 14 4 4 1 2 4 0
+B 13 4 5 1 1 3 0
+B 8 4 11 1 6 1 0
+B 18 4 11 1 6 1 0
+B 12 4 12 1 3 1 0
+B 14 4 12 1 3 1 0
+B 8 4 14 1 4 1 0
+B 18 4 14 1 4 1 0
+B 9 4 15 3 3 1 0
+B 15 4 15 3 3 1 0
+B 12 5 0 3 2 2 0
+B 12 5 2 1 3 2 0
+B 14 5 2 1 3 2 0
+B 11 5 3 1 2 4 0
+B 15 5 3 1 2 4 0
+B 13 5 7 1 1 2 0
+B 12 5 8 1 4 1 0
+B 14 5 8 1 4 1 0
+B 10 5 10 2 5 1 0
+B 15 5 10 2 5 1 0
+B 12 5 11 1 2 1 0
+B 14 5 11 1 2 1 0
+B 11 5 13 2 3 1 0
+B 14 5 13 2 3 1 0
+B 9 5 14 1 3 1 0
+B 11 5 14 1 5 1 0
+B 15 5 14 1 5 1 0
+B 17 5 14 1 3 1 0
+B 12 6 6 1 2 2 0
+B 14 6 6 1 2 2 0
+B 13 6 8 1 1 7 0
+B 12 6 9 1 3 2 0
+B 14 6 9 1 3 2 0
+B 9 6 10 1 12 1 0
+B 17 6 10 1 12 1 0
+B 7 6 13 1 2 1 0
+B 19 6 13 1 2 1 0
+B 10 6 14 1 15 1 0
+B 12 6 14 1 2 1 0
+B 14 6 14 1 2 1 0
+B 16 6 14 1 15 1 0
+B 12 7 1 3 1 1 0
+B 13 7 2 1 1 6 0
+B 11 7 4 2 1 2 0
+B 14 7 4 2 1 2 0
+B 13 7 9 1 1 2 0
+B 9 7 11 1 13 1 0
+B 17 7 11 1 13 1 0
+B 7 7 12 1 1 1 0
+B 19 7 12 1 1 1 0
+B 9 7 13 2 7 1 0
+B 16 7 13 2 7 1 0
+B 13 7 14 1 1 2 0
+B 11 7 15 2 8 1 0
+B 14 7 15 2 8 1 0
+B 13 8 8 1 1 2 0
+B 11 8 9 1 12 1 0
+B 15 8 9 1 12 1 0
+B 8 8 10 1 1 1 0
+B 18 8 10 1 1 1 0
+B 9 8 12 1 8 1 0
+B 17 8 12 1 8 1 0
+B 11 8 13 1 1 1 0
+B 15 8 13 1 1 1 0
+B 13 8 15 1 1 2 0
+B 12 8 16 1 4 1 0
+B 14 8 16 1 4 1 0
+B 10 9 9 1 5 1 0
+B 12 9 9 3 10 1 0
+B 16 9 9 1 5 1 0
+B 8 9 12 1 2 1 0
+B 18 9 12 1 2 1 0
+B 10 9 15 1 4 1 0
+B 16 9 15 1 4 1 0
+B 13 9 16 1 4 1 0
+B 10 10 10 1 10 1 0
+B 16 10 10 1 10 1 0
+B 13 11 15 1 6 1 0
+B 11 12 14 1 7 1 0
+B 15 12 14 1 7 1 0
+B 10 13 12 1 2 1 0
+B 16 13 12 1 2 1 0
+B 11 14 10 1 2 1 0
+B 15 14 10 1 2 1 0
+B 10 14 11 1 2 1 0
+B 16 14 11 1 2 1 0
+B 10 14 13 1 6 1 0
+B 16 14 13 1 6 1 0
+B 12 14 14 1 5 1 0
+B 14 14 14 1 5 1 0
+B 7 15 11 2 1 3 0
+B 18 15 11 2 1 3 0
+B 1 15 12 2 3 1 0
+B 5 15 12 2 4 1 0
+B 20 15 12 2 4 1 0
+B 24 15 12 2 3 1 0
+B 9 15 13 1 6 1 0
+B 17 15 13 1 6 1 0
+B 12 15 15 1 1 1 0
+B 14 15 15 1 1 1 0
+B 4 16 10 3 2 2 0
+B 8 16 10 1 2 2 0
+B 18 16 10 1 2 2 0
+B 20 16 10 3 2 2 0
+B 0 16 11 4 1 1 0
+B 7 16 11 1 1 3 0
+B 19 16 11 1 1 3 0
+B 23 16 11 4 1 1 0
+B 0 16 12 1 1 1 0
+B 3 16 12 2 2 2 0
+B 22 16 12 2 2 2 0
+B 26 16 12 1 1 1 0
+B 1 16 13 2 2 1 0
+B 5 16 13 2 2 1 0
+B 8 16 13 1 10 1 0
+B 18 16 13 1 10 1 0
+B 20 16 13 2 2 1 0
+B 24 16 13 2 2 1 0
+B 2 16 14 2 1 1 0
+B 13 16 14 1 3 1 0
+B 23 16 14 2 1 1 0
+B 11 17 10 1 2 1 0
+B 15 17 10 1 2 1 0
+B 1 17 11 3 1 1 0
+B 7 17 11 1 2 1 0
+B 19 17 11 1 2 1 0
+B 23 17 11 3 1 1 0
+B 7 17 13 1 2 1 0
+B 11 17 13 1 2 1 0
+B 15 17 13 1 2 1 0
+B 19 17 13 1 2 1 0
+B 13 18 7 1 2 2 0
+B 11 18 8 2 2 1 0
+B 14 18 8 2 2 1 0
+B 10 18 9 1 2 1 0
+B 16 18 9 1 2 1 0
+B 6 18 11 1 1 1 0
+B 8 18 11 1 3 2 0
+B 10 18 11 1 1 2 0
+B 16 18 11 1 1 2 0
+B 18 18 11 1 3 2 0
+B 20 18 11 1 1 1 0
+B 7 18 12 1 1 1 0
+B 9 18 12 1 2 1 0
+B 17 18 12 1 2 1 0
+B 19 18 12 1 1 1 0
+B 11 18 15 5 1 2 0
+B 11 19 7 2 7 1 0
+B 14 19 7 2 7 1 0
+B 10 19 8 1 7 1 0
+B 16 19 8 1 7 1 0
+B 8 19 9 2 1 2 0
+B 17 19 9 2 1 2 0
+B 10 19 12 1 1 1 0
+B 16 19 12 1 1 1 0
+B 9 19 14 1 7 1 0
+B 17 19 14 1 7 1 0
+B 10 19 15 2 1 2 0
+B 15 19 15 2 1 2 0
+B 12 19 16 3 1 2 0
+B 11 19 17 1 3 1 0
+B 15 19 17 1 3 1 0
+B 12 20 6 3 4 1 0
+B 10 20 7 1 5 1 0
+B 13 20 7 1 1 1 0
+B 16 20 7 1 5 1 0
+B 9 20 8 1 2 2 0
+B 11 20 8 1 1 1 0
+B 15 20 8 1 1 1 0
+B 17 20 8 1 2 2 0
+B 8 20 9 1 2 2 0
+B 18 20 9 1 2 2 0
+B 7 20 10 1 5 3 0
+B 19 20 10 1 5 3 0
+B 9 20 15 2 5 1 0
+B 16 20 15 2 5 1 0
+B 10 20 16 2 5 1 0
+B 15 20 16 2 5 1 0
+B 12 20 17 3 1 2 0
+B 8 21 12 1 1 1 0
+B 18 21 12 1 1 1 0
+B 7 21 13 1 3 1 0
+B 19 21 13 1 3 1 0
+B 8 21 14 1 4 1 0
+B 18 21 14 1 4 1 0
+B 12 21 16 1 4 2 0
+B 14 21 16 1 4 2 0
+B 12 21 18 3 1 1 1
+B 8 22 8 2 2 1 0
+B 17 22 8 2 2 1 0
+B 8 22 9 1 4 1 0
+B 18 22 9 1 4 1 0
+B 9 22 16 1 1 1 0
+B 17 22 16 1 1 1 0
+B 13 22 17 1 1 2 0
+B 13 23 7 1 3 1 0
+B 9 23 9 1 4 1 0
+B 17 23 9 1 4 1 0
+B 8 23 10 1 6 1 0
+B 18 23 10 1 6 1 0
+B 11 23 17 1 2 1 0
+B 13 23 17 1 1 1 0
+B 15 23 17 1 2 1 0
+B 13 24 6 1 1 1 0
+B 9 24 8 1 2 1 0
+B 11 24 8 1 3 1 0
+B 15 24 8 1 3 1 0
+B 17 24 8 1 2 1 0
+B 8 24 11 1 6 2 0
+B 18 24 11 1 6 2 0
+B 9 24 13 1 3 1 0
+B 17 24 13 1 3 1 0
+B 13 24 16 1 2 1 0
+B 12 25 8 3 2 1 0
+B 10 25 9 1 2 1 0
+B 16 25 9 1 2 1 0
+B 9 25 10 1 4 1 0
+B 17 25 10 1 4 1 0
+B 7 25 12 1 2 1 0
+B 9 25 12 1 6 1 0
+B 17 25 12 1 6 1 0
+B 19 25 12 1 2 1 0
+B 10 25 13 1 1 3 0
+B 16 25 13 1 1 3 0
+B 11 25 14 1 1 3 0
+B 15 25 14 1 1 3 0
+B 12 25 15 3 2 1 0
+B 12 25 16 1 1 1 0
+B 14 25 16 1 1 1 0
+B 11 26 9 5 2 1 0
+B 10 26 10 1 3 1 0
+B 16 26 10 1 3 1 0
+B 10 26 12 1 1 3 0
+B 16 26 12 1 1 3 0
+B 11 26 13 1 1 3 0
+B 15 26 13 1 1 3 0
+B 12 26 14 3 2 1 0
+B 11 27 10 5 1 4 0
+B 10 27 12 1 1 2 0
+B 16 27 12 1 1 2 0
+B 11 27 14 1 1 1 0
+B 15 27 14 1 1 1 0
+B 11 28 10 1 1 3 0
+B 15 28 10 1 1 3 0
+B 9 28 11 2 2 1 0
+B 12 28 11 3 1 1 0
+B 16 28 11 2 2 1 0
+B 10 28 12 1 2 1 0
+B 16 28 12 1 2 1 0
+B 9 30 11 1 1 1 0
+B 17 30 11 1 1 1 0`;
+
+window.__FOX_V4 = `V 32 32 32
+E 16 10 14 6 5 8 7
+E 16 10 7 4 4 3 8
+B 12 0 8 2 7 2 7
+B 18 0 8 2 7 2 7
+B 12 0 18 2 7 2 7
+B 18 0 18 2 7 2 7
+B 12 0 8 2 2 2 0
+B 18 0 8 2 2 2 0
+B 12 0 18 2 2 2 0
+B 18 0 18 2 2 2 0
+S 16 18 6 5 7
+E 16 17 3 3 2 3 8
+B 15 18 1 2 1 1 0
+P 14 20 2 0
+P 18 20 2 0
+K 13 22 6 2 5 7
+K 19 22 6 2 5 7
+P 13 27 6 0
+P 19 27 6 0
+E 16 12 24 4 4 6 7
+S 16 14 28 3 8`;
+</script>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- THREE.JS SCENES                                       -->
+<!-- ══════════════════════════════════════════════════════ -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const COLORS = [0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+
+// ── V4 Parser ──
+function parseV4(code) {
+  let W=32, H=32, D=32;
+  const vm = new Map();
+  const set = (x,y,z,c) => {
+    const ix=Math.round(x), iy=Math.round(y), iz=Math.round(z);
+    if (ix>=0 && ix<W && iy>=0 && iy<H && iz>=0 && iz<D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c||9,0),15));
+  };
+  const addBox = (px,py,pz,w,h,d,c) => {
+    for (let x=px;x<px+w;x++) for (let y=py;y<py+h;y++) for (let z=pz;z<pz+d;z++) set(x,y,z,c);
+  };
+  for (const line of code.split('\n')) {
+    const t = line.trim();
+    if (!t || t.startsWith('--') || t.startsWith('//')) continue;
+    const p = t.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+    if (cmd === 'V') { W=Number(p[1])||32; H=Number(p[2])||32; D=Number(p[3])||32; continue; }
+    if (cmd === 'B') {
+      const n = p.slice(1).map(Number);
+      addBox(n[0],n[1],n[2],n[3],n[4],n[5],n[6]);
+    }
+  }
+  const voxels = [];
+  for (const [k,c] of vm) { const [x,y,z]=k.split(',').map(Number); voxels.push({x,y,z,color:c}); }
+  return { gridW:W, gridH:H, gridD:D, voxels };
+}
+
+// ── Shared helpers ──
+function makeRenderer(canvas, opts = {}) {
+  // Force layout calculation before reading dimensions
+  const w = canvas.clientWidth || canvas.parentElement?.clientWidth || 400;
+  const h = canvas.clientHeight || canvas.parentElement?.clientHeight || 400;
+  const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: opts.alpha || false });
+  r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Use false to not override CSS styles
+  r.setSize(w, h, false);
+  r.setClearColor(opts.clearColor !== undefined ? opts.clearColor : 0x0d0d14);
+  return r;
+}
+
+function syncCanvasSize(canvas, renderer, camera) {
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.round(rect.width);
+  const h = Math.round(rect.height);
+  if (w > 0 && h > 0) {
+    const needResize = canvas.width !== Math.round(w * Math.min(window.devicePixelRatio, 2))
+                    || canvas.height !== Math.round(h * Math.min(window.devicePixelRatio, 2));
+    if (needResize) {
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+  }
+}
+
+function makeResizeObserver(canvas, renderer, camera) {
+  const ro = new ResizeObserver(() => {
+    syncCanvasSize(canvas, renderer, camera);
+  });
+  ro.observe(canvas);
+  // Also sync immediately
+  syncCanvasSize(canvas, renderer, camera);
+  return ro;
+}
+
+function addLights(scene) {
+  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.5));
+  const dl = new THREE.DirectionalLight(0xffffff, 1.2);
+  dl.position.set(30, 50, 20);
+  scene.add(dl);
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S0 Hero Particles
+// ══════════════════════════════════════════════════════════
+class HeroScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+    this.renderer = makeRenderer(canvas, { alpha: true, clearColor: 0x000000 });
+    this.renderer.setClearColor(0x000000, 0);
+    this.scene = new THREE.Scene();
+    const w = canvas.clientWidth || window.innerWidth;
+    const h = canvas.clientHeight || window.innerHeight;
+    this.camera = new THREE.PerspectiveCamera(60, w / h || 1.5, 0.1, 100);
+    this.camera.position.set(0, 0, 20);
+
+    // Particle system
+    const count = 600;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const accentCol = new THREE.Color(0x6c5ce7);
+    const accentCol2 = new THREE.Color(0x00cec9);
+    for (let i = 0; i < count; i++) {
+      pos[i*3] = (Math.random() - 0.5) * 40;
+      pos[i*3+1] = (Math.random() - 0.5) * 30;
+      pos[i*3+2] = (Math.random() - 0.5) * 20;
+      const c = Math.random() > 0.5 ? accentCol : accentCol2;
+      col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const mat = new THREE.PointsMaterial({ size: 0.12, vertexColors: true, transparent: true, opacity: 0.6 });
+    this.particles = new THREE.Points(geo, mat);
+    this.scene.add(this.particles);
+
+    // Floating "image" plane
+    const imgCanvas = document.createElement('canvas');
+    imgCanvas.width = 128; imgCanvas.height = 128;
+    const ctx = imgCanvas.getContext('2d');
+    // Draw a simple cat silhouette
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, 128, 128);
+    ctx.fillStyle = '#6c5ce7';
+    ctx.beginPath();
+    ctx.arc(64, 72, 35, 0, Math.PI * 2);
+    ctx.fill();
+    // ears
+    ctx.beginPath();
+    ctx.moveTo(38, 45); ctx.lineTo(30, 20); ctx.lineTo(52, 38); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(90, 45); ctx.lineTo(98, 20); ctx.lineTo(76, 38); ctx.fill();
+    // eyes
+    ctx.fillStyle = '#00cec9';
+    ctx.beginPath(); ctx.arc(52, 65, 5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(76, 65, 5, 0, Math.PI*2); ctx.fill();
+    // border
+    ctx.strokeStyle = '#6c5ce7';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(8, 8, 112, 112);
+
+    const tex = new THREE.CanvasTexture(imgCanvas);
+    const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(5, 5),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.85 })
+    );
+    this.imagePlane = plane;
+    this.scene.add(plane);
+
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+    this.time = 0;
+  }
+
+  activate() {
+    if (this.running) return;
+    this.running = true;
+    this._animate();
+  }
+
+  deactivate() { this.running = false; }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.time += 0.008;
+    this.particles.rotation.y = this.time * 0.15;
+    this.particles.rotation.x = Math.sin(this.time * 0.3) * 0.1;
+    this.imagePlane.position.y = Math.sin(this.time * 1.5) * 0.5;
+    this.imagePlane.rotation.y = Math.sin(this.time * 0.8) * 0.15;
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S2 Patch Splitting (ViT)
+// ══════════════════════════════════════════════════════════
+class PatchScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+    this.renderer = makeRenderer(canvas);
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(50, (canvas.clientWidth || 400) / (canvas.clientHeight || 400), 0.1, 100);
+    this.camera.position.set(0, 0, 18);
+    addLights(this.scene);
+
+    this.progress = 0;   // 0..1 driven by slider
+    this.autoPlay = false;
+    this.phaseNames = ['Image', 'Patches spread', 'Feature vectors', 'Self-attention'];
+
+    const patchCount = 14 * 14;
+    const patchGeo = new THREE.PlaneGeometry(0.6, 0.6);
+    const patchMat = new THREE.MeshPhongMaterial({ transparent: true, opacity: 0.9 });
+    this.patches = new THREE.InstancedMesh(patchGeo, patchMat, patchCount);
+    this.scene.add(this.patches);
+
+    this.origPositions = [];
+    this.spreadPositions = [];
+    this.featurePositions = [];
+    const mx = new THREE.Matrix4();
+    const cl = new THREE.Color();
+
+    for (let r = 0; r < 14; r++) {
+      for (let c = 0; c < 14; c++) {
+        const i = r * 14 + c;
+        const ox = (c - 6.5) * 0.62;
+        const oy = (6.5 - r) * 0.62;
+        this.origPositions.push(new THREE.Vector3(ox, oy, 0));
+        this.spreadPositions.push(new THREE.Vector3((c - 6.5) * 0.85, (6.5 - r) * 0.85, 0));
+        this.featurePositions.push(new THREE.Vector3((c - 6.5) * 0.42, -4 + Math.random() * 0.5, 0));
+        mx.setPosition(ox, oy, 0);
+        this.patches.setMatrixAt(i, mx);
+        cl.setHSL((r * 14 + c) / 196 * 0.3 + 0.55, 0.7, 0.5);
+        this.patches.setColorAt(i, cl);
+      }
+    }
+    this.patches.instanceMatrix.needsUpdate = true;
+    this.patches.instanceColor.needsUpdate = true;
+
+    this.attentionLines = [];
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x6c5ce7, transparent: true, opacity: 0.0 });
+    for (let k = 0; k < 20; k++) {
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+      const line = new THREE.Line(lineGeo, lineMat.clone());
+      line.visible = false;
+      this.scene.add(line);
+      this.attentionLines.push(line);
+    }
+
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+    this.time = 0;
+  }
+
+  setProgress(p) { this.progress = Math.max(0, Math.min(1, p)); }
+
+  getPhaseLabel() {
+    const phase = Math.min(3, Math.floor(this.progress * 4));
+    return this.phaseNames[phase];
+  }
+
+  activate() {
+    if (!this.running) {
+      this.running = true;
+      this._animate();
+    }
+  }
+
+  deactivate() { this.running = false; }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.time += 0.01;
+
+    if (this.autoPlay) {
+      this.progress = Math.min(1, this.progress + 0.001);
+    }
+
+    const phase = Math.min(3, Math.floor(this.progress * 4));
+    const phaseT = (this.progress * 4) - phase;
+    const mx = new THREE.Matrix4();
+    const q = new THREE.Quaternion();
+
+    for (let r = 0; r < 14; r++) {
+      for (let c = 0; c < 14; c++) {
+        const i = r * 14 + c;
+        const orig = this.origPositions[i];
+        const spread = this.spreadPositions[i];
+        const feat = this.featurePositions[i];
+        const s = new THREE.Vector3(1, 1, 1);
+        let pos;
+        if (phase === 0) {
+          const t = phaseT;
+          pos = orig.clone();
+          // Slight wiggle to show it's alive
+          pos.x += Math.sin(this.time * 2 + i * 0.05) * 0.02;
+        } else if (phase === 1) {
+          pos = orig.clone().lerp(spread, phaseT);
+        } else if (phase === 2) {
+          pos = spread.clone().lerp(feat, phaseT);
+          s.set(0.5, 1 + phaseT * 4, 1);
+        } else {
+          pos = feat.clone();
+          pos.y += Math.sin(this.time * 2 + i * 0.1) * 0.15;
+          s.set(0.5, 5, 1);
+        }
+        mx.compose(pos, q, s);
+        this.patches.setMatrixAt(i, mx);
+      }
+    }
+    this.patches.instanceMatrix.needsUpdate = true;
+
+    if (phase >= 3) {
+      for (let k = 0; k < this.attentionLines.length; k++) {
+        const line = this.attentionLines[k];
+        line.visible = true;
+        const i1 = Math.floor((Math.sin(this.time + k * 1.3) * 0.5 + 0.5) * 195) | 0;
+        const i2 = Math.floor((Math.cos(this.time * 0.7 + k * 2.1) * 0.5 + 0.5) * 195) | 0;
+        const p1 = this.featurePositions[i1];
+        const p2 = this.featurePositions[i2];
+        if (p1 && p2) {
+          const positions = line.geometry.attributes.position.array;
+          positions[0] = p1.x; positions[1] = p1.y; positions[2] = 0.1;
+          positions[3] = p2.x; positions[4] = p2.y; positions[5] = 0.1;
+          line.geometry.attributes.position.needsUpdate = true;
+        }
+        line.material.opacity = 0.15 + Math.sin(this.time * 3 + k) * 0.1;
+      }
+    } else {
+      for (const line of this.attentionLines) line.visible = false;
+    }
+
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S3 Triplane
+// ══════════════════════════════════════════════════════════
+class TriplaneScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+    this.renderer = makeRenderer(canvas);
+    this.renderer.shadowMap.enabled = true;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(45, (canvas.clientWidth || 400) / (canvas.clientHeight || 400), 0.1, 100);
+    this.camera.position.set(8, 6, 8);
+
+    this.controls = new OrbitControls(this.camera, canvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.target.set(0, 0, 0);
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 1.5;
+    this.controls.update();
+
+    addLights(this.scene);
+
+    const planeSize = 5;
+    const planeConfigs = [
+      { color: 0x9b59b6, rotation: [0, 0, 0], label: 'XY' },           // purple - XY
+      { color: 0x1abc9c, rotation: [-Math.PI/2, 0, 0], label: 'XZ' },  // teal - XZ
+      { color: 0xe91e8a, rotation: [0, Math.PI/2, 0], label: 'YZ' },   // pink - YZ
+    ];
+
+    this.triplanes = [];
+    this.heatmapCanvases = [];
+    this.heatmapTextures = [];
+
+    for (const cfg of planeConfigs) {
+      // Create procedural heatmap canvas
+      const hc = document.createElement('canvas');
+      hc.width = 64; hc.height = 64;
+      this.heatmapCanvases.push(hc);
+
+      const tex = new THREE.CanvasTexture(hc);
+      tex.minFilter = THREE.LinearFilter;
+      this.heatmapTextures.push(tex);
+
+      const mat = new THREE.MeshPhongMaterial({
+        map: tex,
+        transparent: true,
+        opacity: 0.55,
+        side: THREE.DoubleSide,
+        color: cfg.color,
+      });
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(planeSize, planeSize), mat);
+      mesh.rotation.set(...cfg.rotation);
+      this.scene.add(mesh);
+      this.triplanes.push(mesh);
+
+      // Wireframe border
+      const edges = new THREE.EdgesGeometry(new THREE.PlaneGeometry(planeSize, planeSize));
+      const edgeMesh = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: cfg.color, opacity: 0.8, transparent: true }));
+      edgeMesh.rotation.set(...cfg.rotation);
+      this.scene.add(edgeMesh);
+    }
+
+    // Query sphere
+    this.sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(0.15, 16, 16),
+      new THREE.MeshPhongMaterial({ color: 0xffd43b, emissive: 0xffd43b, emissiveIntensity: 0.5 })
+    );
+    this.scene.add(this.sphere);
+
+    // Projection lines
+    this.projLines = [];
+    const lineMat = new THREE.LineDashedMaterial({ color: 0xffd43b, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity: 0.6 });
+    for (let i = 0; i < 3; i++) {
+      const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+      const line = new THREE.Line(geo, lineMat.clone());
+      line.computeLineDistances();
+      this.scene.add(line);
+      this.projLines.push(line);
+    }
+
+    // Projection indicators (small spheres on planes)
+    this.indicators = [];
+    for (let i = 0; i < 3; i++) {
+      const ind = new THREE.Mesh(
+        new THREE.SphereGeometry(0.1, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xff6b6b })
+      );
+      this.scene.add(ind);
+      this.indicators.push(ind);
+    }
+
+    // Axis labels
+    const axisColors = [0xff6b6b, 0x51cf66, 0x6c5ce7];
+    const axisLabels = ['X', 'Y', 'Z'];
+    for (let i = 0; i < 3; i++) {
+      const dir = new THREE.Vector3();
+      dir.setComponent(i, 3.5);
+      const arrowHelper = new THREE.ArrowHelper(
+        new THREE.Vector3().setComponent(i, 1).normalize(),
+        new THREE.Vector3().setComponent(i, -3),
+        6, axisColors[i], 0.3, 0.15
+      );
+      arrowHelper.line.material.transparent = true;
+      arrowHelper.line.material.opacity = 0.3;
+      this.scene.add(arrowHelper);
+    }
+
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+    this.time = 0;
+  }
+
+  activate() {
+    if (this.running) return;
+    this.running = true;
+    this._animate();
+  }
+
+  deactivate() { this.running = false; }
+
+  _updateHeatmaps() {
+    for (let p = 0; p < 3; p++) {
+      const ctx = this.heatmapCanvases[p].getContext('2d');
+      const w = 64, h = 64;
+      const imgData = ctx.createImageData(w, h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          const v = Math.sin(x * 0.15 + this.time * 2 + p * 2) *
+                    Math.cos(y * 0.12 + this.time * 1.5 + p) * 0.5 + 0.5;
+          const v2 = Math.sin((x + y) * 0.1 + this.time * 3 + p * 1.5) * 0.3 + 0.5;
+          const brightness = (v * 0.7 + v2 * 0.3) * 255;
+          imgData.data[i] = brightness * (p === 0 ? 1 : 0.3);
+          imgData.data[i+1] = brightness * (p === 1 ? 1 : 0.3);
+          imgData.data[i+2] = brightness * (p === 2 ? 1 : 0.3);
+          imgData.data[i+3] = 180;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      this.heatmapTextures[p].needsUpdate = true;
+    }
+  }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.time += 0.008;
+
+    // Move query sphere in a figure-8
+    const sx = Math.sin(this.time * 1.5) * 1.8;
+    const sy = Math.cos(this.time * 2.1) * 1.2;
+    const sz = Math.sin(this.time * 1.8) * Math.cos(this.time * 0.9) * 1.5;
+    this.sphere.position.set(sx, sy, sz);
+
+    // Projection lines to each plane
+    const projections = [
+      new THREE.Vector3(sx, sy, 0),  // XY plane
+      new THREE.Vector3(sx, 0, sz),  // XZ plane
+      new THREE.Vector3(0, sy, sz),  // YZ plane
+    ];
+    for (let i = 0; i < 3; i++) {
+      const positions = this.projLines[i].geometry.attributes.position.array;
+      positions[0] = sx; positions[1] = sy; positions[2] = sz;
+      positions[3] = projections[i].x; positions[4] = projections[i].y; positions[5] = projections[i].z;
+      this.projLines[i].geometry.attributes.position.needsUpdate = true;
+      this.projLines[i].computeLineDistances();
+
+      this.indicators[i].position.copy(projections[i]);
+      this.indicators[i].material.color.setHex(
+        0xff6b6b + Math.floor(Math.sin(this.time * 4 + i) * 0.5 + 0.5) * 0x004400
+      );
+    }
+
+    // Animate heatmaps every 3 frames
+    if (Math.floor(this.time * 120) % 3 === 0) {
+      this._updateHeatmaps();
+    }
+
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S4 NeRF Ray Casting
+// ══════════════════════════════════════════════════════════
+class NerfScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+    this.renderer = makeRenderer(canvas);
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(50, (canvas.clientWidth || 400) / (canvas.clientHeight || 400), 0.1, 100);
+    this.camera.position.set(10, 7, 10);
+    this.camera.lookAt(0, 0, 0);
+    addLights(this.scene);
+
+    // Bounding box
+    const boxGeo = new THREE.BoxGeometry(5, 5, 5);
+    const boxEdges = new THREE.EdgesGeometry(boxGeo);
+    this.boundingBox = new THREE.LineSegments(boxEdges, new THREE.LineBasicMaterial({ color: 0x333355 }));
+    this.scene.add(this.boundingBox);
+
+    // Camera frustum (small wireframe)
+    const frustumGeo = new THREE.ConeGeometry(1.5, 3, 4);
+    const frustumEdges = new THREE.EdgesGeometry(frustumGeo);
+    this.frustum = new THREE.LineSegments(frustumEdges, new THREE.LineBasicMaterial({ color: 0x6c5ce7 }));
+    this.frustum.position.set(-6, 3, 4);
+    this.frustum.rotation.z = Math.PI / 6;
+    this.frustum.rotation.x = -0.3;
+    this.scene.add(this.frustum);
+
+    // Camera body
+    const camBody = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 0.8, 0.6),
+      new THREE.MeshPhongMaterial({ color: 0x6c5ce7, transparent: true, opacity: 0.7 })
+    );
+    camBody.position.copy(this.frustum.position);
+    camBody.position.x -= 1.5;
+    this.scene.add(camBody);
+
+    // Rays
+    this.rays = [];
+    this.raySamples = [];
+    const rayCount = 6;
+    const samplesPerRay = 16;
+    const rayOrigin = new THREE.Vector3(-6, 3, 4);
+
+    for (let r = 0; r < rayCount; r++) {
+      const angle1 = (r / rayCount - 0.5) * 0.6;
+      const angle2 = (Math.floor(r / 3) / 2 - 0.25) * 0.5;
+      const dir = new THREE.Vector3(
+        1 + angle1 * 0.3,
+        -0.5 + angle2,
+        -0.6 + angle1 * 0.5
+      ).normalize();
+
+      // Ray line
+      const rayEnd = rayOrigin.clone().add(dir.clone().multiplyScalar(14));
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([rayOrigin, rayEnd]);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: new THREE.Color().setHSL(r / rayCount * 0.3 + 0.1, 0.8, 0.6),
+        transparent: true,
+        opacity: 0.4
+      });
+      const line = new THREE.Line(lineGeo, lineMat);
+      this.scene.add(line);
+      this.rays.push(line);
+
+      // Sample points along ray
+      const samples = [];
+      for (let s = 0; s < samplesPerRay; s++) {
+        const t = 3 + (s / samplesPerRay) * 10;
+        const samplePos = rayOrigin.clone().add(dir.clone().multiplyScalar(t));
+
+        // Only add if inside bounding box region
+        if (Math.abs(samplePos.x) < 2.8 && Math.abs(samplePos.y) < 2.8 && Math.abs(samplePos.z) < 2.8) {
+          // Density based on distance from center (simulated implicit field)
+          const distCenter = samplePos.length();
+          const density = Math.max(0, 1 - distCenter / 2.5);
+
+          const sampleMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.05 + density * 0.12, 8, 8),
+            new THREE.MeshPhongMaterial({
+              color: new THREE.Color().setHSL(0.05 + density * 0.15, 0.8, 0.4 + density * 0.3),
+              transparent: true,
+              opacity: 0.2 + density * 0.6,
+              emissive: new THREE.Color().setHSL(0.05 + density * 0.15, 0.5, 0.2),
+              emissiveIntensity: density
+            })
+          );
+          sampleMesh.position.copy(samplePos);
+          this.scene.add(sampleMesh);
+          samples.push({ mesh: sampleMesh, density, t: s / samplesPerRay });
+        }
+      }
+      this.raySamples.push(samples);
+    }
+
+    // Ghost point cloud (implicit field)
+    const cloudCount = 800;
+    const cloudGeo = new THREE.BufferGeometry();
+    const cloudPos = new Float32Array(cloudCount * 3);
+    const cloudCol = new Float32Array(cloudCount * 3);
+    for (let i = 0; i < cloudCount; i++) {
+      let x, y, z;
+      do {
+        x = (Math.random() - 0.5) * 5;
+        y = (Math.random() - 0.5) * 5;
+        z = (Math.random() - 0.5) * 5;
+      } while (Math.sqrt(x*x + y*y + z*z) > 2.2);
+      cloudPos[i*3] = x; cloudPos[i*3+1] = y; cloudPos[i*3+2] = z;
+      const d = 1 - Math.sqrt(x*x + y*y + z*z) / 2.2;
+      cloudCol[i*3] = 0.3 + d * 0.4;
+      cloudCol[i*3+1] = 0.2 + d * 0.5;
+      cloudCol[i*3+2] = 0.5 + d * 0.3;
+    }
+    cloudGeo.setAttribute('position', new THREE.BufferAttribute(cloudPos, 3));
+    cloudGeo.setAttribute('color', new THREE.BufferAttribute(cloudCol, 3));
+    this.cloud = new THREE.Points(cloudGeo, new THREE.PointsMaterial({
+      size: 0.04, vertexColors: true, transparent: true, opacity: 0.25
+    }));
+    this.scene.add(this.cloud);
+
+    // Pixel grid result (small plane at bottom)
+    const pixCanvas = document.createElement('canvas');
+    pixCanvas.width = 6; pixCanvas.height = 2;
+    const pctx = pixCanvas.getContext('2d');
+    for (let i = 0; i < 6; i++) {
+      const hue = i / 6 * 60 + 20;
+      pctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+      pctx.fillRect(i, 0, 1, 2);
+    }
+    this.pixTex = new THREE.CanvasTexture(pixCanvas);
+    this.pixTex.magFilter = THREE.NearestFilter;
+    const pixPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(3, 1),
+      new THREE.MeshBasicMaterial({ map: this.pixTex })
+    );
+    pixPlane.position.set(-6, -1, 4);
+    pixPlane.rotation.y = 0.4;
+    this.scene.add(pixPlane);
+
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+    this.time = 0;
+    this.progress = 0;
+    this.autoPlay = false;
+  }
+
+  activate() {
+    if (!this.running) {
+      this.running = true;
+      this._animate();
+    }
+  }
+
+  deactivate() { this.running = false; }
+
+  setProgress(p) { this.progress = Math.max(0, Math.min(1, p)); }
+
+  getPhaseLabel() {
+    if (this.progress < 0.2) return 'Frustum';
+    if (this.progress < 0.5) return 'Rays extend';
+    if (this.progress < 0.8) return 'Sampling';
+    return 'Compositing';
+  }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.time += 0.008;
+
+    if (this.autoPlay) {
+      this.progress = Math.min(1, this.progress + 0.001);
+    }
+
+    const p = this.progress;
+
+    // Phase 1 (0-0.2): frustum visible, rays hidden
+    // Phase 2 (0.2-0.5): rays extend progressively
+    // Phase 3 (0.5-0.8): sample points appear
+    // Phase 4 (0.8-1.0): colors accumulate, pixel grid
+
+    // Rays visibility
+    for (let r = 0; r < this.rays.length; r++) {
+      const rayThreshold = 0.2 + (r / this.rays.length) * 0.3;
+      this.rays[r].material.opacity = p > rayThreshold ? 0.4 : 0.0;
+    }
+
+    // Sample points
+    for (let r = 0; r < this.raySamples.length; r++) {
+      for (let s = 0; s < this.raySamples[r].length; s++) {
+        const sample = this.raySamples[r][s];
+        const sampleThreshold = 0.5 + sample.t * 0.3;
+        const visible = p > sampleThreshold;
+        const pulse = Math.sin(this.time * 3 - sample.t * 4 + r * 0.5) * 0.5 + 0.5;
+
+        if (visible) {
+          const intensity = Math.min(1, (p - sampleThreshold) / 0.1);
+          sample.mesh.material.opacity = (0.2 + sample.density * 0.6) * intensity * (0.5 + pulse * 0.5);
+          sample.mesh.scale.setScalar((0.8 + pulse * 0.4) * intensity);
+        } else {
+          sample.mesh.material.opacity = 0;
+          sample.mesh.scale.setScalar(0.01);
+        }
+      }
+    }
+
+    // Cloud visibility tied to progress
+    this.cloud.material.opacity = p > 0.3 ? Math.min(0.25, (p - 0.3) * 0.5) : 0;
+    this.cloud.rotation.y = this.time * 0.1;
+
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S5 Marching Cubes
+// ══════════════════════════════════════════════════════════
+class MarchingCubesScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+    this.renderer = makeRenderer(canvas);
+    this.renderer.shadowMap.enabled = true;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(45, (canvas.clientWidth || 400) / (canvas.clientHeight || 400), 0.1, 100);
+    this.camera.position.set(10, 8, 10);
+
+    this.controls = new OrbitControls(this.camera, canvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.target.set(0, 0, 0);
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 1.0;
+    this.controls.update();
+
+    addLights(this.scene);
+
+    const gridSize = 8;
+    const cellSize = 5 / gridSize;
+    const half = 2.5;
+    this.gridSize = gridSize;
+    this.cellSize = cellSize;
+    this.half = half;
+
+    // Wireframe grid
+    const gridMat = new THREE.LineBasicMaterial({ color: 0x222244, transparent: true, opacity: 0.3 });
+    for (let x = 0; x <= gridSize; x++) {
+      for (let y = 0; y <= gridSize; y++) {
+        const px = x * cellSize - half;
+        const py = y * cellSize - half;
+        const geo = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(px, py, -half),
+          new THREE.Vector3(px, py, half)
+        ]);
+        this.scene.add(new THREE.Line(geo, gridMat));
+      }
+      for (let z = 0; z <= gridSize; z++) {
+        const px = x * cellSize - half;
+        const pz = z * cellSize - half;
+        const geo = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(px, -half, pz),
+          new THREE.Vector3(px, half, pz)
+        ]);
+        this.scene.add(new THREE.Line(geo, gridMat));
+      }
+    }
+    for (let y = 0; y <= gridSize; y++) {
+      for (let z = 0; z <= gridSize; z++) {
+        const py = y * cellSize - half;
+        const pz = z * cellSize - half;
+        const geo = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(-half, py, pz),
+          new THREE.Vector3(half, py, pz)
+        ]);
+        this.scene.add(new THREE.Line(geo, gridMat));
+      }
+    }
+
+    // Implicit field: signed distance to a sphere (radius ~1.8)
+    this.sdfRadius = 1.8;
+    this.sdf = (x, y, z) => Math.sqrt(x*x + y*y + z*z) - this.sdfRadius;
+
+    // Corner vertices (green = inside, red = outside)
+    this.cornerMeshes = [];
+    for (let x = 0; x <= gridSize; x++) {
+      for (let y = 0; y <= gridSize; y++) {
+        for (let z = 0; z <= gridSize; z++) {
+          const px = x * cellSize - half;
+          const py = y * cellSize - half;
+          const pz = z * cellSize - half;
+          const inside = this.sdf(px, py, pz) < 0;
+          const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.06, 6, 6),
+            new THREE.MeshBasicMaterial({
+              color: inside ? 0x51cf66 : 0xff6b6b,
+              transparent: true,
+              opacity: 0.0
+            })
+          );
+          mesh.position.set(px, py, pz);
+          mesh.userData.inside = inside;
+          this.scene.add(mesh);
+          this.cornerMeshes.push(mesh);
+        }
+      }
+    }
+
+    // Current cell highlight
+    this.cellHighlight = new THREE.Mesh(
+      new THREE.BoxGeometry(cellSize, cellSize, cellSize),
+      new THREE.MeshBasicMaterial({ color: 0xffd43b, transparent: true, opacity: 0.15, wireframe: true })
+    );
+    this.cellHighlight.visible = false;
+    this.scene.add(this.cellHighlight);
+
+    // Generated mesh (grows progressively)
+    this.meshVertices = [];
+    this.meshGeometry = new THREE.BufferGeometry();
+    this.generatedMesh = new THREE.Mesh(
+      this.meshGeometry,
+      new THREE.MeshPhongMaterial({
+        color: 0x00cec9,
+        transparent: true,
+        opacity: 0.85,
+        side: THREE.DoubleSide,
+        shininess: 80,
+      })
+    );
+    this.scene.add(this.generatedMesh);
+
+    // Precompute all triangles
+    this._precomputeMesh();
+
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+    this.time = 0;
+    this.progress = 0;
+    this.autoPlay = false;
+    this.totalCells = gridSize * gridSize * gridSize;
+  }
+
+  _precomputeMesh() {
+    // Simple marching cubes on sphere SDF
+    const g = this.gridSize;
+    const cs = this.cellSize;
+    const h = this.half;
+    const allVerts = [];
+    this.cellTriCounts = []; // how many verts per cell (cumulative)
+
+    for (let x = 0; x < g; x++) {
+      for (let y = 0; y < g; y++) {
+        for (let z = 0; z < g; z++) {
+          const corners = [];
+          for (let dz = 0; dz < 2; dz++) {
+            for (let dy = 0; dy < 2; dy++) {
+              for (let dx = 0; dx < 2; dx++) {
+                const px = (x + dx) * cs - h;
+                const py = (y + dy) * cs - h;
+                const pz = (z + dz) * cs - h;
+                corners.push({ x: px, y: py, z: pz, val: this.sdf(px, py, pz) });
+              }
+            }
+          }
+
+          // Find edge crossings and create triangles
+          const threshold = 0;
+          let cubeIndex = 0;
+          for (let i = 0; i < 8; i++) {
+            if (corners[i].val < threshold) cubeIndex |= (1 << i);
+          }
+
+          if (cubeIndex === 0 || cubeIndex === 255) {
+            this.cellTriCounts.push(allVerts.length);
+            continue;
+          }
+
+          // Simplified: for each edge that crosses the surface, interpolate position
+          const edgePairs = [
+            [0,1],[2,3],[4,5],[6,7],
+            [0,2],[1,3],[4,6],[5,7],
+            [0,4],[1,5],[2,6],[3,7]
+          ];
+
+          const edgeVerts = [];
+          for (const [a, b] of edgePairs) {
+            if ((corners[a].val < 0) !== (corners[b].val < 0)) {
+              const t = corners[a].val / (corners[a].val - corners[b].val);
+              edgeVerts.push(new THREE.Vector3(
+                corners[a].x + t * (corners[b].x - corners[a].x),
+                corners[a].y + t * (corners[b].y - corners[a].y),
+                corners[a].z + t * (corners[b].z - corners[a].z)
+              ));
+            }
+          }
+
+          // Create triangles from edge vertices (fan from first vertex)
+          if (edgeVerts.length >= 3) {
+            for (let i = 1; i < edgeVerts.length - 1; i++) {
+              allVerts.push(
+                edgeVerts[0].x, edgeVerts[0].y, edgeVerts[0].z,
+                edgeVerts[i].x, edgeVerts[i].y, edgeVerts[i].z,
+                edgeVerts[i+1].x, edgeVerts[i+1].y, edgeVerts[i+1].z
+              );
+            }
+          }
+          this.cellTriCounts.push(allVerts.length);
+        }
+      }
+    }
+
+    // Store computed vertices
+    this.allMeshVerts = new Float32Array(allVerts);
+    this.meshGeometry.setAttribute('position', new THREE.BufferAttribute(this.allMeshVerts, 3));
+    this.meshGeometry.setDrawRange(0, 0);
+  }
+
+  setProgress(p) { this.progress = Math.max(0, Math.min(1, p)); }
+
+  getPhaseLabel() {
+    if (this.progress >= 1) return 'Complete mesh';
+    const cellIdx = Math.floor(this.progress * this.totalCells);
+    return `Cell ${cellIdx}/${this.totalCells}`;
+  }
+
+  activate() {
+    if (!this.running) {
+      this.running = true;
+      this._animate();
+    }
+  }
+
+  deactivate() { this.running = false; }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.time += 0.008;
+
+    if (this.autoPlay) {
+      this.progress = Math.min(1, this.progress + 0.001);
+    }
+
+    const cellIdx = Math.floor(this.progress * this.totalCells);
+    const g = this.gridSize;
+    const isComplete = this.progress >= 1;
+
+    // Update mesh draw range
+    if (cellIdx < this.cellTriCounts.length) {
+      const vertCount = this.cellTriCounts[cellIdx] / 3;
+      this.meshGeometry.setDrawRange(0, vertCount);
+    }
+    if (isComplete) {
+      this.meshGeometry.setDrawRange(0, this.allMeshVerts.length / 3);
+      this.meshGeometry.computeVertexNormals();
+    }
+
+    // Highlight current cell
+    if (!isComplete && cellIdx < this.totalCells) {
+      const x = cellIdx % g;
+      const y = Math.floor(cellIdx / g) % g;
+      const z = Math.floor(cellIdx / (g * g)) % g;
+      this.cellHighlight.position.set(
+        (x + 0.5) * this.cellSize - this.half,
+        (y + 0.5) * this.cellSize - this.half,
+        (z + 0.5) * this.cellSize - this.half
+      );
+      this.cellHighlight.visible = true;
+
+      // Show nearby corner vertices
+      for (let i = 0; i < this.cornerMeshes.length; i++) {
+        const cx = i % (g + 1);
+        const cy = Math.floor(i / (g + 1)) % (g + 1);
+        const cz = Math.floor(i / ((g + 1) * (g + 1)));
+        const dist = Math.abs(cx - x) + Math.abs(cy - y) + Math.abs(cz - z);
+        this.cornerMeshes[i].material.opacity = dist <= 2 ? 0.7 : 0.1;
+      }
+    } else {
+      this.cellHighlight.visible = false;
+      for (const cm of this.cornerMeshes) cm.material.opacity = isComplete ? 0.05 : 0.1;
+    }
+
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S6 Final — Voxel Cat
+// ══════════════════════════════════════════════════════════
+class VoxelCatScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+
+    this.renderer = makeRenderer(canvas);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(40, (canvas.clientWidth || 400) / (canvas.clientHeight || 400), 0.1, 500);
+
+    this.controls = new OrbitControls(this.camera, canvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 2.0;
+
+    this.scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.6));
+    const dl = new THREE.DirectionalLight(0xffffff, 1.4);
+    dl.position.set(40, 60, 30); dl.castShadow = true;
+    dl.shadow.mapSize.set(512, 512);
+    this.scene.add(dl);
+
+    this.voxelMesh = null;
+    this.groundMesh = null;
+    this.gridHelper = null;
+    this.setModel(window.__CAT_V4);
+
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+  }
+
+  setModel(code) {
+    // Remove old mesh/ground/grid
+    if (this.voxelMesh) { this.scene.remove(this.voxelMesh); this.voxelMesh.geometry.dispose(); }
+    if (this.groundMesh) this.scene.remove(this.groundMesh);
+    if (this.gridHelper) this.scene.remove(this.gridHelper);
+
+    const p = parseV4(code);
+    if (p.voxels.length === 0) return;
+
+    const cx = p.gridW/2, cy = p.gridH/4, cz = p.gridD/2;
+    const dist = Math.max(p.gridW, p.gridH, p.gridD) * 1.6;
+    this.camera.position.set(cx + dist*0.7, cy + dist*0.6, cz + dist*0.7);
+    this.controls.target.set(cx, cy, cz);
+    this.controls.update();
+
+    this.groundMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(100, 100),
+      new THREE.ShadowMaterial({ opacity: 0.12 })
+    );
+    this.groundMesh.rotation.x = -Math.PI/2;
+    this.groundMesh.position.set(cx, 0, cz);
+    this.groundMesh.receiveShadow = true;
+    this.scene.add(this.groundMesh);
+
+    this.gridHelper = new THREE.GridHelper(p.gridW, p.gridW, 0x222233, 0x181822);
+    this.gridHelper.position.set(cx, 0, cz);
+    this.scene.add(this.gridHelper);
+
+    const boxGeo = new THREE.BoxGeometry(0.94, 0.94, 0.94);
+    const mat = new THREE.MeshLambertMaterial();
+    this.voxelMesh = new THREE.InstancedMesh(boxGeo, mat, p.voxels.length);
+    this.voxelMesh.castShadow = true; this.voxelMesh.receiveShadow = true;
+    const mx = new THREE.Matrix4(), cl = new THREE.Color();
+    for (let i = 0; i < p.voxels.length; i++) {
+      const v = p.voxels[i];
+      mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+      this.voxelMesh.setMatrixAt(i, mx);
+      cl.setHex(COLORS[v.color] || COLORS[9]);
+      this.voxelMesh.setColorAt(i, cl);
+    }
+    this.voxelMesh.instanceMatrix.needsUpdate = true;
+    this.voxelMesh.instanceColor.needsUpdate = true;
+    this.scene.add(this.voxelMesh);
+  }
+
+  activate() {
+    if (this.running) return;
+    this.running = true;
+    this._animate();
+  }
+
+  deactivate() { this.running = false; }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// Marching Cubes on V4 voxel data
+// ══════════════════════════════════════════════════════════
+
+// 3D Gaussian blur on a Float32Array grid
+function gaussianBlur3D(field, W, H, D, sigma) {
+  const radius = Math.ceil(sigma * 2);
+  const kernel = [];
+  let sum = 0;
+  for (let i = -radius; i <= radius; i++) {
+    const v = Math.exp(-(i * i) / (2 * sigma * sigma));
+    kernel.push(v);
+    sum += v;
+  }
+  for (let i = 0; i < kernel.length; i++) kernel[i] /= sum;
+
+  const idx = (x, y, z) => x + y * W + z * W * H;
+  const temp1 = new Float32Array(field.length);
+  const temp2 = new Float32Array(field.length);
+
+  // Blur X
+  for (let z = 0; z < D; z++) {
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        let val = 0;
+        for (let k = -radius; k <= radius; k++) {
+          const sx = Math.max(0, Math.min(W - 1, x + k));
+          val += field[idx(sx, y, z)] * kernel[k + radius];
+        }
+        temp1[idx(x, y, z)] = val;
+      }
+    }
+  }
+  // Blur Y
+  for (let z = 0; z < D; z++) {
+    for (let x = 0; x < W; x++) {
+      for (let y = 0; y < H; y++) {
+        let val = 0;
+        for (let k = -radius; k <= radius; k++) {
+          const sy = Math.max(0, Math.min(H - 1, y + k));
+          val += temp1[idx(x, sy, z)] * kernel[k + radius];
+        }
+        temp2[idx(x, y, z)] = val;
+      }
+    }
+  }
+  // Blur Z
+  const out = new Float32Array(field.length);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      for (let z = 0; z < D; z++) {
+        let val = 0;
+        for (let k = -radius; k <= radius; k++) {
+          const sz = Math.max(0, Math.min(D - 1, z + k));
+          val += temp2[idx(x, y, sz)] * kernel[k + radius];
+        }
+        out[idx(x, y, z)] = val;
+      }
+    }
+  }
+  return out;
+}
+
+// Marching cubes on a scalar field — returns {positions: Float32Array, colors: Float32Array}
+function marchingCubesFromV4(parsed, sigma) {
+  const W = parsed.gridW, H = parsed.gridH, D = parsed.gridD;
+  // Build occupancy + color grids
+  const occupancy = new Float32Array(W * H * D);
+  const colorGrid = new Int8Array(W * H * D).fill(-1);
+  const idx = (x, y, z) => x + y * W + z * W * H;
+
+  for (const v of parsed.voxels) {
+    if (v.x >= 0 && v.x < W && v.y >= 0 && v.y < H && v.z >= 0 && v.z < D) {
+      occupancy[idx(v.x, v.y, v.z)] = 1.0;
+      colorGrid[idx(v.x, v.y, v.z)] = v.color;
+    }
+  }
+
+  // Blur the occupancy to create a smooth field
+  const field = gaussianBlur3D(occupancy, W, H, D, sigma);
+  const threshold = 0.25;
+
+  // March through cells
+  const positions = [];
+  const colors = [];
+  const edgePairs = [
+    [0,1],[2,3],[4,5],[6,7],
+    [0,2],[1,3],[4,6],[5,7],
+    [0,4],[1,5],[2,6],[3,7]
+  ];
+  const cornerOffsets = [
+    [0,0,0],[1,0,0],[0,1,0],[1,1,0],
+    [0,0,1],[1,0,1],[0,1,1],[1,1,1]
+  ];
+
+  for (let z = 0; z < D - 1; z++) {
+    for (let y = 0; y < H - 1; y++) {
+      for (let x = 0; x < W - 1; x++) {
+        // Sample 8 corners
+        const vals = [];
+        for (const [dx, dy, dz] of cornerOffsets) {
+          vals.push(field[idx(x + dx, y + dy, z + dz)]);
+        }
+
+        // Classify corners
+        let cubeIndex = 0;
+        for (let i = 0; i < 8; i++) {
+          if (vals[i] > threshold) cubeIndex |= (1 << i);
+        }
+        if (cubeIndex === 0 || cubeIndex === 255) continue;
+
+        // Find edge crossings
+        const edgeVerts = [];
+        for (const [a, b] of edgePairs) {
+          if ((vals[a] > threshold) !== (vals[b] > threshold)) {
+            const t = (threshold - vals[a]) / (vals[b] - vals[a]);
+            const ax = x + cornerOffsets[a][0], ay = y + cornerOffsets[a][1], az = z + cornerOffsets[a][2];
+            const bx = x + cornerOffsets[b][0], by = y + cornerOffsets[b][1], bz = z + cornerOffsets[b][2];
+            edgeVerts.push({
+              x: ax + t * (bx - ax) + 0.5,
+              y: ay + t * (by - ay) + 0.5,
+              z: az + t * (bz - az) + 0.5,
+            });
+          }
+        }
+
+        if (edgeVerts.length < 3) continue;
+
+        // Find nearest voxel color for this cell
+        let bestColor = 9;
+        let bestDist = Infinity;
+        const cx2 = x + 0.5, cy2 = y + 0.5, cz2 = z + 0.5;
+        for (let dz = -2; dz <= 2; dz++) {
+          for (let dy = -2; dy <= 2; dy++) {
+            for (let dx = -2; dx <= 2; dx++) {
+              const sx = x + dx, sy = y + dy, sz = z + dz;
+              if (sx >= 0 && sx < W && sy >= 0 && sy < H && sz >= 0 && sz < D) {
+                const ci = colorGrid[idx(sx, sy, sz)];
+                if (ci >= 0) {
+                  const d = dx*dx + dy*dy + dz*dz;
+                  if (d < bestDist) { bestDist = d; bestColor = ci; }
+                }
+              }
+            }
+          }
+        }
+
+        const c = new THREE.Color(COLORS[bestColor] || COLORS[9]);
+        // Fan triangulation
+        for (let i = 1; i < edgeVerts.length - 1; i++) {
+          positions.push(
+            edgeVerts[0].x, edgeVerts[0].y, edgeVerts[0].z,
+            edgeVerts[i].x, edgeVerts[i].y, edgeVerts[i].z,
+            edgeVerts[i+1].x, edgeVerts[i+1].y, edgeVerts[i+1].z
+          );
+          for (let j = 0; j < 3; j++) colors.push(c.r, c.g, c.b);
+        }
+      }
+    }
+  }
+
+  return {
+    positions: new Float32Array(positions),
+    colors: new Float32Array(colors),
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+// SCENE: S6 Smooth Cat (marching cubes + sphere cloud modes)
+// ══════════════════════════════════════════════════════════
+class SmoothCatScene {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.running = false;
+    this.parsed = parseV4(window.__CAT_V4);
+    this.mode = 'mc';
+    this.blurSigma = 1.2;
+    this.mcMesh = null;
+    this.sphereMesh = null;
+    this.groundMesh = null;
+
+    this.renderer = makeRenderer(canvas);
+    this.renderer.shadowMap.enabled = true;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(40, (canvas.clientWidth || 400) / (canvas.clientHeight || 400), 0.1, 500);
+
+    this.controls = new OrbitControls(this.camera, canvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 2.0;
+
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.5));
+    const dl = new THREE.DirectionalLight(0xffffff, 1.6);
+    dl.position.set(40, 60, 30); dl.castShadow = true;
+    dl.shadow.mapSize.set(512, 512);
+    this.scene.add(dl);
+    const bl = new THREE.DirectionalLight(0x8888ff, 0.4);
+    bl.position.set(-30, 40, -20);
+    this.scene.add(bl);
+
+    this._buildAll();
+    this.ro = makeResizeObserver(canvas, this.renderer, this.camera);
+  }
+
+  setModel(code) {
+    this.parsed = parseV4(code);
+    this._buildAll();
+  }
+
+  _buildAll() {
+    // Remove old objects
+    if (this.mcMesh) { this.scene.remove(this.mcMesh); this.mcMesh.geometry.dispose(); this.mcMesh = null; }
+    if (this.sphereMesh) { this.scene.remove(this.sphereMesh); this.sphereMesh.geometry.dispose(); this.sphereMesh = null; }
+    if (this.groundMesh) this.scene.remove(this.groundMesh);
+
+    const p = this.parsed;
+    if (p.voxels.length === 0) return;
+
+    const cx = p.gridW/2, cy = p.gridH/4, cz = p.gridD/2;
+    const dist = Math.max(p.gridW, p.gridH, p.gridD) * 1.6;
+    this.camera.position.set(cx + dist*0.7, cy + dist*0.6, cz + dist*0.7);
+    this.controls.target.set(cx, cy, cz);
+    this.controls.update();
+
+    this.groundMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(100, 100),
+      new THREE.ShadowMaterial({ opacity: 0.12 })
+    );
+    this.groundMesh.rotation.x = -Math.PI/2;
+    this.groundMesh.position.set(cx, 0, cz);
+    this.groundMesh.receiveShadow = true;
+    this.scene.add(this.groundMesh);
+
+    this._buildMarchingCubesMesh();
+    this._buildSphereCloud();
+
+    this.sphereMesh.visible = this.mode === 'spheres';
+    this.mcMesh.visible = this.mode === 'mc';
+  }
+
+  _buildMarchingCubesMesh() {
+    if (this.mcMesh) { this.scene.remove(this.mcMesh); this.mcMesh.geometry.dispose(); }
+
+    const result = marchingCubesFromV4(this.parsed, this.blurSigma);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(result.positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(result.colors, 3));
+    geo.computeVertexNormals();
+
+    this.mcMesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+      vertexColors: true,
+      shininess: 60,
+      side: THREE.DoubleSide,
+    }));
+    this.mcMesh.castShadow = true;
+    this.scene.add(this.mcMesh);
+  }
+
+  _buildSphereCloud() {
+    if (this.sphereMesh) { this.scene.remove(this.sphereMesh); this.sphereMesh.geometry.dispose(); }
+    const p = this.parsed;
+    const sphereGeo = new THREE.SphereGeometry(0.55, 12, 12);
+    const mat = new THREE.MeshPhongMaterial({ shininess: 80 });
+    this.sphereMesh = new THREE.InstancedMesh(sphereGeo, mat, p.voxels.length);
+    this.sphereMesh.castShadow = true;
+    const mx = new THREE.Matrix4(), cl = new THREE.Color();
+    for (let i = 0; i < p.voxels.length; i++) {
+      const v = p.voxels[i];
+      mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+      this.sphereMesh.setMatrixAt(i, mx);
+      cl.setHex(COLORS[v.color] || COLORS[9]);
+      cl.r = Math.min(1, cl.r * 1.3);
+      cl.g = Math.min(1, cl.g * 1.3);
+      cl.b = Math.min(1, cl.b * 1.3);
+      this.sphereMesh.setColorAt(i, cl);
+    }
+    this.sphereMesh.instanceMatrix.needsUpdate = true;
+    this.sphereMesh.instanceColor.needsUpdate = true;
+    this.scene.add(this.sphereMesh);
+  }
+
+  setMode(mode) {
+    this.mode = mode;
+    this.mcMesh.visible = mode === 'mc';
+    this.sphereMesh.visible = mode === 'spheres';
+  }
+
+  setBlur(sigma) {
+    this.blurSigma = sigma;
+    const wasVisible = this.mcMesh.visible;
+    this._buildMarchingCubesMesh();
+    this.mcMesh.visible = wasVisible;
+  }
+
+  activate() {
+    if (this.running) return;
+    this.running = true;
+    this._animate();
+  }
+
+  deactivate() { this.running = false; }
+
+  _animate() {
+    if (!this.running) return;
+    requestAnimationFrame(() => this._animate());
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  dispose() { this.running = false; this.ro.disconnect(); this.renderer.dispose(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// SECTION MANAGER
+// ══════════════════════════════════════════════════════════
+class SectionManager {
+  constructor() {
+    this.sections = document.querySelectorAll('.section');
+    this.scenes = {};
+    this.activeSection = null;
+
+    // Initialize scenes
+    this._initScenes();
+
+    // Nav dots
+    this._createNavDots();
+
+    // Progress bar
+    this._setupProgressBar();
+
+    // Pipeline animation
+    this._setupPipelineAnimation();
+
+    // Section reveal animation
+    this._setupRevealAnimation();
+
+    // Wire up playback controls
+    this._setupControls();
+
+    // IntersectionObserver for scene activation
+    this._setupObserver();
+  }
+
+  _initScenes() {
+    const tryCreate = (id, SceneClass, key) => {
+      const canvas = document.getElementById(id);
+      if (!canvas) { console.warn('Canvas not found:', id); return; }
+      try {
+        this.scenes[key] = new SceneClass(canvas);
+      } catch (e) {
+        console.error(`Failed to create scene ${key}:`, e);
+      }
+    };
+
+    tryCreate('hero-canvas', HeroScene, 's0');
+    tryCreate('canvas-patches', PatchScene, 's2');
+    tryCreate('canvas-triplane', TriplaneScene, 's3');
+    tryCreate('canvas-nerf', NerfScene, 's4');
+    tryCreate('canvas-marching', MarchingCubesScene, 's5');
+    tryCreate('canvas-voxel', VoxelCatScene, 's6v');
+    tryCreate('canvas-smooth', SmoothCatScene, 's6s');
+
+    console.log('Scenes initialized:', Object.keys(this.scenes));
+  }
+
+  _createNavDots() {
+    const container = document.getElementById('nav-dots');
+    this.sections.forEach((section, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'nav-dot';
+      dot.title = section.dataset.label || `Section ${i}`;
+      dot.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth' }));
+      container.appendChild(dot);
+    });
+    this.dots = container.querySelectorAll('.nav-dot');
+  }
+
+  _setupProgressBar() {
+    const bar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = `${(scrollTop / docHeight) * 100}%`;
+    }, { passive: true });
+  }
+
+  _setupPipelineAnimation() {
+    const row = document.getElementById('pipeline-row');
+    if (!row) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const steps = row.querySelectorAll('.pipe-step');
+          const arrows = row.querySelectorAll('.pipe-arrow');
+          steps.forEach((step, i) => {
+            setTimeout(() => step.classList.add('visible'), parseInt(step.dataset.delay) || i * 200);
+          });
+          arrows.forEach((arrow, i) => {
+            setTimeout(() => arrow.classList.add('visible'), 100 + i * 200);
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(row);
+  }
+
+  _setupRevealAnimation() {
+    const revealEls = document.querySelectorAll('.reveal');
+    if (revealEls.length === 0) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => observer.observe(el));
+  }
+
+  _activateScene(id) {
+    if (id === 's0' && this.scenes.s0) this.scenes.s0.activate();
+    if (id === 's2' && this.scenes.s2) this.scenes.s2.activate();
+    if (id === 's3' && this.scenes.s3) this.scenes.s3.activate();
+    if (id === 's4' && this.scenes.s4) this.scenes.s4.activate();
+    if (id === 's5' && this.scenes.s5) this.scenes.s5.activate();
+    if (id === 's6') {
+      if (this.scenes.s6v) this.scenes.s6v.activate();
+      if (this.scenes.s6s) this.scenes.s6s.activate();
+    }
+  }
+
+  _deactivateScene(id) {
+    if (id === 's0' && this.scenes.s0) this.scenes.s0.deactivate();
+    if (id === 's2' && this.scenes.s2) this.scenes.s2.deactivate();
+    if (id === 's3' && this.scenes.s3) this.scenes.s3.deactivate();
+    if (id === 's4' && this.scenes.s4) this.scenes.s4.deactivate();
+    if (id === 's5' && this.scenes.s5) this.scenes.s5.deactivate();
+    if (id === 's6') {
+      if (this.scenes.s6v) this.scenes.s6v.deactivate();
+      if (this.scenes.s6s) this.scenes.s6s.deactivate();
+    }
+  }
+
+  _setupControls() {
+    const sceneMap = { s2: this.scenes.s2, s4: this.scenes.s4, s5: this.scenes.s5 };
+
+    document.querySelectorAll('.scene-controls').forEach(ctrl => {
+      const sceneKey = ctrl.dataset.scene;
+      const scene = sceneMap[sceneKey];
+      if (!scene) return;
+
+      const slider = ctrl.querySelector('.scene-slider');
+      const playBtn = ctrl.querySelector('.play-btn');
+      const label = ctrl.querySelector('.phase-label');
+
+      // Slider drives progress
+      slider.addEventListener('input', () => {
+        scene.autoPlay = false;
+        playBtn.classList.remove('active');
+        playBtn.innerHTML = '&#9654;';
+        scene.setProgress(slider.value / 100);
+      });
+
+      // Play/Pause toggle
+      playBtn.addEventListener('click', () => {
+        scene.autoPlay = !scene.autoPlay;
+        if (scene.autoPlay) {
+          playBtn.classList.add('active');
+          playBtn.innerHTML = '&#9646;&#9646;';
+          // Reset if at end
+          if (scene.progress >= 0.99) scene.setProgress(0);
+        } else {
+          playBtn.classList.remove('active');
+          playBtn.innerHTML = '&#9654;';
+        }
+      });
+
+      // Sync slider and label from scene state each frame
+      const syncUI = () => {
+        requestAnimationFrame(syncUI);
+        slider.value = Math.round(scene.progress * 100);
+        if (scene.getPhaseLabel) label.textContent = scene.getPhaseLabel();
+      };
+      syncUI();
+    });
+
+    // S6 mode toggle + blur slider
+    const smoothScene = this.scenes.s6s;
+    if (smoothScene) {
+      const mcBtn = document.getElementById('mode-mc');
+      const spBtn = document.getElementById('mode-spheres');
+      const blurSlider = document.getElementById('blur-slider');
+      const blurValue = document.getElementById('blur-value');
+      const smoothLabel = document.getElementById('smooth-label');
+
+      const updateActive = (mode) => {
+        smoothScene.setMode(mode);
+        mcBtn.classList.toggle('active', mode === 'mc');
+        spBtn.classList.toggle('active', mode === 'spheres');
+        smoothLabel.textContent = mode === 'mc'
+          ? `Marching Cubes — blur σ ${smoothScene.blurSigma.toFixed(1)}`
+          : 'Sphere cloud';
+      };
+
+      mcBtn.addEventListener('click', () => updateActive('mc'));
+      spBtn.addEventListener('click', () => updateActive('spheres'));
+      updateActive('mc');
+
+      blurSlider.addEventListener('input', () => {
+        const sigma = blurSlider.value / 10;
+        blurValue.textContent = sigma.toFixed(1);
+        smoothScene.setBlur(sigma);
+        smoothLabel.textContent = `Marching Cubes — blur σ ${sigma.toFixed(1)}`;
+      });
+    }
+
+    // Model switcher (Cat / Fox)
+    const voxelScene = this.scenes.s6v;
+    const smoothScene2 = this.scenes.s6s;
+    const catBtn = document.getElementById('model-cat');
+    const foxBtn = document.getElementById('model-fox');
+    if (catBtn && foxBtn && voxelScene && smoothScene2) {
+      const models = { cat: window.__CAT_V4, fox: window.__FOX_V4 };
+      const switchModel = (key) => {
+        catBtn.classList.toggle('active', key === 'cat');
+        foxBtn.classList.toggle('active', key === 'fox');
+        voxelScene.setModel(models[key]);
+        smoothScene2.setModel(models[key]);
+      };
+      catBtn.addEventListener('click', () => switchModel('cat'));
+      foxBtn.addEventListener('click', () => switchModel('fox'));
+    }
+  }
+
+  _setupObserver() {
+    const self = this;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        const dotIdx = Array.from(self.sections).indexOf(entry.target);
+
+        if (entry.isIntersecting) {
+          // Activate scene
+          if (self.dots[dotIdx]) {
+            self.dots.forEach(d => d.classList.remove('active'));
+            self.dots[dotIdx].classList.add('active');
+          }
+          self._activateScene(id);
+        } else {
+          self._deactivateScene(id);
+        }
+      });
+    }, {
+      threshold: [0, 0.1, 0.3, 0.5],
+      rootMargin: '50px 0px 50px 0px',
+    });
+
+    this.sections.forEach(section => observer.observe(section));
+
+    // Immediately activate hero scene (visible on load)
+    if (this.scenes.s0) this.scenes.s0.activate();
+    if (this.dots[0]) this.dots[0].classList.add('active');
+
+  }
+}
+
+// ── Boot ──
+// Use 'load' instead of 'DOMContentLoaded' to ensure CSS layout is computed
+window.addEventListener('load', () => {
+  // Small delay to ensure all CSS is applied and canvases have dimensions
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      new SectionManager();
+    });
+  });
+});
+</script>
+
+</body>
+</html>

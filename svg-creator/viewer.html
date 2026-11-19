@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Sketch Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e8;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: #16213e;
+      border-bottom: 1px solid #2d3244;
+      flex-shrink: 0;
+    }
+
+    .toolbar h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #8888c8;
+      margin-right: 8px;
+    }
+
+    .toolbar button {
+      background: #2d3244;
+      color: #c0c0d8;
+      border: 1px solid #3d4266;
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .toolbar button:hover { background: #3d4266; }
+    .toolbar button.active { background: #4a4f8a; border-color: #6c6cff; color: #fff; }
+
+    .toolbar .spacer { flex: 1; }
+
+    .toolbar select {
+      background: #2d3244;
+      color: #c0c0d8;
+      border: 1px solid #3d4266;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 13px;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #6c8cff;
+    }
+
+    .canvas-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 30px;
+    }
+
+    .canvas-area.bg-white { background: #ffffff; }
+    .canvas-area.bg-dark { background: #1a1a2e; }
+    .canvas-area.bg-grid {
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+        linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+        linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+
+    #svg-container {
+      max-width: 100%;
+      max-height: 100%;
+      filter: drop-shadow(0 4px 20px rgba(0,0,0,0.2));
+    }
+
+    #svg-container svg {
+      display: block;
+      max-width: 90vw;
+      max-height: 80vh;
+    }
+
+    .info-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 20px;
+      background: #16213e;
+      border-top: 1px solid #2d3244;
+      font-size: 12px;
+      color: #6688aa;
+      flex-shrink: 0;
+    }
+
+    .ssl-preview {
+      display: none;
+      position: fixed;
+      top: 50px;
+      right: 20px;
+      width: 400px;
+      max-height: 80vh;
+      background: #16213e;
+      border: 1px solid #3d4266;
+      border-radius: 8px;
+      overflow: auto;
+      padding: 16px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #b0b8d0;
+      white-space: pre;
+      z-index: 100;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+
+    .ssl-preview.visible { display: block; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>SSL Viewer</h1>
+    <button id="btn-play" class="active" onclick="togglePlay()">Pause</button>
+    <button onclick="restart()">Restart</button>
+    <select id="speed" onchange="setSpeed(this.value)">
+      <option value="0.25">0.25x</option>
+      <option value="0.5">0.5x</option>
+      <option value="1" selected>1x</option>
+      <option value="2">2x</option>
+      <option value="3">3x</option>
+    </select>
+    <div class="spacer"></div>
+    <button id="btn-bg" onclick="cycleBg()">BG: White</button>
+    <button id="btn-ssl" onclick="toggleSSL()">SSL</button>
+    <button onclick="downloadSVG()">Download SVG</button>
+    <span class="status" id="status">Loading...</span>
+  </div>
+
+  <div class="canvas-area bg-white" id="canvas-area">
+    <div id="svg-container"></div>
+  </div>
+
+  <div class="ssl-preview" id="ssl-preview"></div>
+
+  <div class="info-bar">
+    <span id="info-dims"></span>
+    <span id="info-groups"></span>
+    <span id="info-anims"></span>
+  </div>
+
+  <script>
+    let isPlaying = true;
+    let currentBg = 0;
+    const bgModes = ['bg-white', 'bg-dark', 'bg-grid'];
+    const bgLabels = ['White', 'Dark', 'Grid'];
+    let lastSvgData = '';
+    let lastSslData = '';
+
+    async function loadSVG() {
+      try {
+        const res = await fetch('/api/latest');
+        const data = await res.json();
+
+        if (data.svg && data.svg !== lastSvgData) {
+          lastSvgData = data.svg;
+          lastSslData = data.ssl || '';
+
+          const container = document.getElementById('svg-container');
+          container.innerHTML = data.svg;
+
+          // Initialize draw-on animations — compute path lengths
+          initDrawOn();
+
+          // Update info
+          const svg = container.querySelector('svg');
+          if (svg) {
+            const vb = svg.getAttribute('viewBox') || '';
+            document.getElementById('info-dims').textContent = `Canvas: ${vb}`;
+            const groups = svg.querySelectorAll('g[id]');
+            document.getElementById('info-groups').textContent = `Groups: ${groups.length}`;
+            const styleEl = svg.querySelector('style');
+            const animCount = (styleEl?.textContent.match(/@keyframes/g) || []).length;
+            document.getElementById('info-anims').textContent = `Animations: ${animCount}`;
+          }
+
+          // Update SSL preview
+          document.getElementById('ssl-preview').textContent = lastSslData;
+
+          document.getElementById('status').textContent = 'Loaded';
+          document.getElementById('status').style.color = '#4caf50';
+        }
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error: ' + err.message;
+        document.getElementById('status').style.color = '#ff6b7a';
+      }
+    }
+
+    function initDrawOn() {
+      // Find all elements with stroke-dasharray set to var(--path-length)
+      const container = document.getElementById('svg-container');
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      // For each group with draw-on animation, compute total path length of children
+      const groups = svg.querySelectorAll('g[id]');
+      for (const g of groups) {
+        const style = window.getComputedStyle(g);
+        if (style.strokeDasharray && style.strokeDasharray !== 'none') {
+          let totalLength = 0;
+          const pathEls = g.querySelectorAll('path, line, circle, rect, ellipse, polyline');
+          for (const el of pathEls) {
+            if (typeof el.getTotalLength === 'function') {
+              totalLength += el.getTotalLength();
+            } else {
+              totalLength += 500; // estimate for elements without getTotalLength
+            }
+          }
+          if (totalLength > 0) {
+            g.style.setProperty('--path-length', totalLength);
+            // Also set on children
+            for (const el of pathEls) {
+              const len = typeof el.getTotalLength === 'function' ? el.getTotalLength() : 500;
+              el.style.strokeDasharray = len;
+              el.style.strokeDashoffset = len;
+              el.style.animation = g.style.animation;
+            }
+          }
+        }
+      }
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('btn-play');
+      btn.textContent = isPlaying ? 'Pause' : 'Play';
+      btn.classList.toggle('active', isPlaying);
+
+      const svg = document.querySelector('#svg-container svg');
+      if (svg) {
+        svg.style.animationPlayState = isPlaying ? 'running' : 'paused';
+        svg.querySelectorAll('*').forEach(el => {
+          el.style.animationPlayState = isPlaying ? 'running' : 'paused';
+        });
+      }
+    }
+
+    function restart() {
+      const container = document.getElementById('svg-container');
+      const html = container.innerHTML;
+      container.innerHTML = '';
+      // Force reflow
+      void container.offsetHeight;
+      container.innerHTML = html;
+      initDrawOn();
+      isPlaying = true;
+      document.getElementById('btn-play').textContent = 'Pause';
+      document.getElementById('btn-play').classList.add('active');
+    }
+
+    function setSpeed(val) {
+      const svg = document.querySelector('#svg-container svg');
+      if (svg) {
+        svg.style.setProperty('--speed', val);
+        svg.querySelectorAll('*').forEach(el => {
+          const current = window.getComputedStyle(el).animationDuration;
+          if (current && current !== '0s') {
+            // Scale duration by speed factor
+            const ms = parseFloat(current) * 1000;
+            el.style.animationDuration = (ms / parseFloat(val)) + 'ms';
+          }
+        });
+      }
+    }
+
+    function cycleBg() {
+      const area = document.getElementById('canvas-area');
+      area.classList.remove(bgModes[currentBg]);
+      currentBg = (currentBg + 1) % bgModes.length;
+      area.classList.add(bgModes[currentBg]);
+      document.getElementById('btn-bg').textContent = 'BG: ' + bgLabels[currentBg];
+    }
+
+    function toggleSSL() {
+      const panel = document.getElementById('ssl-preview');
+      panel.classList.toggle('visible');
+      document.getElementById('btn-ssl').classList.toggle('active', panel.classList.contains('visible'));
+    }
+
+    function downloadSVG() {
+      if (!lastSvgData) return;
+      const blob = new Blob([lastSvgData], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'illustration.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Initial load + poll for changes
+    loadSVG();
+    setInterval(loadSVG, 2000);
+  </script>
+</body>
+</html>

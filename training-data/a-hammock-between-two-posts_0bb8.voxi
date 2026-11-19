@@ -1,0 +1,34 @@
+V 32 20 16
+
+-- ground
+B 0 0 0 32 1 16 2
+
+-- left post
+B 3 1 7 2 13 2 a
+
+-- right post
+B 27 1 7 2 13 2 a
+
+-- left upper rope
+B 5 12 8 3 1 1 9
+
+-- left lower rope
+B 7 10 8 2 1 1 9
+
+-- hammock left end
+B 8 9 5 5 2 6 d
+
+-- hammock middle sag
+B 13 7 5 6 2 6 d
+
+-- hammock right end
+B 19 9 5 5 2 6 d
+
+-- right lower rope
+B 23 10 8 2 1 1 9
+
+-- right upper rope
+B 25 12 8 3 1 1 9
+
+-- pillow
+S 10 10 8 1 8

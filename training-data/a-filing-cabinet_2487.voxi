@@ -1,0 +1,43 @@
+V 24 24 24
+
+-- cabinet body
+B 8 0 9 8 20 6 9
+
+-- top cap
+B 8 20 9 8 1 6 8
+
+-- side trim left
+B 8 0 9 1 20 6 0
+
+-- side trim right
+B 15 0 9 1 20 6 0
+
+-- drawer face top
+B 9 15 8 6 4 1 8
+
+-- drawer face second
+B 9 10 8 6 4 1 8
+
+-- drawer face third
+B 9 5 8 6 4 1 8
+
+-- drawer face bottom
+B 9 0 8 6 4 1 8
+
+-- handle top drawer
+B 11 17 7 2 1 1 7
+
+-- handle second drawer
+B 11 12 7 2 1 1 7
+
+-- handle third drawer
+B 11 7 7 2 1 1 7
+
+-- handle bottom drawer
+B 11 2 7 2 1 1 7
+
+-- base feet left
+B 8 0 9 2 1 2 0
+
+-- base feet right
+B 14 0 9 2 1 2 0

@@ -1,0 +1,46 @@
+V 32 28 32
+
+-- front small wheels
+E 11 4 7 1 3 2 0
+E 21 4 7 1 3 2 0
+
+-- rear large wheels
+E 8 7 18 2 6 3 0
+E 24 7 18 2 6 3 0
+
+-- main chassis
+B 10 3 6 12 5 16 1
+
+-- engine hood
+B 11 5 4 10 8 8 1
+
+-- front grille
+B 11 4 3 10 7 2 9
+
+-- headlights
+B 11 10 3 2 2 1 6
+B 19 10 3 2 2 1 6
+
+-- hood stripe accent
+B 11 12 5 10 2 6 6
+
+-- exhaust stack
+C 14 13 5 1 8 9
+
+-- left rear fender
+B 8 8 14 3 5 8 1
+
+-- right rear fender
+B 21 8 14 3 5 8 1
+
+-- cab body
+B 10 8 14 12 10 8 8
+
+-- windshield
+B 10 8 13 12 9 1 3
+
+-- cab roof
+B 9 17 14 14 2 8 9
+
+-- rear hitch
+B 12 3 22 8 4 3 9

@@ -1,0 +1,16 @@
+V 36 22 8
+
+-- bow (outer ring)
+S 7 12 4 5 6
+-- bow hole
+S 7 12 4 2 0
+-- shaft
+B 12 10 3 20 3 2 6
+-- teeth
+B 16 7 3 2 3 2 6
+B 20 7 3 2 3 2 6
+B 24 7 3 3 3 2 6
+-- shoulder
+B 28 10 3 2 5 2 6
+-- tip
+B 32 10 3 2 3 2 8

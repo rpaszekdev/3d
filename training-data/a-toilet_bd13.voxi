@@ -1,0 +1,28 @@
+V 24 28 24
+
+-- pedestal base
+B 9 0 6 6 5 8 9
+
+-- bowl outer
+E 12 8 9 5 4 4 8
+
+-- water in bowl
+E 12 7 9 3 2 3 4
+
+-- toilet rim
+B 7 11 5 10 1 9 8
+
+-- seat
+B 7 12 5 10 1 9 9
+
+-- tank body
+B 7 11 14 10 10 5 8
+
+-- tank lid
+B 6 20 13 12 1 7 8
+
+-- flush handle
+B 16 15 13 2 2 1 9
+
+-- flush button
+S 17 17 14 1 9

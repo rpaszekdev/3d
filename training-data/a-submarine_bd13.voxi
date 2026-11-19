@@ -1,0 +1,40 @@
+V 40 20 24
+
+-- main pressure hull
+E 20 9 12 16 6 7 f
+
+-- nose dome
+S 5 9 12 5 3
+
+-- conning tower / sail
+B 17 14 10 6 6 4 9
+
+-- periscope
+C 19 20 12 1 6 9
+
+-- forward port hydroplane
+B 7 7 5 5 2 5 d
+
+-- forward starboard hydroplane
+B 7 7 14 5 2 5 d
+
+-- aft port hydroplane
+B 28 7 5 4 2 4 d
+
+-- aft starboard hydroplane
+B 28 7 15 4 2 4 d
+
+-- vertical stabilizer / rudder
+B 32 9 11 3 8 2 9
+
+-- horizontal stern plane
+B 31 7 8 3 2 8 d
+
+-- propeller shaft
+C 36 9 12 1 3 9
+
+-- propeller blade vertical
+B 36 5 12 1 8 1 7
+
+-- propeller blade horizontal
+B 36 9 9 1 1 6 7

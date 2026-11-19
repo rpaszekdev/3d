@@ -1,0 +1,100 @@
+P1
+# === FEET (orange) ===
+# Left foot - three toes
+0 185 2 210 4 4 12 7
+0 181 2 214 4 4 12 7
+0 189 2 214 4 4 12 7
+# Right foot - three toes
+0 215 2 210 4 4 12 7
+0 211 2 214 4 4 12 7
+0 219 2 214 4 4 12 7
+# Foot pads
+0 185 2 215 12 3 16 7
+0 215 2 215 12 3 16 7
+# === LEGS (black, short and stubby) ===
+0 185 8 208 8 10 8 0
+0 215 8 208 8 10 8 0
+# === LOWER BODY (white belly, egg-shaped) ===
+12 200 55 200 38 45 30 8
+# Upper belly
+12 200 90 200 34 35 28 8
+# === BACK BODY (black shell, wrapping around) ===
+12 200 55 190 40 47 25 0
+12 200 90 190 36 37 22 0
+# Black sides - left
+0 168 55 198 8 80 30 0
+0 170 55 192 10 78 24 0
+# Black sides - right
+0 232 55 198 8 80 30 0
+0 230 55 192 10 78 24 0
+# Black top of body
+0 200 108 195 50 12 32 0
+# === CHEST DETAIL (white gradient) ===
+12 200 40 206 30 20 20 8
+# Lower belly roundness
+12 200 28 205 26 14 18 8
+# === NECK (black, narrowing) ===
+12 200 118 197 28 16 22 0
+# White throat patch
+0 200 118 210 18 14 6 8
+# === HEAD (black, round) ===
+1 200 142 200 28 28 26 0
+# Head top
+1 200 152 198 24 16 22 0
+# === FACE DETAILS ===
+# White face patches (cheek areas)
+12 192 138 210 8 8 6 8
+12 208 138 210 8 8 6 8
+# Eye whites
+1 192 144 212 5 5 4 8
+1 208 144 212 5 5 4 8
+# Eye pupils (black)
+1 192 144 215 3 3 3 0
+1 208 144 215 3 3 3 0
+# Eye highlights
+1 193 145 216 1 1 1 8
+1 209 145 216 1 1 1 8
+# === BEAK (orange, pointed) ===
+3 200 136 218 8 6 14 7
+# Beak top ridge
+0 200 138 216 6 2 10 0
+# Nostrils
+1 198 137 222 1 1 1 0
+1 202 137 222 1 1 1 0
+# === FLIPPERS (black, long and thin) ===
+# Left flipper
+0 164 88 200 6 55 14 0
+0 162 72 202 5 30 12 0
+0 161 58 204 4 20 10 0
+# Left flipper tip (slightly lighter)
+0 160 48 205 4 12 8 9
+# Right flipper
+0 236 88 200 6 55 14 0
+0 238 72 202 5 30 12 0
+0 239 58 204 4 20 10 0
+# Right flipper tip
+0 240 48 205 4 12 8 9
+# === TAIL (small, black) ===
+0 200 22 182 10 14 4 0
+3 200 18 178 8 10 6 0
+# === BODY CONTOUR DETAILS ===
+# Black-white boundary on front (subtle shading line)
+0 175 70 208 3 60 2 9
+0 225 70 208 3 60 2 9
+# Belly bottom curve
+12 200 20 205 24 8 16 8
+# === BACK FEATHER TEXTURE (cloned dark marks) ===
+0 200 100 183 4 4 3 0 40 3 -12 -15 0
+0 200 100 183 4 4 3 0 40 3 12 -15 0
+# === TOENAIL DETAILS (dark tips on feet) ===
+1 185 2 205 2 2 2 0
+1 181 2 205 2 2 2 0
+1 189 2 205 2 2 2 0
+1 215 2 205 2 2 2 0
+1 211 2 205 2 2 2 0
+1 219 2 205 2 2 2 0
+# === CROWN DETAIL (slight head crest) ===
+1 200 158 195 18 8 16 0
+# === SHOULDER BULK ===
+12 178 100 196 14 14 18 0
+12 222 100 196 14 14 18 0

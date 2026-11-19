@@ -1,0 +1,43 @@
+V 24 24 24
+-- Penguin from depth reference + manual refinement
+-- Depth data showed: head at y=14-18, body y=5-14, feet y=3-4
+-- Center around x=10, z=12
+
+-- Body (black, round, matches depth blob at x=7-14, z=8-16)
+E 10 9 12 5 6 5 0
+
+-- White belly (forward, depth showed white at z=6-8)
+E 10 8 8 4 5 3 8
+
+-- Head (black, depth showed at y=14-18, x=8-12)
+S 10 17 11 3 0
+
+-- Yellow beak (depth showed orange/tan at z=5-7, y=13-15)
+B 9 15 5 2 2 3 7
+B 9 16 5 2 1 2 7
+
+-- Eyes (white)
+P 8 18 8 8
+P 12 18 8 8
+
+-- Yellow chest patch (depth showed tan/white transition)
+E 10 14 9 3 2 3 6
+
+-- Left flipper (depth showed dark voxels at x=4-6)
+B 4 8 10 2 8 4 0
+B 3 12 10 1 5 4 0
+
+-- Right flipper (depth showed dark at x=17-19)
+B 14 8 10 2 8 4 0
+B 16 12 10 1 5 4 0
+
+-- Feet (orange, depth showed at y=3-4, x=9-15)
+B 7 2 10 3 1 4 7
+B 12 2 10 3 1 4 7
+
+-- Legs
+B 8 3 11 2 2 2 0
+B 12 3 11 2 2 2 0
+
+-- Tail (depth showed dark behind at z=18-20)
+B 9 5 17 2 3 2 0

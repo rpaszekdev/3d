@@ -1,0 +1,64 @@
+V 32 32 32
+
+-- foundation slab
+B 4 0 6 24 2 20 9
+
+-- front glass wall
+B 4 2 6 24 11 1 4
+
+-- back glass wall
+B 4 2 25 24 11 1 4
+
+-- left glass wall
+B 4 2 7 1 11 18 4
+
+-- right glass wall
+B 27 2 7 1 11 18 4
+
+-- door opening (front center)
+B 13 2 6 6 8 1 a
+
+-- roof eave frame
+B 4 13 6 24 1 20 8
+
+-- roof slope layers stepped
+B 7 14 6 18 1 20 8
+B 10 15 6 12 1 20 8
+B 13 16 6 6 1 20 8
+
+-- ridge beam
+B 15 17 6 2 3 20 7
+
+-- corner posts
+C 4 2 6 1 12 8
+C 27 2 6 1 12 8
+C 4 2 25 1 12 8
+C 27 2 25 1 12 8
+
+-- plant benches
+B 6 4 8 4 1 16 d
+B 22 4 8 4 1 16 d
+
+-- bench legs
+B 6 2 8 1 2 1 a
+B 9 2 8 1 2 1 a
+B 6 2 23 1 2 1 a
+B 9 2 23 1 2 1 a
+B 22 2 8 1 2 1 a
+B 25 2 8 1 2 1 a
+
+-- plants left bench
+S 8 7 11 2 2
+S 8 7 16 2 2
+S 8 7 21 2 2
+C 8 5 11 1 3 c
+C 8 5 16 1 3 c
+C 8 5 21 1 3 c
+
+-- plants right bench
+S 24 7 11 2 2
+S 24 7 16 2 2
+S 24 7 21 2 2
+C 24 5 11 1 3 c
+C 24 5 16 1 3 c
+C 24 5 21 1 3 c

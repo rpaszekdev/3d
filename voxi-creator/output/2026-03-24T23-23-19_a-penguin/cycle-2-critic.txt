@@ -1,0 +1,16 @@
+`★ Insight ─────────────────────────────────────`
+**Voxel orientation matters critically:** In VOXI, the "front" camera faces the -Z direction, so belly/face details should be placed on the **low-Z face** of the model to be visible in the primary viewing angle. Placing white details on the high-Z face causes them to appear only in the "back" screenshot — a common and easy-to-miss orientation trap.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 6
+
+STRENGTHS: The penguin is immediately recognizable — a well-proportioned upright body, great orange feet that read as penguin "clown shoes", and a nicely sculpted rounded/tapered silhouette visible in the side views. The **tan (color d) egg-pouch patch** inside the white belly is an impressive Emperor Penguin detail. The wing protrusions visible in the top-down view add real 3D depth. Color palette (blue body, white belly, orange beak/feet) is spot-on thematically.
+
+ISSUES:
+- **Belly is facing the wrong direction.** The front view shows an all-blue body — the white chest and tan egg-patch are visible only from the *back* view, meaning the belly is on the high-Z face instead of the low-Z face. Flip the belly placement: `B 13 4 14 6 18 1 8` → push it toward Z≈14–15 (front face of body). The penguin's "face side" must point toward the viewer in the front camera.
+- **No visible eyes or beak from the front.** The top view hints at an orange element at the head, but no eyes or beak appear from the front or front-iso views. Add yellow/orange eye dots with `P 13 26 14 6` and `P 18 26 14 6` (white sclerae), and a forward-protruding beak like `B 14 24 12 4 3 2 7` (orange box sticking out in -Z direction).
+- **Head lacks a distinct neck/head separation.** The body tapers smoothly up but there's no clear color break between body and head. Add a dark navy ring or slight width reduction: `B 13 20 14 6 3 4 f` for a neck narrowing before the spherical head region.
+
+PRIORITY_FIX: **Rotate the belly/face to face forward (low-Z).** Right now the iconic white belly is hidden on the wrong side. Move the white belly panel from the back face to the front face (decrease its Z coordinates by ~4–6 units) so the first thing you see in the front-iso view is the classic tuxedo look. That single fix will jump this model from 6 → 8.

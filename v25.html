@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSL V2.5 — Spatial Sketch Language</title>
+<style>
+/* =========================================================================
+   CSS — Dark theme split-pane IDE
+   ========================================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+  --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+  --accent: #6c8cff; --accent-dim: #4a5a8a;
+  --error-bg: #3a1820; --error-text: #ff6b7a;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* --- Header --- */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px; background: var(--surface);
+  border-bottom: 1px solid var(--border); flex-shrink: 0; height: 42px;
+}
+header h1 { font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+header h1 span { color: var(--accent); }
+.toolbar { display: flex; align-items: center; gap: 8px; }
+select, button {
+  font-family: inherit; font-size: 11px;
+  background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer; transition: border-color 0.15s;
+}
+select:hover, button:hover { border-color: var(--accent-dim); }
+button:active { background: var(--border); }
+button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* --- Main split pane --- */
+main { display: flex; flex: 1; overflow: hidden; }
+
+/* --- Editor pane --- */
+.editor-pane {
+  width: 38%; min-width: 280px; display: flex; flex-direction: column;
+  border-right: 1px solid var(--border); background: var(--surface);
+}
+.ref-bar {
+  padding: 6px 12px; background: var(--surface2);
+  border-bottom: 1px solid var(--border); font-size: 10px;
+  color: var(--text-dim); display: flex; flex-direction: column; gap: 3px;
+  flex-shrink: 0;
+}
+.ref-bar .types { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ref-bar .types b { color: var(--accent); }
+.ref-bar .colors { display: flex; align-items: center; gap: 3px; margin-top: 2px; }
+.swatch {
+  display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.15); vertical-align: middle;
+}
+.ref-bar .relations { margin-top: 1px; color: var(--text-dim); }
+
+.editor-wrap {
+  flex: 1; display: flex; overflow: hidden; position: relative;
+}
+.line-numbers {
+  width: 36px; background: var(--bg); color: var(--text-dim);
+  font: 13px/1.55 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  padding: 8px 6px 8px 0; text-align: right; overflow: hidden;
+  user-select: none; flex-shrink: 0;
+}
+#editor {
+  flex: 1; background: var(--bg); color: var(--text);
+  font: 13px/1.55 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  border: none; outline: none; resize: none; padding: 8px 10px;
+  overflow-y: auto; tab-size: 2; white-space: pre;
+}
+.error-bar {
+  background: var(--error-bg); color: var(--error-text);
+  font-size: 11px; padding: 4px 12px; border-top: 1px solid #4a1a25;
+  display: none; flex-shrink: 0; max-height: 80px; overflow-y: auto;
+}
+.error-bar.show { display: block; }
+
+/* --- Canvas pane --- */
+.canvas-pane {
+  flex: 1; position: relative; background: var(--bg); overflow: hidden;
+}
+#canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+#canvas.panning { cursor: grabbing; }
+.mouse-pos {
+  position: absolute; bottom: 8px; right: 12px;
+  font: 11px/1 'SF Mono', monospace; color: var(--text-dim);
+  pointer-events: none;
+}
+.zoom-info {
+  position: absolute; top: 8px; right: 12px;
+  font: 11px/1 'SF Mono', monospace; color: var(--text-dim);
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SSL <span>V2.5</span></h1>
+  <div class="toolbar">
+    <select id="examples">
+      <option value="">Load example...</option>
+      <option value="snowman">Snowman</option>
+      <option value="house">House</option>
+      <option value="chess">Chess King</option>
+      <option value="table">Table</option>
+      <option value="rocket">Rocket</option>
+      <option value="tree">Tree</option>
+      <option value="lamp">Lamp</option>
+      <option value="city">City</option>
+    </select>
+    <button id="btn-grid" class="active" title="Toggle grid">Grid</button>
+    <button id="btn-arrows" class="active" title="Toggle relation arrows">Arrows</button>
+    <button id="btn-labels" class="active" title="Toggle index labels">Labels</button>
+    <button id="btn-reset-view" title="Reset zoom & pan">Reset View</button>
+    <button id="btn-export" title="Export SVG">Export SVG</button>
+  </div>
+</header>
+
+<main>
+  <div class="editor-pane">
+    <div class="ref-bar">
+      <div class="types">
+        <span><b>P1</b> iso</span>
+        <span>0=box 1=sph 2=cyl 3=cone 4=pyr 5=tor 6=line 7=dot 8=txt 9=arc</span>
+        <span><b>U</b> <b>I</b> <b>S</b> csg</span>
+        <span>0>1>2 connect</span>
+      </div>
+      <div class="colors">
+        <span>Colors:</span>
+        <span class="swatch" style="background:#1a1a1a" title="0 blk"></span><span>0</span>
+        <span class="swatch" style="background:#e53935" title="1 red"></span><span>1</span>
+        <span class="swatch" style="background:#43a047" title="2 grn"></span><span>2</span>
+        <span class="swatch" style="background:#1e88e5" title="3 blu"></span><span>3</span>
+        <span class="swatch" style="background:#00bcd4" title="4 cyn"></span><span>4</span>
+        <span class="swatch" style="background:#8e24aa" title="5 mag"></span><span>5</span>
+        <span class="swatch" style="background:#fdd835" title="6 yel"></span><span>6</span>
+        <span class="swatch" style="background:#fb8c00" title="7 org"></span><span>7</span>
+        <span class="swatch" style="background:#ffffff" title="8 wht"></span><span>8</span>
+        <span class="swatch" style="background:#9e9e9e" title="9 gry"></span><span>9</span>
+      </div>
+      <div class="relations">
+        Rel: 10=on 11=under 12=left 13=right 14=front 15=back 16=in 17=beside | 20=union 21=sub 22=inter | 30=stack 31=mirror 34=attach
+      </div>
+    </div>
+    <div class="editor-wrap">
+      <div class="line-numbers" id="line-numbers"></div>
+      <textarea id="editor" spellcheck="false" placeholder="P1&#10;0 200 0 200 80 60 80 3"></textarea>
+    </div>
+    <div class="error-bar" id="error-bar"></div>
+  </div>
+  <div class="canvas-pane">
+    <svg id="canvas" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <!-- Arrow marker for connections -->
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6c8cff"/>
+        </marker>
+        <!-- Arrow marker for relation arrows (muted) -->
+        <marker id="arrow-rel" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+          <polygon points="0 0, 6 2.5, 0 5" fill="#555570"/>
+        </marker>
+      </defs>
+      <g id="grid-layer"></g>
+      <g id="scene-layer"></g>
+      <g id="connection-layer"></g>
+      <g id="relation-layer"></g>
+      <g id="label-layer"></g>
+    </svg>
+    <div class="zoom-info" id="zoom-info">100%</div>
+    <div class="mouse-pos" id="mouse-pos">X:0 Y:0 Z:0</div>
+  </div>
+</main>
+
+<script>
+// =============================================================================
+// SSL V2.5 RENDERER — Complete Standalone Implementation
+// =============================================================================
+
+// --- CONSTANTS ---------------------------------------------------------------
+
+const TYPES = ['box','sphere','cylinder','cone','pyramid','torus','line','dot','text','arc'];
+const COLORS = [
+  '#1a1a1a','#e53935','#43a047','#1e88e5','#00bcd4',
+  '#8e24aa','#fdd835','#fb8c00','#ffffff','#9e9e9e'
+];
+
+// Mnemonic maps for hybrid word/number input
+const TYPE_NAMES = {
+  box:0, sph:1, ball:1, cyl:2, tube:2, cone:3, pyr:4,
+  tor:5, ring:5, line:6, dot:7, txt:8, text:8, arc:9
+};
+const COLOR_NAMES = {
+  blk:0, red:1, grn:2, blu:3, cyn:4, mag:5, yel:6, org:7, wht:8, gry:9,
+  black:0, green:2, blue:3, cyan:4, magenta:5, yellow:6, orange:7, white:8, gray:9, grey:9
+};
+
+// Relation code names for reference
+const RELATION_NAMES = {
+  10:'on', 11:'under', 12:'left', 13:'right', 14:'front', 15:'back',
+  16:'in', 17:'beside', 20:'union', 21:'subtract', 22:'intersect',
+  30:'stack', 31:'mirror', 34:'attach'
+};
+
+const NS = 'http://www.w3.org/2000/svg';
+const D2R = Math.PI / 180;
+
+// Isometric projection constants
+const S = 0.7;
+const OX = 500;
+const OY = 780;
+
+// Camera orbit angles (degrees). azimuth=45 + elevation=30 = classic isometric
+let camAzimuth = 45;     // horizontal orbit (0=front, 90=right side)
+let camElevation = 30;   // vertical tilt (0=side view, 90=top-down)
+
+// Derived trig values (recomputed on orbit change)
+let camCosA, camSinA, camCosE, camSinE;
+let VD = { x: 0.577, y: -0.577, z: 0.577 };
+
+// Ellipse foreshortening for cylinders/cones/torus at current camera angle
+let ellipseFactor = 0.5;  // sin(elevation) — how squished circles look from above
+
+function updateCamera() {
+  const a = camAzimuth * D2R;
+  const e = camElevation * D2R;
+  camCosA = Math.cos(a);
+  camSinA = Math.sin(a);
+  camCosE = Math.cos(e);
+  camSinE = Math.sin(e);
+  // View direction = normalized camera-to-origin vector
+  VD = {
+    x: camCosE * camSinA,
+    y: -camSinE,
+    z: camCosE * camCosA
+  };
+  // Ellipse foreshortening: circles on horizontal plane appear as ellipses
+  // The minor axis ratio = sin(elevation)
+  ellipseFactor = camSinE;
+}
+updateCamera();
+
+// --- STATE -------------------------------------------------------------------
+
+let showGrid = true;
+let showArrows = true;
+let showLabels = true;
+
+// Navigation state
+let viewZoom = 1;       // 1 = 100%, 2 = 200% (zoomed in), 0.5 = 50% (zoomed out)
+let viewPanX = 0;       // pan offset in SVG units
+let viewPanY = 0;
+let isPanning = false;
+let panStartX = 0;
+let panStartY = 0;
+let panStartVX = 0;
+let panStartVY = 0;
+
+// --- DOM REFS ----------------------------------------------------------------
+
+const editorEl = document.getElementById('editor');
+const lineNumEl = document.getElementById('line-numbers');
+const errorBarEl = document.getElementById('error-bar');
+const canvasEl = document.getElementById('canvas');
+const gridLayer = document.getElementById('grid-layer');
+const sceneLayer = document.getElementById('scene-layer');
+const connectionLayer = document.getElementById('connection-layer');
+const relationLayer = document.getElementById('relation-layer');
+const labelLayer = document.getElementById('label-layer');
+const mousePosEl = document.getElementById('mouse-pos');
+const examplesEl = document.getElementById('examples');
+
+// =============================================================================
+// COLOR UTILITIES
+// =============================================================================
+
+function parseRGB(hex) {
+  if (!hex) return null;
+  if (hex.startsWith('rgb')) {
+    const m = hex.match(/(\d+)/g);
+    return m ? { r: +m[0], g: +m[1], b: +m[2] } : null;
+  }
+  if (hex.length === 4) return { r: parseInt(hex[1]+hex[1],16), g: parseInt(hex[2]+hex[2],16), b: parseInt(hex[3]+hex[3],16) };
+  if (hex.length === 7) return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
+  return null;
+}
+
+/** Darken a color by multiplying RGB by factor f (0-1) */
+function darken(hex, f) {
+  const c = parseRGB(hex);
+  if (!c) return hex;
+  return `rgb(${Math.round(c.r*f)},${Math.round(c.g*f)},${Math.round(c.b*f)})`;
+}
+
+/** Lighten a color by adding n to each channel */
+function lighten(hex, n) {
+  const c = parseRGB(hex);
+  if (!c) return hex;
+  return `rgb(${Math.min(255,c.r+n)},${Math.min(255,c.g+n)},${Math.min(255,c.b+n)})`;
+}
+
+/** Slightly blend a color with white for highlights */
+function highlight(hex, amount) {
+  const c = parseRGB(hex);
+  if (!c) return hex;
+  const r = Math.min(255, c.r + Math.round((255 - c.r) * amount));
+  const g = Math.min(255, c.g + Math.round((255 - c.g) * amount));
+  const b = Math.min(255, c.b + Math.round((255 - c.b) * amount));
+  return `rgb(${r},${g},${b})`;
+}
+
+function clamp(n) { return Math.max(0, Math.min(9, Math.round(n))); }
+
+// =============================================================================
+// ISOMETRIC PROJECTION
+// =============================================================================
+
+/** Project 3D (x,y,z) to 2D screen coords. Y is UP. Uses camera orbit angles. */
+function iso(x, y, z) {
+  // Rotate point around Y axis by azimuth, then tilt by elevation
+  const rx = x * camCosA - z * camSinA;   // rotated X (horizontal)
+  const rz = x * camSinA + z * camCosA;   // rotated Z (into screen)
+  // Apply elevation: project rz and y
+  const sy2 = y * camCosE + rz * camSinE;  // vertical component
+  return {
+    sx: OX + rx * S,
+    sy: OY - sy2 * S
+  };
+}
+
+/** Depth value for painter's algorithm. Projects along view direction. */
+function isoDepth(x, y, z) {
+  return VD.x * x + VD.y * y + VD.z * z;
+}
+
+/** Inverse isometric: screen coords to approximate ground-plane (y=0) position */
+function isoInverse(sx, sy) {
+  // On ground plane (y=0): sx = OX + (x*cosA - z*sinA)*S
+  //                          sy = OY - (z*cosA + x*sinA)*sinE * S
+  const px = (sx - OX) / S;
+  const py = -(sy - OY) / S;
+  // py = (x*sinA + z*cosA) * sinE  (since y=0)
+  // px = x*cosA - z*sinA
+  const rz = camSinE > 0.01 ? py / camSinE : 0;
+  // px = x*cosA - z*sinA, rz = x*sinA + z*cosA
+  const x = px * camCosA + rz * camSinA;
+  const z = -px * camSinA + rz * camCosA;
+  return { x: Math.round(x), y: 0, z: Math.round(z) };
+}
+
+// =============================================================================
+// 3D ROTATION
+// =============================================================================
+
+/** Rotate point (px,py,pz) around center (cx,cy,cz) by Euler angles (degrees) */
+function rot3D(px, py, pz, cx, cy, cz, rx, ry, rz) {
+  let x = px - cx, y = py - cy, z = pz - cz;
+  if (rx) {
+    const c = Math.cos(rx*D2R), s = Math.sin(rx*D2R);
+    const y2 = y*c - z*s, z2 = y*s + z*c;
+    y = y2; z = z2;
+  }
+  if (ry) {
+    const c = Math.cos(ry*D2R), s = Math.sin(ry*D2R);
+    const x2 = x*c + z*s, z2 = -x*s + z*c;
+    x = x2; z = z2;
+  }
+  if (rz) {
+    const c = Math.cos(rz*D2R), s = Math.sin(rz*D2R);
+    const x2 = x*c - y*s, y2 = x*s + y*c;
+    x = x2; y = y2;
+  }
+  return { x: x + cx, y: y + cy, z: z + cz };
+}
+
+/** Rotate a normal vector by Euler angles */
+function rotNormal(nx, ny, nz, rx, ry, rz) {
+  let x = nx, y = ny, z = nz;
+  if (rx) {
+    const c = Math.cos(rx*D2R), s = Math.sin(rx*D2R);
+    const y2 = y*c - z*s, z2 = y*s + z*c;
+    y = y2; z = z2;
+  }
+  if (ry) {
+    const c = Math.cos(ry*D2R), s = Math.sin(ry*D2R);
+    const x2 = x*c + z*s, z2 = -x*s + z*c;
+    x = x2; z = z2;
+  }
+  if (rz) {
+    const c = Math.cos(rz*D2R), s = Math.sin(rz*D2R);
+    const x2 = x*c - y*s, y2 = x*s + y*c;
+    x = x2; y = y2;
+  }
+  return { x, y, z };
+}
+
+/** Check if a face is visible (facing the camera) */
+function faceVisible(nx, ny, nz, rx, ry, rz) {
+  const n = rotNormal(nx, ny, nz, rx || 0, ry || 0, rz || 0);
+  return (n.x * VD.x + n.y * VD.y + n.z * VD.z) < 0;
+}
+
+// =============================================================================
+// SVG HELPERS
+// =============================================================================
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    el.setAttribute(k, v);
+  }
+  return el;
+}
+
+/** Create an SVG polygon from array of {sx,sy} screen points */
+function svgPolygon(pts, fill, stroke, strokeWidth, opacity) {
+  return svgEl('polygon', {
+    points: pts.map(p => `${p.sx},${p.sy}`).join(' '),
+    fill,
+    stroke: stroke || darken(fill, 0.6),
+    'stroke-width': strokeWidth || 1,
+    'stroke-linejoin': 'round',
+    opacity: opacity || 1
+  });
+}
+
+/** Create an SVG path */
+function svgPath(d, fill, stroke, strokeWidth, opacity) {
+  return svgEl('path', {
+    d,
+    fill: fill || 'none',
+    stroke: stroke || 'none',
+    'stroke-width': strokeWidth || 1,
+    'stroke-linejoin': 'round',
+    opacity: opacity || 1
+  });
+}
+
+// =============================================================================
+// PARSER
+// =============================================================================
+
+function parse(source) {
+  const lines = source.split('\n');
+  const elements = [];
+  const connections = [];
+  const csgOps = [];
+  const errors = [];
+  let projection = null;
+
+  for (let li = 0; li < lines.length; li++) {
+    const raw = lines[li].trim();
+    if (!raw || raw.startsWith('--') || raw.startsWith('//')) continue;
+
+    // --- Projection mode line ---
+    if (/^P[0-3]\s*$/i.test(raw)) {
+      projection = raw[1] === '1' ? 'iso' : raw[1] === '2' ? 'persp' : raw[1] === '3' ? 'cabinet' : 'flat';
+      continue;
+    }
+
+    // --- CSG operation: U a b, I a b, S a b ---
+    if (/^[UIS]\s+\d/i.test(raw)) {
+      const p = raw.split(/\s+/);
+      const op = p[0].toUpperCase();
+      const a = parseInt(p[1]), b = parseInt(p[2]);
+      if (!isNaN(a) && !isNaN(b)) {
+        csgOps.push({ op, a, b, line: li });
+      }
+      continue;
+    }
+
+    // --- Extract quoted text for text elements ---
+    let text = null;
+    const tm = raw.match(/"([^"]*)"/);
+    if (tm) text = tm[1];
+    const numStr = raw.replace(/"[^"]*"/g, '').trim();
+
+    // --- Connection line: 0>1>2 (only digits, '>', and whitespace) ---
+    if (/^\d+(\s*>\s*\d+)+\s*$/.test(numStr)) {
+      const parts = numStr.split('>').map(s => parseInt(s.trim()));
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!isNaN(parts[i]) && !isNaN(parts[i+1])) {
+          connections.push({ from: parts[i], to: parts[i+1], line: li });
+        }
+      }
+      continue;
+    }
+
+    // --- Element line: T X Y Z W H D C [R REF] [RX RY RZ] ---
+    const tokens = numStr.split(/\s+/).filter(s => s.length > 0);
+    const nums = tokens.map(t => {
+      const lo = t.toLowerCase();
+      if (TYPE_NAMES[lo] !== undefined) return TYPE_NAMES[lo];
+      if (COLOR_NAMES[lo] !== undefined) return COLOR_NAMES[lo];
+      const n = Number(t);
+      return isNaN(n) ? null : n;
+    }).filter(n => n !== null);
+
+    if (nums.length < 8) {
+      if (nums.length > 0) {
+        errors.push({ line: li, msg: `Need T X Y Z W H D C (8 values), got ${nums.length}` });
+      }
+      continue;
+    }
+
+    const el = {
+      idx: elements.length,
+      line: li,
+      type: TYPES[clamp(nums[0])] || 'box',
+      typeNum: clamp(nums[0]),
+      x: nums[1], y: nums[2], z: nums[3],
+      w: nums[4], h: nums[5], d: nums[6],
+      color: COLORS[clamp(nums[7])] || COLORS[9],
+      colorIdx: clamp(nums[7]),
+      rel: null, relRef: null,
+      rx: 0, ry: 0, rz: 0,
+      text
+    };
+
+    // Parse remaining values: [R REF] [40 COUNT DX DY DZ] [RX RY RZ]
+    let cursor = 8;
+    let cloneCount = 0, cloneDX = 0, cloneDY = 0, cloneDZ = 0;
+
+    if (cursor < nums.length) {
+      const val = nums[cursor];
+      if (val >= 10 && val <= 39 && val !== 40 && cursor + 1 < nums.length) {
+        el.rel = val;
+        el.relRef = nums[cursor + 1];
+        cursor += 2;
+      }
+    }
+
+    // Clone operator (40 COUNT DX DY DZ)
+    if (cursor < nums.length && nums[cursor] === 40 && cursor + 4 <= nums.length) {
+      cloneCount = nums[cursor + 1] || 0;
+      cloneDX = nums[cursor + 2] || 0;
+      cloneDY = nums[cursor + 3] || 0;
+      cloneDZ = nums[cursor + 4] || 0;
+      cursor += 5;
+    }
+
+    // Remaining values are rotation
+    if (cursor < nums.length) {
+      el.rx = nums[cursor] || 0;
+      el.ry = nums[cursor + 1] || 0;
+      el.rz = nums[cursor + 2] || 0;
+    }
+
+    elements.push(el);
+
+    // Generate clones
+    if (cloneCount > 1) {
+      for (let ci = 1; ci < cloneCount; ci++) {
+        elements.push({
+          ...el,
+          idx: elements.length,
+          x: el.x + cloneDX * ci,
+          y: el.y + cloneDY * ci,
+          z: el.z + cloneDZ * ci,
+        });
+      }
+    }
+  }
+
+  return { elements, connections, csgOps, errors, projection };
+}
+
+// =============================================================================
+// GRID RENDERER
+// =============================================================================
+
+function renderGrid() {
+  gridLayer.innerHTML = '';
+  if (!showGrid) return;
+
+  const step = 50;
+  const range = 400;
+
+  // Draw ground-plane grid lines
+  for (let i = -range; i <= range; i += step) {
+    // Lines along X axis (varying x, fixed z)
+    const a1 = iso(-range, 0, i);
+    const a2 = iso(range, 0, i);
+    const lineX = svgEl('line', {
+      x1: a1.sx, y1: a1.sy, x2: a2.sx, y2: a2.sy,
+      stroke: i === 0 ? '#2a2f40' : '#1a1e2a',
+      'stroke-width': i === 0 ? 0.8 : 0.4,
+      opacity: 0.6
+    });
+    gridLayer.appendChild(lineX);
+
+    // Lines along Z axis (fixed x, varying z)
+    const b1 = iso(i, 0, -range);
+    const b2 = iso(i, 0, range);
+    const lineZ = svgEl('line', {
+      x1: b1.sx, y1: b1.sy, x2: b2.sx, y2: b2.sy,
+      stroke: i === 0 ? '#2a2f40' : '#1a1e2a',
+      'stroke-width': i === 0 ? 0.8 : 0.4,
+      opacity: 0.6
+    });
+    gridLayer.appendChild(lineZ);
+  }
+}
+
+// =============================================================================
+// ELEMENT CENTER CALCULATION
+// =============================================================================
+
+/** Get the 3D center of an element (for connections, labels, relation arrows) */
+function elementCenter(el) {
+  const t = el.type;
+  if (t === 'line') {
+    // Line: center between start and end (w,h,d are end coords)
+    return { x: (el.x + el.w) / 2, y: (el.y + el.h) / 2, z: (el.z + el.d) / 2 };
+  }
+  if (t === 'sphere' || t === 'dot' || t === 'torus') {
+    // Center-based shapes: position IS center of base, add half height
+    return { x: el.x, y: el.y + el.w, z: el.z };
+  }
+  // Box, cylinder, cone, pyramid: position is bottom-left corner (box) or center-base (cyl, cone, pyr)
+  if (t === 'box') {
+    return { x: el.x + el.w / 2, y: el.y + el.h / 2, z: el.z + el.d / 2 };
+  }
+  // Cylinder, cone, pyramid: center of base, add half height
+  return { x: el.x, y: el.y + el.h / 2, z: el.z };
+}
+
+// =============================================================================
+// SHAPE RENDERERS — Each returns an array of SVG elements
+// =============================================================================
+
+/** Create a unique gradient ID for SVG defs */
+let gradientCounter = 0;
+function uniqueId(prefix) { return `${prefix}-${gradientCounter++}`; }
+
+// --- BOX (3D cuboid with face culling) ---
+function renderBox(el) {
+  const { x, y, z, w, h, d, color, rx, ry, rz } = el;
+  const cx = x + w/2, cy = y + h/2, cz = z + d/2;
+
+  // 8 vertices of the cuboid
+  const verts = [
+    { x: x,   y: y,   z: z   },   // 0: front-bottom-left
+    { x: x+w, y: y,   z: z   },   // 1: front-bottom-right
+    { x: x+w, y: y+h, z: z   },   // 2: front-top-right
+    { x: x,   y: y+h, z: z   },   // 3: front-top-left
+    { x: x,   y: y,   z: z+d },   // 4: back-bottom-left
+    { x: x+w, y: y,   z: z+d },   // 5: back-bottom-right
+    { x: x+w, y: y+h, z: z+d },   // 6: back-top-right
+    { x: x,   y: y+h, z: z+d },   // 7: back-top-left
+  ];
+
+  // Apply rotation
+  const rv = verts.map(v => rot3D(v.x, v.y, v.z, cx, cy, cz, rx, ry, rz));
+  // Project to screen
+  const sv = rv.map(v => iso(v.x, v.y, v.z));
+
+  // 6 faces: [vertex indices, normal, shading factor]
+  const faces = [
+    { vi: [4,5,6,7], nx: 0, ny: 0, nz: 1,  shade: 0.55, label: 'back' },    // back  (+Z)
+    { vi: [0,4,7,3], nx: -1, ny: 0, nz: 0, shade: 0.5,  label: 'left' },    // left  (-X)
+    { vi: [1,5,6,2], nx: 1, ny: 0, nz: 0,  shade: 0.65, label: 'right' },   // right (+X)
+    { vi: [0,1,2,3], nx: 0, ny: 0, nz: -1, shade: 0.75, label: 'front' },   // front (-Z)
+    { vi: [0,1,5,4], nx: 0, ny: -1, nz: 0, shade: 0.6,  label: 'bottom' },  // bottom(-Y)
+    { vi: [3,2,6,7], nx: 0, ny: 1, nz: 0,  shade: 1.0,  label: 'top' },     // top   (+Y)
+  ];
+
+  const svgEls = [];
+  for (const face of faces) {
+    // Face culling
+    if (!faceVisible(face.nx, face.ny, face.nz, rx, ry, rz)) continue;
+
+    const pts = face.vi.map(i => sv[i]);
+    const fillColor = darken(color, face.shade);
+    const strokeColor = darken(color, face.shade * 0.6);
+    svgEls.push(svgPolygon(pts, fillColor, strokeColor, 0.8));
+  }
+
+  return svgEls;
+}
+
+// --- SPHERE (circle with highlight gradient) ---
+function renderSphere(el) {
+  const { x, y, z, w, color } = el;
+  const radius = w;
+  // Center is at (x, y + radius, z) — position is center of base
+  const center = iso(x, y + radius, z);
+  const screenR = radius * S;
+
+  const defs = canvasEl.querySelector('defs');
+  const gradId = uniqueId('sph-grad');
+
+  // Radial gradient for sphere shading
+  const grad = svgEl('radialGradient', {
+    id: gradId, cx: '35%', cy: '35%', r: '60%',
+    fx: '30%', fy: '30%'
+  });
+  grad.appendChild(svgEl('stop', { offset: '0%', 'stop-color': highlight(color, 0.6) }));
+  grad.appendChild(svgEl('stop', { offset: '50%', 'stop-color': color }));
+  grad.appendChild(svgEl('stop', { offset: '100%', 'stop-color': darken(color, 0.45) }));
+  defs.appendChild(grad);
+
+  const circle = svgEl('circle', {
+    cx: center.sx, cy: center.sy, r: screenR,
+    fill: `url(#${gradId})`,
+    stroke: darken(color, 0.5),
+    'stroke-width': 0.8
+  });
+
+  // Specular highlight
+  const hlR = screenR * 0.2;
+  const hlCircle = svgEl('circle', {
+    cx: center.sx - screenR * 0.25, cy: center.sy - screenR * 0.25,
+    r: hlR,
+    fill: 'rgba(255,255,255,0.25)',
+    stroke: 'none'
+  });
+
+  return [circle, hlCircle];
+}
+
+// --- CYLINDER (face-culled strips + caps, solid 3D from any angle) ---
+function renderCylinder(el) {
+  const { x, y, z, w, h, color, rx, ry, rz } = el;
+  const radius = w / 2;
+  const N = 24;
+  const cx3 = x, cy3 = y + h/2, cz3 = z;
+
+  // Sample 3D circle points at a given Y height
+  function capPoints3D(capY) {
+    const pts = [];
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * Math.PI * 2;
+      const px = x + radius * Math.cos(a);
+      const pz = z + radius * Math.sin(a);
+      const r = rot3D(px, capY, pz, cx3, cy3, cz3, rx, ry, rz);
+      pts.push(r);
+    }
+    return pts;
+  }
+
+  const bot3D = capPoints3D(y);
+  const top3D = capPoints3D(y + h);
+  const botScreen = bot3D.map(p => iso(p.x, p.y, p.z));
+  const topScreen = top3D.map(p => iso(p.x, p.y, p.z));
+
+  const svgEls = [];
+
+  // Render body as individual quad strips, face-culled with per-strip shading
+  for (let i = 0; i < N; i++) {
+    const i2 = (i + 1) % N;
+
+    // Compute face normal for this strip (cross product of two edges)
+    const b1 = bot3D[i], b2 = bot3D[i2], t1 = top3D[i];
+    const e1 = { x: b2.x - b1.x, y: b2.y - b1.y, z: b2.z - b1.z };
+    const e2 = { x: t1.x - b1.x, y: t1.y - b1.y, z: t1.z - b1.z };
+    const nx = e1.y * e2.z - e1.z * e2.y;
+    const ny = e1.z * e2.x - e1.x * e2.z;
+    const nz = e1.x * e2.y - e1.y * e2.x;
+
+    // Face culling: dot with view direction
+    const dot = nx * VD.x + ny * VD.y + nz * VD.z;
+    if (dot >= 0) continue; // back face
+
+    // Shading based on how much the face points toward the light (top-left)
+    const len = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+    const shade = 0.45 + 0.55 * Math.max(0, (-nx/len * 0.3 + ny/len * 0.5 - nz/len * 0.3));
+
+    const pts = [botScreen[i], botScreen[i2], topScreen[i2], topScreen[i]];
+    svgEls.push(svgPolygon(pts, darken(color, shade), darken(color, shade * 0.6), 0.3));
+  }
+
+  // Top cap: check if top face normal is visible
+  const topNormal = rotNormal(0, 1, 0, rx, ry, rz);
+  if (topNormal.x * VD.x + topNormal.y * VD.y + topNormal.z * VD.z < 0) {
+    svgEls.push(svgPolygon(topScreen, highlight(color, 0.15), darken(color, 0.5), 0.4));
+  }
+
+  // Bottom cap: check if bottom face normal is visible
+  const botNormal = rotNormal(0, -1, 0, rx, ry, rz);
+  if (botNormal.x * VD.x + botNormal.y * VD.y + botNormal.z * VD.z < 0) {
+    svgEls.push(svgPolygon(botScreen, darken(color, 0.4), darken(color, 0.3), 0.4));
+  }
+
+  return svgEls;
+}
+
+// --- CONE (face-culled triangular strips + base cap, solid 3D from any angle) ---
+function renderCone(el) {
+  const { x, y, z, w, h, color, rx, ry, rz } = el;
+  const radius = w / 2;
+  const N = 24;
+  const cx3 = x, cy3 = y + h/2, cz3 = z;
+
+  // Sample base circle in 3D
+  const base3D = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * Math.PI * 2;
+    const px = x + radius * Math.cos(a);
+    const pz = z + radius * Math.sin(a);
+    const r = rot3D(px, y, pz, cx3, cy3, cz3, rx, ry, rz);
+    base3D.push(r);
+  }
+  const baseScreen = base3D.map(p => iso(p.x, p.y, p.z));
+
+  // Apex
+  const apex3D = rot3D(x, y + h, z, cx3, cy3, cz3, rx, ry, rz);
+  const apexScreen = iso(apex3D.x, apex3D.y, apex3D.z);
+
+  const svgEls = [];
+
+  // Render body as individual triangular strips, face-culled
+  for (let i = 0; i < N; i++) {
+    const i2 = (i + 1) % N;
+
+    // Face normal: cross product of two triangle edges
+    const b1 = base3D[i], b2 = base3D[i2];
+    const e1 = { x: b2.x - b1.x, y: b2.y - b1.y, z: b2.z - b1.z };
+    const e2 = { x: apex3D.x - b1.x, y: apex3D.y - b1.y, z: apex3D.z - b1.z };
+    const nx = e1.y * e2.z - e1.z * e2.y;
+    const ny = e1.z * e2.x - e1.x * e2.z;
+    const nz = e1.x * e2.y - e1.y * e2.x;
+
+    const dot = nx * VD.x + ny * VD.y + nz * VD.z;
+    if (dot >= 0) continue;
+
+    const len = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+    const shade = 0.45 + 0.55 * Math.max(0, (-nx/len * 0.3 + ny/len * 0.5 - nz/len * 0.3));
+
+    const pts = [baseScreen[i], baseScreen[i2], apexScreen];
+    svgEls.push(svgPolygon(pts, darken(color, shade), darken(color, shade * 0.6), 0.2));
+  }
+
+  // Base cap
+  const botNormal = rotNormal(0, -1, 0, rx, ry, rz);
+  if (botNormal.x * VD.x + botNormal.y * VD.y + botNormal.z * VD.z < 0) {
+    svgEls.push(svgPolygon(baseScreen, darken(color, 0.4), darken(color, 0.3), 0.4));
+  }
+
+  return svgEls;
+}
+
+// --- PYRAMID (4 triangular faces from square base to apex, face culled) ---
+function renderPyramid(el) {
+  const { x, y, z, w, h, color, rx, ry, rz } = el;
+  // For pyramid, w is the base width, d defaults to w if 0
+  const bw = w;
+  const bd = el.d || w;
+  const cx3 = x, cy3 = y + h/2, cz3 = z;
+
+  // Base vertices (square centered at x,z on ground plane y)
+  const baseVerts = [
+    { x: x - bw/2, y: y, z: z - bd/2 },  // 0: front-left
+    { x: x + bw/2, y: y, z: z - bd/2 },  // 1: front-right
+    { x: x + bw/2, y: y, z: z + bd/2 },  // 2: back-right
+    { x: x - bw/2, y: y, z: z + bd/2 },  // 3: back-left
+  ];
+  const apex3D = { x: x, y: y + h, z: z };
+
+  // Rotate all vertices
+  const rv = baseVerts.map(v => rot3D(v.x, v.y, v.z, cx3, cy3, cz3, rx, ry, rz));
+  const ra = rot3D(apex3D.x, apex3D.y, apex3D.z, cx3, cy3, cz3, rx, ry, rz);
+
+  // Project
+  const sv = rv.map(v => iso(v.x, v.y, v.z));
+  const sa = iso(ra.x, ra.y, ra.z);
+
+  // Faces: [base vertex indices, normal]
+  const faces = [
+    { vi: [0, 1], nx: 0, ny: 0, nz: -1, shade: 0.75 },  // front
+    { vi: [1, 2], nx: 1, ny: 0, nz: 0,  shade: 0.65 },  // right
+    { vi: [2, 3], nx: 0, ny: 0, nz: 1,  shade: 0.55 },  // back
+    { vi: [3, 0], nx: -1, ny: 0, nz: 0, shade: 0.5 },   // left
+  ];
+
+  // Bottom face
+  const bottomFace = { vi: [0,1,2,3], nx: 0, ny: -1, nz: 0, shade: 0.4 };
+
+  const svgEls = [];
+
+  // Bottom face
+  if (faceVisible(bottomFace.nx, bottomFace.ny, bottomFace.nz, rx, ry, rz)) {
+    svgEls.push(svgPolygon(
+      bottomFace.vi.map(i => sv[i]),
+      darken(color, bottomFace.shade),
+      darken(color, bottomFace.shade * 0.6),
+      0.6
+    ));
+  }
+
+  // Triangular side faces
+  for (const face of faces) {
+    // Approximate normal for slanted face (pointing outward and up)
+    const nUp = 0.5; // upward component
+    const fn = rotNormal(face.nx * 0.8, nUp, face.nz * 0.8, rx||0, ry||0, rz||0);
+    const dot = fn.x * VD.x + fn.y * VD.y + fn.z * VD.z;
+    if (dot >= 0) continue; // cull
+
+    const pts = [sv[face.vi[0]], sv[face.vi[1]], sa];
+    svgEls.push(svgPolygon(pts, darken(color, face.shade), darken(color, face.shade * 0.6), 0.6));
+  }
+
+  return svgEls;
+}
+
+// --- TORUS (nested ellipses) ---
+function renderTorus(el) {
+  const { x, y, z, w, h, color } = el;
+  const majorR = w;
+  const minorR = h || w * 0.3;
+  const center = iso(x, y + majorR, z);
+  const outerR = majorR * S;
+  const innerR = (majorR - minorR) * S;
+  const ellipseRY_outer = outerR * ellipseFactor;
+  const ellipseRY_inner = innerR * ellipseFactor;
+
+  const defs = canvasEl.querySelector('defs');
+  const gradId = uniqueId('tor-grad');
+  const grad = svgEl('radialGradient', { id: gradId, cx: '40%', cy: '40%', r: '60%' });
+  grad.appendChild(svgEl('stop', { offset: '0%', 'stop-color': highlight(color, 0.3) }));
+  grad.appendChild(svgEl('stop', { offset: '100%', 'stop-color': darken(color, 0.5) }));
+  defs.appendChild(grad);
+
+  const svgEls = [];
+
+  // Outer ellipse
+  svgEls.push(svgEl('ellipse', {
+    cx: center.sx, cy: center.sy, rx: outerR, ry: ellipseRY_outer * 2.5,
+    fill: `url(#${gradId})`,
+    stroke: darken(color, 0.5),
+    'stroke-width': 0.8
+  }));
+
+  // Inner hole (dark)
+  svgEls.push(svgEl('ellipse', {
+    cx: center.sx, cy: center.sy, rx: innerR, ry: ellipseRY_inner * 2.5,
+    fill: '#0f1117',
+    stroke: darken(color, 0.4),
+    'stroke-width': 0.6
+  }));
+
+  return svgEls;
+}
+
+// --- LINE ---
+function renderLine(el) {
+  const { x, y, z, w, h, d, color } = el;
+  // For line: start=(x,y,z), end=(w,h,d)
+  const p1 = iso(x, y, z);
+  const p2 = iso(w, h, d);
+
+  const line = svgEl('line', {
+    x1: p1.sx, y1: p1.sy, x2: p2.sx, y2: p2.sy,
+    stroke: color,
+    'stroke-width': 2,
+    'stroke-linecap': 'round'
+  });
+
+  return [line];
+}
+
+// --- DOT ---
+function renderDot(el) {
+  const { x, y, z, w, color } = el;
+  const radius = Math.max(w, 2);
+  const center = iso(x, y, z);
+  const screenR = radius * S;
+
+  const circle = svgEl('circle', {
+    cx: center.sx, cy: center.sy, r: screenR,
+    fill: color,
+    stroke: darken(color, 0.6),
+    'stroke-width': 0.6
+  });
+
+  return [circle];
+}
+
+// --- TEXT ---
+function renderText(el) {
+  const { x, y, z, w, color, text: txt } = el;
+  const center = iso(x, y, z);
+  const fontSize = (w || 14) * S;
+
+  const textEl = svgEl('text', {
+    x: center.sx, y: center.sy,
+    fill: color,
+    'font-family': "'SF Mono', 'Consolas', monospace",
+    'font-size': fontSize,
+    'text-anchor': 'middle',
+    'dominant-baseline': 'middle'
+  });
+  textEl.textContent = txt || 'text';
+
+  return [textEl];
+}
+
+// --- ARC (circle outline) ---
+function renderArc(el) {
+  const { x, y, z, w, color } = el;
+  const radius = w;
+  const center = iso(x, y + radius, z);
+  const screenR = radius * S;
+
+  const circle = svgEl('circle', {
+    cx: center.sx, cy: center.sy, r: screenR,
+    fill: 'none',
+    stroke: color,
+    'stroke-width': 1.5
+  });
+
+  return [circle];
+}
+
+// =============================================================================
+// MAIN RENDER FUNCTION
+// =============================================================================
+
+function render() {
+  const source = editorEl.value;
+  const parsed = parse(source);
+  const { elements, connections, csgOps, errors, projection } = parsed;
+
+  // Reset gradient counter
+  gradientCounter = 0;
+
+  // Clear layers
+  sceneLayer.innerHTML = '';
+  connectionLayer.innerHTML = '';
+  relationLayer.innerHTML = '';
+  labelLayer.innerHTML = '';
+  // Remove old dynamic gradients from defs
+  const defs = canvasEl.querySelector('defs');
+  const markers = defs.querySelectorAll('marker');
+  defs.innerHTML = '';
+  markers.forEach(m => defs.appendChild(m));
+
+  // Show errors
+  if (errors.length > 0) {
+    errorBarEl.textContent = errors.map(e => `Line ${e.line + 1}: ${e.msg}`).join(' | ');
+    errorBarEl.classList.add('show');
+  } else {
+    errorBarEl.classList.remove('show');
+  }
+
+  // Render grid
+  renderGrid();
+
+  // --- Depth sort elements ---
+  const sorted = elements.map((el, i) => ({ el, origIdx: i }));
+  sorted.sort((a, b) => {
+    const ca = elementCenter(a.el);
+    const cb = elementCenter(b.el);
+    return isoDepth(ca.x, ca.y, ca.z) - isoDepth(cb.x, cb.y, cb.z);
+  });
+
+  // --- Render each element ---
+  for (const { el } of sorted) {
+    let svgEls = [];
+    switch (el.type) {
+      case 'box':      svgEls = renderBox(el); break;
+      case 'sphere':   svgEls = renderSphere(el); break;
+      case 'cylinder': svgEls = renderCylinder(el); break;
+      case 'cone':     svgEls = renderCone(el); break;
+      case 'pyramid':  svgEls = renderPyramid(el); break;
+      case 'torus':    svgEls = renderTorus(el); break;
+      case 'line':     svgEls = renderLine(el); break;
+      case 'dot':      svgEls = renderDot(el); break;
+      case 'text':     svgEls = renderText(el); break;
+      case 'arc':      svgEls = renderArc(el); break;
+    }
+
+    // Wrap in a group for the element
+    const g = svgEl('g', { 'data-idx': el.idx, 'data-type': el.type });
+    svgEls.forEach(e => g.appendChild(e));
+    sceneLayer.appendChild(g);
+  }
+
+  // --- Render index labels ---
+  if (showLabels) {
+    for (const el of elements) {
+      const c = elementCenter(el);
+      const sc = iso(c.x, c.y, c.z);
+      // Small label above the element
+      const label = svgEl('text', {
+        x: sc.sx, y: sc.sy - 8,
+        fill: '#6c8cff',
+        'font-family': "'SF Mono', monospace",
+        'font-size': 9,
+        'text-anchor': 'middle',
+        'dominant-baseline': 'auto',
+        opacity: 0.7
+      });
+      label.textContent = el.idx;
+      labelLayer.appendChild(label);
+    }
+  }
+
+  // --- Render relation arrows ---
+  if (showArrows) {
+    for (const el of elements) {
+      if (el.rel !== null && el.relRef !== null && el.relRef >= 0 && el.relRef < elements.length) {
+        const ref = elements[el.relRef];
+        const fromC = elementCenter(el);
+        const toC = elementCenter(ref);
+        const from = iso(fromC.x, fromC.y, fromC.z);
+        const to = iso(toC.x, toC.y, toC.z);
+
+        const line = svgEl('line', {
+          x1: from.sx, y1: from.sy, x2: to.sx, y2: to.sy,
+          stroke: '#555570',
+          'stroke-width': 0.8,
+          'stroke-dasharray': '4,3',
+          'marker-end': 'url(#arrow-rel)',
+          opacity: 0.5
+        });
+        relationLayer.appendChild(line);
+
+        // Relation label at midpoint
+        const mx = (from.sx + to.sx) / 2;
+        const my = (from.sy + to.sy) / 2;
+        const relName = RELATION_NAMES[el.rel] || `r${el.rel}`;
+        const relLabel = svgEl('text', {
+          x: mx, y: my - 5,
+          fill: '#555570',
+          'font-family': "'SF Mono', monospace",
+          'font-size': 7,
+          'text-anchor': 'middle',
+          opacity: 0.6
+        });
+        relLabel.textContent = relName;
+        relationLayer.appendChild(relLabel);
+      }
+    }
+  }
+
+  // --- Render connections ---
+  for (const conn of connections) {
+    if (conn.from < 0 || conn.from >= elements.length) continue;
+    if (conn.to < 0 || conn.to >= elements.length) continue;
+
+    const fromC = elementCenter(elements[conn.from]);
+    const toC = elementCenter(elements[conn.to]);
+    const from = iso(fromC.x, fromC.y, fromC.z);
+    const to = iso(toC.x, toC.y, toC.z);
+
+    const line = svgEl('line', {
+      x1: from.sx, y1: from.sy, x2: to.sx, y2: to.sy,
+      stroke: '#6c8cff',
+      'stroke-width': 1.5,
+      'marker-end': 'url(#arrow)',
+      opacity: 0.8
+    });
+    connectionLayer.appendChild(line);
+  }
+
+  // Update line numbers
+  updateLineNumbers();
+}
+
+// =============================================================================
+// LINE NUMBERS
+// =============================================================================
+
+function updateLineNumbers() {
+  const lines = editorEl.value.split('\n');
+  lineNumEl.innerHTML = lines.map((_, i) => `<div>${i + 1}</div>`).join('');
+}
+
+// =============================================================================
+// EVENT HANDLERS
+// =============================================================================
+
+// Live render on input
+editorEl.addEventListener('input', render);
+editorEl.addEventListener('scroll', () => {
+  lineNumEl.scrollTop = editorEl.scrollTop;
+});
+
+// =============================================================================
+// NAVIGATION — Zoom, Pan, Reset
+// =============================================================================
+
+const canvasPaneEl = document.querySelector('.canvas-pane');
+const zoomInfoEl = document.getElementById('zoom-info');
+
+/** Update SVG viewBox based on current zoom + pan */
+function updateViewBox() {
+  const size = 1000 / viewZoom;
+  const cx = 500 + viewPanX;  // center point
+  const cy = 500 + viewPanY;
+  const vx = cx - size / 2;
+  const vy = cy - size / 2;
+  canvasEl.setAttribute('viewBox', `${vx} ${vy} ${size} ${size}`);
+  zoomInfoEl.textContent = `${Math.round(viewZoom * 100)}%  az:${Math.round(camAzimuth)}° el:${Math.round(camElevation)}°`;
+}
+
+/** Convert screen coords to SVG coords (accounting for zoom+pan) */
+function screenToSvg(clientX, clientY) {
+  const rect = canvasEl.getBoundingClientRect();
+  const size = 1000 / viewZoom;
+  const cx = 500 + viewPanX;
+  const cy = 500 + viewPanY;
+  const vx = cx - size / 2;
+  const vy = cy - size / 2;
+  const sx = vx + (clientX - rect.left) / rect.width * size;
+  const sy = vy + (clientY - rect.top) / rect.height * size;
+  return { sx, sy };
+}
+
+// Zoom with scroll wheel (zoom toward cursor)
+canvasPaneEl.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const zoomFactor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+  const newZoom = Math.max(0.15, Math.min(10, viewZoom * zoomFactor));
+
+  // Zoom toward cursor position
+  const { sx, sy } = screenToSvg(e.clientX, e.clientY);
+  const ratio = 1 - viewZoom / newZoom;
+  viewPanX += (sx - 500 - viewPanX) * ratio;
+  viewPanY += (sy - 500 - viewPanY) * ratio;
+
+  viewZoom = newZoom;
+  updateViewBox();
+}, { passive: false });
+
+// Pan with left-click drag (not right-click, not alt+click)
+canvasPaneEl.addEventListener('mousedown', (e) => {
+  if (e.target.tagName === 'TEXTAREA') return;
+  if (e.button === 2 || e.altKey) return; // orbit handles these
+  if (e.button === 0) {
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panStartVX = viewPanX;
+    panStartVY = viewPanY;
+    canvasEl.classList.add('panning');
+    e.preventDefault();
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isPanning) return;
+  const rect = canvasEl.getBoundingClientRect();
+  const size = 1000 / viewZoom;
+  const dx = (e.clientX - panStartX) / rect.width * size;
+  const dy = (e.clientY - panStartY) / rect.height * size;
+  viewPanX = panStartVX - dx;
+  viewPanY = panStartVY - dy;
+  updateViewBox();
+});
+
+window.addEventListener('mouseup', (e) => {
+  if (isPanning) {
+    isPanning = false;
+    canvasEl.classList.remove('panning');
+  }
+});
+
+// --- ORBIT: Right-click drag to rotate camera ---
+let isOrbiting = false;
+let orbitStartX = 0, orbitStartY = 0;
+let orbitStartAz = 0, orbitStartEl = 0;
+
+canvasPaneEl.addEventListener('contextmenu', (e) => e.preventDefault());
+
+canvasPaneEl.addEventListener('mousedown', (e) => {
+  if (e.target.tagName === 'TEXTAREA') return;
+  if (e.button === 2 || e.altKey) {
+    // Right-click or Alt+click = orbit
+    isOrbiting = true;
+    orbitStartX = e.clientX;
+    orbitStartY = e.clientY;
+    orbitStartAz = camAzimuth;
+    orbitStartEl = camElevation;
+    canvasEl.classList.add('panning');
+    e.preventDefault();
+    return;
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isOrbiting) return;
+  const dx = e.clientX - orbitStartX;
+  const dy = e.clientY - orbitStartY;
+  camAzimuth = orbitStartAz - dx * 0.5;  // horizontal drag = azimuth
+  camElevation = Math.max(5, Math.min(89, orbitStartEl + dy * 0.5));  // vertical drag = elevation, clamped
+  updateCamera();
+  render();
+});
+
+window.addEventListener('mouseup', (e) => {
+  if (isOrbiting) {
+    isOrbiting = false;
+    canvasEl.classList.remove('panning');
+  }
+});
+
+// Double-click to reset view (zoom, pan, AND orbit)
+canvasPaneEl.addEventListener('dblclick', (e) => {
+  if (e.target.tagName === 'TEXTAREA') return;
+  viewZoom = 1;
+  viewPanX = 0;
+  viewPanY = 0;
+  camAzimuth = 45;
+  camElevation = 30;
+  updateCamera();
+  updateViewBox();
+  render();
+});
+
+// Mouse position display (uses zoom-aware conversion)
+canvasPaneEl.addEventListener('mousemove', (e) => {
+  if (isPanning) return;
+  const { sx, sy } = screenToSvg(e.clientX, e.clientY);
+  const pos = isoInverse(sx, sy);
+  mousePosEl.textContent = `X:${pos.x} Y:${pos.y} Z:${pos.z}`;
+});
+
+// Toggle buttons
+document.getElementById('btn-grid').addEventListener('click', function() {
+  showGrid = !showGrid;
+  this.classList.toggle('active', showGrid);
+  render();
+});
+
+document.getElementById('btn-arrows').addEventListener('click', function() {
+  showArrows = !showArrows;
+  this.classList.toggle('active', showArrows);
+  render();
+});
+
+document.getElementById('btn-labels').addEventListener('click', function() {
+  showLabels = !showLabels;
+  this.classList.toggle('active', showLabels);
+  render();
+});
+
+// Reset View (zoom, pan, and orbit)
+document.getElementById('btn-reset-view').addEventListener('click', () => {
+  viewZoom = 1;
+  viewPanX = 0;
+  viewPanY = 0;
+  camAzimuth = 45;
+  camElevation = 30;
+  updateCamera();
+  updateViewBox();
+  render();
+});
+
+// Export SVG
+document.getElementById('btn-export').addEventListener('click', () => {
+  const svgClone = canvasEl.cloneNode(true);
+  // Add background rect
+  const bg = document.createElementNS(NS, 'rect');
+  bg.setAttribute('width', '1000');
+  bg.setAttribute('height', '1000');
+  bg.setAttribute('fill', '#0f1117');
+  svgClone.insertBefore(bg, svgClone.firstChild);
+
+  const svgData = new XMLSerializer().serializeToString(svgClone);
+  const blob = new Blob([svgData], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ssl-scene.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// =============================================================================
+// EXAMPLES
+// =============================================================================
+
+const EXAMPLES = {
+  snowman: `P1
+1 200 30 200 35 35 0 8
+1 200 80 200 25 25 0 8 10 0
+1 200 115 200 18 18 0 8 10 1
+3 200 133 200 5 18 0 7 14 2
+7 191 120 183 3 3 0 0 12 2
+7 209 120 183 3 3 0 0 13 2`,
+
+  house: `P1
+0 130 0 130 140 60 140 9
+4 200 60 200 170 50 0 1 10 0
+0 180 0 115 40 45 15 3 14 0
+0 270 60 160 20 40 20 1 10 0`,
+
+  chess: `P1
+2 200 0 200 45 15 0 8
+2 200 15 200 35 10 0 8 10 0
+2 200 25 200 18 65 0 8 10 1
+2 200 90 200 32 12 0 8 10 2
+1 200 120 200 25 25 0 8 10 3
+0 196 145 196 8 30 8 8 10 4
+0 190 163 190 20 8 20 8 10 5`,
+
+  table: `P1
+0 130 70 130 140 6 140 7
+0 135 0 135 10 70 10 7 11 0
+0 255 0 135 10 70 10 7 11 0
+0 135 0 255 10 70 10 7 11 0
+0 255 0 255 10 70 10 7 11 0
+2 175 76 175 12 30 0 4 10 0
+1 230 86 180 10 10 0 1 10 0
+0 185 76 235 55 8 35 3 10 0`,
+
+  rocket: `P1
+2 200 30 200 45 130 0 9
+3 200 160 200 45 55 0 1 10 0
+0 158 0 200 10 65 10 1 34 0
+0 242 0 200 10 65 10 1 31 2
+0 200 0 158 10 65 10 1 34 0
+0 200 0 242 10 65 10 1 31 4
+3 200 0 200 30 40 0 7 11 0
+1 200 5 200 12 12 0 6 16 6`,
+
+  tree: `P1
+2 200 0 200 12 80 0 7
+1 200 70 200 45 45 0 2 10 0
+1 200 100 200 35 35 0 2 10 1
+1 200 125 200 25 25 0 2 10 2`,
+
+  lamp: `P1
+2 200 0 200 25 8 0 9
+2 200 8 200 8 60 0 9 10 0
+3 200 68 200 35 30 0 6 10 1
+2 200 68 200 6 32 0 8 16 2`,
+
+  city: `P1
+0 50 0 200 40 200 40 3
+0 120 0 200 30 130 30 9
+0 170 0 200 55 80 50 7
+0 250 0 200 25 250 25 4
+0 300 0 200 60 60 55 1
+0 380 0 200 35 160 30 9`
+};
+
+examplesEl.addEventListener('change', function() {
+  const key = this.value;
+  if (EXAMPLES[key]) {
+    editorEl.value = EXAMPLES[key];
+    render();
+  }
+  this.value = '';
+});
+
+// =============================================================================
+// GLOBAL API — for render.js (Playwright headless pipeline)
+// =============================================================================
+
+/** Set editor content and re-render */
+window.sslSetCode = function(code) {
+  editorEl.value = code;
+  render();
+};
+
+/** Toggle presentation mode: hide grid, labels, relation arrows */
+window.sslPresentationMode = function(on) {
+  if (on) {
+    showGrid = false;
+    showLabels = false;
+    showArrows = false;
+  } else {
+    showGrid = true;
+    showLabels = true;
+    showArrows = true;
+  }
+  // Update button states
+  document.getElementById('btn-grid').classList.toggle('active', showGrid);
+  document.getElementById('btn-arrows').classList.toggle('active', showArrows);
+  document.getElementById('btn-labels').classList.toggle('active', showLabels);
+  render();
+};
+
+// =============================================================================
+// INITIAL RENDER
+// =============================================================================
+
+// Load snowman as default example
+editorEl.value = EXAMPLES.snowman;
+updateViewBox();
+render();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+CANVAS 595 842 #ffffff
+
+-- ═══════════════════════════════════════════════════
+-- LEFT SIDEBAR — dark slate with curved header feel
+-- ═══════════════════════════════════════════════════
+RECT 0 0 170 842 0 #4a5568
+
+-- Name header area (darker top)
+RECT 0 0 170 70 0 #2d3748
+TEXT 20 30 "Tygo Splinter" 18 1 #ffffff bold
+TEXT 20 50 "Aspiring Vibe Coder" 9 1 #a0aec0 italic
+
+PHOTO 50 85 70 1 #a0aec0 3
+
+-- ── Contact Details ──────────────────────────────
+TEXT 20 178 "Contact Details" 10 1 #ffffff bold
+DIVIDER 20 190 150 190 1 #718096
+
+TEXT 20 206 "tygosplinter@outlook.com" 7 1 #cbd5e0
+TEXT 20 220 "0626036222" 7 1 #cbd5e0
+TEXT 20 234 "Bisschop Metziusstraat 2" 7 1 #cbd5e0
+TEXT 20 246 "5014LS Tilburg" 7 1 #cbd5e0
+TEXT 20 262 "Born: 27 November 2003" 7 1 #cbd5e0
+TEXT 20 276 "Driver's License B" 7 1 #cbd5e0
+
+-- ── Core Skills ──────────────────────────────────
+TEXT 20 306 "Core Skills" 10 1 #ffffff bold
+DIVIDER 20 318 150 318 1 #718096
+
+TEXT 20 334 "Vibe Coding" 7.5 1 #cbd5e0
+TEXT 20 348 "AI-Assisted Development" 7.5 1 #cbd5e0
+TEXT 20 362 "Team Leadership" 7.5 1 #cbd5e0
+TEXT 20 376 "Event Organisation" 7.5 1 #cbd5e0
+TEXT 20 390 "Customer Service" 7.5 1 #cbd5e0
+TEXT 20 404 "Warehouse Operations" 7.5 1 #cbd5e0
+TEXT 20 418 "Logistics & Delivery" 7.5 1 #cbd5e0
+TEXT 20 432 "Entrepreneurial Thinking" 7.5 1 #cbd5e0
+TEXT 20 446 "Fast Learner" 7.5 1 #cbd5e0
+
+-- ── Languages ────────────────────────────────────
+TEXT 20 476 "Languages" 10 1 #ffffff bold
+DIVIDER 20 488 150 488 1 #718096
+
+TEXT 20 504 "Dutch" 7.5 1 #cbd5e0
+TEXT 110 504 "native" 6.5 1 #a0aec0
+TEXT 20 518 "English" 7.5 1 #cbd5e0
+TEXT 110 518 "fluent" 6.5 1 #a0aec0
+
+-- ── Interests ────────────────────────────────────
+TEXT 20 548 "Interests" 10 1 #ffffff bold
+DIVIDER 20 560 150 560 1 #718096
+
+TEXT 20 576 "Vibe Coding" 7.5 1 #cbd5e0
+TEXT 20 590 "AI & Emerging Tech" 7.5 1 #cbd5e0
+TEXT 20 604 "Entrepreneurship" 7.5 1 #cbd5e0
+TEXT 20 618 "Community Building" 7.5 1 #cbd5e0
+
+
+-- ═══════════════════════════════════════════════════
+-- MAIN CONTENT — right side
+-- ═══════════════════════════════════════════════════
+
+-- ── Professional Profile ─────────────────────────
+TEXT 190 30 "Professional Profile" 14 1 #c05621 bold
+DIVIDER 190 47 570 47 1 #c05621
+
+TEXT 190 64 "Entrepreneurship & Business Innovation student at Tilburg University with" 8.5 1 #444444
+TEXT 190 78 "hands-on experience in customer-facing roles, logistics, and warehouse" 8.5 1 #444444
+TEXT 190 92 "operations. Passionate vibe coder who builds with AI tools, turning ideas" 8.5 1 #444444
+TEXT 190 106 "into working products through natural-language prompting and rapid" 8.5 1 #444444
+TEXT 190 120 "prototyping. Eager to lead a student community around this emerging" 8.5 1 #444444
+TEXT 190 134 "movement and help fellow students discover the power of vibe coding." 8.5 1 #444444
+
+-- ── Why CEO of Vibe Coders Association ───────────
+TEXT 190 164 "Motivation — CEO, Student Association for Vibe Coders" 14 1 #c05621 bold
+DIVIDER 190 181 570 181 1 #c05621
+
+TEXT 190 196 "Outline" 9 1 #444444 italic
+
+TEXT 190 214 "I believe vibe coding is the future of how non-traditional developers" 8.5 1 #444444
+TEXT 190 228 "build software. As someone studying Entrepreneurship, I see a massive" 8.5 1 #444444
+TEXT 190 242 "opportunity to create a student community where people learn to ship" 8.5 1 #444444
+TEXT 190 256 "real products using AI — no CS degree required." 8.5 1 #444444
+
+TEXT 190 276 "Key Qualities" 9 1 #444444 italic
+
+TEXT 190 294 "·  Passionate vibe coder — actively builds projects using AI-assisted" 8 1 #444444
+TEXT 190 306 "   tools and natural-language prompting." 8 1 #444444
+TEXT 190 322 "·  Entrepreneurial mindset — studying Business Innovation, understands" 8 1 #444444
+TEXT 190 334 "   how to turn ideas into sustainable initiatives." 8 1 #444444
+TEXT 190 350 "·  Proven reliability — held multiple jobs with strong work ethic across" 8 1 #444444
+TEXT 190 362 "   retail, logistics, and delivery." 8 1 #444444
+TEXT 190 378 "·  Community-oriented — wants to bring students together, organise" 8 1 #444444
+TEXT 190 390 "   workshops, hackathons, and build-in-public sessions." 8 1 #444444
+TEXT 190 406 "·  Strong communicator — customer-facing experience across all roles." 8 1 #444444
+
+-- ── Education ────────────────────────────────────
+TEXT 190 440 "Education" 14 1 #c05621 bold
+DIVIDER 190 457 570 457 1 #c05621
+
+TEXT 190 474 "Entrepreneurship & Business Innovation" 10 1 #333333 bold
+TEXT 510 474 "2024 — 2027" 8 1 #888888
+TEXT 190 488 "Tilburg University" 8.5 1 #888888
+
+-- ── Work Experience ──────────────────────────────
+TEXT 190 518 "Work Experience" 14 1 #c05621 bold
+DIVIDER 190 535 570 535 1 #c05621
+
+TEXT 190 554 "Delivery Driver" 10 1 #333333 bold
+TEXT 510 554 "Apr — Nov 2025" 8 1 #888888
+TEXT 190 568 "Picnic, Tilburg" 8.5 1 #888888
+
+TEXT 190 584 "Outline" 9 1 #444444 italic
+TEXT 190 600 "·  Managed efficient delivery routes across Tilburg, handling time" 8 1 #444444
+TEXT 190 612 "   pressure and customer interaction on every stop." 8 1 #444444
+TEXT 190 628 "·  Maintained high customer satisfaction ratings through friendly" 8 1 #444444
+TEXT 190 640 "   service and reliable delivery." 8 1 #444444
+
+DIVIDER 190 658 570 658 1 #e2e8f0
+
+TEXT 190 672 "Warehouse Worker" 10 1 #333333 bold
+TEXT 510 672 "Oct 2023 — May 2024" 8 1 #888888
+TEXT 190 686 "Van Bemmel & Kroon B.V., Hazerswoude-Rijndijk" 8.5 1 #888888
+
+TEXT 190 702 "·  Managed stock and inventory in a fast-paced warehouse environment." 8 1 #444444
+TEXT 190 714 "·  Ensured order accuracy and timely dispatch." 8 1 #444444
+
+DIVIDER 190 732 570 732 1 #e2e8f0
+
+TEXT 190 746 "Store Associate" 10 1 #333333 bold
+TEXT 510 746 "Mar 2021 — Apr 2022" 8 1 #888888
+TEXT 190 760 "Albert Heijn (Leisant B.V.), Leiderdorp" 8.5 1 #888888
+
+TEXT 190 776 "·  Customer service, shelf stocking, and cash register operations." 8 1 #444444
+TEXT 190 788 "·  Worked flexible shifts alongside high school studies." 8 1 #444444

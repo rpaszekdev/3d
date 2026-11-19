@@ -1,0 +1,133 @@
+CANVAS 595 842 #ffffff
+
+-- ═══════════════════════════════════════════════════
+-- DARK HEADER BAND
+-- ═══════════════════════════════════════════════════
+RECT 0 0 595 160 0 #1a2332
+TEXT 40 35 "ROBERT PASZEK" 32 1 #ffffff bold
+TEXT 40 70 "Software Developer  ·  CSAI" 12 1 #6db3d4 bold
+
+TEXT 40 100 "+48 725 850 750" 8 1 #8aaabe
+TEXT 180 100 "r.f.paszek@gmail.com" 8 1 #8aaabe
+TEXT 370 100 "Tilburg, Netherlands" 8 1 #8aaabe
+
+TEXT 40 124 "Student of Cognitive Science and AI. Won 1st place (of 93 teams)" 9 1 #c8dae8 italic
+TEXT 40 138 "at an international Hackathon. Created a DSL for CV generation — this CV was built with it." 9 1 #c8dae8 italic
+
+PHOTO 500 20 80 1 #6db3d4 3
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN (x=40, w=330)
+-- ═══════════════════════════════════════════════════
+
+-- ── Projects ─────────────────────────────────────
+TEXT 40 180 "PROJECTS" 9 1 #1a2332 bold
+DIVIDER 40 192 370 192 2 #6db3d4
+
+TEXT 40 210 "Bed&Market — Autonomous Marketing Agent" 10.5 1 #1a2332 bold
+TEXT 330 210 "2026" 8 1 #999999
+TEXT 40 224 "Playwright  ·  Perplexity API  ·  Claude API" 7.5 1 #6db3d4
+TEXT 40 238 "End-to-end automation pipeline: scrapes hundreds of B&B" 8 1 #444444
+TEXT 40 250 "websites, extracts business contacts, generates personalized" 8 1 #444444
+TEXT 40 262 "outreach — runs overnight with zero human intervention." 8 1 #444444
+TEXT 40 274 "Replaced a full day of manual research per batch." 8 1 #444444
+
+TEXT 40 296 "Hackathon Winner — 1st of 93 Teams" 10.5 1 #1a2332 bold
+TEXT 330 296 "Spring 2025" 8 1 #999999
+TEXT 40 310 "G-tec Medical Engineering, Tilburg" 7.5 1 #6db3d4
+TEXT 40 324 "Created a working EEG brain-computer interface that" 8 1 #444444
+TEXT 40 336 "translated brain activity into music in real time." 8 1 #444444
+
+TEXT 40 358 "ChatResume — AI CV Generator" 10.5 1 #1a2332 bold
+TEXT 330 358 "2026" 8 1 #999999
+TEXT 40 372 "TypeScript  ·  Canvas 2D  ·  Custom DSL" 7.5 1 #6db3d4
+TEXT 40 386 "CV generation engine powered by a custom markup language." 8 1 #444444
+TEXT 40 398 "User pastes resume + job description, AI tailors and" 8 1 #444444
+TEXT 40 410 "renders a professional PDF in seconds." 8 1 #444444
+
+TEXT 40 432 "AI-Native IDE" 10.5 1 #1a2332 bold
+TEXT 330 432 "2026" 8 1 #999999
+TEXT 40 446 "Tauri 2.x  ·  React  ·  Rust  ·  SQLite" 7.5 1 #6db3d4
+TEXT 40 460 "Developer productivity tool: one-click workspace indexing" 8 1 #444444
+TEXT 40 472 "via RAG embeddings, natural-language code search, parallel" 8 1 #444444
+TEXT 40 484 "AI session orchestration." 8 1 #444444
+
+-- ── Education ────────────────────────────────────
+TEXT 40 514 "EDUCATION" 9 1 #1a2332 bold
+DIVIDER 40 526 370 526 2 #6db3d4
+
+TEXT 40 544 "BSc Cognitive Science & AI — 2nd year" 10.5 1 #1a2332 bold
+TEXT 290 544 "Sept 2024 — Current" 8 1 #999999
+TEXT 40 558 "Tilburg University, Netherlands" 8 1 #444444
+
+-- ── Work Experience ──────────────────────────────
+TEXT 40 586 "WORK EXPERIENCE" 9 1 #1a2332 bold
+DIVIDER 40 598 370 598 2 #6db3d4
+
+TEXT 40 616 "Vice-Chair — CSAI Programme Committee" 10.5 1 #1a2332 bold
+TEXT 290 616 "Sept 2025 — Current" 8 1 #999999
+TEXT 40 630 "Tilburg University" 8 1 #444444
+
+TEXT 40 652 "Sales Rep — Genergy Poland" 10.5 1 #1a2332 bold
+TEXT 290 652 "Jan — Jun 2024" 8 1 #999999
+TEXT 40 666 "Gdansk  ·  Solar panels  ·  B2B sales" 8 1 #444444
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN (x=400, w=155)
+-- ═══════════════════════════════════════════════════
+
+-- ── Skills ───────────────────────────────────────
+TEXT 400 180 "SKILLS" 9 1 #1a2332 bold
+DIVIDER 400 192 555 192 2 #6db3d4
+
+TEXT 400 210 "AI-Assisted Development" 8.5 1 #1a2332 bold
+TEXT 400 224 "2,400+ hrs with Claude Code" 7.5 1 #444444
+TEXT 400 236 "3,000+ sessions, 15+ projects" 7.5 1 #444444
+TEXT 400 248 "since Nov 2025" 7.5 1 #444444
+
+TEXT 400 268 "RAG & Embeddings" 8.5 1 #1a2332 bold
+TEXT 400 282 "Web Scraping (Playwright)" 7.5 1 #444444
+TEXT 400 294 "API Integration & MCP" 7.5 1 #444444
+TEXT 400 306 "DSL Design & Compilers" 7.5 1 #444444
+TEXT 400 318 "Full-Stack (React, Node, Rust)" 7.5 1 #444444
+
+TEXT 400 338 "Public Speaking" 8.5 1 #1a2332 bold
+TEXT 400 352 "Art of Presenting course" 7.5 1 #444444
+TEXT 400 364 "University Theatre (active)" 7.5 1 #444444
+
+-- ── Live Projects ────────────────────────────────
+TEXT 400 394 "LIVE PROJECTS" 9 1 #1a2332 bold
+DIVIDER 400 406 555 406 2 #6db3d4
+
+TEXT 400 424 "stayinbocas.com" 8 1 #6db3d4
+TEXT 400 438 "bedandmarket.com" 8 1 #6db3d4
+TEXT 400 452 "brainquiz.study" 8 1 #6db3d4
+TEXT 400 466 "batchresume.com" 8 1 #6db3d4
+TEXT 400 480 "csai.live" 8 1 #6db3d4
+
+-- ── Languages ────────────────────────────────────
+TEXT 400 510 "LANGUAGES" 9 1 #1a2332 bold
+DIVIDER 400 522 555 522 2 #6db3d4
+
+TEXT 400 540 "Polish" 8 1 #444444
+TEXT 510 540 "native" 7 1 #999999
+TEXT 400 554 "English" 8 1 #444444
+TEXT 510 554 "fluent" 7 1 #999999
+TEXT 400 568 "Spanish" 8 1 #444444
+TEXT 510 568 "communicative" 7 1 #999999
+
+-- ── Interests ────────────────────────────────────
+TEXT 400 598 "INTERESTS" 9 1 #1a2332 bold
+DIVIDER 400 610 555 610 2 #6db3d4
+
+TEXT 400 628 "Sailing, Chess, Skiing" 8 1 #444444
+TEXT 400 642 "Traveling (4 continents)" 8 1 #444444
+TEXT 400 656 "Brain-Computer Interfaces" 8 1 #444444
+
+-- ── Certificates ─────────────────────────────────
+TEXT 400 686 "CERTIFICATES" 9 1 #1a2332 bold
+DIVIDER 400 698 555 698 2 #6db3d4
+
+TEXT 400 716 "Motorboat Operator" 8 1 #444444
+TEXT 400 730 "Sailing Permit" 8 1 #444444

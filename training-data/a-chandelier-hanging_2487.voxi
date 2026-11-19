@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- ceiling plate
+B 14 31 14 4 1 4 9
+
+-- suspension chain
+C 16 25 16 1 6 9
+
+-- central crown hub
+S 16 22 16 4 6
+
+-- decorative skirt ring
+C 16 18 16 7 1 6
+
+-- west arm
+B 8 21 15 8 1 2 6
+
+-- east arm
+B 16 21 15 8 1 2 6
+
+-- north arm
+B 15 21 8 2 1 8 6
+
+-- south arm
+B 15 21 16 2 1 8 6
+
+-- candle cup holders at arm tips
+S 8 22 16 1 6
+S 24 22 16 1 6
+S 16 22 8 1 6
+S 16 22 24 1 6
+
+-- candles (white wax)
+C 8 22 16 1 4 8
+C 24 22 16 1 4 8
+C 16 22 8 1 4 8
+C 16 22 24 1 4 8
+
+-- flames (orange)
+S 8 27 16 1 7
+S 24 27 16 1 7
+S 16 27 8 1 7
+S 16 27 24 1 7
+
+-- bottom finial stem
+C 16 13 16 1 5 6
+
+-- bottom finial ball
+S 16 12 16 2 d

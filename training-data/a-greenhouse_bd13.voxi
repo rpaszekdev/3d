@@ -1,0 +1,39 @@
+V 32 24 32
+
+-- floor slab
+B 4 0 4 24 1 24 a
+
+-- glass walls (cyan)
+B 4 1 4 24 10 1 4
+B 4 1 27 8 10 1 4
+B 16 1 27 12 10 1 4
+B 4 1 5 1 10 22 4
+B 27 1 5 1 10 22 4
+
+-- wooden door
+B 12 1 27 4 7 1 a
+
+-- roof left slope
+B 4 10 4 6 2 24 4
+B 10 12 4 5 2 24 4
+B 15 14 4 3 2 24 4
+
+-- roof right slope
+B 18 14 4 3 2 24 4
+B 21 12 4 5 2 24 4
+B 26 10 4 5 2 24 4
+
+-- ridge beam
+B 15 16 4 2 1 24 9
+
+-- planting benches
+B 8 2 10 5 1 8 a
+B 19 2 10 5 1 8 a
+
+-- plants
+S 10 4 14 2 2
+S 16 4 14 2 2
+S 22 4 14 2 2
+S 10 4 20 2 2
+S 16 4 20 2 2
+S 22 4 20 2 2

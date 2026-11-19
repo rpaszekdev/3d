@@ -1,0 +1,41 @@
+V 24 24 24
+
+-- foundation
+B 4 0 4 16 1 16 9
+
+-- walls
+B 4 1 4 16 8 1 7
+B 4 1 19 16 8 1 7
+B 4 1 4 1 8 16 7
+B 19 1 4 1 8 16 7
+
+-- floor interior
+B 5 1 5 14 1 14 d
+
+-- roof base
+B 3 9 3 18 1 18 1
+
+-- roof middle
+B 5 10 5 14 1 14 1
+
+-- roof peak
+B 7 11 7 10 1 10 e
+
+-- chimney
+B 14 9 7 3 6 3 9
+B 14 14 7 3 1 3 0
+
+-- door
+B 9 1 4 6 5 1 a
+
+-- window left
+B 5 4 4 3 3 1 4
+
+-- window right
+B 16 4 4 3 3 1 4
+
+-- window back left
+B 5 4 19 3 3 1 4
+
+-- window back right
+B 16 4 19 3 3 1 4

@@ -1,0 +1,29 @@
+V 28 22 20
+
+-- tortilla shell base
+B 4 1 8 20 3 4 d
+
+-- left tortilla wall
+B 4 4 9 3 9 3 d
+B 3 7 10 3 6 2 d
+
+-- right tortilla wall
+B 21 4 9 3 9 3 d
+B 22 7 10 3 6 2 d
+
+-- meat filling
+B 7 4 9 14 4 3 a
+
+-- cheese layer
+B 7 8 9 14 2 3 6
+
+-- lettuce overflow
+B 6 9 8 16 3 5 2
+
+-- tomato pieces
+S 9 10 10 1 1
+S 14 10 10 1 1
+S 18 10 10 1 1
+
+-- sour cream
+B 10 10 9 8 2 2 8

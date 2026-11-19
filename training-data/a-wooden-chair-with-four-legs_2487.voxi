@@ -1,0 +1,21 @@
+V 24 24 24
+
+-- four legs (brown wood)
+B 8 0 8 2 8 2 a
+B 14 0 8 2 8 2 a
+B 8 0 14 2 8 2 a
+B 14 0 14 2 8 2 a
+
+-- seat (tan wood)
+B 7 8 7 10 2 10 d
+
+-- chair back uprights
+B 8 10 15 2 9 2 a
+B 14 10 15 2 9 2 a
+
+-- back rails (horizontal supports)
+B 8 17 15 8 2 2 d
+B 8 13 15 8 2 2 d
+
+-- seat front rail (structural)
+B 8 6 8 8 2 2 6

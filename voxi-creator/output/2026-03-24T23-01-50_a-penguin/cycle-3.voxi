@@ -1,0 +1,49 @@
+V 32 32 32
+
+-- Feet (orange)
+B 11 0 12 4 2 5 7
+B 17 0 12 4 2 5 7
+
+-- Legs (navy)
+B 12 2 14 3 3 4 f
+B 17 2 14 3 3 4 f
+
+-- Main body (navy back and sides)
+B 10 4 13 12 14 7 f
+
+-- White belly (front portion of body)
+B 12 5 12 8 11 3 8
+
+-- Left wing (navy flipper)
+B 6 5 14 5 11 3 f
+
+-- Right wing (navy flipper)
+B 21 5 14 5 11 3 f
+
+-- Neck (navy)
+B 13 17 14 6 3 5 f
+
+-- Head sphere (navy)
+S 16 23 16 5 f
+
+-- White face patch
+B 13 21 13 6 4 3 8
+
+-- Beak top (orange)
+B 14 22 10 4 2 3 7
+
+-- Beak bottom (slightly darker orange/tan)
+B 14 21 10 4 1 3 d
+
+-- Left eye
+P 14 24 13 0
+
+-- Right eye
+P 18 24 13 0
+
+-- Eye shine (white highlight)
+P 14 25 13 8
+P 18 25 13 8
+
+-- Belly lower highlight (slightly off-white)
+B 13 5 12 6 4 2 8

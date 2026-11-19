@@ -1,0 +1,48 @@
+V 24 24 24
+
+-- front legs
+B 9 0 9 2 4 2 a
+B 13 0 9 2 4 2 a
+
+-- back legs
+B 9 0 14 2 4 2 a
+B 13 0 14 2 4 2 a
+
+-- body
+B 9 4 8 6 5 9 7
+
+-- belly
+B 10 4 9 4 2 7 d
+
+-- neck
+B 10 8 6 4 3 3 7
+
+-- head
+S 12 12 5 3 7
+
+-- snout
+B 10 9 2 4 3 3 d
+
+-- nose
+B 11 10 1 2 1 1 0
+
+-- eyes
+S 10 13 4 1 0
+S 14 13 4 1 0
+
+-- ears
+B 9 14 4 3 5 2 7
+B 13 14 4 3 5 2 7
+
+-- ear tips
+B 10 17 4 1 2 2 e
+B 14 17 4 1 2 2 e
+
+-- tail base
+B 9 5 17 6 4 4 7
+
+-- tail curve
+B 10 8 20 4 3 2 7
+
+-- tail tip
+B 11 10 21 3 3 2 8

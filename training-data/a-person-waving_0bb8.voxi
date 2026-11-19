@@ -1,0 +1,36 @@
+V 20 30 12
+
+-- shoes
+B 6 0 4 3 2 4 a
+B 11 0 4 3 2 4 a
+
+-- legs
+B 7 2 5 3 6 3 9
+B 11 2 5 3 6 3 9
+
+-- torso
+B 6 8 4 8 7 4 3
+
+-- neck
+B 9 15 5 2 2 2 d
+
+-- head
+S 10 18 6 3 d
+
+-- hair
+S 10 21 6 2 a
+
+-- left arm at side
+B 4 8 5 2 7 3 d
+
+-- left hand
+S 4 8 6 1 b
+
+-- right upper arm raised
+B 15 10 5 2 5 3 d
+
+-- right forearm extended outward
+B 17 14 5 2 4 3 d
+
+-- right hand waving
+S 19 17 6 2 b

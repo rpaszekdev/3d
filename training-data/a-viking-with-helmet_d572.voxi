@@ -1,0 +1,54 @@
+V 32 32 32
+
+-- boots
+B 12 0 13 4 2 4 a
+B 17 0 13 4 2 4 a
+
+-- legs
+B 12 2 13 4 6 4 0
+B 17 2 13 4 6 4 0
+
+-- tunic body
+B 11 8 12 10 8 5 1
+
+-- chest armor plate
+B 12 9 11 8 5 2 9
+
+-- left arm
+B 8 8 13 3 7 3 1
+-- right arm
+B 21 8 13 3 7 3 1
+
+-- hands
+B 8 6 13 3 2 3 d
+B 21 6 13 3 2 3 d
+
+-- neck
+B 14 15 13 4 2 3 d
+
+-- head
+S 16 19 14 3 d
+
+-- beard
+B 13 13 11 6 5 2 6
+
+-- helmet base
+B 12 21 11 8 3 6 9
+
+-- helmet brim
+B 11 21 11 10 1 6 9
+
+-- left horn
+B 7 21 13 3 5 2 8
+-- right horn
+B 23 21 13 3 5 2 8
+
+-- eyes
+B 14 19 11 2 1 1 0
+B 18 19 11 2 1 1 0
+
+-- axe handle
+B 24 3 14 1 10 1 a
+
+-- axe head
+B 24 12 13 2 4 3 9

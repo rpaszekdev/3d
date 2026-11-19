@@ -1,0 +1,25 @@
+V 50 27 40
+-- VOXI-Home compiled scene (5m × 4m, scale: 1 voxel = 10cm)
+
+-- Floor
+B 0 0 0 50 1 40 8
+
+-- Walls
+B 0 1 0 50 17 1 9
+B 0 1 39 50 17 1 9
+B 0 1 0 1 17 40 9
+B 49 1 0 1 17 40 9
+
+-- Door openings
+B 21 1 39 9 17 1 0 -- north door
+
+-- Windows
+B 49 9 14 1 14 12 4 -- east window
+
+-- Furniture
+B 10 1 5 10 8 23 5 -- 3-Seat Sofa (sofa 3seat)
+B 3 1 30 8 8 8 5 -- Armchair (sofa armchair)
+B 20 1 15 9 5 5 d -- Coffee Table (table coffee)
+B 37 1 20 12 7 1 0 -- 55" TV (tv 55)
+B 12 1 8 20 1 15 e -- Medium Rug (rug medium)
+B 2 1 2 3 16 3 6 -- Floor Lamp (lamp floor)

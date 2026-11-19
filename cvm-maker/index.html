@@ -1,0 +1,2248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVM — CV Maker DSL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #232733;
+    --border: #2d3244; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #e8804a; --canvas-bg: #13151f;
+    --highlight: rgba(232, 128, 74, 0.3);
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); height: 100vh; overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    height: 40px; display: flex; align-items: center; gap: 8px;
+    padding: 0 12px; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .header h1 { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .header h1 .accent { color: var(--accent); }
+  .header select, .header button {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text); padding: 4px 10px; font-size: 11px; cursor: pointer;
+  }
+  .header select:hover, .header button:hover { border-color: var(--accent); }
+  .header .spacer { flex: 1; }
+  .header .info { font-size: 11px; color: var(--text-dim); }
+  .header label { font-size: 11px; color: var(--text-dim); }
+  .header .sep { color: var(--border); }
+  .btn-photo { background: #2a3a2a !important; border-color: #4a6a4a !important; }
+  .btn-photo:hover { border-color: #6a9a6a !important; }
+  .export-group { display: flex; gap: 0; }
+  .export-group button { border-radius: 0; border-right: none; }
+  .export-group button:first-child { border-radius: 5px 0 0 5px; }
+  .export-group button:last-child { border-radius: 0 5px 5px 0; border-right: 1px solid var(--border); }
+
+  /* Layout */
+  .split { display: flex; height: calc(100vh - 40px); }
+
+  /* Editor */
+  .editor-pane {
+    width: 440px; min-width: 300px; display: flex; flex-direction: column;
+    border-right: 1px solid var(--border); background: var(--surface);
+  }
+  .editor-wrap { flex: 1; position: relative; overflow: hidden; }
+  .line-numbers {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 32px;
+    background: var(--surface2); color: var(--text-dim); font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; padding: 8px 4px; text-align: right; overflow: hidden;
+    user-select: none; border-right: 1px solid var(--border);
+  }
+  .line-numbers .hl { background: var(--highlight); color: var(--accent); }
+  textarea {
+    position: absolute; left: 32px; top: 0; right: 0; bottom: 0;
+    background: transparent; color: var(--text); border: none; resize: none;
+    font-size: 12px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; padding: 8px; outline: none; tab-size: 4;
+    white-space: pre; overflow: auto;
+  }
+  textarea::placeholder { color: var(--text-dim); }
+
+  .format-ref {
+    padding: 6px 8px; border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--text-dim); line-height: 1.7;
+    background: var(--surface2);
+  }
+  .format-ref code { color: var(--accent); }
+  .status {
+    height: 24px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 11px; color: var(--text-dim); border-top: 1px solid var(--border);
+  }
+  .status .ok { color: #4caf50; }
+  .status .spacer { flex: 1; }
+
+  /* Canvas */
+  .canvas-pane {
+    flex: 1; background: var(--canvas-bg); overflow: auto;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .canvas-pane.drag-over { background: #1a2a1a; }
+  .canvas-wrap { position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  #main-canvas { display: block; }
+
+  /* Layer list */
+  .layer-panel {
+    width: 200px; border-left: 1px solid var(--border); background: var(--surface);
+    display: flex; flex-direction: column;
+  }
+  .layer-panel-title {
+    font-size: 11px; font-weight: 600; padding: 8px; color: var(--text-dim);
+    border-bottom: 1px solid var(--border); background: var(--surface2);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .layer-list {
+    flex: 1; overflow-y: auto; font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .layer-item {
+    padding: 4px 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .layer-item:hover { background: var(--surface2); }
+  .layer-item.selected { background: var(--highlight); }
+  .layer-swatch {
+    width: 12px; height: 12px; border-radius: 2px;
+    border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .layer-z {
+    font-size: 9px; color: var(--text-dim); margin-left: auto;
+    background: var(--surface2); padding: 1px 4px; border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>CVM <span class="accent">CV Maker</span></h1>
+  <select id="examples"><option value="">— templates —</option></select>
+  <span class="sep">|</span>
+  <label>Page:</label>
+  <select id="page-size">
+    <option value="a4p" selected>A4 Portrait</option>
+    <option value="a4l">A4 Landscape</option>
+    <option value="lp">Letter Portrait</option>
+    <option value="ll">Letter Landscape</option>
+    <option value="custom">Custom</option>
+  </select>
+  <label>Zoom:</label>
+  <select id="zoom">
+    <option value="0.25">25%</option>
+    <option value="0.5">50%</option>
+    <option value="0.75" selected>75%</option>
+    <option value="1">100%</option>
+    <option value="1.5">150%</option>
+  </select>
+  <span class="sep">|</span>
+  <button class="btn-photo" id="btn-photo">Load Photo</button>
+  <input type="file" id="photo-input" accept="image/*" style="display:none">
+  <div class="spacer"></div>
+  <button id="btn-gemma" style="background:#1a3a1a !important;border-color:#3a7a3a !important;color:#7fff7f;">Copy Gemma 4 Prompt</button>
+  <span class="sep">|</span>
+  <div class="export-group">
+    <button id="btn-png">PNG</button>
+    <button id="btn-jpg">JPG</button>
+    <button id="btn-pdf">PDF</button>
+    <button id="btn-docx" style="background:#2a2a4a !important;border-color:#4a4a8a !important;">DOCX</button>
+    <button id="btn-html" style="background:#2a3a2a !important;border-color:#4a6a4a !important;">HTML</button>
+  </div>
+  <span class="info" id="info"></span>
+</div>
+
+<div class="split">
+  <div class="editor-pane">
+    <div class="editor-wrap">
+      <div class="line-numbers" id="line-numbers"></div>
+      <textarea id="editor" spellcheck="false" placeholder="CANVAS 595 842 #ffffff&#10;PHOTO 130 80 100 1 #334155 3&#10;SECTION 40 200 515 1 #1e293b &quot;Experience&quot;"></textarea>
+    </div>
+    <div class="format-ref">
+      <code>CANVAS w h [bg]</code> &middot;
+      <code>RECT x y w h z color [r]</code> &middot;
+      <code>TEXT x y "str" size z color [bold|italic|light]</code><br>
+      <code>PHOTO x y size z [border-color] [border-w]</code> &middot;
+      <code>SECTION x y w z color "Title"</code><br>
+      <code>SKILL-BAR x y w h z fill% color [bg] ["Label"]</code> &middot;
+      <code>PILL x y z color text-color "Label"</code><br>
+      <code>RATING x y z color max filled</code> &middot;
+      <code>DIVIDER x1 y1 x2 y2 z [color] [dashed]</code><br>
+      <code>CONTACT x y z color icon "text"</code> &middot;
+      <code>TIMELINE x y h z color</code> &middot;
+      <code>LINE</code> <code>ELLIPSE</code> <code>IMG</code> &middot; <code>--</code> comment
+    </div>
+    <div class="status">
+      <span id="status-text" class="ok">Ready</span>
+      <span class="spacer"></span>
+      <span id="el-count"></span>
+    </div>
+  </div>
+
+  <div class="canvas-pane" id="canvas-pane">
+    <div class="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="layer-panel">
+    <div class="layer-panel-title">Layers</div>
+    <div class="layer-list" id="layer-list"></div>
+  </div>
+</div>
+
+<script>
+// ── Image Store ──────────────────────────────────────────────────
+const imageStore = { photo: null };
+
+// ── Icon Paths (canvas-drawn, no font dependency) ────────────────
+const ICONS = {
+  email(ctx, x, y, s, c) {
+    ctx.strokeStyle = c; ctx.lineWidth = s * 0.08; ctx.fillStyle = 'none';
+    const w = s, h = s * 0.7, top = y + (s - h) / 2;
+    ctx.beginPath();
+    ctx.rect(x, top, w, h);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, top); ctx.lineTo(x + w/2, top + h*0.55); ctx.lineTo(x + w, top);
+    ctx.stroke();
+  },
+  phone(ctx, x, y, s, c) {
+    ctx.fillStyle = c;
+    ctx.beginPath();
+    const cx = x + s/2, cy = y + s/2, r = s * 0.38;
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${s*0.5}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('☎', cx, cy + 1);
+    ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+  },
+  location(ctx, x, y, s, c) {
+    ctx.fillStyle = c;
+    const cx = x + s/2, pinTop = y + s*0.08;
+    ctx.beginPath();
+    ctx.arc(cx, pinTop + s*0.3, s*0.28, Math.PI, 0);
+    ctx.lineTo(cx, y + s*0.92);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx, pinTop + s*0.3, s*0.12, 0, Math.PI*2);
+    ctx.fill();
+  },
+  web(ctx, x, y, s, c) {
+    ctx.strokeStyle = c; ctx.lineWidth = s * 0.07;
+    const cx = x + s/2, cy = y + s/2, r = s*0.4;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, cy, r*0.45, r, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + s*0.1, cy); ctx.lineTo(x + s*0.9, cy); ctx.stroke();
+  },
+  github(ctx, x, y, s, c) {
+    ctx.fillStyle = c;
+    const cx = x + s/2, cy = y + s/2, r = s*0.42;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${s*0.55}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('⌥', cx, cy);
+    ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+  },
+  linkedin(ctx, x, y, s, c) {
+    ctx.fillStyle = c;
+    roundedRect(ctx, x, y + s*0.1, s, s*0.8, s*0.15);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${s*0.5}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('in', x + s/2, y + s/2);
+    ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+  },
+  calendar(ctx, x, y, s, c) {
+    ctx.strokeStyle = c; ctx.lineWidth = s * 0.07;
+    const pad = s * 0.1;
+    ctx.strokeRect(x + pad, y + pad + s*0.15, s - pad*2, s - pad*2 - s*0.15);
+    ctx.beginPath();
+    ctx.moveTo(x + pad, y + pad + s*0.38);
+    ctx.lineTo(x + s - pad, y + pad + s*0.38);
+    ctx.stroke();
+    // top hooks
+    ctx.lineWidth = s * 0.09;
+    ctx.beginPath(); ctx.moveTo(x + s*0.3, y + pad); ctx.lineTo(x + s*0.3, y + pad + s*0.2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + s*0.7, y + pad); ctx.lineTo(x + s*0.7, y + pad + s*0.2); ctx.stroke();
+  },
+  briefcase(ctx, x, y, s, c) {
+    ctx.fillStyle = c;
+    const pad = s * 0.08;
+    roundedRect(ctx, x + pad, y + s*0.3, s - pad*2, s*0.55, s*0.08);
+    ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = s * 0.07;
+    ctx.beginPath();
+    ctx.moveTo(x + s*0.35, y + s*0.3);
+    ctx.lineTo(x + s*0.35, y + s*0.18);
+    ctx.lineTo(x + s*0.65, y + s*0.18);
+    ctx.lineTo(x + s*0.65, y + s*0.3);
+    ctx.stroke();
+  }
+};
+
+
+// ── Helpers ──────────────────────────────────────────────────────
+
+function roundedRect(ctx, x, y, w, h, r) {
+  r = Math.min(r || 0, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawStar(ctx, cx, cy, r, filled, color) {
+  const spikes = 5, outerR = r, innerR = r * 0.45;
+  ctx.beginPath();
+  for (let i = 0; i < spikes * 2; i++) {
+    const rad = (i * Math.PI / spikes) - Math.PI / 2;
+    const rr = i % 2 === 0 ? outerR : innerR;
+    const px = cx + rr * Math.cos(rad);
+    const py = cy + rr * Math.sin(rad);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  if (filled) {
+    ctx.fillStyle = color;
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+}
+
+
+// ── Parser ──────────────────────────────────────────────────────
+
+function parseCVM(code) {
+  let canvasW = 595, canvasH = 842, canvasBg = '#ffffff';
+  const elements = [];
+
+  const lines = code.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
+    if (!trimmed || trimmed.startsWith('--') || trimmed.startsWith('//')) continue;
+
+    // Tokenize respecting quoted strings
+    const tokens = [];
+    let j = 0;
+    while (j < trimmed.length) {
+      if (trimmed[j] === ' ' || trimmed[j] === '\t') { j++; continue; }
+      if (trimmed[j] === '"') {
+        const end = trimmed.indexOf('"', j + 1);
+        if (end === -1) { tokens.push(trimmed.slice(j + 1)); j = trimmed.length; }
+        else { tokens.push(trimmed.slice(j + 1, end)); j = end + 1; }
+      } else {
+        const end = trimmed.indexOf(' ', j);
+        if (end === -1) { tokens.push(trimmed.slice(j)); j = trimmed.length; }
+        else { tokens.push(trimmed.slice(j, end)); j = end + 1; }
+      }
+    }
+
+    if (tokens.length === 0) continue;
+    const cmd = tokens[0].toUpperCase();
+
+    if (cmd === 'CANVAS' || cmd === 'C') {
+      canvasW = Number(tokens[1]) || 595;
+      canvasH = Number(tokens[2]) || 842;
+      canvasBg = tokens[3] || '#ffffff';
+      continue;
+    }
+
+    if (cmd === 'RECT' || cmd === 'R') {
+      elements.push({
+        type: 'rect', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        w: Number(tokens[3]) || 100, h: Number(tokens[4]) || 50,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#888',
+        radius: Number(tokens[7]) || 0,
+      });
+    } else if (cmd === 'TEXT' || cmd === 'T') {
+      elements.push({
+        type: 'text', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        content: tokens[3] || '', size: Number(tokens[4]) || 16,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#000',
+        weight: (tokens[7] || 'normal').toLowerCase(),
+      });
+    } else if (cmd === 'IMG' || cmd === 'I') {
+      elements.push({
+        type: 'img', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        w: Number(tokens[3]) || 200, h: Number(tokens[4]) || 150,
+        z: Number(tokens[5]) || 0, label: tokens[6] || 'image',
+      });
+    } else if (cmd === 'LINE' || cmd === 'L') {
+      elements.push({
+        type: 'line', line: i,
+        x1: Number(tokens[1]) || 0, y1: Number(tokens[2]) || 0,
+        x2: Number(tokens[3]) || 100, y2: Number(tokens[4]) || 0,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#000',
+        width: Number(tokens[7]) || 1,
+      });
+    } else if (cmd === 'ELLIPSE' || cmd === 'E') {
+      elements.push({
+        type: 'ellipse', line: i,
+        cx: Number(tokens[1]) || 0, cy: Number(tokens[2]) || 0,
+        rx: Number(tokens[3]) || 50, ry: Number(tokens[4]) || 50,
+        z: Number(tokens[5]) || 0, color: tokens[6] || '#888',
+      });
+
+    // ── CV Primitives ────────────────────────────────────────────
+
+    } else if (cmd === 'PHOTO') {
+      elements.push({
+        type: 'photo', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        size: Number(tokens[3]) || 80,
+        z: Number(tokens[4]) || 0,
+        borderColor: tokens[5] || '#ffffff',
+        borderWidth: Number(tokens[6]) || 3,
+      });
+    } else if (cmd === 'SECTION') {
+      elements.push({
+        type: 'section', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        w: Number(tokens[3]) || 200,
+        z: Number(tokens[4]) || 0,
+        color: tokens[5] || '#1e293b',
+        title: tokens[6] || 'Section',
+      });
+    } else if (cmd === 'DIVIDER') {
+      elements.push({
+        type: 'divider', line: i,
+        x1: Number(tokens[1]) || 0, y1: Number(tokens[2]) || 0,
+        x2: Number(tokens[3]) || 200, y2: Number(tokens[4]) || 0,
+        z: Number(tokens[5]) || 0,
+        color: tokens[6] || '#d0d0d0',
+        style: (tokens[7] || 'solid').toLowerCase(),
+      });
+    } else if (cmd === 'SKILL-BAR') {
+      const fillStr = (tokens[6] || '0').replace('%', '');
+      elements.push({
+        type: 'skillbar', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        w: Number(tokens[3]) || 150, h: Number(tokens[4]) || 8,
+        z: Number(tokens[5]) || 0,
+        fill: Math.min(100, Math.max(0, Number(fillStr) || 0)),
+        color: tokens[7] || '#3b82f6',
+        bgColor: tokens[8] || '#e2e8f0',
+        label: tokens[9] || '',
+      });
+    } else if (cmd === 'PILL') {
+      elements.push({
+        type: 'pill', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        z: Number(tokens[3]) || 0,
+        color: tokens[4] || '#3b82f6',
+        textColor: tokens[5] || '#ffffff',
+        label: tokens[6] || 'Tag',
+      });
+    } else if (cmd === 'RATING') {
+      elements.push({
+        type: 'rating', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        z: Number(tokens[3]) || 0,
+        color: tokens[4] || '#f59e0b',
+        max: Number(tokens[5]) || 5,
+        filled: Number(tokens[6]) || 3,
+      });
+    } else if (cmd === 'TIMELINE') {
+      elements.push({
+        type: 'timeline', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        h: Number(tokens[3]) || 200,
+        z: Number(tokens[4]) || 0,
+        color: tokens[5] || '#d0d0d0',
+      });
+    } else if (cmd === 'CONTACT') {
+      elements.push({
+        type: 'contact', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        z: Number(tokens[3]) || 0,
+        color: tokens[4] || '#666666',
+        icon: (tokens[5] || 'email').toLowerCase(),
+        text: tokens[6] || '',
+      });
+    } else if (cmd === 'ICON') {
+      elements.push({
+        type: 'icon', line: i,
+        x: Number(tokens[1]) || 0, y: Number(tokens[2]) || 0,
+        size: Number(tokens[3]) || 16,
+        z: Number(tokens[4]) || 0,
+        color: tokens[5] || '#666666',
+        name: (tokens[6] || 'email').toLowerCase(),
+      });
+    }
+  }
+
+  elements.sort((a, b) => a.z - b.z);
+  return { canvasW, canvasH, canvasBg, elements };
+}
+
+
+// ── Renderer ────────────────────────────────────────────────────
+
+function drawElement(ctx, el, highlight) {
+  ctx.save();
+
+  if (highlight) {
+    ctx.shadowColor = 'rgba(232, 128, 74, 0.6)';
+    ctx.shadowBlur = 8;
+  }
+
+  switch (el.type) {
+    case 'rect': {
+      ctx.fillStyle = el.color;
+      if (el.radius > 0) {
+        roundedRect(ctx, el.x, el.y, el.w, el.h, el.radius);
+        ctx.fill();
+      } else {
+        ctx.fillRect(el.x, el.y, el.w, el.h);
+      }
+      break;
+    }
+
+    case 'text': {
+      const style = el.weight === 'italic' ? 'italic ' : '';
+      const weight = el.weight === 'bold' ? 'bold ' : el.weight === 'light' ? '300 ' : '';
+      ctx.font = `${style}${weight}${el.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
+      ctx.fillStyle = el.color;
+      ctx.textBaseline = 'top';
+      ctx.fillText(el.content, el.x, el.y);
+      break;
+    }
+
+    case 'img': {
+      ctx.fillStyle = '#ddd';
+      ctx.fillRect(el.x, el.y, el.w, el.h);
+      ctx.strokeStyle = '#bbb';
+      ctx.strokeRect(el.x, el.y, el.w, el.h);
+      ctx.fillStyle = '#999';
+      ctx.font = '12px system-ui';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(el.label, el.x + el.w/2, el.y + el.h/2);
+      ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
+      break;
+    }
+
+    case 'line': {
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = el.width;
+      ctx.beginPath();
+      ctx.moveTo(el.x1, el.y1);
+      ctx.lineTo(el.x2, el.y2);
+      ctx.stroke();
+      break;
+    }
+
+    case 'ellipse': {
+      ctx.fillStyle = el.color;
+      ctx.beginPath();
+      ctx.ellipse(el.cx, el.cy, el.rx, el.ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+
+    // ── CV Primitives ──────────────────────────────────────────
+
+    case 'photo': {
+      const r = el.size / 2;
+      const cx = el.x + r, cy = el.y + r;
+
+      if (imageStore.photo) {
+        // Draw real photo, circular clip, cover fit
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.clip();
+        const img = imageStore.photo;
+        const scale = Math.max(el.size / img.width, el.size / img.height);
+        const dw = img.width * scale, dh = img.height * scale;
+        ctx.drawImage(img, cx - dw/2, cy - dh/2, dw, dh);
+        ctx.restore();
+      } else {
+        // Placeholder: gray circle with silhouette
+        ctx.fillStyle = '#c0c8d0';
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+        // Head
+        ctx.fillStyle = '#8090a0';
+        ctx.beginPath();
+        ctx.arc(cx, cy - r * 0.15, r * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        // Shoulders
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + r * 0.55, r * 0.5, r * 0.35, 0, Math.PI, 0);
+        ctx.fill();
+      }
+
+      // Border ring
+      if (el.borderWidth > 0) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = el.borderColor;
+        ctx.lineWidth = el.borderWidth;
+        ctx.stroke();
+      }
+      break;
+    }
+
+    case 'section': {
+      ctx.font = `bold 13px -apple-system, system-ui, sans-serif`;
+      ctx.fillStyle = el.color;
+      ctx.textBaseline = 'top';
+      ctx.fillText(el.title.toUpperCase(), el.x, el.y);
+      // Underline rule
+      const metrics = ctx.measureText(el.title.toUpperCase());
+      const ruleY = el.y + 18;
+      ctx.strokeStyle = el.color;
+      ctx.globalAlpha = 0.3;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(el.x, ruleY);
+      ctx.lineTo(el.x + el.w, ruleY);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      break;
+    }
+
+    case 'divider': {
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = 1;
+      if (el.style === 'dashed') ctx.setLineDash([6, 4]);
+      else if (el.style === 'dotted') ctx.setLineDash([2, 3]);
+      ctx.beginPath();
+      ctx.moveTo(el.x1, el.y1);
+      ctx.lineTo(el.x2, el.y2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      break;
+    }
+
+    case 'skillbar': {
+      const r = Math.min(el.h / 2, 6);
+      // Background
+      ctx.fillStyle = el.bgColor;
+      roundedRect(ctx, el.x, el.y, el.w, el.h, r);
+      ctx.fill();
+      // Filled portion
+      const fillW = Math.max(el.h, el.w * el.fill / 100);
+      ctx.fillStyle = el.color;
+      roundedRect(ctx, el.x, el.y, fillW, el.h, r);
+      ctx.fill();
+      // Label
+      if (el.label) {
+        ctx.font = `${Math.max(8, el.h - 4)}px -apple-system, system-ui, sans-serif`;
+        ctx.fillStyle = '#fff';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(el.label, el.x + 6, el.y + el.h / 2);
+      }
+      break;
+    }
+
+    case 'pill': {
+      ctx.font = '12px -apple-system, system-ui, sans-serif';
+      const tw = ctx.measureText(el.label).width;
+      const pw = tw + 20, ph = 24, pr = 12;
+      ctx.fillStyle = el.color;
+      roundedRect(ctx, el.x, el.y, pw, ph, pr);
+      ctx.fill();
+      ctx.fillStyle = el.textColor;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(el.label, el.x + 10, el.y + ph / 2);
+      // Store computed width for hit testing
+      el._pw = pw; el._ph = ph;
+      break;
+    }
+
+    case 'rating': {
+      const starSize = 10, gap = 4;
+      for (let s = 0; s < el.max; s++) {
+        const sx = el.x + s * (starSize * 2 + gap) + starSize;
+        const sy = el.y + starSize;
+        drawStar(ctx, sx, sy, starSize, s < el.filled, el.color);
+      }
+      break;
+    }
+
+    case 'timeline': {
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(el.x, el.y);
+      ctx.lineTo(el.x, el.y + el.h);
+      ctx.stroke();
+      // Endpoint dots
+      ctx.fillStyle = el.color;
+      ctx.beginPath(); ctx.arc(el.x, el.y, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(el.x, el.y + el.h, 4, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+
+    case 'contact': {
+      const iconSize = 16;
+      const iconFn = ICONS[el.icon] || ICONS.email;
+      iconFn(ctx, el.x, el.y, iconSize, el.color);
+      ctx.font = '13px -apple-system, system-ui, sans-serif';
+      ctx.fillStyle = el.color;
+      ctx.textBaseline = 'top';
+      ctx.fillText(el.text, el.x + iconSize + 8, el.y + 1);
+      break;
+    }
+
+    case 'icon': {
+      const iconFn = ICONS[el.name] || ICONS.email;
+      iconFn(ctx, el.x, el.y, el.size, el.color);
+      break;
+    }
+  }
+
+  ctx.restore();
+}
+
+
+// ── Main Render ─────────────────────────────────────────────────
+
+const canvas = document.getElementById('main-canvas');
+const ctx = canvas.getContext('2d');
+let currentZoom = 0.75;
+let selectedLine = -1;
+let parsedElements = [];
+
+function render() {
+  const code = editor.value;
+  if (!code.trim()) {
+    statusText.textContent = 'Empty';
+    elCount.textContent = '';
+    return;
+  }
+
+  try {
+    const { canvasW, canvasH, canvasBg, elements } = parseCVM(code);
+    parsedElements = elements;
+
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    canvas.style.width = (canvasW * currentZoom) + 'px';
+    canvas.style.height = (canvasH * currentZoom) + 'px';
+
+    ctx.fillStyle = canvasBg;
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    for (const el of elements) {
+      drawElement(ctx, el, el.line === selectedLine);
+    }
+
+    statusText.className = 'ok';
+    statusText.textContent = `${canvasW}×${canvasH}`;
+    const maxZ = elements.reduce((m, e) => Math.max(m, e.z), 0);
+    elCount.textContent = `${elements.length} elements · z 0–${maxZ}`;
+    info.textContent = `${canvasW}×${canvasH}`;
+
+    updateLayers(elements);
+
+  } catch (e) {
+    statusText.className = '';
+    statusText.textContent = 'Error: ' + e.message;
+    console.error(e);
+  }
+}
+
+
+// ── Layer Panel ─────────────────────────────────────────────────
+
+function updateLayers(elements) {
+  const list = document.getElementById('layer-list');
+  const sorted = [...elements].reverse();
+  list.innerHTML = sorted.map(el => {
+    const label = el.type === 'text' ? `"${el.content.slice(0,20)}"` :
+                  el.type === 'photo' ? `PHOTO ${el.size}px` :
+                  el.type === 'section' ? `§ ${el.title}` :
+                  el.type === 'skillbar' ? `SKILL ${el.fill}%` :
+                  el.type === 'pill' ? `PILL "${el.label}"` :
+                  el.type === 'rating' ? `★ ${el.filled}/${el.max}` :
+                  el.type === 'contact' ? `${el.icon}: ${el.text.slice(0,15)}` :
+                  el.type === 'timeline' ? `TIMELINE ${el.h}h` :
+                  el.type === 'divider' ? 'DIVIDER' :
+                  el.type === 'icon' ? `ICON ${el.name}` :
+                  el.type === 'img' ? `IMG ${el.label}` :
+                  el.type === 'line' ? 'LINE' :
+                  el.type === 'ellipse' ? 'ELLIPSE' :
+                  `RECT ${el.w}×${el.h}`;
+    const sColor = el.color || '#888';
+    const sel = el.line === selectedLine ? ' selected' : '';
+    return `<div class="layer-item${sel}" data-line="${el.line}">
+      <span class="layer-swatch" style="background:${sColor}"></span>
+      <span>${label}</span>
+      <span class="layer-z">z${el.z}</span>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.layer-item').forEach(item => {
+    item.addEventListener('click', () => {
+      selectedLine = Number(item.dataset.line);
+      render();
+      highlightEditorLine(selectedLine);
+    });
+  });
+}
+
+
+// ── Hit Testing ─────────────────────────────────────────────────
+
+function hitTest(el, mx, my) {
+  switch (el.type) {
+    case 'rect': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h;
+    case 'img': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h;
+    case 'text': return mx >= el.x && mx <= el.x + 300 && my >= el.y && my <= el.y + el.size;
+    case 'photo': {
+      const r = el.size / 2, cx = el.x + r, cy = el.y + r;
+      return (mx - cx) ** 2 + (my - cy) ** 2 <= r * r;
+    }
+    case 'section': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + 22;
+    case 'skillbar': return mx >= el.x && mx <= el.x + el.w && my >= el.y && my <= el.y + el.h;
+    case 'pill': return mx >= el.x && mx <= el.x + (el._pw || 80) && my >= el.y && my <= el.y + (el._ph || 24);
+    case 'rating': {
+      const totalW = el.max * 24;
+      return mx >= el.x && mx <= el.x + totalW && my >= el.y && my <= el.y + 20;
+    }
+    case 'timeline': return Math.abs(mx - el.x) < 8 && my >= el.y && my <= el.y + el.h;
+    case 'divider':
+    case 'line': {
+      const x1 = el.x1, y1 = el.y1, x2 = el.x2, y2 = el.y2;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      if (len === 0) return false;
+      const t = Math.max(0, Math.min(1, ((mx-x1)*dx + (my-y1)*dy) / (len*len)));
+      const px = x1 + t*dx, py = y1 + t*dy;
+      return Math.sqrt((mx-px)**2 + (my-py)**2) < 6;
+    }
+    case 'contact': return mx >= el.x && mx <= el.x + 200 && my >= el.y && my <= el.y + 18;
+    case 'icon': return mx >= el.x && mx <= el.x + el.size && my >= el.y && my <= el.y + el.size;
+    case 'ellipse': return ((mx-el.cx)/el.rx)**2 + ((my-el.cy)/el.ry)**2 <= 1;
+  }
+  return false;
+}
+
+
+// ── Canvas Click ────────────────────────────────────────────────
+
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) / currentZoom;
+  const my = (e.clientY - rect.top) / currentZoom;
+
+  const reversed = [...parsedElements].reverse();
+  let hit = null;
+  for (const el of reversed) {
+    if (hitTest(el, mx, my)) { hit = el; break; }
+  }
+
+  selectedLine = hit ? hit.line : -1;
+  render();
+  if (hit) highlightEditorLine(hit.line);
+});
+
+
+// ── Editor ──────────────────────────────────────────────────────
+
+const editor = document.getElementById('editor');
+const lineNumbersEl = document.getElementById('line-numbers');
+const statusText = document.getElementById('status-text');
+const elCount = document.getElementById('el-count');
+const info = document.getElementById('info');
+
+function updateLineNumbers() {
+  const lines = editor.value.split('\n');
+  lineNumbersEl.innerHTML = lines.map((_, i) => {
+    const cls = i === selectedLine ? ' class="hl"' : '';
+    return `<div${cls}>${i + 1}</div>`;
+  }).join('');
+}
+
+function highlightEditorLine(lineIdx) {
+  const lines = editor.value.split('\n');
+  let charPos = 0;
+  for (let i = 0; i < lineIdx && i < lines.length; i++) {
+    charPos += lines[i].length + 1;
+  }
+  editor.focus();
+  editor.setSelectionRange(charPos, charPos + (lines[lineIdx] || '').length);
+  updateLineNumbers();
+}
+
+editor.addEventListener('scroll', () => { lineNumbersEl.scrollTop = editor.scrollTop; });
+
+let renderTimer = null;
+editor.addEventListener('input', () => {
+  updateLineNumbers();
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(render, 120);
+});
+
+editor.addEventListener('click', () => {
+  const pos = editor.selectionStart;
+  const textBefore = editor.value.slice(0, pos);
+  const lineIdx = textBefore.split('\n').length - 1;
+  const el = parsedElements.find(e => e.line === lineIdx);
+  selectedLine = el ? lineIdx : -1;
+  render();
+});
+
+
+// ── Zoom ────────────────────────────────────────────────────────
+
+document.getElementById('zoom').addEventListener('change', e => {
+  currentZoom = Number(e.target.value);
+  render();
+});
+
+
+// ── Page Size ───────────────────────────────────────────────────
+
+const PAGE_SIZES = {
+  a4p: [595, 842], a4l: [842, 595],
+  lp: [612, 792], ll: [792, 612],
+  custom: null,
+};
+
+document.getElementById('page-size').addEventListener('change', e => {
+  const size = PAGE_SIZES[e.target.value];
+  if (!size) return; // custom: no change
+  // Update CANVAS line in editor
+  const lines = editor.value.split('\n');
+  let found = false;
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim().toUpperCase();
+    if (trimmed.startsWith('CANVAS') || trimmed.startsWith('C ')) {
+      // Parse existing to keep bg color
+      const tokens = lines[i].trim().split(/\s+/);
+      const bg = tokens[3] || '#ffffff';
+      lines[i] = `CANVAS ${size[0]} ${size[1]} ${bg}`;
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    lines.unshift(`CANVAS ${size[0]} ${size[1]} #ffffff`);
+  }
+  editor.value = lines.join('\n');
+  updateLineNumbers();
+  render();
+});
+
+
+// ── Photo Loading ───────────────────────────────────────────────
+
+const photoInput = document.getElementById('photo-input');
+
+document.getElementById('btn-photo').addEventListener('click', () => {
+  photoInput.click();
+});
+
+photoInput.addEventListener('change', (e) => {
+  if (e.target.files && e.target.files[0]) loadPhoto(e.target.files[0]);
+});
+
+function loadPhoto(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      imageStore.photo = img;
+      document.getElementById('btn-photo').textContent = '✓ Photo Loaded';
+      render();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Drag and drop on canvas
+const canvasPane = document.getElementById('canvas-pane');
+canvasPane.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  canvasPane.classList.add('drag-over');
+});
+canvasPane.addEventListener('dragleave', () => {
+  canvasPane.classList.remove('drag-over');
+});
+canvasPane.addEventListener('drop', (e) => {
+  e.preventDefault();
+  canvasPane.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    loadPhoto(file);
+  }
+});
+
+
+// ── Export: PNG ──────────────────────────────────────────────────
+
+document.getElementById('btn-png').addEventListener('click', () => {
+  // Render at 2x for high quality
+  const code = editor.value;
+  const { canvasW, canvasH, canvasBg, elements } = parseCVM(code);
+
+  const expCanvas = document.createElement('canvas');
+  expCanvas.width = canvasW * 2;
+  expCanvas.height = canvasH * 2;
+  const ectx = expCanvas.getContext('2d');
+  ectx.scale(2, 2);
+
+  ectx.fillStyle = canvasBg;
+  ectx.fillRect(0, 0, canvasW, canvasH);
+  for (const el of elements) drawElement(ectx, el, false);
+
+  const link = document.createElement('a');
+  link.download = 'cv-export.png';
+  link.href = expCanvas.toDataURL('image/png');
+  link.click();
+});
+
+
+// ── Export: JPG ─────────────────────────────────────────────────
+
+document.getElementById('btn-jpg').addEventListener('click', () => {
+  const code = editor.value;
+  const { canvasW, canvasH, canvasBg, elements } = parseCVM(code);
+
+  const expCanvas = document.createElement('canvas');
+  expCanvas.width = canvasW * 2;
+  expCanvas.height = canvasH * 2;
+  const ectx = expCanvas.getContext('2d');
+  ectx.scale(2, 2);
+
+  // White background for JPG (no transparency)
+  ectx.fillStyle = '#ffffff';
+  ectx.fillRect(0, 0, canvasW, canvasH);
+  // Then canvas bg on top
+  ectx.fillStyle = canvasBg;
+  ectx.fillRect(0, 0, canvasW, canvasH);
+  for (const el of elements) drawElement(ectx, el, false);
+
+  const link = document.createElement('a');
+  link.download = 'cv-export.jpg';
+  link.href = expCanvas.toDataURL('image/jpeg', 0.95);
+  link.click();
+});
+
+
+// ── Export: PDF ──────────────────────────────────────────────────
+
+document.getElementById('btn-pdf').addEventListener('click', () => {
+  if (typeof window.jspdf === 'undefined') {
+    alert('jsPDF not loaded. Check your internet connection.');
+    return;
+  }
+
+  const code = editor.value;
+  const { canvasW, canvasH, canvasBg, elements } = parseCVM(code);
+
+  // Render at 3x for print quality
+  const scale = 3;
+  const expCanvas = document.createElement('canvas');
+  expCanvas.width = canvasW * scale;
+  expCanvas.height = canvasH * scale;
+  const ectx = expCanvas.getContext('2d');
+  ectx.scale(scale, scale);
+
+  ectx.fillStyle = canvasBg;
+  ectx.fillRect(0, 0, canvasW, canvasH);
+  for (const el of elements) drawElement(ectx, el, false);
+
+  const imgData = expCanvas.toDataURL('image/jpeg', 0.98);
+
+  // Determine orientation and page size
+  const orientation = canvasW > canvasH ? 'landscape' : 'portrait';
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation,
+    unit: 'pt',
+    format: [canvasW, canvasH],
+  });
+
+  doc.addImage(imgData, 'JPEG', 0, 0, canvasW, canvasH);
+  doc.save('cv-export.pdf');
+});
+
+
+// ── Shared: VOXI → HTML builder ─────────────────────────────────
+
+function buildCvHtml(opts) {
+  const { forWord } = opts || {};
+  const code = editor.value;
+  const { canvasW, canvasH, canvasBg, elements } = parseCVM(code);
+
+  // ── Find sidebar rect (the big dark rect at x=0) ──────────────
+  const sidebarRect = elements.find(
+    el => el.type === 'rect' && el.x === 0 && el.y === 0 && el.h >= canvasH * 0.8
+  );
+  const sidebarW = sidebarRect ? sidebarRect.w : 0;
+  const sidebarColor = sidebarRect ? sidebarRect.color : '#ffffff';
+  const hasSidebar = sidebarW > 0;
+
+  // ── Split elements into sidebar vs main column ────────────────
+  const sidebarEls = [];
+  const mainEls = [];
+
+  for (const el of elements) {
+    if (el.type === 'rect' && el === sidebarRect) continue;
+    if (hasSidebar && el.x < sidebarW) {
+      sidebarEls.push(el);
+    } else {
+      mainEls.push(el);
+    }
+  }
+
+  sidebarEls.sort((a, b) => (a.y || a.y1 || 0) - (b.y || b.y1 || 0));
+  mainEls.sort((a, b) => (a.y || a.y1 || 0) - (b.y || b.y1 || 0));
+
+  // ── Helpers ────────────────────────────────────────────────────
+  function hexClean(c) {
+    if (!c) return '#000000';
+    if (c.length === 4) return '#' + c[1]+c[1] + c[2]+c[2] + c[3]+c[3];
+    return c;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function elToHtml(el, prevY) {
+    const yPos = el.y ?? el.y1 ?? 0;
+    const gap = prevY !== null ? Math.max(0, yPos - prevY) : 0;
+    const marginTop = prevY !== null ? Math.max(0, gap - 14) : 0;
+    const mt = marginTop > 2 ? `margin-top:${Math.round(marginTop)}px;` : '';
+
+    switch (el.type) {
+      case 'text': {
+        const fw = el.weight === 'bold' ? 'font-weight:bold;' : el.weight === 'light' ? 'font-weight:300;' : '';
+        const fs = el.weight === 'italic' ? 'font-style:italic;' : '';
+        return `<p style="${mt}margin-bottom:0;font-size:${el.size}pt;color:${hexClean(el.color)};${fw}${fs}font-family:Calibri,Arial,sans-serif;line-height:1.3;">${escHtml(el.content)}</p>`;
+      }
+      case 'divider': {
+        return `<hr style="${mt}border:none;border-top:1px solid ${hexClean(el.color)};margin-bottom:4px;">`;
+      }
+      case 'contact': {
+        const iconMap = { phone: '☎', email: '✉', location: '📍', web: '🌐', github: '⌥', linkedin: 'in', calendar: '📅', briefcase: '💼' };
+        const icon = iconMap[el.icon] || '•';
+        return `<p style="${mt}margin-bottom:0;font-size:10pt;color:${hexClean(el.color)};font-family:Calibri,Arial,sans-serif;line-height:1.4;">${icon}&nbsp; ${escHtml(el.text)}</p>`;
+      }
+      case 'section': {
+        return `<p style="${mt}margin-bottom:2px;font-size:11pt;color:${hexClean(el.color)};font-weight:bold;font-family:Calibri,Arial,sans-serif;text-transform:uppercase;border-bottom:2px solid ${hexClean(el.color)};padding-bottom:3px;">${escHtml(el.title)}</p>`;
+      }
+      case 'photo': {
+        if (imageStore.photo) {
+          const photoCanvas = document.createElement('canvas');
+          const sz = el.size;
+          photoCanvas.width = sz; photoCanvas.height = sz;
+          const pctx = photoCanvas.getContext('2d');
+          pctx.beginPath();
+          pctx.arc(sz/2, sz/2, sz/2, 0, Math.PI*2);
+          pctx.clip();
+          const img = imageStore.photo;
+          const scale = Math.max(sz / img.width, sz / img.height);
+          const dw = img.width * scale, dh = img.height * scale;
+          pctx.drawImage(img, sz/2 - dw/2, sz/2 - dh/2, dw, dh);
+          const dataUrl = photoCanvas.toDataURL('image/png');
+          return `<p style="${mt}text-align:center;margin-bottom:6px;"><img src="${dataUrl}" width="${sz}" height="${sz}" style="border-radius:50%;display:block;margin:0 auto;"></p>`;
+        }
+        return `<p style="${mt}text-align:center;margin-bottom:6px;"><span style="display:inline-block;width:${el.size}px;height:${el.size}px;border-radius:50%;background:#c0c8d0;"></span></p>`;
+      }
+      case 'skillbar': {
+        const fillW = Math.round(el.fill);
+        const label = el.label ? `<span style="position:relative;z-index:1;color:#fff;font-size:8pt;padding-left:4px;">${escHtml(el.label)}</span>` : '';
+        return `<div style="${mt}margin-bottom:2px;background:${hexClean(el.bgColor)};border-radius:4px;height:${el.h + 4}px;position:relative;overflow:hidden;"><div style="width:${fillW}%;height:100%;background:${hexClean(el.color)};border-radius:4px;">${label}</div></div>`;
+      }
+      case 'pill': {
+        return `<span style="display:inline-block;${mt}background:${hexClean(el.color)};color:${hexClean(el.textColor)};padding:3px 10px;border-radius:12px;font-size:9pt;font-family:Calibri,Arial,sans-serif;margin-right:4px;margin-bottom:3px;">${escHtml(el.label)}</span>`;
+      }
+      case 'rating': {
+        let stars = '';
+        for (let s = 0; s < el.max; s++) {
+          stars += s < el.filled
+            ? `<span style="color:${hexClean(el.color)};">★</span>`
+            : `<span style="color:${hexClean(el.color)};opacity:0.3;">★</span>`;
+        }
+        return `<p style="${mt}margin-bottom:2px;font-size:12pt;">${stars}</p>`;
+      }
+      default:
+        return '';
+    }
+  }
+
+  function buildColumnHtml(els) {
+    let html = '';
+    let prevY = null;
+    for (const el of els) {
+      const snippet = elToHtml(el, prevY);
+      if (snippet) {
+        html += snippet + '\n';
+        prevY = (el.y ?? el.y1 ?? 0) + (el.size || el.h || 14);
+      }
+    }
+    return html;
+  }
+
+  const sidebarHtml = buildColumnHtml(sidebarEls);
+  const mainHtml = buildColumnHtml(mainEls);
+
+  const sidebarPct = hasSidebar ? Math.round((sidebarW / canvasW) * 100) : 0;
+  const mainPct = 100 - sidebarPct;
+
+  // ── Word-specific XML preamble ────────────────────────────────
+  const wordNs = forWord ? ` xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:w="urn:schemas-microsoft-com:office:word"
+  xmlns="http://www.w3.org/TR/REC-html40"` : '';
+
+  const wordXml = forWord ? `\n<!--[if gte mso 9]><xml>
+<w:WordDocument><w:View>Print</w:View>
+<w:Zoom>100</w:Zoom></w:WordDocument>
+</xml><![endif]-->` : '';
+
+  const bodyContent = hasSidebar
+    ? `<table class="cv-layout"><tr>
+  <td class="sidebar">${sidebarHtml}</td>
+  <td class="main">${mainHtml}</td>
+</tr></table>`
+    : `<div style="padding:30px 40px;">${mainHtml}</div>`;
+
+  return `<html${wordNs}>
+<head>
+<meta charset="utf-8">
+<meta name="Generator" content="CVM Maker">${wordXml}
+<style>
+  @page { size: A4; margin: 0; }
+  body { margin: 0; padding: 0; font-family: Calibri, Arial, sans-serif; }
+  table.cv-layout { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  td { vertical-align: top; padding: 24px 20px; }
+  td.sidebar { background: ${sidebarColor}; width: ${sidebarPct}%; }
+  td.main { background: ${canvasBg}; width: ${mainPct}%; padding-left: 28px; padding-right: 28px; }
+  p { margin: 0; }
+  hr { margin: 6px 0; }
+</style>
+</head>
+<body>
+${bodyContent}
+</body>
+</html>`;
+}
+
+
+// ── Export: DOCX (native Word) ───────────────────────────────────
+
+document.getElementById('btn-docx').addEventListener('click', async () => {
+  if (typeof docx === 'undefined') {
+    alert('docx library not loaded. Check your internet connection.');
+    return;
+  }
+
+  try {
+  const D = docx;
+  const code = editor.value;
+  const { canvasW, canvasH, canvasBg, elements } = parseCVM(code);
+
+  // ── Find sidebar ──────────────────────────────────────────────
+  const sidebarRect = elements.find(
+    el => el.type === 'rect' && el.x === 0 && el.y === 0 && el.h >= canvasH * 0.8
+  );
+  const sidebarW = sidebarRect ? sidebarRect.w : 0;
+  const sidebarBg = sidebarRect ? sidebarRect.color : '#ffffff';
+  const hasSidebar = sidebarW > 0;
+
+  // ── Split & sort elements by column ───────────────────────────
+  const sidebarEls = [];
+  const mainEls = [];
+  for (const el of elements) {
+    if (el.type === 'rect' && el === sidebarRect) continue;
+    // Skip non-sidebar background rects
+    if (el.type === 'rect') continue;
+    if (hasSidebar && (el.x ?? el.x1 ?? 0) < sidebarW) {
+      sidebarEls.push(el);
+    } else {
+      mainEls.push(el);
+    }
+  }
+  sidebarEls.sort((a, b) => (a.y ?? a.y1 ?? 0) - (b.y ?? b.y1 ?? 0));
+  mainEls.sort((a, b) => (a.y ?? a.y1 ?? 0) - (b.y ?? b.y1 ?? 0));
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function dxColor(c) {
+    if (!c) return '000000';
+    c = c.replace('#', '');
+    if (c.length === 3) return c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
+    return c;
+  }
+
+  const noBorders = {
+    top: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    bottom: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    left: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+    right: { style: D.BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+  };
+
+  function makeRun(text, size, color, bold, italic) {
+    return new D.TextRun({
+      text: text,
+      size: size * 2, // half-points
+      color: dxColor(color),
+      font: 'Calibri',
+      bold: bold === 'bold',
+      italics: italic === 'italic',
+    });
+  }
+
+  // ── Group elements into paragraph blocks ──────────────────────
+  function groupElements(els, rightTabPos) {
+    const blocks = [];
+
+    for (let i = 0; i < els.length; i++) {
+      const el = els[i];
+      const elY = el.y ?? el.y1 ?? 0;
+      const prev = blocks.length > 0 ? blocks[blocks.length - 1] : null;
+      const prevY = prev ? prev._y : null;
+      const gap = prevY !== null ? elY - prevY : 0;
+
+      if (el.type === 'text') {
+        // Case 1: Same Y as previous text → tab + append (title + date on same line)
+        if (prev && prev._type === 'text' && Math.abs(elY - prevY) < 4 && el.x > (prev._x || 0) + 50) {
+          prev.children.push(new D.TextRun({ text: '\t', font: 'Calibri' }));
+          prev.children.push(makeRun(el.content, el.size, el.color, el.weight, el.weight));
+          continue;
+        }
+
+        // Case 2: Continuation line (no bullet, deeper indent, small gap)
+        if (prev && prev._type === 'text' && !el.content.startsWith('•') &&
+            gap > 0 && gap <= 18 && el.x > (prev._x || 0) + 4) {
+          prev.children.push(makeRun(' ' + el.content, el.size, el.color, el.weight, el.weight));
+          prev._y = elY;
+          continue;
+        }
+
+        // Case 3: Flowing text merge (same style, same x, small gap, no bullet)
+        if (prev && prev._type === 'text' && !el.content.startsWith('•') &&
+            gap > 0 && gap <= 18 &&
+            Math.abs(el.x - (prev._x || 0)) <= 2 &&
+            el.size === prev._size && el.color === prev._color && el.weight === prev._weight &&
+            !prev._hasBullet) {
+          prev.children.push(makeRun(' ' + el.content, el.size, el.color, el.weight, el.weight));
+          prev._y = elY;
+          continue;
+        }
+
+        // Case 4: New paragraph
+        const spacingBefore = prevY !== null ? Math.max(0, Math.round((gap - 14) * 15)) : 0;
+        const hasBullet = el.content.startsWith('•');
+        blocks.push({
+          _type: 'text', _y: elY, _x: el.x, _size: el.size,
+          _color: el.color, _weight: el.weight, _hasBullet: hasBullet,
+          children: [makeRun(el.content, el.size, el.color, el.weight, el.weight)],
+          spacing: { before: spacingBefore, after: 0 },
+          tabStops: [{ type: D.TabStopType.RIGHT, position: rightTabPos }],
+        });
+
+      } else if (el.type === 'divider') {
+        const spacingBefore = prevY !== null ? Math.max(0, Math.round((gap - 4) * 15)) : 0;
+        blocks.push({
+          _type: 'divider', _y: elY,
+          children: [new D.TextRun({ text: '', font: 'Calibri' })],
+          spacing: { before: spacingBefore, after: 40 },
+          borderBottom: { style: D.BorderStyle.SINGLE, size: 1, color: dxColor(el.color) },
+        });
+
+      } else if (el.type === 'contact') {
+        const iconMap = { phone: '☎ ', email: '✉ ', location: '📍 ', web: '🌐 ', linkedin: 'in ', github: '⌥ ', calendar: '📅 ', briefcase: '💼 ' };
+        const icon = iconMap[el.icon] || '• ';
+
+        // Same Y as previous contact → tab-separated
+        if (prev && prev._type === 'contact' && Math.abs(elY - prevY) < 4) {
+          prev.children.push(new D.TextRun({ text: '    ', font: 'Calibri', size: 20, color: dxColor(el.color) }));
+          prev.children.push(new D.TextRun({ text: icon + el.text, size: 20, color: dxColor(el.color), font: 'Calibri' }));
+          continue;
+        }
+
+        const spacingBefore = prevY !== null ? Math.max(0, Math.round((gap - 14) * 15)) : 0;
+        blocks.push({
+          _type: 'contact', _y: elY,
+          children: [new D.TextRun({ text: icon + el.text, size: 20, color: dxColor(el.color), font: 'Calibri' })],
+          spacing: { before: spacingBefore, after: 0 },
+        });
+
+      } else if (el.type === 'photo') {
+        if (imageStore.photo) {
+          const photoCanvas = document.createElement('canvas');
+          const sz = Math.round(el.size * 2);
+          photoCanvas.width = sz; photoCanvas.height = sz;
+          const pctx = photoCanvas.getContext('2d');
+          pctx.beginPath();
+          pctx.arc(sz/2, sz/2, sz/2, 0, Math.PI*2);
+          pctx.clip();
+          const img = imageStore.photo;
+          const scale = Math.max(sz / img.width, sz / img.height);
+          const dw = img.width * scale, dh = img.height * scale;
+          pctx.drawImage(img, sz/2 - dw/2, sz/2 - dh/2, dw, dh);
+
+          const dataUrl = photoCanvas.toDataURL('image/png');
+          const base64 = dataUrl.split(',')[1];
+          const binary = atob(base64);
+          const bytes = new Uint8Array(binary.length);
+          for (let b = 0; b < binary.length; b++) bytes[b] = binary.charCodeAt(b);
+
+          blocks.push({
+            _type: 'photo', _y: elY,
+            children: [
+              new D.ImageRun({
+                data: bytes,
+                transformation: { width: el.size, height: el.size },
+              })
+            ],
+            spacing: { before: 100, after: 100 },
+            alignment: D.AlignmentType.CENTER,
+          });
+        }
+
+      } else if (el.type === 'skillbar') {
+        const spacingBefore = prevY !== null ? Math.max(0, Math.round((gap - 8) * 15)) : 0;
+        const label = el.label || `${el.fill}%`;
+        const bar = '█'.repeat(Math.round(el.fill / 10)) + '░'.repeat(10 - Math.round(el.fill / 10));
+        blocks.push({
+          _type: 'text', _y: elY, _x: el.x, _size: 9, _color: el.color, _weight: 'normal', _hasBullet: false,
+          children: [
+            new D.TextRun({ text: label + '  ', size: 16, color: dxColor(el.color), font: 'Calibri' }),
+            new D.TextRun({ text: bar, size: 16, color: dxColor(el.color), font: 'Calibri' }),
+          ],
+          spacing: { before: spacingBefore, after: 0 },
+        });
+
+      } else if (el.type === 'pill') {
+        const spacingBefore = prevY !== null ? Math.max(0, Math.round((gap - 8) * 15)) : 0;
+        blocks.push({
+          _type: 'text', _y: elY, _x: el.x, _size: 9, _color: el.color, _weight: 'normal', _hasBullet: false,
+          children: [
+            new D.TextRun({
+              text: ` ${el.label} `,
+              size: 18,
+              color: dxColor(el.textColor),
+              font: 'Calibri',
+              highlight: 'yellow',
+            })
+          ],
+          spacing: { before: spacingBefore, after: 20 },
+        });
+
+      } else if (el.type === 'rating') {
+        const spacingBefore = prevY !== null ? Math.max(0, Math.round((gap - 8) * 15)) : 0;
+        const stars = '★'.repeat(el.filled) + '☆'.repeat(el.max - el.filled);
+        blocks.push({
+          _type: 'text', _y: elY, _x: el.x, _size: 12, _color: el.color, _weight: 'normal', _hasBullet: false,
+          children: [
+            new D.TextRun({ text: stars, size: 24, color: dxColor(el.color), font: 'Calibri' }),
+          ],
+          spacing: { before: spacingBefore, after: 0 },
+        });
+      }
+    }
+
+    return blocks;
+  }
+
+  // ── Convert blocks to docx Paragraphs ─────────────────────────
+  function blocksToParagraphs(blocks) {
+    return blocks.map(b => {
+      const opts = {
+        children: b.children,
+        spacing: b.spacing,
+      };
+      if (b.tabStops) opts.tabStops = b.tabStops;
+      if (b.alignment) opts.alignment = b.alignment;
+      if (b.borderBottom) {
+        opts.border = { bottom: b.borderBottom };
+      }
+      return new D.Paragraph(opts);
+    });
+  }
+
+  // ── Page dimensions (A4 in DXA/twips) ─────────────────────────
+  const pageW = 11906;
+  const pageH = 16838;
+  const sidebarDxa = hasSidebar ? Math.round((sidebarW / canvasW) * pageW) : 0;
+  const mainDxa = pageW - sidebarDxa;
+  const sidebarTabR = Math.round(sidebarDxa - 800);
+  const mainTabR = Math.round(mainDxa - 800);
+
+  const sidebarBlocks = groupElements(sidebarEls, sidebarTabR);
+  const mainBlocks = groupElements(mainEls, mainTabR);
+
+  const sidebarParas = blocksToParagraphs(sidebarBlocks);
+  const mainParas = blocksToParagraphs(mainBlocks);
+
+  if (sidebarParas.length === 0) sidebarParas.push(new D.Paragraph({ children: [] }));
+  if (mainParas.length === 0) mainParas.push(new D.Paragraph({ children: [] }));
+
+  // ── Build document ────────────────────────────────────────────
+  let sectionChildren;
+
+  if (hasSidebar) {
+    const table = new D.Table({
+      rows: [
+        new D.TableRow({
+          children: [
+            new D.TableCell({
+              children: sidebarParas,
+              width: { size: sidebarDxa, type: D.WidthType.DXA },
+              shading: { type: D.ShadingType.CLEAR, fill: dxColor(sidebarBg) },
+              borders: noBorders,
+            }),
+            new D.TableCell({
+              children: mainParas,
+              width: { size: mainDxa, type: D.WidthType.DXA },
+              borders: noBorders,
+            }),
+          ],
+        }),
+      ],
+      width: { size: 100, type: D.WidthType.PERCENTAGE },
+    });
+    sectionChildren = [table];
+  } else {
+    sectionChildren = mainParas;
+  }
+
+  const doc = new D.Document({
+    sections: [{
+      properties: {
+        page: {
+          size: { width: pageW, height: pageH },
+          margin: { top: 0, bottom: 0, left: 0, right: 0 },
+        },
+      },
+      children: sectionChildren,
+    }],
+  });
+
+  // ── Generate & download ───────────────────────────────────────
+  const blob = await D.Packer.toBlob(doc);
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'cv-export.docx';
+  link.click();
+  URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error('DOCX export error:', err);
+    alert('DOCX export failed: ' + err.message);
+  }
+});
+
+
+// ── Export: HTML ─────────────────────────────────────────────────
+
+document.getElementById('btn-html').addEventListener('click', () => {
+  const html = buildCvHtml({ forWord: false });
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'cv-export.html';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+
+// ── Keyboard Shortcuts ──────────────────────────────────────────
+
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
+    e.preventDefault();
+    if (e.shiftKey) {
+      document.getElementById('btn-png').click();
+    } else {
+      document.getElementById('btn-pdf').click();
+    }
+  }
+});
+
+
+// ── LocalStorage Persistence ────────────────────────────────────
+
+const STORAGE_KEY = 'cvm-maker-editor';
+const STORAGE_PHOTO_KEY = 'cvm-maker-photo';
+
+let saveTimer = null;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, editor.value);
+    } catch(e) {}
+  }, 500);
+}
+editor.addEventListener('input', autoSave);
+
+
+// ── Examples ────────────────────────────────────────────────────
+
+const EXAMPLES = {
+
+'Modern — Dark Sidebar': `CANVAS 595 842 #f5f5f0
+-- Left Sidebar
+RECT 0 0 195 842 0 #1e293b
+
+-- Profile Photo
+PHOTO 58 36 80 1 #334155 3
+
+-- Name
+TEXT 22 130 "Robert Paszek" 16 1 #f1f5f9 bold
+TEXT 22 152 "Software Engineer" 11 1 #94a3b8
+
+DIVIDER 22 172 175 172 1 #334155
+
+-- Contact (sidebar)
+TEXT 22 186 "CONTACT" 9 1 #64748b bold
+CONTACT 22 204 1 #cbd5e1 email "robert@example.com"
+CONTACT 22 224 1 #cbd5e1 github "github.com/rpaszek"
+CONTACT 22 244 1 #cbd5e1 linkedin "linkedin.com/in/rpaszek"
+CONTACT 22 264 1 #cbd5e1 location "London, UK"
+
+DIVIDER 22 288 175 288 1 #334155
+
+-- Skills (sidebar)
+TEXT 22 304 "SKILLS" 9 1 #64748b bold
+TEXT 22 324 "Languages" 8 1 #94a3b8 bold
+PILL 22 338 1 #3b82f6 #ffffff "Python"
+PILL 84 338 1 #3b82f6 #ffffff "JavaScript"
+PILL 22 366 1 #3b82f6 #ffffff "Go"
+PILL 60 366 1 #3b82f6 #ffffff "TypeScript"
+
+TEXT 22 398 "Frameworks" 8 1 #94a3b8 bold
+PILL 22 412 1 #0ea5e9 #ffffff "React"
+PILL 78 412 1 #0ea5e9 #ffffff "Next.js"
+PILL 22 440 1 #0ea5e9 #ffffff "FastAPI"
+PILL 86 440 1 #0ea5e9 #ffffff "Node"
+
+TEXT 22 474 "Infrastructure" 8 1 #94a3b8 bold
+PILL 22 488 1 #8b5cf6 #ffffff "Docker"
+PILL 86 488 1 #8b5cf6 #ffffff "AWS"
+PILL 22 516 1 #8b5cf6 #ffffff "K8s"
+PILL 62 516 1 #8b5cf6 #ffffff "PostgreSQL"
+
+DIVIDER 22 548 175 548 1 #334155
+
+-- Education (sidebar)
+TEXT 22 564 "EDUCATION" 9 1 #64748b bold
+TEXT 22 584 "MSc Computer Science" 10 1 #f1f5f9 bold
+TEXT 22 598 "UCL — 2018-2020" 9 1 #94a3b8
+TEXT 22 622 "BSc Mathematics" 10 1 #f1f5f9 bold
+TEXT 22 636 "Univ. of Warsaw — 2014-2018" 9 1 #94a3b8
+
+-- ═══════ RIGHT COLUMN ═══════
+
+-- Profile
+SECTION 215 30 360 1 #1e293b "Profile"
+TEXT 215 56 "Software engineer focused on spatial" 10 1 #475569
+TEXT 215 72 "computing, DSL design, and creative" 10 1 #475569
+TEXT 215 88 "tooling for AI systems." 10 1 #475569
+
+-- Experience
+SECTION 215 120 360 1 #1e293b "Experience"
+
+RECT 215 148 3 60 0 #3b82f6
+TEXT 228 148 "Senior Software Engineer" 11 1 #1e293b bold
+TEXT 228 164 "Spatial Labs — London" 9 1 #94a3b8
+TEXT 480 148 "2023—" 8 1 #94a3b8
+TEXT 228 182 "Designed VOXI DSL for 3D scenes." 9 1 #475569
+TEXT 228 196 "Reduced LLM tokens by 85%." 9 1 #475569
+
+RECT 215 224 3 60 0 #3b82f6
+TEXT 228 224 "Full Stack Developer" 11 1 #1e293b bold
+TEXT 228 240 "TechFlow — Remote" 9 1 #94a3b8
+TEXT 480 224 "2021—23" 8 1 #94a3b8
+TEXT 228 258 "Microservice arch, 2M req/day." 9 1 #475569
+TEXT 228 272 "Next.js rebuild, -60% bundle." 9 1 #475569
+
+RECT 215 300 3 44 0 #3b82f6
+TEXT 228 300 "Junior Developer" 11 1 #1e293b bold
+TEXT 228 316 "DataPulse — Warsaw" 9 1 #94a3b8
+TEXT 480 300 "2020—21" 8 1 #94a3b8
+TEXT 228 334 "ETL pipelines, 500GB/day." 9 1 #475569
+
+-- Projects
+SECTION 215 370 360 1 #1e293b "Projects"
+
+RECT 215 396 175 100 0 #ffffff 6
+RECT 215 396 175 24 1 #1e293b 6
+TEXT 224 400 "VOXI — Spatial DSL" 9 2 #f1f5f9 bold
+TEXT 224 430 "3D scenes in ~100" 8 1 #475569
+TEXT 224 444 "tokens for LLMs." 8 1 #475569
+PILL 224 464 1 #dbeafe #3b82f6 "Python"
+PILL 278 464 1 #dbeafe #3b82f6 "JS"
+
+RECT 400 396 175 100 0 #ffffff 6
+RECT 400 396 175 24 1 #1e293b 6
+TEXT 409 400 "Brain Converter" 9 2 #f1f5f9 bold
+TEXT 409 430 "NL to 3D voxel" 8 1 #475569
+TEXT 409 444 "scene pipeline." 8 1 #475569
+PILL 409 464 1 #fef3c7 #92400e "FastAPI"
+PILL 467 464 1 #fef3c7 #92400e "Claude"
+
+RECT 215 508 175 100 0 #ffffff 6
+RECT 215 508 175 24 1 #1e293b 6
+TEXT 224 512 "Video Depth" 9 2 #f1f5f9 bold
+TEXT 224 542 "Spatial structure" 8 1 #475569
+TEXT 224 556 "from video + LLM." 8 1 #475569
+PILL 224 576 1 #dcfce7 #16a34a "PyTorch"
+
+RECT 400 508 175 100 0 #ffffff 6
+RECT 400 508 175 24 1 #1e293b 6
+TEXT 409 512 "Sketch-Lang" 9 2 #f1f5f9 bold
+TEXT 409 542 "2D vector DSL for" 8 1 #475569
+TEXT 409 556 "LLM visual input." 8 1 #475569
+PILL 409 576 1 #f3e8ff #7c3aed "JavaScript"
+
+-- Certifications
+SECTION 215 630 360 1 #1e293b "Certifications"
+TEXT 215 656 "AWS Solutions Architect" 9 1 #475569
+TEXT 480 656 "2023" 8 1 #94a3b8
+TEXT 215 674 "GCP Data Engineer" 9 1 #475569
+TEXT 480 674 "2022" 8 1 #94a3b8
+TEXT 215 692 "CKA Kubernetes" 9 1 #475569
+TEXT 480 692 "2022" 8 1 #94a3b8`,
+
+'Classic — Centered': `CANVAS 595 842 #ffffff
+-- Centered header
+PHOTO 258 30 80 1 #e0e0e0 2
+
+TEXT 178 120 "Robert Paszek" 24 1 #222222 bold
+TEXT 215 150 "Software Engineer" 13 1 #888888
+DIVIDER 200 172 395 172 1 #cccccc
+
+-- Contact row
+CONTACT 120 186 1 #666666 email "robert@example.com"
+CONTACT 320 186 1 #666666 location "London, UK"
+
+DIVIDER 60 212 535 212 1 #e0e0e0
+
+-- Profile
+TEXT 60 230 "Software engineer focused on spatial computing, DSL design," 10 1 #444444
+TEXT 60 246 "and creative tooling. Bridging human intuition and machines." 10 1 #444444
+
+DIVIDER 60 270 535 270 1 #e0e0e0
+
+-- Experience
+SECTION 60 286 475 1 #222222 "Experience"
+
+TEXT 60 314 "Senior Software Engineer" 12 1 #222222 bold
+TEXT 60 332 "Spatial Labs — London" 10 1 #888888
+TEXT 430 314 "2023 — Present" 9 1 #aaaaaa
+TEXT 60 352 "Designed VOXI DSL. Built renderer. Reduced LLM tokens 85%." 10 1 #444444
+
+DIVIDER 60 374 535 374 1 #f0f0f0
+
+TEXT 60 390 "Full Stack Developer" 12 1 #222222 bold
+TEXT 60 408 "TechFlow — Remote" 10 1 #888888
+TEXT 430 390 "2021 — 2023" 9 1 #aaaaaa
+TEXT 60 428 "Microservice arch, 2M req/day. Next.js rebuild, -60% bundle." 10 1 #444444
+
+DIVIDER 60 450 535 450 1 #f0f0f0
+
+TEXT 60 466 "Junior Developer" 12 1 #222222 bold
+TEXT 60 484 "DataPulse — Warsaw" 10 1 #888888
+TEXT 430 466 "2020 — 2021" 9 1 #aaaaaa
+TEXT 60 504 "ETL pipelines 500GB/day. React + D3 dashboard." 10 1 #444444
+
+DIVIDER 60 530 535 530 1 #e0e0e0
+
+-- Skills
+SECTION 60 546 475 1 #222222 "Skills"
+
+TEXT 60 574 "Languages" 9 1 #999999
+SKILL-BAR 140 574 200 10 1 92 #3b82f6 #e2e8f0 "Python"
+TEXT 60 594 "JavaScript" 9 1 #999999
+SKILL-BAR 140 594 200 10 1 88 #3b82f6 #e2e8f0 "JavaScript"
+TEXT 60 614 "Go" 9 1 #999999
+SKILL-BAR 140 614 200 10 1 70 #3b82f6 #e2e8f0 "Go"
+TEXT 60 634 "TypeScript" 9 1 #999999
+SKILL-BAR 140 634 200 10 1 85 #3b82f6 #e2e8f0 "TypeScript"
+
+TEXT 370 574 "Docker" 9 1 #999999
+RATING 430 572 1 #f59e0b 5 5
+TEXT 370 594 "K8s" 9 1 #999999
+RATING 430 592 1 #f59e0b 5 4
+TEXT 370 614 "AWS" 9 1 #999999
+RATING 430 612 1 #f59e0b 5 4
+TEXT 370 634 "React" 9 1 #999999
+RATING 430 632 1 #f59e0b 5 5
+
+DIVIDER 60 660 535 660 1 #e0e0e0
+
+-- Education
+SECTION 60 676 475 1 #222222 "Education"
+TEXT 60 704 "MSc Computer Science" 11 1 #222222 bold
+TEXT 300 704 "UCL" 10 1 #888888
+TEXT 430 704 "2018 — 2020" 9 1 #aaaaaa
+TEXT 60 726 "BSc Mathematics" 11 1 #222222 bold
+TEXT 300 726 "Univ. of Warsaw" 10 1 #888888
+TEXT 430 726 "2014 — 2018" 9 1 #aaaaaa
+
+DIVIDER 60 752 535 752 1 #e0e0e0
+
+-- Projects
+SECTION 60 768 475 1 #222222 "Projects"
+TEXT 60 796 "VOXI" 10 1 #222222 bold
+TEXT 100 796 "— Spatial Reasoning DSL for 3D scenes in ~100 tokens" 9 1 #444444
+TEXT 60 814 "Brain Converter" 10 1 #222222 bold
+TEXT 170 814 "— NL to 3D voxel scene translator" 9 1 #444444`,
+
+'Hacker — Terminal': `CANVAS 595 842 #0a0a0a
+-- Header
+RECT 20 20 555 74 0 #111111 4
+LINE 20 20 575 20 1 #00ff41 1
+TEXT 36 34 "> robert_paszek" 22 2 #00ff41 bold
+TEXT 36 62 "software_engineer // spatial_computing" 10 2 #00aa2a
+
+-- Contact bar
+RECT 20 108 555 22 0 #111111 4
+TEXT 36 112 "$ cat contact.txt" 8 1 #555555
+TEXT 170 112 "robert@example.com" 8 1 #00ff41
+TEXT 320 112 "github.com/rpaszek" 8 1 #00ff41
+TEXT 470 112 "London, UK" 8 1 #00ff41
+
+-- Profile
+TEXT 36 154 "$ whoami" 9 1 #555555
+TEXT 36 172 "Software engineer. Spatial computing, DSLs," 10 1 #cccccc
+TEXT 36 188 "and creative tooling for AI systems." 10 1 #cccccc
+
+-- Experience
+TEXT 36 220 "$ cat experience.log" 9 1 #555555
+LINE 36 236 560 236 1 #1a1a1a 1
+
+RECT 36 248 4 52 0 #00ff41
+TEXT 50 250 "Senior Software Engineer" 11 1 #ffffff bold
+TEXT 50 266 "Spatial Labs" 9 1 #555555
+TEXT 470 250 "[2023-now]" 8 1 #00aa2a
+TEXT 50 284 ">> VOXI DSL, renderer, -85% LLM tokens" 9 1 #aaaaaa
+
+RECT 36 314 4 52 0 #00ff41
+TEXT 50 316 "Full Stack Developer" 11 1 #ffffff bold
+TEXT 50 332 "TechFlow" 9 1 #555555
+TEXT 470 316 "[2021-23]" 8 1 #00aa2a
+TEXT 50 350 ">> Microservices 2M/day, Next.js -60%" 9 1 #aaaaaa
+
+RECT 36 380 4 36 0 #00ff41
+TEXT 50 382 "Junior Developer" 11 1 #ffffff bold
+TEXT 50 398 "DataPulse" 9 1 #555555
+TEXT 470 382 "[2020-21]" 8 1 #00aa2a
+
+-- Projects
+TEXT 36 434 "$ ls ~/projects/" 9 1 #555555
+LINE 36 450 560 450 1 #1a1a1a 1
+
+RECT 36 462 260 80 0 #111111 4
+TEXT 48 468 "drwxr-xr-x" 7 1 #555555
+TEXT 120 468 "voxi/" 9 1 #00ff41 bold
+TEXT 48 486 "3D DSL, ~100 tokens" 8 1 #aaaaaa
+TEXT 48 500 "LLM spatial reasoning" 8 1 #aaaaaa
+PILL 48 520 1 #1a3a1a #00ff41 "Python"
+PILL 106 520 1 #1a3a1a #00ff41 "JS"
+
+RECT 310 462 260 80 0 #111111 4
+TEXT 322 468 "drwxr-xr-x" 7 1 #555555
+TEXT 394 468 "brain-converter/" 9 1 #00ff41 bold
+TEXT 322 486 "NL → 3D voxel scenes" 8 1 #aaaaaa
+TEXT 322 500 "LLM + DSL pipeline" 8 1 #aaaaaa
+PILL 322 520 1 #1a3a1a #00ff41 "FastAPI"
+PILL 384 520 1 #1a3a1a #00ff41 "Claude"
+
+RECT 36 556 260 80 0 #111111 4
+TEXT 48 562 "drwxr-xr-x" 7 1 #555555
+TEXT 120 562 "video-depth/" 9 1 #00ff41 bold
+TEXT 48 580 "Spatial from video" 8 1 #aaaaaa
+TEXT 48 594 "Depth + LLM reasoning" 8 1 #aaaaaa
+PILL 48 614 1 #1a3a1a #00ff41 "PyTorch"
+
+RECT 310 556 260 80 0 #111111 4
+TEXT 322 562 "drwxr-xr-x" 7 1 #555555
+TEXT 394 562 "sketch-lang/" 9 1 #00ff41 bold
+TEXT 322 580 "2D vector DSL" 8 1 #aaaaaa
+TEXT 322 594 "Vision matrix for LLM" 8 1 #aaaaaa
+PILL 322 614 1 #1a3a1a #00ff41 "JavaScript"
+
+-- Skills
+TEXT 36 660 "$ echo $SKILLS" 9 1 #555555
+LINE 36 676 560 676 1 #1a1a1a 1
+TEXT 36 690 "lang=" 8 1 #555555
+TEXT 78 690 "Python JavaScript TypeScript Go SQL Rust" 9 1 #00ff41
+TEXT 36 708 "frame=" 8 1 #555555
+TEXT 78 708 "React Next.js FastAPI Flask Node Django" 9 1 #00ff41
+TEXT 36 726 "infra=" 8 1 #555555
+TEXT 78 726 "Docker Kubernetes AWS PostgreSQL Redis" 9 1 #00ff41
+
+-- Education
+TEXT 36 758 "$ cat education.log" 9 1 #555555
+LINE 36 774 560 774 1 #1a1a1a 1
+TEXT 36 790 "MSc Computer Science" 10 1 #ffffff bold
+TEXT 250 790 "UCL" 9 1 #555555
+TEXT 470 790 "[2018-20]" 8 1 #00aa2a
+TEXT 36 808 "BSc Mathematics" 10 1 #ffffff bold
+TEXT 250 808 "Univ. Warsaw" 9 1 #555555
+TEXT 470 808 "[2014-18]" 8 1 #00aa2a`,
+
+'Coral — Right Sidebar': `CANVAS 595 842 #fafafa
+-- Right Sidebar
+RECT 410 0 185 842 0 #1a1a2e
+
+-- Header
+RECT 0 0 410 90 0 #ffffff
+TEXT 36 26 "Robert" 28 1 #1a1a2e bold
+TEXT 36 58 "Paszek" 28 1 #f97066 bold
+TEXT 36 80 "Software Engineer" 10 1 #888888
+
+-- Sidebar: Photo + Contact
+PHOTO 458 28 80 1 #2a2a42 2
+TEXT 430 120 "CONTACT" 8 1 #f97066 bold
+DIVIDER 430 132 580 132 1 #2a2a42
+CONTACT 430 144 1 #c4c4d8 email "robert@example.com"
+CONTACT 430 164 1 #c4c4d8 github "github.com/rpaszek"
+CONTACT 430 184 1 #c4c4d8 location "London, UK"
+
+-- Sidebar: Languages with bars
+TEXT 430 214 "LANGUAGES" 8 1 #f97066 bold
+DIVIDER 430 226 580 226 1 #2a2a42
+TEXT 430 240 "Python" 9 1 #e4e4f0
+SKILL-BAR 430 256 140 4 2 95 #f97066 #2a2a42
+TEXT 430 270 "JavaScript" 9 1 #e4e4f0
+SKILL-BAR 430 286 140 4 2 90 #f97066 #2a2a42
+TEXT 430 300 "TypeScript" 9 1 #e4e4f0
+SKILL-BAR 430 316 140 4 2 85 #f97066 #2a2a42
+TEXT 430 330 "Go" 9 1 #e4e4f0
+SKILL-BAR 430 346 140 4 2 70 #f97066 #2a2a42
+
+-- Sidebar: Frameworks
+TEXT 430 376 "FRAMEWORKS" 8 1 #f97066 bold
+DIVIDER 430 388 580 388 1 #2a2a42
+TEXT 430 402 "React  Next.js  FastAPI" 8 1 #c4c4d8
+TEXT 430 418 "Flask  Node  Django" 8 1 #c4c4d8
+
+-- Sidebar: Infra
+TEXT 430 448 "INFRASTRUCTURE" 8 1 #f97066 bold
+DIVIDER 430 460 580 460 1 #2a2a42
+TEXT 430 474 "Docker  K8s  AWS" 8 1 #c4c4d8
+TEXT 430 490 "PostgreSQL  Redis" 8 1 #c4c4d8
+
+-- Sidebar: Education
+TEXT 430 524 "EDUCATION" 8 1 #f97066 bold
+DIVIDER 430 536 580 536 1 #2a2a42
+TEXT 430 550 "MSc Computer Science" 9 1 #e4e4f0 bold
+TEXT 430 566 "UCL — 2018-2020" 8 1 #8888a8
+TEXT 430 588 "BSc Mathematics" 9 1 #e4e4f0 bold
+TEXT 430 604 "Univ. Warsaw — 2014-18" 8 1 #8888a8
+
+-- ═══ LEFT COLUMN ═══
+
+-- Profile
+SECTION 36 110 350 1 #1a1a2e "Profile"
+TEXT 36 136 "Software engineer focused on spatial" 10 1 #444444
+TEXT 36 152 "computing, DSL design, and creative" 10 1 #444444
+TEXT 36 168 "tooling for AI systems." 10 1 #444444
+
+-- Experience
+SECTION 36 200 350 1 #1a1a2e "Experience"
+
+RECT 36 228 8 8 1 #f97066
+TEXT 52 226 "Senior Software Engineer" 11 1 #1a1a2e bold
+TEXT 52 242 "Spatial Labs — London" 9 1 #999999
+TEXT 310 226 "2023 — Present" 8 1 #f97066
+TEXT 52 260 "Designed VOXI DSL for 3D scenes." 9 1 #444444
+TEXT 52 276 "Built renderer. -85% LLM tokens." 9 1 #444444
+
+RECT 36 300 8 8 1 #f97066
+TEXT 52 298 "Full Stack Developer" 11 1 #1a1a2e bold
+TEXT 52 314 "TechFlow — Remote" 9 1 #999999
+TEXT 310 298 "2021 — 2023" 8 1 #f97066
+TEXT 52 332 "Microservice arch, 2M req/day." 9 1 #444444
+
+RECT 36 356 8 8 1 #f97066
+TEXT 52 354 "Junior Developer" 11 1 #1a1a2e bold
+TEXT 52 370 "DataPulse — Warsaw" 9 1 #999999
+TEXT 310 354 "2020 — 2021" 8 1 #f97066
+
+-- Projects
+SECTION 36 404 350 1 #1a1a2e "Projects"
+
+RECT 36 430 175 96 0 #ffffff 6
+RECT 36 430 175 3 1 #f97066
+TEXT 46 440 "VOXI" 10 2 #1a1a2e bold
+TEXT 46 456 "Spatial DSL, ~100" 8 1 #444444
+TEXT 46 470 "tokens for LLMs." 8 1 #444444
+PILL 46 490 1 #fff1f0 #f97066 "Python"
+PILL 100 490 1 #fff1f0 #f97066 "JS"
+
+RECT 220 430 175 96 0 #ffffff 6
+RECT 220 430 175 3 1 #f97066
+TEXT 230 440 "Brain Converter" 10 2 #1a1a2e bold
+TEXT 230 456 "NL → 3D voxel" 8 1 #444444
+TEXT 230 470 "scene pipeline." 8 1 #444444
+PILL 230 490 1 #fff1f0 #f97066 "FastAPI"
+
+RECT 36 538 175 96 0 #ffffff 6
+RECT 36 538 175 3 1 #f97066
+TEXT 46 548 "Video Depth" 10 2 #1a1a2e bold
+TEXT 46 564 "Spatial from video" 8 1 #444444
+TEXT 46 578 "+ LLM reasoning." 8 1 #444444
+PILL 46 598 1 #fff1f0 #f97066 "PyTorch"
+
+RECT 220 538 175 96 0 #ffffff 6
+RECT 220 538 175 3 1 #f97066
+TEXT 230 548 "Sketch-Lang" 10 2 #1a1a2e bold
+TEXT 230 564 "2D vector DSL for" 8 1 #444444
+TEXT 230 578 "LLM visual input." 8 1 #444444
+PILL 230 598 1 #fff1f0 #f97066 "JavaScript"`,
+
+'Evangelia — Psychology Student': `CANVAS 595 842 #ffffff
+-- Left Sidebar
+RECT 0 0 210 842 0 #2d3a4a
+PHOTO 55 30 100 1 #ffffff 4
+TEXT 30 150 "PROFILE" 16 1 #ffffff bold
+DIVIDER 30 170 190 170 1 #4a5a6a
+TEXT 30 184 "I am currently a student at the" 9 1 #c8d0d8
+TEXT 30 198 "School of European Education" 9 1 #c8d0d8
+TEXT 30 212 "of Heraklion. As a psychology" 9 1 #c8d0d8
+TEXT 30 226 "enthusiast, I actively participate" 9 1 #c8d0d8
+TEXT 30 240 "in community activities, attend" 9 1 #c8d0d8
+TEXT 30 254 "events, and enjoy reading books" 9 1 #c8d0d8
+TEXT 30 268 "on the subject. My interest lies" 9 1 #c8d0d8
+TEXT 30 282 "in comprehending human" 9 1 #c8d0d8
+TEXT 30 296 "behavior and understanding the" 9 1 #c8d0d8
+TEXT 30 310 "complexities of the brain's" 9 1 #c8d0d8
+TEXT 30 324 "responses in different" 9 1 #c8d0d8
+TEXT 30 338 "situations." 9 1 #c8d0d8
+TEXT 30 370 "SKILLS" 16 1 #ffffff bold
+DIVIDER 30 390 190 390 1 #4a5a6a
+TEXT 42 406 "•  Self-Motivated" 9 1 #c8d0d8
+TEXT 42 422 "•  Empathy and Compassion" 9 1 #c8d0d8
+TEXT 42 438 "•  Problem - Solving" 9 1 #c8d0d8
+TEXT 42 454 "•  Critical Thinking" 9 1 #c8d0d8
+TEXT 42 470 "•  Communication" 9 1 #c8d0d8
+TEXT 42 486 "•  Learning languages" 9 1 #c8d0d8
+TEXT 50 500 "(Dutch-Spanish)" 9 1 #c8d0d8
+TEXT 30 532 "INTERESTS" 16 1 #ffffff bold
+TEXT 30 552 "AND HOBBIES" 16 1 #ffffff bold
+DIVIDER 30 572 190 572 1 #4a5a6a
+TEXT 42 588 "Reading books" 9 1 #c8d0d8
+TEXT 42 604 "Taking photos of places" 9 1 #c8d0d8
+TEXT 42 620 "Cooking" 9 1 #c8d0d8
+TEXT 42 636 "Krav Maga" 9 1 #c8d0d8
+TEXT 30 668 "LANGUAGES" 16 1 #ffffff bold
+DIVIDER 30 688 190 688 1 #4a5a6a
+TEXT 42 704 "•  Greek (mother tongue)" 9 1 #c8d0d8
+TEXT 42 720 "•  English (very good spoken" 9 1 #c8d0d8
+TEXT 50 734 "and written command)" 9 1 #c8d0d8
+-- Right Column
+TEXT 232 40 "Evangelia" 36 1 #2d3a4a bold
+TEXT 232 82 "Mamou" 34 1 #6b7d8e
+CONTACT 232 128 1 #4a5a6a phone "(+30) 6940072733"
+CONTACT 370 128 1 #4a5a6a email "mamoueva38@gmail.com"
+CONTACT 540 128 1 #4a5a6a location "Greece"
+DIVIDER 232 150 575 150 1 #d0d4d8
+TEXT 232 164 "EDUCATION" 16 1 #2d3a4a bold
+DIVIDER 232 184 575 184 1 #2d3a4a
+TEXT 240 198 "•  European Baccaloaureate to be awarded (July 2024)" 9 1 #333333
+TEXT 240 218 "•  School Of European Education Heraklion (SEEH) | 2014 - 2024" 9 1 #333333
+TEXT 240 238 "•  1st Greek Public Primary School | 2012 - 2014" 9 1 #333333
+TEXT 232 268 "OBJECTIVE STATEMENT" 16 1 #2d3a4a bold
+DIVIDER 232 288 575 288 1 #2d3a4a
+TEXT 232 302 "My objective is to obtain a Bachelor's degree in Psychology and" 9 1 #333333
+TEXT 232 316 "develop a comprehensive understanding of the field. Ultimately, I" 9 1 #333333
+TEXT 232 330 "aspire to leverage my knowledge to enhance the well-being of" 9 1 #333333
+TEXT 232 344 "individuals worldwide and make a positive impact in their lives." 9 1 #333333
+TEXT 232 374 "RELEVANT COURSEWORK" 16 1 #2d3a4a bold
+DIVIDER 232 394 575 394 1 #2d3a4a
+TEXT 240 410 "•" 9 1 #333333
+TEXT 250 410 "Seminar on Rare and Peculiar Mental Disorders (2023):" 9 1 #333333 bold
+TEXT 250 424 "Attended a seminar on rare and unconventional mental disorders," 9 1 #333333
+TEXT 250 438 "gaining valuable insights into the complexities of psychological" 9 1 #333333
+TEXT 250 452 "conditions beyond the norm." 9 1 #333333
+TEXT 240 472 "•" 9 1 #333333
+TEXT 250 472 "Seminar on Practical Music Therapy Applications (2023):" 9 1 #333333 bold
+TEXT 250 486 "Explored the therapeutic use of music in psychology and" 9 1 #333333
+TEXT 250 500 "healthcare, focusing on its emotional and communication benefits" 9 1 #333333
+TEXT 250 514 "for personal growth and well-being." 9 1 #333333
+TEXT 240 534 "•" 9 1 #333333
+TEXT 250 534 "Seminar on Self-Awareness and Self-Esteem (2023):" 9 1 #333333 bold
+TEXT 250 548 "Attended a seminar discussing the effects of self-awareness and" 9 1 #333333
+TEXT 250 562 "self-esteem on personal growth and mental health." 9 1 #333333
+TEXT 232 592 "EXTRACURRICULAR ACTIVITIES" 16 1 #2d3a4a bold
+DIVIDER 232 612 575 612 1 #2d3a4a
+TEXT 240 628 "•" 9 1 #333333
+TEXT 250 628 "Volunteer at the Mediterranean Beach Games (2023):" 9 1 #333333 bold
+TEXT 250 642 "Volunteered at the Mediterranean Beach Games, assisting in event" 9 1 #333333
+TEXT 250 656 "coordination, athlete support, and ensuring a seamless experience." 9 1 #333333
+TEXT 240 678 "•" 9 1 #333333
+TEXT 250 678 "Volunteer at the Cliff Diving Festival (2023):" 9 1 #333333 bold
+TEXT 250 692 "Volunteered at the Cliff Diving Festival, assisting with facilities," 9 1 #333333
+TEXT 250 706 "participant care, and event safety." 9 1 #333333
+TEXT 240 728 "•" 9 1 #333333
+TEXT 250 728 "Member of the School Environmental Team (2021-2023):" 9 1 #333333 bold
+TEXT 250 742 "Actively participated in school's environmental initiatives, including" 9 1 #333333
+TEXT 250 756 "recycling, aided stray animals, cleaned neighborhoods, and" 9 1 #333333
+TEXT 250 770 "donated to sick animal care through school environmental" 9 1 #333333
+TEXT 250 784 "initiatives." 9 1 #333333`,
+
+};
+
+
+// ── Gemma 4 Prompt ──────────────────────────────────────────────
+
+const GEMMA4_PROMPT = `You are a CV layout engine. You output CVM (Canvas Visual Markup) — a line-based DSL that renders to a 595×842 pixel canvas (A4).
+
+## CVM Commands
+
+CANVAS 595 842 <bg_hex>
+RECT x y w h z color [radius]
+TEXT x y "string" size z color [bold|italic|light]
+LINE x1 y1 x2 y2 z color [width]
+ELLIPSE cx cy rx ry z color
+PHOTO x y size z [border_color] [border_width]
+SECTION x y w z color "Title"
+DIVIDER x1 y1 x2 y2 z [color] [dashed|dotted]
+PILL x y z bg_color text_color "Label"
+SKILL-BAR x y w h z fill% color [bg_color]
+RATING x y z color max filled
+CONTACT x y z color icon "text"
+ICON x y size z color name
+TIMELINE x y h z color
+
+## Rules
+- z=0 for backgrounds, z=1 for content
+- Strings MUST be in double quotes
+- Colors are hex (#rrggbb)
+- Icons: email, phone, location, web, github, linkedin, calendar, briefcase
+- Canvas is always 595 842
+- Sidebar (if used): 200-210px wide, content starts at ~232px
+- Font sizes: name 26-36, section headers 8-16, body 8.5-9, job titles 10-11
+- Output ONLY CVM code, no explanation, no markdown fences
+- Use -- for comments
+
+## Template Styles
+1. Dark Sidebar — dark left panel + light right content (tech/corporate)
+2. Minimal Editorial — no sidebar, thin top accent line, lots of whitespace
+3. Header Banner — full-width colored header, no sidebar
+4. Colored Sidebar — domain-colored sidebar (green=healthcare, blue=tech)
+
+## Example (Dark Sidebar)
+
+CANVAS 595 842 #f8f9fa
+RECT 0 0 210 842 0 #1b2838
+RECT 0 0 210 160 0 #243447
+PHOTO 55 20 100 1 #3a506b 3
+TEXT 28 135 "Sarah Chen" 18 1 #e8edf2 bold
+TEXT 28 158 "Senior Backend Engineer" 9 1 #6db3f2
+DIVIDER 28 176 182 176 1 #2d3f52
+TEXT 28 192 "CONTACT" 8 1 #5a7490 bold
+CONTACT 28 210 1 #8ca3ba email "sarah@email.com"
+CONTACT 28 230 1 #8ca3ba location "San Francisco, CA"
+CONTACT 28 250 1 #8ca3ba phone "415-555-0198"
+DIVIDER 28 272 182 272 1 #2d3f52
+TEXT 28 288 "SKILLS" 8 1 #5a7490 bold
+TEXT 28 308 "Go" 8.5 1 #b8c9da
+SKILL-BAR 28 324 152 5 1 96 #4a9ff5 #243447
+TEXT 28 338 "Kubernetes" 8.5 1 #b8c9da
+SKILL-BAR 28 354 152 5 1 92 #4a9ff5 #243447
+TEXT 232 36 "Sarah Chen" 30 1 #1b2838 bold
+TEXT 232 72 "Senior Backend Engineer" 11 1 #4a7fb5
+DIVIDER 232 94 570 94 1 #d5dbe2
+TEXT 240 110 "PROFESSIONAL SUMMARY" 8 1 #4a5568 bold
+TEXT 232 140 "Backend engineer with 5+ years building high-throughput" 8.5 1 #4a5568
+TEXT 232 156 "payment systems and distributed APIs at scale." 8.5 1 #4a5568
+TEXT 240 212 "EXPERIENCE" 8 1 #4a5568 bold
+TEXT 232 244 "Senior Software Engineer" 10 1 #1b2838 bold
+TEXT 232 260 "Stripe  |  San Francisco" 8.5 1 #8896a4
+TEXT 478 244 "2021 - Present" 7.5 1 #a0adb8
+TEXT 240 280 "Led payments API redesign serving 10M+ req/day" 8.5 1 #4a5568
+
+## Task
+Generate a complete, professional CV in CVM for the following person. Choose the template style that best fits their industry. Fill the full A4 page — use all 842px of vertical space.
+
+---
+
+[PASTE RESUME INFO HERE]`;
+
+document.getElementById('btn-gemma').addEventListener('click', () => {
+  navigator.clipboard.writeText(GEMMA4_PROMPT).then(() => {
+    const btn = document.getElementById('btn-gemma');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy Gemma 4 Prompt'; }, 2000);
+  });
+});
+
+
+// ── Init ────────────────────────────────────────────────────────
+
+// Populate examples dropdown
+const examplesSelect = document.getElementById('examples');
+for (const name of Object.keys(EXAMPLES)) {
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  examplesSelect.appendChild(opt);
+}
+examplesSelect.addEventListener('change', e => {
+  if (e.target.value && EXAMPLES[e.target.value]) {
+    editor.value = EXAMPLES[e.target.value];
+    selectedLine = -1;
+    updateLineNumbers();
+    render();
+  }
+});
+
+// Restore from localStorage or load default
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+  editor.value = saved;
+} else {
+  editor.value = EXAMPLES['Modern — Dark Sidebar'];
+}
+
+// Restore photo from localStorage
+try {
+  const savedPhoto = localStorage.getItem(STORAGE_PHOTO_KEY);
+  if (savedPhoto) {
+    const img = new Image();
+    img.onload = () => {
+      imageStore.photo = img;
+      document.getElementById('btn-photo').textContent = '✓ Photo Loaded';
+      render();
+    };
+    img.src = savedPhoto;
+  }
+} catch(e) {}
+
+updateLineNumbers();
+render();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+V 32 32 8
+
+-- bow handle
+B 7 14 3 3 4 2 a
+
+-- upper bow limb (curves outward then back to tip)
+B 8 18 3 2 4 2 a
+B 9 22 3 2 4 2 a
+B 10 26 3 2 3 2 a
+B 12 29 3 1 2 1 a
+
+-- lower bow limb
+B 8 10 3 2 4 2 a
+B 9 6 3 2 4 2 a
+B 10 2 3 2 3 2 a
+B 12 0 3 1 2 1 a
+
+-- bowstring (white, taut vertical line)
+B 13 1 3 1 29 1 8
+
+-- arrow shaft (wood)
+B 14 15 3 14 1 1 d
+
+-- arrowhead (red)
+B 28 14 3 3 2 1 1
+
+-- fletching top (magenta feather)
+B 14 17 3 1 3 1 5
+-- fletching bottom
+B 14 12 3 1 3 1 5
+-- fletching center back
+B 14 15 3 1 1 2 5

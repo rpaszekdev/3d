@@ -1,0 +1,34 @@
+V 24 18 24
+
+-- outer coil (ground layer)
+B 4 0 19 16 3 3 c
+B 20 0 6 3 3 13 2
+B 4 0 3 16 3 3 2
+B 3 0 7 3 3 12 2
+
+-- middle coil (Y=3, spiraling inward)
+B 7 3 16 10 3 3 2
+B 17 3 8 3 3 8 2
+B 7 3 5 10 3 3 2
+
+-- inner coil (Y=6)
+B 9 6 13 8 3 3 2
+B 15 6 9 3 3 4 2
+B 9 6 7 5 3 3 2
+
+-- body rising toward head
+B 10 9 9 4 3 2 2
+B 11 12 9 3 3 2 2
+
+-- head (raised, facing viewer)
+E 12 15 9 3 2 3 2
+B 10 14 6 4 2 4 2
+
+-- eyes
+S 10 16 7 1 1
+S 14 16 7 1 1
+
+-- forked tongue
+B 12 14 4 1 1 2 1
+B 11 14 3 1 1 1 1
+B 13 14 3 1 1 1 1

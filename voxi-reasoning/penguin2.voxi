@@ -1,0 +1,48 @@
+V 16 24 12
+-- Penguin v4 — fixed symmetry, refined
+
+-- Body (black oval)
+E 8 10 6 5 8 4 0
+
+-- White belly (pushed forward)
+E 8 9 4 3 7 2 8
+
+-- Neck (black)
+E 8 18 6 3 2 3 0
+
+-- Head (black)
+S 8 21 6 3 0
+
+-- Yellow ear patches (sides of head)
+B 5 20 5 1 3 3 6
+B 11 20 5 1 3 3 6
+
+-- Yellow chest crescent
+E 8 17 4 3 2 2 6
+
+-- Eyes
+P 7 22 3 8
+P 9 22 3 8
+
+-- Beak (orange, forward)
+B 7 20 0 2 2 2 7
+B 7 21 0 2 1 1 7
+
+-- Left flipper (tapered)
+B 2 11 5 2 8 3 0
+B 1 15 5 2 4 3 0
+
+-- Right flipper (tapered)
+B 12 11 5 2 8 3 0
+B 13 15 5 2 4 3 0
+
+-- Tail nub (centered)
+B 7 3 9 2 3 2 0
+
+-- Short legs (symmetric around x=8)
+B 6 1 5 2 2 2 0
+B 10 1 5 2 2 2 0
+
+-- Feet (orange, symmetric)
+B 5 0 4 3 1 4 7
+B 10 0 4 3 1 4 7

@@ -1,0 +1,26 @@
+V 32 32 32
+-- VORTEX STRETCHING: The mechanism unique to 3D
+-- A vortex tube gets stretched along Z, concentrating vorticity
+-- This is WHY 3D is harder than 2D
+
+-- Time T=0: Fat, slow vortex (blue, radius 8)
+C 8 16 16 7 4 3
+
+-- Time T=1: Medium vortex (cyan, radius 5) — stretching
+C 16 16 16 4 6 4
+
+-- Time T=2: Thin, fast vortex (yellow, radius 2) — concentrated
+C 24 16 16 2 8 6
+
+-- Arrows showing stretch direction (red dots along X)
+P 3 16 16 1
+P 4 16 16 1
+P 12 16 16 1
+P 13 16 16 1
+P 20 16 16 1
+P 21 16 16 1
+P 28 16 16 1
+P 29 16 16 1
+
+-- The question: does this concentration have a LIMIT?
+-- Or can vorticity → infinity in finite time?

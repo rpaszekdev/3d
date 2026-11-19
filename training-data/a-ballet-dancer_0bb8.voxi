@@ -1,0 +1,38 @@
+V 32 48 32
+
+-- pointe shoes
+B 13 0 13 3 2 4 b
+B 18 0 13 3 2 4 b
+
+-- legs
+C 15 2 15 2 13 d
+C 19 2 15 2 13 d
+
+-- tutu outer layer
+B 7 13 9 18 3 14 b
+-- tutu middle layer
+B 9 14 11 14 2 10 5
+-- tutu inner layer
+B 11 15 12 10 1 8 b
+
+-- leotard bodice
+B 13 16 12 6 10 6 5
+
+-- neck
+B 15 26 14 2 3 2 d
+
+-- head
+S 16 30 15 3 d
+
+-- hair bun
+S 16 34 15 2 a
+
+-- left arm raised
+B 10 20 14 3 11 3 d
+-- right arm raised
+B 20 20 14 3 11 3 d
+
+-- left hand
+S 11 31 15 2 d
+-- right hand
+S 22 31 15 2 d

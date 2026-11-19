@@ -1,0 +1,36 @@
+V 40 12 16
+-- body
+B 8 2 5 20 5 6 2
+-- tail
+B 28 2 6 6 4 4 2
+B 34 2 7 4 3 2 2
+B 38 2 7 2 2 2 2
+-- head
+B 4 2 4 4 5 8 2
+-- upper jaw
+B 0 3 5 4 2 6 2
+-- lower jaw
+B 0 2 5 4 2 6 c
+-- belly
+B 8 2 6 20 2 4 d
+-- front legs
+B 10 0 3 3 2 2 c
+B 10 0 11 3 2 2 c
+-- rear legs
+B 22 0 3 3 2 2 c
+B 22 0 11 3 2 2 c
+-- eyes
+S 6 7 6 1 6
+S 6 7 10 1 6
+-- nostrils
+B 0 5 6 1 1 1 0
+B 0 5 9 1 1 1 0
+-- back ridges
+B 12 7 7 2 1 2 c
+B 16 7 7 2 1 2 c
+B 20 7 7 2 1 2 c
+B 24 7 7 2 1 2 c
+-- teeth
+B 1 3 6 1 1 1 8
+B 2 3 8 1 1 1 8
+B 1 3 9 1 1 1 8

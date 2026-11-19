@@ -1,0 +1,31 @@
+V 32 24 32
+
+-- stone foundation
+B 5 0 7 22 1 18 9
+
+-- log walls (brown)
+B 5 1 7 22 8 2 a
+B 5 1 23 22 8 2 a
+B 5 1 9 2 8 14 a
+B 25 1 9 2 8 14 a
+
+-- front door (maroon)
+B 14 1 7 4 6 1 e
+
+-- front windows (cyan)
+B 8 4 7 3 3 1 4
+B 21 4 7 3 3 1 4
+
+-- chimney (stone gray)
+B 20 1 12 3 20 3 9
+
+-- gable roof (dark green, stepped layers)
+B 4 9 7 24 1 18 c
+B 4 10 8 24 1 16 c
+B 4 11 9 24 1 14 c
+B 4 12 10 24 1 12 c
+B 4 13 11 24 1 10 c
+B 4 14 12 24 1 8 c
+B 4 15 13 24 1 6 c
+B 4 16 14 24 1 4 c
+B 4 17 15 24 1 2 c

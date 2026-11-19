@@ -1,0 +1,47 @@
+V 32 32 32
+
+-- feet
+B 11 0 13 5 2 6 7
+B 18 0 13 5 2 6 7
+
+-- legs
+B 12 2 14 4 3 4 f
+B 18 2 14 4 3 4 f
+
+-- main body
+E 16 11 16 7 7 5 f
+
+-- white belly patch
+E 16 10 14 5 6 3 8
+
+-- left wing
+B 8 4 14 4 10 5 f
+
+-- right wing
+B 21 4 14 4 10 5 f
+
+-- neck
+B 13 17 14 6 3 4 f
+
+-- head
+S 16 22 16 5 f
+
+-- white face
+E 16 21 13 3 3 3 8
+
+-- beak upper
+B 14 21 10 4 2 3 7
+
+-- beak lower
+B 14 19 10 4 2 3 7
+
+-- left eye
+P 13 24 12 0
+P 14 24 12 8
+
+-- right eye
+P 19 24 12 0
+P 18 24 12 8
+
+-- belly highlight
+E 16 8 14 3 4 2 8

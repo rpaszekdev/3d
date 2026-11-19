@@ -1,0 +1,34 @@
+V 24 24 24
+
+-- tripod legs
+C 12 5 12 1 10 9
+B 7 0 12 2 8 2 9
+B 15 0 12 2 8 2 9
+B 11 0 7 2 8 2 9
+
+-- tripod head mount
+B 10 10 11 4 2 2 9
+
+-- camera body
+B 8 12 10 8 5 6 3
+
+-- camera top (hot shoe)
+B 10 17 11 4 1 4 9
+
+-- lens barrel
+C 12 14 9 3 4 3
+
+-- lens glass
+S 12 14 8 2 4
+
+-- viewfinder bump
+B 13 17 11 3 2 3 7
+
+-- shutter button
+S 15 18 11 1 1
+
+-- camera strap lug left
+B 8 16 11 1 2 2 9
+
+-- camera strap lug right
+B 15 16 11 1 2 2 9

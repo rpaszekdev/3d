@@ -1,0 +1,40 @@
+V 24 28 24
+
+-- base platform
+B 5 0 8 14 2 8 6
+
+-- pedestal step
+B 7 2 9 10 2 6 d
+
+-- stem column
+C 12 4 12 2 7 12 6
+
+-- cup lower taper
+C 12 11 12 4 2 12 6
+
+-- cup bowl body
+C 12 13 12 6 7 12 6
+
+-- cup rim band
+B 5 20 9 14 1 6 d
+
+-- left handle upper
+B 5 15 10 2 1 4 6
+-- left handle side
+B 4 14 10 1 5 4 6
+-- left handle lower
+B 5 13 10 2 1 4 6
+
+-- right handle upper
+B 17 15 10 2 1 4 6
+-- right handle side
+B 19 14 10 1 5 4 6
+-- right handle lower
+B 17 13 10 2 1 4 6
+
+-- engraving star front
+B 11 15 8 2 2 1 8
+B 10 16 8 4 1 1 8
+
+-- base label band
+B 6 1 8 12 1 8 d

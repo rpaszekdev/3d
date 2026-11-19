@@ -1,0 +1,48 @@
+V 32 32 20
+
+-- legs
+B 5 0 7 2 4 2 9
+B 25 0 7 2 4 2 9
+
+-- pedal board
+B 12 0 5 8 3 2 9
+
+-- pedals
+B 13 1 5 2 2 1 6
+B 17 1 5 2 2 1 6
+
+-- main cabinet body
+B 4 4 6 24 22 10 0
+
+-- front lower panel
+B 5 4 5 22 6 2 9
+
+-- keyboard shelf
+B 5 10 5 22 1 2 9
+
+-- white keys
+B 6 11 5 2 4 1 8
+B 9 11 5 2 4 1 8
+B 12 11 5 2 4 1 8
+B 15 11 5 2 4 1 8
+B 18 11 5 2 4 1 8
+B 21 11 5 2 4 1 8
+B 24 11 5 2 4 1 8
+
+-- black keys
+B 8 12 5 2 3 1 0
+B 11 12 5 2 3 1 0
+B 16 12 5 2 3 1 0
+B 19 12 5 2 3 1 0
+B 23 12 5 2 3 1 0
+
+-- music stand
+B 8 22 5 16 1 2 9
+
+-- top lid
+B 4 26 6 24 2 10 0
+
+-- bench
+B 9 0 0 14 2 5 9
+B 9 0 0 2 4 2 a
+B 21 0 0 2 4 2 a

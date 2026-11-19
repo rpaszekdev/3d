@@ -1,0 +1,31 @@
+V 16 28 14
+
+-- base
+B 2 0 3 12 2 8 d
+
+-- stem
+B 5 2 4 6 6 6 d
+
+-- neck flare
+B 4 8 3 8 3 7 d
+
+-- head body
+B 3 11 2 8 7 8 d
+
+-- snout (projects forward)
+B 3 12 0 6 5 3 d
+
+-- nose
+B 4 16 0 4 2 3 d
+
+-- mane
+B 5 18 4 5 4 5 d
+
+-- ear
+B 6 22 4 3 3 3 d
+
+-- eye
+B 4 14 2 2 2 2 0
+
+-- nostril
+B 5 12 0 2 1 1 0

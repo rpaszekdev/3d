@@ -1,0 +1,30 @@
+V 32 48 32
+
+-- concrete base
+B 7 0 7 18 2 18 9
+
+-- support legs (gray steel)
+B 10 2 10 2 20 2 9
+B 20 2 10 2 20 2 9
+B 10 2 20 2 20 2 9
+B 20 2 20 2 20 2 9
+
+-- lower cross bracing
+B 10 8 11 12 1 2 9
+B 11 8 10 2 1 12 9
+
+-- upper cross bracing
+B 10 16 11 12 1 2 9
+B 11 16 10 2 1 12 9
+
+-- tank collar ring
+C 16 22 16 6 3 9
+
+-- main water tank (blue)
+E 16 30 16 9 7 9 3
+
+-- dome cap (white)
+S 16 37 16 5 8
+
+-- vent pipe
+C 16 42 16 1 4 9

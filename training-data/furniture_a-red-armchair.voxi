@@ -1,0 +1,22 @@
+V 16 16 16
+
+-- legs (brown)
+B 3 0 3 2 4 2 a
+B 11 0 3 2 4 2 a
+B 3 0 11 2 4 2 a
+B 11 0 11 2 4 2 a
+
+-- seat base (red)
+B 3 4 3 10 2 10 1
+
+-- seat cushion (pink)
+B 4 6 4 8 1 7 5
+
+-- backrest (red)
+B 3 6 11 10 7 2 1
+
+-- left armrest (maroon)
+B 3 6 3 2 2 8 e
+
+-- right armrest (maroon)
+B 11 6 3 2 2 8 e

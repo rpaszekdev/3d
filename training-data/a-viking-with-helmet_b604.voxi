@@ -1,0 +1,33 @@
+V 24 32 24
+
+-- boots
+B 9 0 10 3 2 3 0
+B 13 0 10 3 2 3 0
+-- legs
+B 9 2 10 3 5 3 3
+B 13 2 10 3 5 3 3
+-- torso (chainmail)
+B 8 7 9 8 10 6 9
+-- belt
+B 8 11 9 8 1 6 a
+-- fur collar
+B 8 15 9 8 2 6 8
+-- left arm
+B 5 9 10 3 8 3 9
+-- right arm
+B 16 9 10 3 8 3 9
+-- beard
+B 9 14 9 6 4 2 7
+-- head (skin)
+B 9 17 9 6 6 5 d
+-- eyes
+B 10 21 8 1 1 1 0
+B 13 21 8 1 1 1 0
+-- helmet
+B 8 22 8 8 5 6 9
+-- nose guard
+B 11 17 8 2 5 1 9
+-- left horn
+B 2 23 10 6 2 2 6
+-- right horn
+B 16 23 10 6 2 2 6

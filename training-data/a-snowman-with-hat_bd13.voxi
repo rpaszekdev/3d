@@ -1,0 +1,37 @@
+V 24 32 24
+
+-- bottom ball
+S 12 6 12 6 8
+
+-- middle ball
+S 12 15 12 4 8
+
+-- head
+S 12 22 12 3 8
+
+-- scarf
+B 9 19 9 6 1 6 1
+
+-- hat brim
+B 8 25 9 8 1 6 0
+
+-- hat top
+B 10 26 10 4 4 4 0
+
+-- eyes
+S 11 23 9 1 0
+S 13 23 9 1 0
+
+-- carrot nose
+B 12 22 8 1 1 3 7
+
+-- buttons
+S 12 16 8 1 0
+S 12 14 8 1 0
+S 12 12 8 1 0
+
+-- left arm
+B 3 14 11 5 1 2 a
+
+-- right arm
+B 16 14 11 5 1 2 a

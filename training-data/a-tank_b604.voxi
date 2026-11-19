@@ -1,0 +1,30 @@
+V 32 20 32
+
+-- left track
+B 2 0 4 4 5 24 0
+-- right track
+B 26 0 4 4 5 24 0
+-- track wheels left
+S 4 2 4 2 9
+S 4 2 28 2 9
+-- track wheels right
+S 28 2 4 2 9
+S 28 2 28 2 9
+-- hull body
+B 5 2 5 22 6 22 d
+-- hull front armor
+B 5 2 3 22 5 2 d
+-- turret base ring
+B 9 8 9 14 2 14 9
+-- turret
+B 10 10 10 12 5 12 9
+-- main gun barrel
+B 14 12 1 4 2 9 9
+-- commander cupola
+S 20 15 16 2 9
+-- machine gun
+B 15 14 7 2 1 4 0
+-- exhaust
+B 22 8 22 2 4 2 0
+-- rear plate
+B 5 2 28 22 6 2 9

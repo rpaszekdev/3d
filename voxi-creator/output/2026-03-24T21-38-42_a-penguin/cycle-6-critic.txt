@@ -1,0 +1,15 @@
+`★ Insight ─────────────────────────────────────`
+**The #13151f dark background is nearly identical to VOXI's color 0 (black).** This is the most common failure mode — a model built primarily with black voxels will vanish completely into the background. Navy (f) is also very dark and nearly disappears too, making this a double-invisibility problem for a classic black-and-white penguin attempt.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+STRENGTHS: The structural intent is clear from the VOXI code — the model has distinct feet, legs, and a body with anatomically appropriate layering (feet at Y=0, legs above, body above that). The orange feet (color 7) and navy legs (color f) show good penguin color thinking.
+
+ISSUES:
+- **The entire model is invisible** — all 6 views are pure black. The body is almost certainly using color `0` (black), which is indistinguishable from the `#13151f` renderer background. Replace all black body parts with navy `f`: e.g. `B 9 6 11 14 14 10 f` for the main torso.
+- **Navy (f) on the dark background is also nearly invisible** — even the legs that use `f` are swallowed. The back/sides of the penguin should use `f`, but the front-facing belly needs a bright contrast color. Add a white belly stripe: `B 12 6 10 8 10 1 8` (color 8 = white) to make it pop and be instantly recognizable.
+- **Orange feet (color 7) are not rendering visibly** — the feet boxes (`B 10 0 11 5 2 6 7` and `B 19 0 11 5 2 6 7`) are placed at Z=11 but the depth may be pushing them behind the body. Bring feet forward to Z=9 or reduce body Z-start to avoid occlusion. Also, a 5×2×6 foot is very flat — try `B 10 0 10 5 2 8 7` for a longer, more flipper-like foot.
+
+PRIORITY_FIX: **Replace color `0` with navy `f` on the entire body mass immediately.** Without this, the model is completely invisible and no other improvements matter. The whole penguin body stack should use `f` for its outer shell, then layer white `8` on the front face for the belly, and yellow/orange `6`/`7` for the beak and feet. This single change will make the penguin visible from all 6 angles.

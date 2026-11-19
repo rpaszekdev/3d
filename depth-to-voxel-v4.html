@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Depth→Voxel — V4 Source Scene</title>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+}}
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #08080d; --card: #111118; --border: #222233;
+    --accent: #6c5ce7; --accent2: #00cec9; --text: #e8e8f0; --muted: #7a7a8e;
+  }
+  body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+  .toolbar {
+    height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+    background: var(--card); border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .toolbar h1 { font-size: 14px; font-weight: 700; }
+  .toolbar .accent { color: var(--accent2); }
+  .toolbar button {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); padding: 5px 12px; font-size: 11px; cursor: pointer;
+  }
+  .toolbar button:hover { border-color: var(--accent); }
+  .toolbar button.active { border-color: var(--accent); color: var(--accent); }
+  .toolbar .spacer { flex: 1; }
+  .toolbar label { font-size: 11px; color: var(--muted); }
+  .toolbar input[type="range"] { width: 80px; accent-color: var(--accent); }
+  .toolbar .val { font-size: 11px; color: var(--accent2); min-width: 24px; }
+  .main { flex: 1; display: flex; overflow: hidden; }
+  .panel {
+    width: 320px; flex-shrink: 0; background: var(--card); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow-y: auto; padding: 16px;
+  }
+  .panel h3 { font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .panel p { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+  .panel .step { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .panel .step-num { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; align-items: center; justify-content: center; margin-right: 6px; }
+  .panel .step-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .code-block {
+    font-size: 10px; font-family: 'SF Mono', monospace; color: var(--accent2);
+    background: var(--bg); padding: 8px; border-radius: 6px; border: 1px solid var(--border);
+    max-height: 200px; overflow-y: auto; white-space: pre; line-height: 1.5;
+  }
+  .canvas-area { flex: 1; position: relative; }
+  #main-canvas { width: 100%; height: 100%; display: block; }
+  .phase-label {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+    background: rgba(17,17,24,0.9); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 20px; font-size: 13px; font-weight: 600; color: var(--accent2);
+    pointer-events: none;
+  }
+  .preview-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .preview-box {
+    flex: 1; aspect-ratio: 4/3; border-radius: 6px; border: 1px solid var(--border);
+    overflow: hidden; position: relative;
+  }
+  .preview-box canvas { width: 100%; height: 100%; display: block; }
+  .preview-box .label {
+    position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7);
+    font-size: 9px; text-align: center; padding: 2px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <h1><span class="accent">Depth→Voxel</span> V4 Scene</h1>
+  <div class="spacer"></div>
+  <label>Phase:</label>
+  <button id="btn-p0" class="active" onclick="setPhase(0)">V4 Scene</button>
+  <button id="btn-p1" onclick="setPhase(1)">Depth</button>
+  <button id="btn-p2" onclick="setPhase(2)">Rays</button>
+  <button id="btn-p3" onclick="setPhase(3)">Reconstructed</button>
+  <button id="btn-p4" onclick="setPhase(4)">Compare</button>
+  <div class="spacer"></div>
+  <label>Recon grid:</label>
+  <input type="range" id="grid-size" min="8" max="32" value="16" oninput="updateGrid()">
+  <span class="val" id="grid-val">16</span>
+</div>
+
+<div class="main">
+  <div class="panel">
+    <h3>V4 Source → Depth → Reconstruct</h3>
+
+    <div class="step">
+      <div class="step-title"><span class="step-num">1</span> V4 Source (input)</div>
+      <p>The room is written in your DSL. This is the ground truth.</p>
+      <pre class="code-block" id="v4-source"></pre>
+    </div>
+
+    <div class="step">
+      <div class="step-title"><span class="step-num">2</span> Depth Camera</div>
+      <p>A virtual camera captures color + depth from one viewpoint. Only front-facing surfaces are visible.</p>
+      <div class="preview-row">
+        <div class="preview-box">
+          <canvas id="preview-color" width="128" height="96"></canvas>
+          <div class="label">Color</div>
+        </div>
+        <div class="preview-box">
+          <canvas id="preview-depth" width="128" height="96"></canvas>
+          <div class="label">Depth</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title"><span class="step-num">3</span> Reconstruction</div>
+      <p>Back-project depth pixels into 3D → voxelize into a new grid. Compare to the original — what's missing?</p>
+    </div>
+
+    <div class="step">
+      <div class="step-title"><span class="step-num">4</span> Reconstructed V4</div>
+      <p>The output V4 code from single-view reconstruction:</p>
+      <pre class="code-block" id="v4-output"></pre>
+    </div>
+  </div>
+
+  <div class="canvas-area">
+    <canvas id="main-canvas"></canvas>
+    <div class="phase-label" id="phase-label">Phase 1: V4 Source Scene</div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const COLORS_HEX = [0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+const CKEYS = '0123456789abcdef';
+
+// ── V4 room scene ──
+const ROOM_V4 = `-- Room scene in V4
+V 32 32 32
+-- Floor
+B 0 0 0 32 1 32 d
+-- Back wall
+B 0 1 30 32 20 2 9
+-- Left wall
+B 0 1 0 2 20 32 9
+-- Table top
+B 6 6 20 12 1 8 a
+-- Table legs
+B 6 1 20 2 5 2 a
+B 16 1 20 2 5 2 a
+B 6 1 26 2 5 2 a
+B 16 1 26 2 5 2 a
+-- Chair seat
+B 10 1 14 4 4 4 1
+-- Chair back
+B 10 4 17 4 6 1 1
+-- Lamp base
+B 20 1 6 2 8 2 0
+-- Lamp shade
+B 19 9 5 4 3 4 6
+-- Book on table
+B 8 7 22 4 1 3 3
+-- Plant pot
+B 24 1 24 4 4 4 2
+-- Plant leaves
+B 25 5 25 2 6 2 c
+B 24 7 25 4 2 2 c
+B 25 7 24 2 2 4 c
+-- Rug
+B 8 1 8 12 0 10 5`;
+
+// ── V4 Parser (same as your v4-voxel.html) ──
+function parseV4(code) {
+  let W = 32, H = 32, D = 32;
+  const vm = new Map();
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix >= 0 && ix < W && iy >= 0 && iy < H && iz >= 0 && iz < D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c || 9, 0), 15));
+  };
+  const addBox = (px,py,pz,w,h,d,c) => {
+    for (let x=px;x<px+w;x++) for (let y=py;y<py+h;y++) for (let z=pz;z<pz+d;z++) set(x,y,z,c);
+  };
+  for (const line of code.split('\n')) {
+    const t = line.trim();
+    if (!t || t.startsWith('--') || t.startsWith('//')) continue;
+    const p = t.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+    if (cmd === 'V') { W=Number(p[1])||32; H=Number(p[2])||32; D=Number(p[3])||32; continue; }
+    if (cmd === 'B') {
+      const n = p.slice(1).map((s,i) => i === 6 ? CKEYS.indexOf(s.toLowerCase()) : Number(s));
+      if (n[6] < 0) n[6] = 9;
+      addBox(n[0],n[1],n[2],n[3],n[4],n[5],n[6]);
+    }
+  }
+  const voxels = [];
+  for (const [k,c] of vm) { const [x,y,z]=k.split(',').map(Number); voxels.push({x,y,z,color:c}); }
+  return { gridW:W, gridH:H, gridD:D, voxels };
+}
+
+// ── Scene setup ──
+const canvas = document.getElementById('main-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x08080d);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
+camera.position.set(40, 30, 40);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(16, 8, 16);
+controls.update();
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.4));
+const dl = new THREE.DirectionalLight(0xffffff, 1.2);
+dl.position.set(40, 50, 20); dl.castShadow = true;
+dl.shadow.mapSize.set(1024, 1024);
+scene.add(dl);
+
+// ── Build source scene from V4 ──
+const sourceGroup = new THREE.Group();
+scene.add(sourceGroup);
+
+function buildV4Scene(code, group) {
+  while (group.children.length) {
+    const c = group.children[0];
+    group.remove(c);
+    if (c.geometry) c.geometry.dispose();
+  }
+
+  const parsed = parseV4(code);
+  if (parsed.voxels.length === 0) return parsed;
+
+  const boxGeo = new THREE.BoxGeometry(0.94, 0.94, 0.94);
+  const mat = new THREE.MeshLambertMaterial();
+  const mesh = new THREE.InstancedMesh(boxGeo, mat, parsed.voxels.length);
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  const mx = new THREE.Matrix4(), cl = new THREE.Color();
+  for (let i = 0; i < parsed.voxels.length; i++) {
+    const v = parsed.voxels[i];
+    mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+    mesh.setMatrixAt(i, mx);
+    cl.setHex(COLORS_HEX[v.color]);
+    mesh.setColorAt(i, cl);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.instanceColor.needsUpdate = true;
+  group.add(mesh);
+
+  // Ground grid
+  const grid = new THREE.GridHelper(parsed.gridW, parsed.gridW, 0x222244, 0x181828);
+  grid.position.set(parsed.gridW/2, 0, parsed.gridD/2);
+  group.add(grid);
+
+  // Ground shadow
+  const gnd = new THREE.Mesh(
+    new THREE.PlaneGeometry(60, 60),
+    new THREE.ShadowMaterial({ opacity: 0.1 })
+  );
+  gnd.rotation.x = -Math.PI/2;
+  gnd.position.set(parsed.gridW/2, 0, parsed.gridD/2);
+  gnd.receiveShadow = true;
+  group.add(gnd);
+
+  return parsed;
+}
+
+const sourceParsed = buildV4Scene(ROOM_V4, sourceGroup);
+
+// Show V4 source in panel
+document.getElementById('v4-source').textContent = ROOM_V4;
+
+// ── Depth camera ──
+const depthCam = new THREE.PerspectiveCamera(55, 4/3, 0.5, 60);
+depthCam.position.set(16, 14, -4);
+depthCam.lookAt(16, 6, 18);
+
+// Camera visualization
+const camVizGroup = new THREE.Group();
+scene.add(camVizGroup);
+const camMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(1.5, 1, 1),
+  new THREE.MeshPhongMaterial({ color: 0x6c5ce7, transparent: true, opacity: 0.8 })
+);
+camVizGroup.add(camMesh);
+
+// Frustum lines
+const fl = 4;
+const fpts = [];
+const corners = [[-1,-0.75,1],[1,-0.75,1],[1,0.75,1],[-1,0.75,1]];
+for (const c of corners) fpts.push(0,0,0, c[0]*fl, c[1]*fl, c[2]*fl);
+for (let i = 0; i < 4; i++) {
+  const a = corners[i], b = corners[(i+1)%4];
+  fpts.push(a[0]*fl,a[1]*fl,a[2]*fl, b[0]*fl,b[1]*fl,b[2]*fl);
+}
+const frustumGeo = new THREE.BufferGeometry();
+frustumGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(fpts), 3));
+camVizGroup.add(new THREE.LineSegments(frustumGeo, new THREE.LineBasicMaterial({ color: 0x6c5ce7, transparent: true, opacity: 0.4 })));
+camVizGroup.position.copy(depthCam.position);
+camVizGroup.lookAt(16, 6, 18);
+
+// ── Raycasting depth ──
+const raycaster = new THREE.Raycaster();
+const RAY_RES_X = 64, RAY_RES_Y = 48;
+
+let depthData = [];
+let reconGrid = 16;
+let reconVoxels = new Map();
+
+const rayGroup = new THREE.Group();
+scene.add(rayGroup);
+const pointGroup = new THREE.Group();
+scene.add(pointGroup);
+const reconGroup = new THREE.Group();
+scene.add(reconGroup);
+
+function castRays() {
+  depthData = [];
+  depthCam.updateMatrixWorld();
+  depthCam.updateProjectionMatrix();
+
+  for (let py = 0; py < RAY_RES_Y; py++) {
+    for (let px = 0; px < RAY_RES_X; px++) {
+      const ndcX = (px / (RAY_RES_X - 1)) * 2 - 1;
+      const ndcY = -((py / (RAY_RES_Y - 1)) * 2 - 1);
+      raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), depthCam);
+      const hits = raycaster.intersectObjects(sourceGroup.children, false);
+      if (hits.length > 0) {
+        const hit = hits[0];
+        // Get color from instanced mesh
+        let color = 9;
+        if (hit.object.isInstancedMesh && hit.instanceId !== undefined) {
+          const c = new THREE.Color();
+          hit.object.getColorAt(hit.instanceId, c);
+          // Find nearest palette color
+          let bestDist = Infinity;
+          for (let i = 0; i < 16; i++) {
+            const pc = new THREE.Color(COLORS_HEX[i]);
+            const dist = (c.r-pc.r)**2 + (c.g-pc.g)**2 + (c.b-pc.b)**2;
+            if (dist < bestDist) { bestDist = dist; color = i; }
+          }
+        }
+        depthData.push({
+          screenX: px, screenY: py,
+          worldPos: hit.point.clone(),
+          color,
+          depth: hit.distance,
+        });
+      }
+    }
+  }
+}
+
+function voxelizeRecon() {
+  reconVoxels = new Map();
+  const gs = reconGrid;
+  const scale = 32 / gs; // map from 32-grid world to recon grid
+
+  for (const d of depthData) {
+    const vx = Math.floor(d.worldPos.x / scale);
+    const vy = Math.floor(d.worldPos.y / scale);
+    const vz = Math.floor(d.worldPos.z / scale);
+    if (vx >= 0 && vx < gs && vy >= 0 && vy < gs && vz >= 0 && vz < gs) {
+      const key = `${vx},${vy},${vz}`;
+      if (!reconVoxels.has(key)) {
+        reconVoxels.set(key, { x: vx, y: vy, z: vz, color: d.color });
+      }
+    }
+  }
+}
+
+function generateReconV4() {
+  const gs = reconGrid;
+  let code = `-- Reconstructed from single depth view\nV ${gs} ${gs} ${gs}\n`;
+  const sorted = [...reconVoxels.values()].sort((a,b) => a.color - b.color || a.y - b.y);
+  for (const v of sorted) {
+    code += `B ${v.x} ${v.y} ${v.z} 1 1 1 ${CKEYS[v.color]}\n`;
+  }
+  return code;
+}
+
+function buildRayViz() {
+  while (rayGroup.children.length) { const c = rayGroup.children[0]; rayGroup.remove(c); if (c.geometry) c.geometry.dispose(); }
+  while (pointGroup.children.length) { const c = pointGroup.children[0]; pointGroup.remove(c); if (c.geometry) c.geometry.dispose(); }
+
+  // Show subset of rays
+  for (let i = 0; i < depthData.length; i += 6) {
+    const d = depthData[i];
+    const geo = new THREE.BufferGeometry().setFromPoints([depthCam.position.clone(), d.worldPos]);
+    const hue = (d.depth / 30) * 0.3;
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+      color: new THREE.Color().setHSL(hue, 0.8, 0.5), transparent: true, opacity: 0.15
+    }));
+    rayGroup.add(line);
+  }
+
+  // Hit points
+  const dotGeo = new THREE.SphereGeometry(0.12, 6, 6);
+  for (let i = 0; i < depthData.length; i += 3) {
+    const d = depthData[i];
+    const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: COLORS_HEX[d.color] }));
+    dot.position.copy(d.worldPos);
+    pointGroup.add(dot);
+  }
+}
+
+function buildReconViz() {
+  while (reconGroup.children.length) { const c = reconGroup.children[0]; reconGroup.remove(c); if (c.geometry) c.geometry.dispose(); }
+
+  if (reconVoxels.size === 0) return;
+  const gs = reconGrid;
+  const cellSize = 32 / gs;
+  const boxGeo = new THREE.BoxGeometry(cellSize * 0.9, cellSize * 0.9, cellSize * 0.9);
+  const mat = new THREE.MeshLambertMaterial();
+  const mesh = new THREE.InstancedMesh(boxGeo, mat, reconVoxels.size);
+  mesh.castShadow = true;
+  const mx = new THREE.Matrix4(), cl = new THREE.Color();
+  let i = 0;
+  for (const v of reconVoxels.values()) {
+    mx.setPosition(v.x * cellSize + cellSize/2, v.y * cellSize + cellSize/2, v.z * cellSize + cellSize/2);
+    mesh.setMatrixAt(i, mx);
+    cl.setHex(COLORS_HEX[v.color]);
+    mesh.setColorAt(i, cl);
+    i++;
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.instanceColor.needsUpdate = true;
+  reconGroup.add(mesh);
+
+  const grid = new THREE.GridHelper(32, gs, 0x333355, 0x222233);
+  grid.position.set(16, 0, 16);
+  reconGroup.add(grid);
+}
+
+// ── Previews ──
+function drawPreviews() {
+  // Color
+  const cc = document.getElementById('preview-color').getContext('2d');
+  cc.fillStyle = '#111'; cc.fillRect(0, 0, 128, 96);
+  for (const d of depthData) {
+    const col = new THREE.Color(COLORS_HEX[d.color]);
+    cc.fillStyle = `rgb(${col.r*255|0},${col.g*255|0},${col.b*255|0})`;
+    cc.fillRect((d.screenX/RAY_RES_X)*128, (d.screenY/RAY_RES_Y)*96, 128/RAY_RES_X+1, 96/RAY_RES_Y+1);
+  }
+  // Depth
+  const dc = document.getElementById('preview-depth').getContext('2d');
+  dc.fillStyle = '#000'; dc.fillRect(0, 0, 128, 96);
+  let maxD = 0;
+  for (const d of depthData) maxD = Math.max(maxD, d.depth);
+  for (const d of depthData) {
+    const v = (1 - d.depth / maxD) * 255 | 0;
+    dc.fillStyle = `rgb(${v},${v},${v})`;
+    dc.fillRect((d.screenX/RAY_RES_X)*128, (d.screenY/RAY_RES_Y)*96, 128/RAY_RES_X+1, 96/RAY_RES_Y+1);
+  }
+}
+
+// ── Phase control ──
+let currentPhase = 0;
+const phaseLabels = [
+  'V4 Source — the room written in your DSL (32³ grid)',
+  'Depth Camera — color + depth from one viewpoint',
+  'Back-Projection — rays hit surfaces, find 3D points',
+  'Reconstructed — voxelized from single depth view',
+  'Compare — source (left) vs reconstruction (right, shifted)',
+];
+
+function setPhase(p) {
+  currentPhase = p;
+  document.querySelectorAll('.toolbar button[id^="btn-p"]').forEach((b, i) => b.classList.toggle('active', i === p));
+  document.getElementById('phase-label').textContent = phaseLabels[p];
+
+  sourceGroup.visible = p === 0 || p === 1 || p === 2 || p === 4;
+  camVizGroup.visible = p === 1 || p === 2;
+  rayGroup.visible = p === 2;
+  pointGroup.visible = p === 2;
+  reconGroup.visible = p === 3 || p === 4;
+
+  if (p === 4) {
+    // Shift recon to the right for comparison
+    reconGroup.position.set(36, 0, 0);
+    sourceGroup.position.set(0, 0, 0);
+    camera.position.set(50, 30, 16);
+    controls.target.set(34, 8, 16);
+  } else {
+    reconGroup.position.set(0, 0, 0);
+    sourceGroup.position.set(0, 0, 0);
+    if (p === 0) { camera.position.set(40, 30, 40); controls.target.set(16, 8, 16); }
+    if (p === 1) { camera.position.set(30, 20, -8); controls.target.set(16, 8, 16); }
+    if (p === 2) { camera.position.set(25, 18, -5); controls.target.set(16, 6, 16); }
+    if (p === 3) { camera.position.set(40, 30, 40); controls.target.set(16, 8, 16); }
+  }
+  controls.update();
+
+  if (p === 4 || p === 3) {
+    document.getElementById('v4-output').textContent = generateReconV4();
+  }
+}
+
+window.setPhase = setPhase;
+window.updateGrid = () => {
+  reconGrid = parseInt(document.getElementById('grid-size').value);
+  document.getElementById('grid-val').textContent = reconGrid;
+  rebuild();
+};
+
+function rebuild() {
+  castRays();
+  voxelizeRecon();
+  buildRayViz();
+  buildReconViz();
+  drawPreviews();
+  if (currentPhase >= 3) document.getElementById('v4-output').textContent = generateReconV4();
+}
+
+// ── Resize ──
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (w && h) { renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix(); }
+}
+new ResizeObserver(resize).observe(canvas);
+
+// ── Animate ──
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+resize();
+rebuild();
+setPhase(0);
+animate();
+</script>
+</body>
+</html>

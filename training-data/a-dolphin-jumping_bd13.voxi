@@ -1,0 +1,48 @@
+V 32 32 32
+
+-- water surface
+B 2 2 6 28 2 20 4
+
+-- water splash
+B 7 4 10 6 3 6 3
+B 9 4 13 4 4 4 3
+
+-- tail flukes
+B 3 7 13 4 2 2 9
+B 3 11 19 4 2 2 9
+
+-- tail stock
+E 7 9 16 3 2 3 9
+
+-- rear body
+E 11 12 16 4 3 4 9
+
+-- mid body (arc peak)
+E 17 16 16 5 4 4 9
+
+-- belly white stripe
+E 17 15 16 4 2 3 8
+
+-- dorsal fin
+B 15 19 15 2 5 1 9
+
+-- front body
+E 22 18 16 4 3 3 9
+
+-- pectoral flipper left
+B 19 13 12 5 2 2 9
+
+-- pectoral flipper right
+B 19 13 18 5 2 2 9
+
+-- head
+E 26 21 16 3 3 3 9
+
+-- snout beak
+B 28 19 15 4 2 2 9
+
+-- eye
+S 27 22 14 1 0
+
+-- mouth line
+B 28 19 15 3 1 2 0

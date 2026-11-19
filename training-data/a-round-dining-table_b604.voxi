@@ -1,0 +1,13 @@
+V 32 32 32
+
+-- table base (foot)
+C 16 1 16 5 2 a
+
+-- central pedestal
+C 16 3 16 2 12 a
+
+-- tabletop (wide flat cylinder)
+C 16 15 16 11 2 d
+
+-- tabletop edge highlight
+C 16 15 16 11 1 6

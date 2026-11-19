@@ -1,0 +1,28 @@
+V 16 32 16
+
+-- base platform
+B 3 0 3 10 2 10 7
+
+-- base upper ring
+B 4 2 4 8 2 8 9
+
+-- main shaft
+C 8 4 8 3 10 7
+
+-- shaft middle band
+B 5 9 5 6 2 6 8
+
+-- upper body
+C 8 11 8 3 6 7
+
+-- upper collar
+B 5 17 5 6 2 6 9
+
+-- cross vertical bar
+B 7 19 7 2 6 2 8
+
+-- cross horizontal bar
+B 5 21 7 6 2 2 8
+
+-- crown top sphere
+S 8 26 8 2 7

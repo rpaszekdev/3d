@@ -1,0 +1,1 @@
+Building a penguin in VOXI means thinking in layers: feet at Y=0, body rising up, head on top. Key design choices:

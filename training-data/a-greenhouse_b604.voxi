@@ -1,0 +1,42 @@
+V 32 32 32
+
+-- foundation
+B 3 0 3 26 2 26 d
+
+-- glass walls (cyan)
+B 3 2 3 26 12 2 4
+B 3 2 27 26 12 2 4
+B 3 2 5 2 12 22 4
+B 27 2 5 2 12 22 4
+
+-- door (front, brown)
+B 13 2 3 6 10 2 a
+
+-- corner frame posts (white)
+B 3 2 3 2 16 2 8
+B 27 2 3 2 16 2 8
+B 3 2 27 2 16 2 8
+B 27 2 27 2 16 2 8
+
+-- peaked roof layers (cyan, narrowing in X)
+B 3 18 3 26 2 26 4
+B 5 20 3 22 2 26 4
+B 7 22 3 18 2 26 4
+B 9 24 3 14 2 26 4
+B 11 26 3 10 2 26 4
+B 13 28 3 6 2 26 4
+
+-- ridge beam (white)
+B 15 30 3 2 2 26 8
+
+-- planting benches (brown)
+B 5 2 8 4 3 16 a
+B 23 2 8 4 3 16 a
+
+-- potted plants (green)
+S 7 7 11 2 2
+S 7 7 17 2 2
+S 7 7 23 2 2
+S 25 7 11 2 2
+S 25 7 19 2 2
+S 16 3 15 2 2

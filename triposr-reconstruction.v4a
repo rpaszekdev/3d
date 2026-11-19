@@ -1,0 +1,339 @@
+-- PATH B: TripoSR-style Full 3D Reconstruction
+-- Visualizes ML pipeline: Image -> ViT -> Triplane -> NeRF -> Mesh
+-- FILM-TITLE: "Path B: TripoSR Full 3D"
+-- FILM: 0 5 "Input Image" "A flat **2D house** — roof, windows, door, chimney. Just a facade, **1 voxel deep**. The ML pipeline will reconstruct the complete 3D geometry from this single view."
+-- FILM: 5 10 "Vision Transformer" "The image is split into a **4x4 patch grid**. Self-attention spheres bounce between patches, learning relationships. Patches turn **magenta** when encoding is complete — raw pixels become feature tokens."
+-- FILM: 10 16 "Triplane Projection" "Three **orthogonal feature planes** materialize: XY (blue), XZ (green), YZ (red). Query points sample where all three intersect. This is how TripoSR encodes 3D structure in 2D representations."
+-- FILM: 16 22 "NeRF Rendering" "A camera casts **rays** into the triplane volume. Where rays hit density, points appear. The point cloud forms: first the front wall, then sides, then the **back wall** — depth emerges from features."
+-- FILM: 22 27 "Mesh Extraction" "**Marching cubes** solidifies the point cloud into a complete mesh. Front wall from the image, **back wall hallucinated** by the network. Side windows, 3D roof, chimney — all inferred. Sparkles mark hallucinated surfaces."
+-- FILM: 27 30 "Complete 3D" "The final result: a **solid 3D house** viewable from any angle. An orbiting camera proves it — the geometry is complete. The network **imagined** every surface it couldn't see."
+V 96 56 56
+DUR 30
+L 1
+
+-- NOTE: 0 5 "Stage 1: Input Image (2D)"
+-- NOTE: 5 10 "Stage 2: Vision Transformer — Patch Encoding"
+-- NOTE: 10 16 "Stage 3: Triplane Feature Projection"
+-- NOTE: 16 22 "Stage 4: NeRF Volume Rendering"
+-- NOTE: 22 27 "Stage 5: Marching Cubes → Full Mesh"
+-- NOTE: 27 30 "Result: Complete 3D Reconstruction"
+
+-- ============================================================
+-- STAGE 1: INPUT IMAGE (T=0-5) — Flat 2D house, 1 voxel deep
+-- ============================================================
+
+-- House front wall (flat, Z=0 plane)
+B -34 -4 0 clamp(T*2,0,1)*12 clamp(T*2,0,1)*10 1 d
+-- Roof (peaked) — two angled slabs
+B -34 8 0 clamp(T*2-0.2,0,1)*14 clamp(T*2-0.2,0,1)*3 1 1
+B -34 11 0 clamp(T*2-0.3,0,1)*10 clamp(T*2-0.3,0,1)*2 1 1
+B -34 13 0 clamp(T*2-0.4,0,1)*6 clamp(T*2-0.4,0,1)*2 1 e
+B -34 15 0 clamp(T*2-0.5,0,1)*3 clamp(T*2-0.5,0,1)*1 1 e
+-- Chimney
+B -27 14 0 clamp(T*2-0.5,0,1)*2 clamp(T*2-0.5,0,1)*4 1 9
+-- Door
+B -34 -6 0 clamp(T*2-0.3,0,1)*3 clamp(T*2-0.3,0,1)*6 1 a
+-- Door knob
+S -32 -6 -1 clamp(T*2-0.5,0,1)*1 6
+-- Left window
+B -40 1 0 clamp(T*2-0.4,0,1)*3 clamp(T*2-0.4,0,1)*3 1 4
+B -40 1 -1 clamp(T*2-0.5,0,1)*2 clamp(T*2-0.5,0,1)*2 1 3
+-- Right window
+B -28 1 0 clamp(T*2-0.4,0,1)*3 clamp(T*2-0.4,0,1)*3 1 4
+B -28 1 -1 clamp(T*2-0.5,0,1)*2 clamp(T*2-0.5,0,1)*2 1 3
+-- Ground line
+B -34 -12 0 clamp(T*2-0.1,0,1)*16 clamp(T*2-0.1,0,1)*1 1 2
+-- "FLAT" emphasis — flashing depth indicator
+S -34 -16 0 clamp(T-1,0,1)*bounce(T*3)*2 8
+
+-- Photo frame border
+B -34 2 0 clamp(T*1.5,0,1)*16 clamp(T*1.5,0,1)*20 clamp(T*1.5,0,1)*1 0
+B -34 2 1 clamp(T*1.5-0.1,0,1)*15 clamp(T*1.5-0.1,0,1)*19 1 9
+
+-- ============================================================
+-- Arrow 1 (T=4-5)
+-- ============================================================
+B -20+clamp(T-4,0,1)*2 0 0 clamp(T-4,0,2)*3 1 1 6
+K -17+clamp(T-4.5,0,1)*2 0 0 clamp(T-4.5,0,1)*2 clamp(T-4.5,0,1)*3 6
+
+-- ============================================================
+-- STAGE 2: VISION TRANSFORMER (T=5-10)
+-- ============================================================
+
+-- Patch grid — 4x4 grid of small boxes representing image patches
+-- Row 1
+B -12 7 0 clamp(T-5,0,1)*2 clamp(T-5,0,1)*2 1 d
+B -8 7 0 clamp(T-5.1,0,1)*2 clamp(T-5.1,0,1)*2 1 d
+B -4 7 0 clamp(T-5.2,0,1)*2 clamp(T-5.2,0,1)*2 1 1
+B 0 7 0 clamp(T-5.3,0,1)*2 clamp(T-5.3,0,1)*2 1 1
+-- Row 2
+B -12 3 0 clamp(T-5.15,0,1)*2 clamp(T-5.15,0,1)*2 1 d
+B -8 3 0 clamp(T-5.25,0,1)*2 clamp(T-5.25,0,1)*2 1 a
+B -4 3 0 clamp(T-5.35,0,1)*2 clamp(T-5.35,0,1)*2 1 d
+B 0 3 0 clamp(T-5.45,0,1)*2 clamp(T-5.45,0,1)*2 1 d
+-- Row 3
+B -12 -1 0 clamp(T-5.3,0,1)*2 clamp(T-5.3,0,1)*2 1 d
+B -8 -1 0 clamp(T-5.4,0,1)*2 clamp(T-5.4,0,1)*2 1 4
+B -4 -1 0 clamp(T-5.5,0,1)*2 clamp(T-5.5,0,1)*2 1 d
+B 0 -1 0 clamp(T-5.6,0,1)*2 clamp(T-5.6,0,1)*2 1 d
+-- Row 4
+B -12 -5 0 clamp(T-5.45,0,1)*2 clamp(T-5.45,0,1)*2 1 2
+B -8 -5 0 clamp(T-5.55,0,1)*2 clamp(T-5.55,0,1)*2 1 2
+B -4 -5 0 clamp(T-5.65,0,1)*2 clamp(T-5.65,0,1)*2 1 2
+B 0 -5 0 clamp(T-5.75,0,1)*2 clamp(T-5.75,0,1)*2 1 2
+
+-- Patch highlight sweep (encoding each patch)
+S -12+floor(saw(T-5)*4)*4 7-floor(saw(T-5+0.25)*4)*4 -1 clamp(T-6,0,1)*clamp(10-T,0,1)*2 6
+S -12+floor(saw(T-5.3)*4)*4 7-floor(saw(T-5.55)*4)*4 -1 clamp(T-6.3,0,1)*clamp(10-T,0,1)*2 5
+
+-- Attention connections — bouncing spheres between patches
+S -10+sin(T*4)*6 5+cos(T*3)*6 -1 clamp(T-7,0,1)*clamp(10-T,0,1)*1 8
+S -6+cos(T*5)*6 3+sin(T*4)*4 -1 clamp(T-7.2,0,1)*clamp(10-T,0,1)*1 8
+S -8+sin(T*3)*4 -1+cos(T*5)*4 -1 clamp(T-7.4,0,1)*clamp(10-T,0,1)*1 8
+S -4+cos(T*4.5)*6 1+sin(T*3.5)*6 -1 clamp(T-7.6,0,1)*clamp(10-T,0,1)*1 8
+S -10+sin(T*6)*4 -3+cos(T*4)*4 -1 clamp(T-7.8,0,1)*clamp(10-T,0,1)*1 8
+
+-- Attention lines (thin cylinders connecting patches)
+B -6+sin(T*2)*2 5 -1 clamp(T-7,0,1)*clamp(10-T,0,1)*8 1 1 8
+B -6 1+cos(T*2)*2 -1 1 clamp(T-7.3,0,1)*clamp(10-T,0,1)*8 1 8
+
+-- Patches change color = encoding complete (T=8-9)
+B -12 7 -1 clamp(T-8,0,1)*2 clamp(T-8,0,1)*2 1 5
+B -8 7 -1 clamp(T-8.1,0,1)*2 clamp(T-8.1,0,1)*2 1 5
+B -4 7 -1 clamp(T-8.2,0,1)*2 clamp(T-8.2,0,1)*2 1 5
+B 0 7 -1 clamp(T-8.3,0,1)*2 clamp(T-8.3,0,1)*2 1 5
+B -12 3 -1 clamp(T-8.15,0,1)*2 clamp(T-8.15,0,1)*2 1 5
+B -8 3 -1 clamp(T-8.25,0,1)*2 clamp(T-8.25,0,1)*2 1 5
+B -4 3 -1 clamp(T-8.35,0,1)*2 clamp(T-8.35,0,1)*2 1 5
+B 0 3 -1 clamp(T-8.45,0,1)*2 clamp(T-8.45,0,1)*2 1 5
+B -12 -1 -1 clamp(T-8.3,0,1)*2 clamp(T-8.3,0,1)*2 1 5
+B -8 -1 -1 clamp(T-8.4,0,1)*2 clamp(T-8.4,0,1)*2 1 5
+B -4 -1 -1 clamp(T-8.5,0,1)*2 clamp(T-8.5,0,1)*2 1 5
+B 0 -1 -1 clamp(T-8.6,0,1)*2 clamp(T-8.6,0,1)*2 1 5
+B -12 -5 -1 clamp(T-8.45,0,1)*2 clamp(T-8.45,0,1)*2 1 5
+B -8 -5 -1 clamp(T-8.55,0,1)*2 clamp(T-8.55,0,1)*2 1 5
+B -4 -5 -1 clamp(T-8.65,0,1)*2 clamp(T-8.65,0,1)*2 1 5
+B 0 -5 -1 clamp(T-8.75,0,1)*2 clamp(T-8.75,0,1)*2 1 5
+
+-- Feature token bar (encoded representation)
+B -6 -10 0 clamp(T-9,0,1)*10 clamp(T-9,0,1)*1 clamp(T-9,0,1)*1 5
+S -12 -10 0 clamp(T-9,0,1)*1 4
+S -6 -10 0 clamp(T-9.2,0,1)*1 1
+S 0 -10 0 clamp(T-9.4,0,1)*1 3
+
+-- ============================================================
+-- Arrow 2 (T=9-10)
+-- ============================================================
+B 6+clamp(T-9,0,1)*2 0 0 clamp(T-9,0,2)*3 1 1 6
+K 10+clamp(T-9.5,0,1)*2 0 0 clamp(T-9.5,0,1)*2 clamp(T-9.5,0,1)*3 6
+
+-- ============================================================
+-- STAGE 3: TRIPLANE FEATURE PROJECTION (T=10-16)
+-- ============================================================
+
+-- XY Plane (blue) — front view features — thin slab
+B 24 0 0 1 clamp(T-10,0,1)*18 clamp(T-10.3,0,1)*18 3
+-- XZ Plane (green) — top-down view features
+B 24 0 0 clamp(T-11,0,1)*18 1 clamp(T-11.3,0,1)*18 2
+-- YZ Plane (red) — side view features
+B 24 0 0 clamp(T-12,0,1)*18 clamp(T-12.3,0,1)*18 1 1
+
+-- Feature dots on XY plane (blue dots)
+S 23 sin(T*1.5)*6 cos(T*2)*6 clamp(T-13,0,1)*clamp(16-T,0,1)*1 4
+S 23 cos(T*1.8)*4 sin(T*1.2)*7 clamp(T-13.1,0,1)*clamp(16-T,0,1)*1 4
+S 23 sin(T*2.2)*7 cos(T*1.5)*3 clamp(T-13.2,0,1)*clamp(16-T,0,1)*1 4
+S 23 cos(T*1.3)*5 sin(T*2.5)*5 clamp(T-13.3,0,1)*clamp(16-T,0,1)*1 4
+S 23 sin(T*2.8)*3 cos(T*1.8)*8 clamp(T-13.4,0,1)*clamp(16-T,0,1)*1 4
+
+-- Feature dots on XZ plane (green dots)
+S 24+sin(T*1.7)*6 -1 cos(T*2.1)*6 clamp(T-13.2,0,1)*clamp(16-T,0,1)*1 2
+S 24+cos(T*2.3)*4 -1 sin(T*1.4)*7 clamp(T-13.3,0,1)*clamp(16-T,0,1)*1 2
+S 24+sin(T*1.9)*7 -1 cos(T*2.7)*3 clamp(T-13.4,0,1)*clamp(16-T,0,1)*1 2
+S 24+cos(T*2.5)*5 -1 sin(T*1.1)*5 clamp(T-13.5,0,1)*clamp(16-T,0,1)*1 2
+
+-- Feature dots on YZ plane (red dots)
+S 25 sin(T*2.1)*6 cos(T*1.6)*6 clamp(T-13.4,0,1)*clamp(16-T,0,1)*1 1
+S 25 cos(T*1.4)*4 sin(T*2.8)*7 clamp(T-13.5,0,1)*clamp(16-T,0,1)*1 1
+S 25 sin(T*2.6)*7 cos(T*2.0)*3 clamp(T-13.6,0,1)*clamp(16-T,0,1)*1 1
+S 25 cos(T*1.9)*5 sin(T*1.3)*5 clamp(T-13.7,0,1)*clamp(16-T,0,1)*1 1
+
+-- Intersection glow — where all three planes meet
+S 24 0 0 clamp(T-14,0,1)*2+bounce(T*4)*1 6
+S 24 0 0 clamp(T-14,0,1)*3+bounce(T*4+1)*1 8
+
+-- Query points sampling through volume
+S 24+sin(T*2)*8 sin(T*1.7)*8 cos(T*2.3)*8 clamp(T-14.5,0,1)*clamp(16-T,0,1)*1 6
+S 24+cos(T*1.5)*7 cos(T*2.1)*7 sin(T*1.3)*7 clamp(T-14.7,0,1)*clamp(16-T,0,1)*1 6
+S 24+sin(T*2.5)*6 cos(T*1.9)*6 cos(T*2.7)*6 clamp(T-14.9,0,1)*clamp(16-T,0,1)*1 6
+S 24+cos(T*1.8)*9 sin(T*2.4)*5 sin(T*1.6)*9 clamp(T-15.1,0,1)*clamp(16-T,0,1)*1 6
+-- Query connection lines (thin)
+B 24+sin(T*2)*4 0 0 clamp(T-14.5,0,1)*clamp(16-T,0,1)*4 1 1 6
+B 24 sin(T*1.7)*4 0 1 clamp(T-14.5,0,1)*clamp(16-T,0,1)*4 1 6
+B 24 0 cos(T*2.3)*4 1 1 clamp(T-14.5,0,1)*clamp(16-T,0,1)*4 6
+
+-- ============================================================
+-- STAGE 4: NeRF VOLUME RENDERING (T=16-22)
+-- ============================================================
+
+-- Camera body
+B -38 20 -20 clamp(T-16,0,1)*3 clamp(T-16,0,1)*2 clamp(T-16,0,1)*3 9
+-- Camera lens
+C -38 20 -17 clamp(T-16.2,0,1)*1 clamp(T-16.2,0,1)*2 0
+-- Camera flash
+S -38 22 -20 clamp(T-16.3,0,1)*1 6
+
+-- Rays from camera (6 rays fanning out)
+-- Ray 1
+S -38+clamp(saw(T*0.6),0,1)*14 20-clamp(saw(T*0.6),0,1)*14 -17+clamp(saw(T*0.6),0,1)*17 clamp(T-17,0,1)*clamp(22-T,0,1)*1 6
+-- Ray 2
+S -38+clamp(saw(T*0.6+0.15),0,1)*14 20-clamp(saw(T*0.6+0.15),0,1)*18 -17+clamp(saw(T*0.6+0.15),0,1)*17 clamp(T-17,0,1)*clamp(22-T,0,1)*1 6
+-- Ray 3
+S -38+clamp(saw(T*0.6+0.3),0,1)*18 20-clamp(saw(T*0.6+0.3),0,1)*16 -17+clamp(saw(T*0.6+0.3),0,1)*14 clamp(T-17.2,0,1)*clamp(22-T,0,1)*1 6
+-- Ray 4
+S -38+clamp(saw(T*0.55),0,1)*16 20-clamp(saw(T*0.55),0,1)*20 -17+clamp(saw(T*0.55),0,1)*19 clamp(T-17.3,0,1)*clamp(22-T,0,1)*1 6
+-- Ray 5
+S -38+clamp(saw(T*0.55+0.2),0,1)*12 20-clamp(saw(T*0.55+0.2),0,1)*17 -17+clamp(saw(T*0.55+0.2),0,1)*15 clamp(T-17.5,0,1)*clamp(22-T,0,1)*1 6
+-- Ray 6
+S -38+clamp(saw(T*0.65+0.1),0,1)*15 20-clamp(saw(T*0.65+0.1),0,1)*15 -17+clamp(saw(T*0.65+0.1),0,1)*18 clamp(T-17.4,0,1)*clamp(22-T,0,1)*1 6
+
+-- Point cloud forming house shape (sparse then dense)
+-- Front wall points
+S -30 2 0 clamp(T-18,0,1)*1 7
+S -28 4 0 clamp(T-18.1,0,1)*1 7
+S -32 0 0 clamp(T-18.15,0,1)*1 7
+S -26 2 0 clamp(T-18.2,0,1)*1 7
+S -30 6 0 clamp(T-18.25,0,1)*1 7
+S -28 0 0 clamp(T-18.3,0,1)*1 7
+S -32 4 0 clamp(T-18.35,0,1)*1 7
+S -26 6 0 clamp(T-18.4,0,1)*1 7
+-- Roof points
+S -30 8 0 clamp(T-18.5,0,1)*1 1
+S -28 9 0 clamp(T-18.55,0,1)*1 1
+S -32 8 0 clamp(T-18.6,0,1)*1 1
+S -29 10 0 clamp(T-18.65,0,1)*1 1
+-- NOW WITH DEPTH — side points
+S -30 2 4 clamp(T-19,0,1)*1 7
+S -30 2 -4 clamp(T-19.1,0,1)*1 7
+S -28 4 3 clamp(T-19.15,0,1)*1 7
+S -28 4 -3 clamp(T-19.2,0,1)*1 7
+S -32 0 4 clamp(T-19.25,0,1)*1 7
+S -32 0 -4 clamp(T-19.3,0,1)*1 7
+S -26 2 4 clamp(T-19.35,0,1)*1 7
+S -26 2 -4 clamp(T-19.4,0,1)*1 7
+-- Back wall points
+S -30 2 6 clamp(T-19.5,0,1)*1 7
+S -28 4 6 clamp(T-19.55,0,1)*1 7
+S -32 0 6 clamp(T-19.6,0,1)*1 7
+S -26 2 6 clamp(T-19.65,0,1)*1 7
+S -30 6 6 clamp(T-19.7,0,1)*1 7
+S -28 0 6 clamp(T-19.75,0,1)*1 7
+-- Roof depth points
+S -30 8 3 clamp(T-19.8,0,1)*1 1
+S -30 8 -3 clamp(T-19.85,0,1)*1 1
+S -30 8 6 clamp(T-19.9,0,1)*1 1
+S -29 10 3 clamp(T-19.95,0,1)*1 1
+S -29 10 -3 clamp(T-20,0,1)*1 1
+-- Dense fill points
+S -31 3 2 clamp(T-20.2,0,1)*1 7
+S -29 1 -2 clamp(T-20.3,0,1)*1 7
+S -27 5 2 clamp(T-20.4,0,1)*1 7
+S -31 5 -2 clamp(T-20.5,0,1)*1 7
+S -27 1 4 clamp(T-20.6,0,1)*1 7
+S -29 3 -4 clamp(T-20.7,0,1)*1 7
+S -31 1 6 clamp(T-20.8,0,1)*1 7
+S -27 3 6 clamp(T-20.9,0,1)*1 7
+
+-- ============================================================
+-- STAGE 5: MARCHING CUBES -> FULL MESH (T=22-27)
+-- ============================================================
+
+-- Solid 3D house materializing
+-- Front wall
+B -29 0 -4 clamp(T-22,0,1)*8 clamp(T-22,0,1)*8 clamp(T-22,0,1)*1 d
+-- Back wall (HALLUCINATED)
+B -29 0 4 clamp(T-22.3,0,1)*8 clamp(T-22.3,0,1)*8 clamp(T-22.3,0,1)*1 d
+-- Left wall
+B -35 0 0 clamp(T-22.5,0,1)*1 clamp(T-22.5,0,1)*8 clamp(T-22.5,0,1)*8 d
+-- Right wall (HALLUCINATED)
+B -23 0 0 clamp(T-22.7,0,1)*1 clamp(T-22.7,0,1)*8 clamp(T-22.7,0,1)*8 d
+-- Floor
+B -29 -5 0 clamp(T-22.4,0,1)*8 clamp(T-22.4,0,1)*1 clamp(T-22.4,0,1)*8 9
+
+-- Roof with 3D thickness
+B -29 6 0 clamp(T-23,0,1)*10 clamp(T-23,0,1)*2 clamp(T-23,0,1)*10 1
+B -29 8 0 clamp(T-23.2,0,1)*7 clamp(T-23.2,0,1)*2 clamp(T-23.2,0,1)*8 1
+B -29 10 0 clamp(T-23.4,0,1)*4 clamp(T-23.4,0,1)*2 clamp(T-23.4,0,1)*6 e
+B -29 12 0 clamp(T-23.6,0,1)*2 clamp(T-23.6,0,1)*1 clamp(T-23.6,0,1)*4 e
+
+-- Door (3D)
+B -29 -3 -5 clamp(T-23.5,0,1)*2 clamp(T-23.5,0,1)*5 clamp(T-23.5,0,1)*1 a
+-- Door knob
+S -27 -3 -5 clamp(T-23.7,0,1)*1 6
+
+-- Front windows
+B -34 2 -5 clamp(T-23.8,0,1)*2 clamp(T-23.8,0,1)*2 clamp(T-23.8,0,1)*1 4
+B -24 2 -5 clamp(T-23.9,0,1)*2 clamp(T-23.9,0,1)*2 clamp(T-23.9,0,1)*1 4
+-- Side windows (hallucinated)
+B -36 2 0 clamp(T-24.2,0,1)*1 clamp(T-24.2,0,1)*2 clamp(T-24.2,0,1)*2 4
+B -22 2 0 clamp(T-24.3,0,1)*1 clamp(T-24.3,0,1)*2 clamp(T-24.3,0,1)*2 4
+
+-- Chimney (3D)
+B -24 12 2 clamp(T-24,0,1)*2 clamp(T-24,0,1)*4 clamp(T-24,0,1)*2 9
+
+-- Sparkle effects on hallucinated surfaces
+S -23+sin(T*5)*2 sin(T*4)*4 cos(T*3)*4 clamp(T-24.5,0,1)*clamp(27-T,0,1)*1 6
+S -35+cos(T*4)*2 cos(T*3)*4 sin(T*5)*4 clamp(T-24.7,0,1)*clamp(27-T,0,1)*1 6
+S -29+sin(T*6)*4 8+bounce(T*3)*2 4+cos(T*4)*2 clamp(T-24.9,0,1)*clamp(27-T,0,1)*1 4
+S -29+cos(T*5)*4 -2+bounce(T*4)*2 -4+sin(T*3)*2 clamp(T-25,0,1)*clamp(27-T,0,1)*1 4
+S -23+sin(T*3)*1 2+sin(T*5)*3 cos(T*4)*3 clamp(T-25.2,0,1)*clamp(27-T,0,1)*1 5
+S -35+cos(T*6)*1 4+cos(T*4)*3 sin(T*5)*3 clamp(T-25.4,0,1)*clamp(27-T,0,1)*1 5
+-- More sparkles on back wall
+S -29 sin(T*3)*4 5+cos(T*5)*1 clamp(T-25,0,1)*clamp(27-T,0,1)*1 8
+S -29 cos(T*4)*4 5+sin(T*3)*1 clamp(T-25.3,0,1)*clamp(27-T,0,1)*1 8
+-- Sparkles on side walls
+S -36 sin(T*5)*4 sin(T*4)*4 clamp(T-25.1,0,1)*clamp(27-T,0,1)*1 8
+S -22 cos(T*4)*4 cos(T*3)*4 clamp(T-25.5,0,1)*clamp(27-T,0,1)*1 8
+
+-- ============================================================
+-- STAGE 6: RESULT — COMPLETE 3D (T=27-30)
+-- ============================================================
+
+-- Final solid house (persistent, centered)
+-- Main body
+B 20 -2 0 clamp(T-27,0,1)*8 clamp(T-27,0,1)*8 clamp(T-27,0,1)*8 d
+-- Roof
+B 20 6 0 clamp(T-27.2,0,1)*10 clamp(T-27.2,0,1)*3 clamp(T-27.2,0,1)*10 1
+B 20 9 0 clamp(T-27.3,0,1)*7 clamp(T-27.3,0,1)*2 clamp(T-27.3,0,1)*8 e
+B 20 11 0 clamp(T-27.4,0,1)*4 clamp(T-27.4,0,1)*1 clamp(T-27.4,0,1)*5 e
+-- Door
+B 20 -4 -6 clamp(T-27.5,0,1)*2 clamp(T-27.5,0,1)*5 1 a
+S 22 -4 -7 clamp(T-27.6,0,1)*1 6
+-- Windows front
+B 15 1 -6 clamp(T-27.6,0,1)*2 clamp(T-27.6,0,1)*2 1 4
+B 25 1 -6 clamp(T-27.7,0,1)*2 clamp(T-27.7,0,1)*2 1 4
+-- Windows sides
+B 28 1 0 1 clamp(T-27.8,0,1)*2 clamp(T-27.8,0,1)*2 4
+B 12 1 0 1 clamp(T-27.9,0,1)*2 clamp(T-27.9,0,1)*2 4
+-- Chimney
+B 25 11 2 clamp(T-27.5,0,1)*2 clamp(T-27.5,0,1)*4 clamp(T-27.5,0,1)*2 9
+-- Ground
+B 20 -8 0 clamp(T-27.1,0,1)*14 clamp(T-27.1,0,1)*1 clamp(T-27.1,0,1)*14 2
+
+-- Rotating highlight ring around final model
+S 20+cos(T*2)*14 0 sin(T*2)*14 clamp(T-28,0,1)*1 6
+S 20+cos(T*2+PI)*14 0 sin(T*2+PI)*14 clamp(T-28,0,1)*1 6
+S 20+cos(T*2+PI/2)*14 4 sin(T*2+PI/2)*14 clamp(T-28.2,0,1)*1 4
+S 20+cos(T*2+PI*1.5)*14 -4 sin(T*2+PI*1.5)*14 clamp(T-28.2,0,1)*1 4
+
+-- Orbiting camera indicator
+S 20+cos(T*1.5)*18 8+sin(T)*3 sin(T*1.5)*18 clamp(T-28.5,0,1)*2 8
+-- Camera ray to model
+B 20+cos(T*1.5)*9 4+sin(T)*1.5 sin(T*1.5)*9 clamp(T-28.5,0,1)*9 1 1 6
+
+-- Stage progress bar at bottom
+B -38 -24 0 clamp(T*0.2,0,1)*4 1 4 5
+B -14 -24 0 clamp(T-5,0,5)*0.8 1 4 3
+B 10 -24 0 clamp(T-10,0,6)*0.67 1 4 2
+B -29 -24 0 clamp(T-16,0,6)*0.67 1 4 7
+B -29 -20 0 clamp(T-22,0,5)*0.8 1 4 1
+B 20 -24 0 clamp(T-27,0,3)*1.33 1 4 6

@@ -1,0 +1,22 @@
+V 16 32 16
+
+-- base
+C 8 1 8 4 2 9
+
+-- pole lower
+C 8 4 8 1 10 9
+
+-- pole upper
+C 8 14 8 1 8 9
+
+-- neck curve
+B 7 21 7 3 2 3 9
+
+-- shade outer
+C 8 26 8 5 4 d
+
+-- shade inner (darker)
+C 8 25 8 3 3 6
+
+-- light glow
+S 8 24 8 2 6

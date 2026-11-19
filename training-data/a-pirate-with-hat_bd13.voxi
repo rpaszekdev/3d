@@ -1,0 +1,57 @@
+V 24 32 24
+
+-- boots
+B 9 0 10 3 2 3 a
+B 13 0 10 3 2 3 a
+
+-- legs
+B 9 2 10 3 4 3 f
+B 13 2 10 3 4 3 f
+
+-- coat body
+B 8 6 9 8 7 4 e
+
+-- belt
+B 8 6 9 8 1 4 a
+
+-- belt buckle
+B 11 6 8 2 1 1 6
+
+-- left arm
+B 6 6 9 2 6 2 e
+-- right arm
+B 16 6 9 2 6 2 e
+
+-- left hand
+B 6 6 9 2 2 2 d
+-- right hand
+B 16 6 9 2 2 2 d
+
+-- sword
+B 18 5 10 1 7 1 9
+B 17 10 10 3 1 1 9
+
+-- neck
+B 11 13 10 2 2 2 d
+
+-- head
+S 12 16 11 3 d
+
+-- beard
+B 10 13 9 4 3 2 a
+
+-- eye patch
+B 10 16 9 2 1 1 0
+B 10 16 9 1 2 1 0
+
+-- hat brim
+B 7 18 8 10 1 5 0
+
+-- hat top
+B 9 19 9 6 5 4 0
+
+-- hat band
+B 9 19 9 6 1 4 5
+
+-- skull on hat
+S 12 22 9 1 8

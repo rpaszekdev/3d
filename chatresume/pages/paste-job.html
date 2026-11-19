@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paste Job Description — ChatResume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --brand: #1d4ed8;
+      --brand-light: #3b82f6;
+      --brand-dark: #1e3a8a;
+      --dark: #0f172a;
+      --dark-muted: #1e293b;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --surface: #ffffff;
+      --surface-warm: #fafaf9;
+      --surface-cool: #f8fafc;
+      --accent: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --radius-lg: 24px;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background-color: var(--surface-cool);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
+
+    /* Page wrapper */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeInDown 0.5s ease forwards;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background-color 0.2s;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      background-color: var(--surface-cool);
+    }
+
+    .back-btn svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    .back-btn:hover svg {
+      transform: translateX(-2px);
+    }
+
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .step-text {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .progress-track {
+      width: 120px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--brand-light));
+      border-radius: 100px;
+      animation: progressGrow 0.8s ease 0.3s backwards;
+    }
+
+    /* Main content */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px 48px;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .heading {
+      font-family: "Instrument Serif", serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: var(--dark);
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.15s forwards;
+    }
+
+    /* Textarea container */
+    .textarea-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.3s forwards;
+    }
+
+    .job-textarea {
+      width: 100%;
+      min-height: 260px;
+      padding: 24px;
+      padding-bottom: 44px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .job-textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    .job-textarea:focus {
+      border-color: var(--brand-light);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.08);
+    }
+
+    .word-counter {
+      position: absolute;
+      bottom: 14px;
+      right: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      opacity: 0.7;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .job-textarea:focus ~ .word-counter {
+      opacity: 1;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      margin: 28px 0;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.42s forwards;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-text {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: lowercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* URL input */
+    .url-input-wrapper {
+      position: relative;
+      width: 100%;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.54s forwards;
+    }
+
+    .url-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      opacity: 0.6;
+      pointer-events: none;
+      transition: color 0.2s, opacity 0.2s;
+    }
+
+    .url-input {
+      width: 100%;
+      padding: 16px 20px 16px 48px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.9375rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .url-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    .url-input:focus {
+      border-color: var(--brand-light);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.08);
+    }
+
+    .url-input:focus ~ .url-icon {
+      color: var(--brand);
+      opacity: 1;
+    }
+
+    /* CTA Button */
+    .cta-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 36px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.66s forwards;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--surface);
+      background: var(--brand);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.25s, transform 0.2s, box-shadow 0.25s, opacity 0.25s;
+      box-shadow: 0 1px 3px rgba(29, 78, 216, 0.15), 0 4px 12px rgba(29, 78, 216, 0.1);
+    }
+
+    .cta-btn:hover:not(:disabled) {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(29, 78, 216, 0.2), 0 8px 24px rgba(29, 78, 216, 0.15);
+    }
+
+    .cta-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .cta-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .cta-btn svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    .cta-btn:hover:not(:disabled) svg {
+      transform: translateX(3px);
+    }
+
+    /* Tip */
+    .tip {
+      width: 100%;
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.78s forwards;
+    }
+
+    .tip-label {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes progressGrow {
+      from {
+        width: 50%;
+      }
+      to {
+        width: 100%;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .top-bar {
+        padding: 16px 20px;
+      }
+
+      .content {
+        padding: 36px 20px 40px;
+      }
+
+      .heading {
+        font-size: 1.875rem;
+        margin-bottom: 28px;
+      }
+
+      .job-textarea {
+        min-height: 200px;
+        padding: 18px;
+        padding-bottom: 40px;
+        font-size: 0.875rem;
+      }
+
+      .url-input {
+        padding: 14px 16px 14px 44px;
+        font-size: 0.875rem;
+      }
+
+      .cta-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 16px 28px;
+      }
+
+      .cta-wrapper {
+        justify-content: stretch;
+      }
+
+      .progress-track {
+        width: 80px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .heading {
+        font-size: 1.625rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="page-paste-job" class="page">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <button class="back-btn" data-navigate="upload" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/>
+          <path d="M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Back</span>
+      </button>
+      <div class="step-indicator">
+        <span class="step-text">Step 2 of 2</span>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+      <h1 class="heading">Paste the job description</h1>
+
+      <!-- Textarea -->
+      <div class="textarea-container">
+        <textarea
+          id="job-description"
+          class="job-textarea"
+          placeholder="Paste the full job description here..."
+          spellcheck="false"
+        ></textarea>
+        <span class="word-counter" id="word-counter">0 words</span>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">or</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- URL Input -->
+      <div class="url-input-wrapper">
+        <input
+          type="url"
+          id="job-url"
+          class="url-input"
+          placeholder="Paste job posting URL..."
+          autocomplete="off"
+        >
+        <svg class="url-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-wrapper">
+        <button class="cta-btn" id="cta-btn" data-navigate="editor" disabled>
+          <span>Tailor my CV</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/>
+            <path d="M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tip -->
+      <p class="tip">
+        <span class="tip-label">Tip:</span> Include the full job posting for best ATS matching results
+      </p>
+    </main>
+
+  </section>
+
+  <script>
+    (function () {
+      const textarea = document.getElementById("job-description");
+      const urlInput = document.getElementById("job-url");
+      const ctaBtn = document.getElementById("cta-btn");
+      const wordCounter = document.getElementById("word-counter");
+
+      function countWords(text) {
+        const trimmed = text.trim();
+        if (trimmed.length === 0) return 0;
+        return trimmed.split(/\s+/).length;
+      }
+
+      function updateWordCounter() {
+        const count = countWords(textarea.value);
+        wordCounter.textContent = count === 1 ? "1 word" : count + " words";
+      }
+
+      function updateCtaState() {
+        const hasText = textarea.value.trim().length > 0;
+        const hasUrl = urlInput.value.trim().length > 0;
+        ctaBtn.disabled = !(hasText || hasUrl);
+      }
+
+      textarea.addEventListener("input", function () {
+        updateWordCounter();
+        updateCtaState();
+      });
+
+      urlInput.addEventListener("input", function () {
+        updateCtaState();
+      });
+
+      // Navigation handlers
+      document.querySelectorAll("[data-navigate]").forEach(function (el) {
+        el.addEventListener("click", function () {
+          var target = el.getAttribute("data-navigate");
+          console.log("Navigate to:", target);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

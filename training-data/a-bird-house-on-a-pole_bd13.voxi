@@ -1,0 +1,25 @@
+V 24 28 24
+
+-- pole
+C 12 7 12 1 14 9
+
+-- mounting platform
+B 9 14 9 6 1 6 a
+
+-- house body
+B 8 15 9 8 6 6 a
+
+-- entrance hole
+S 12 19 9 2 0
+
+-- perch stick
+B 11 17 8 2 1 1 6
+
+-- roof layer 1 wide
+B 7 21 8 10 2 8 7
+
+-- roof layer 2 mid
+B 8 23 9 8 2 6 7
+
+-- roof peak
+B 9 25 10 6 2 4 6

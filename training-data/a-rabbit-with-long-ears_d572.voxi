@@ -1,0 +1,38 @@
+V 20 28 16
+
+-- back haunches
+B 6 0 6 4 4 4 8
+B 10 0 6 4 4 4 8
+
+-- body
+E 10 6 8 4 4 3 8
+
+-- tail
+S 10 5 12 2 8
+
+-- front legs
+C 8 2 7 1 4 8
+C 12 2 7 1 4 8
+
+-- neck
+C 10 10 8 2 2 8
+
+-- head
+S 10 12 8 3 8
+
+-- left ear outer
+B 7 15 7 2 11 2 8
+-- left ear inner
+B 8 15 7 1 10 1 b
+
+-- right ear outer
+B 11 15 7 2 11 2 8
+-- right ear inner
+B 12 15 7 1 10 1 b
+
+-- eyes
+B 8 13 6 1 1 1 0
+B 12 13 6 1 1 1 0
+
+-- nose
+B 10 11 6 1 1 1 b

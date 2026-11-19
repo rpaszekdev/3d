@@ -1,0 +1,14 @@
+V 32 32 32
+
+-- base layer
+B 6 0 6 20 2 20 d
+-- second layer
+B 8 2 8 16 2 16 d
+-- third layer
+B 10 4 10 12 2 12 a
+-- fourth layer
+B 12 6 12 8 2 8 a
+-- fifth layer
+B 14 8 14 4 2 4 6
+-- apex capstone
+B 15 10 15 2 2 2 6

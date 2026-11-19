@@ -1,0 +1,25 @@
+V 24 16 16
+
+-- stem
+B 11 11 7 2 3 2 a
+
+-- center body peak of curve
+E 12 10 8 4 2 3 6
+
+-- left mid section
+E 7 8 8 3 3 2 6
+
+-- left lower section
+E 3 5 8 2 3 2 6
+
+-- left tip
+S 1 3 8 1 a
+
+-- right mid section
+E 17 8 8 3 3 2 6
+
+-- right lower section
+E 21 5 8 2 3 2 6
+
+-- right tip
+S 23 3 8 1 a

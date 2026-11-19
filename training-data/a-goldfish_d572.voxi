@@ -1,0 +1,46 @@
+V 32 20 32
+
+-- body (orange ellipsoid, elongated along Z)
+E 16 9 16 6 4 9 7
+
+-- belly (yellow underside)
+E 16 7 16 5 2 8 6
+
+-- head
+S 16 9 6 4 7
+
+-- left eye
+S 14 10 5 1 8
+
+-- right eye
+S 18 10 5 1 8
+
+-- left pupil
+S 14 10 4 1 0
+
+-- right pupil
+S 18 10 4 1 0
+
+-- mouth
+B 15 7 3 2 2 2 e
+
+-- tail connector
+B 13 7 24 6 5 2 7
+
+-- upper tail lobe
+B 11 11 26 10 5 2 7
+
+-- lower tail lobe
+B 11 4 26 10 5 2 6
+
+-- dorsal fin
+B 13 13 11 6 5 1 7
+
+-- left pectoral fin
+B 9 6 13 2 3 5 6
+
+-- right pectoral fin
+B 21 6 13 2 3 5 6
+
+-- ventral fin
+B 14 3 15 4 2 3 6

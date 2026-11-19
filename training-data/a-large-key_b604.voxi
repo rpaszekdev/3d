@@ -1,0 +1,13 @@
+V 24 24 8
+
+-- key ring (circular bow)
+S 8 16 4 4 6
+S 8 16 4 3 0
+
+-- key shaft
+B 8 14 3 10 2 2 6
+
+-- key teeth
+B 14 11 3 2 2 2 6
+B 17 13 3 2 2 2 6
+B 15 9 3 2 2 2 6

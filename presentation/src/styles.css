@@ -1,0 +1,91 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background: #0a0a0a;
+  color: #f5f5f5;
+  font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.canvas-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9vh;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 6vw;
+}
+
+.caption h1 {
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.caption p {
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  margin-top: 14px;
+  opacity: 0.55;
+  font-style: italic;
+}
+
+.counter {
+  position: absolute;
+  bottom: 22px;
+  right: 32px;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  opacity: 0.35;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.hint {
+  position: absolute;
+  bottom: 22px;
+  left: 32px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  opacity: 0.35;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.voxi-overlay {
+  position: absolute;
+  top: 50%;
+  right: 6vw;
+  transform: translateY(-50%);
+  width: min(38vw, 520px);
+  background: rgba(15, 15, 15, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px 28px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #d8d2c0;
+  white-space: pre;
+}
+
+.voxi-overlay .head {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 16px;
+  white-space: normal;
+}

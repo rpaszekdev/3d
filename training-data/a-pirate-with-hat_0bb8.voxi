@@ -1,0 +1,64 @@
+V 32 48 32
+
+-- boots
+B 12 0 13 3 3 4 0
+B 17 0 13 3 3 4 0
+
+-- pants legs
+B 12 3 13 3 5 4 9
+B 17 3 13 3 5 4 9
+
+-- coat body
+B 11 8 12 10 9 5 1
+
+-- belt
+B 11 8 12 10 2 5 0
+
+-- belt buckle
+B 15 8 11 2 2 1 6
+
+-- left arm
+B 9 8 12 2 8 4 1
+
+-- right arm
+B 21 8 12 2 8 4 1
+
+-- left hand
+B 9 6 12 2 3 4 d
+
+-- right hand
+B 21 6 12 2 3 4 d
+
+-- coat collar
+B 13 17 11 6 2 2 8
+
+-- neck
+B 14 16 12 4 3 3 d
+
+-- head
+S 16 22 14 4 d
+
+-- eye patch
+B 14 23 10 3 2 1 0
+
+-- eye patch strap
+B 17 23 10 2 1 1 0
+
+-- good eye
+B 18 23 10 2 1 1 3
+
+-- mustache
+B 13 20 10 6 1 2 e
+
+-- hat brim
+B 9 26 11 14 1 8 0
+
+-- hat crown
+B 11 27 12 10 7 5 0
+
+-- skull on hat
+S 16 30 11 2 8
+
+-- crossbones
+B 12 30 10 8 1 1 8
+B 15 28 10 2 5 1 8

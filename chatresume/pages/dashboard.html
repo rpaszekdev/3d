@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatResume — My CVs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --brand: #1d4ed8;
+      --brand-light: #3b82f6;
+      --brand-dark: #1e3a8a;
+      --dark: #0f172a;
+      --dark-muted: #1e293b;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --surface: #ffffff;
+      --surface-warm: #fafaf9;
+      --surface-cool: #f8fafc;
+      --accent: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --radius-lg: 24px;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --yellow: #ca8a04;
+      --yellow-bg: #fefce8;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background: var(--surface-cool);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Grain texture overlay */
+    #page-dashboard::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .topbar-logo {
+      font-family: "Instrument Serif", serif;
+      font-size: 1.5rem;
+      color: var(--dark);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+
+    .btn--primary {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .btn--primary:hover {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+    }
+
+    .btn--outlined {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn--outlined:hover {
+      background: var(--surface-warm);
+      border-color: var(--text-muted);
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    .btn--ghost:hover {
+      background: var(--surface-warm);
+      color: var(--text);
+    }
+
+    .btn--small {
+      padding: 6px 14px;
+      font-size: 0.8125rem;
+    }
+
+    .btn-icon {
+      font-size: 1.1em;
+      line-height: 1;
+    }
+
+    /* ── Main Content ── */
+    .dashboard-content {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .section-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-family: "Instrument Serif", serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+    }
+
+    .section-count {
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 10px;
+      border-radius: 100px;
+    }
+
+    .section-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--brand);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .section-link:hover {
+      color: var(--brand-dark);
+    }
+
+    /* ── CV Cards Grid ── */
+    .cv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .cv-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      cursor: default;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: card-enter 0.5s ease forwards;
+    }
+
+    .cv-card:nth-child(1) { animation-delay: 0.1s; }
+    .cv-card:nth-child(2) { animation-delay: 0.22s; }
+    .cv-card:nth-child(3) { animation-delay: 0.34s; }
+
+    @keyframes card-enter {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cv-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    /* ── CV Thumbnail Preview ── */
+    .cv-thumbnail {
+      background: var(--surface-warm);
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 180px;
+    }
+
+    .cv-preview-doc {
+      width: 110px;
+      background: var(--surface);
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.3s ease;
+    }
+
+    .cv-card:hover .cv-preview-doc {
+      transform: scale(1.03);
+    }
+
+    .doc-line {
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+    }
+
+    .doc-line--title {
+      width: 55%;
+      height: 5px;
+      background: var(--dark);
+      margin-bottom: 2px;
+    }
+
+    .doc-line--subtitle {
+      width: 40%;
+      height: 3px;
+      background: var(--text-muted);
+      opacity: 0.5;
+      margin-bottom: 6px;
+    }
+
+    .doc-line--short { width: 45%; }
+    .doc-line--medium { width: 72%; }
+    .doc-line--long { width: 90%; }
+    .doc-line--full { width: 100%; }
+
+    .doc-section-gap {
+      height: 6px;
+    }
+
+    .doc-line--section-head {
+      width: 35%;
+      height: 4px;
+      background: var(--brand);
+      opacity: 0.4;
+    }
+
+    /* ── Card Body ── */
+    .cv-card-body {
+      padding: 20px 24px 20px;
+    }
+
+    .cv-card-title {
+      font-family: "DM Sans", sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .cv-card-target {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .cv-card-target .arrow {
+      color: var(--brand-light);
+      font-size: 0.75rem;
+    }
+
+    .cv-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .ats-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.01em;
+    }
+
+    .ats-badge--green {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .ats-badge--yellow {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .cv-card-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .cv-card-label {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface-cool);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    /* ── Card Actions ── */
+    .cv-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px 20px;
+    }
+
+    .more-btn-wrapper {
+      position: relative;
+    }
+
+    .more-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      letter-spacing: 2px;
+    }
+
+    .more-btn:hover {
+      background: var(--surface-warm);
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* ── Dropdown ── */
+    .dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1), 0 2px 8px rgba(15, 23, 42, 0.04);
+      min-width: 160px;
+      padding: 6px;
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(-4px) scale(0.97);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .dropdown.is-open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.8125rem;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+      text-align: left;
+    }
+
+    .dropdown-item:hover {
+      background: var(--surface-cool);
+    }
+
+    .dropdown-item--danger {
+      color: var(--red);
+    }
+
+    .dropdown-item--danger:hover {
+      background: var(--red-bg);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 6px;
+    }
+
+    .dropdown-item-icon {
+      font-size: 0.9rem;
+      width: 18px;
+      text-align: center;
+      opacity: 0.8;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .empty-state.is-visible {
+      display: flex;
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 100px;
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .empty-state-icon::after {
+      content: "+";
+      font-size: 2rem;
+      color: var(--border);
+      font-weight: 300;
+    }
+
+    .empty-state-title {
+      font-family: "Instrument Serif", serif;
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .empty-state-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .cv-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 14px 20px;
+      }
+
+      .topbar-logo {
+        font-size: 1.25rem;
+      }
+
+      .dashboard-content {
+        padding: 32px 20px 60px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+
+      .cv-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .btn--primary span.btn-label {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section id="page-dashboard" class="page">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <a class="topbar-logo" data-navigate="landing">ChatResume</a>
+    <div class="topbar-actions">
+      <button class="btn btn--primary" data-navigate="landing">
+        <span class="btn-icon">+</span>
+        <span class="btn-label">New CV</span>
+      </button>
+      <button class="btn btn--outlined">Account</button>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <main class="dashboard-content">
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <div class="section-title-group">
+        <h1 class="section-title">My CVs</h1>
+        <span class="section-count" id="cv-count">(3)</span>
+      </div>
+      <a class="section-link" data-navigate="gallery">Browse templates &rarr;</a>
+    </div>
+
+    <!-- CV Cards Grid -->
+    <div class="cv-grid" id="cv-grid">
+
+      <!-- Card 1: Frontend Engineer -->
+      <article class="cv-card">
+        <div class="cv-thumbnail">
+          <div class="cv-preview-doc">
+            <div class="doc-line doc-line--title"></div>
+            <div class="doc-line doc-line--subtitle"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--long"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--medium"></div>
+            <div class="doc-section-gap"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--long"></div>
+            <div class="doc-line doc-line--short"></div>
+            <div class="doc-section-gap"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--medium"></div>
+            <div class="doc-line doc-line--full"></div>
+          </div>
+        </div>
+        <div class="cv-card-body">
+          <h3 class="cv-card-title">Frontend Engineer</h3>
+          <div class="cv-card-target">
+            <span class="arrow">&rarr;</span> Google
+          </div>
+          <div class="cv-card-meta">
+            <span class="ats-badge ats-badge--green">ATS 87%</span>
+            <span class="cv-card-time">2h ago</span>
+          </div>
+        </div>
+        <div class="cv-card-actions">
+          <button class="btn btn--outlined btn--small" data-navigate="editor">Edit</button>
+          <div class="more-btn-wrapper">
+            <button class="more-btn" aria-label="More actions" data-more-toggle>&middot;&middot;&middot;</button>
+            <div class="dropdown">
+              <button class="dropdown-item">
+                <span class="dropdown-item-icon">&#x2398;</span> Duplicate
+              </button>
+              <button class="dropdown-item">
+                <span class="dropdown-item-icon">&#x21E3;</span> Download PDF
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item dropdown-item--danger">
+                <span class="dropdown-item-icon">&#x2715;</span> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2: Backend Engineer -->
+      <article class="cv-card">
+        <div class="cv-thumbnail">
+          <div class="cv-preview-doc">
+            <div class="doc-line doc-line--title"></div>
+            <div class="doc-line doc-line--subtitle"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--long"></div>
+            <div class="doc-line doc-line--medium"></div>
+            <div class="doc-section-gap"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--long"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--short"></div>
+            <div class="doc-section-gap"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--medium"></div>
+          </div>
+        </div>
+        <div class="cv-card-body">
+          <h3 class="cv-card-title">Backend Engineer</h3>
+          <div class="cv-card-target">
+            <span class="arrow">&rarr;</span> Stripe
+          </div>
+          <div class="cv-card-meta">
+            <span class="ats-badge ats-badge--green">ATS 92%</span>
+            <span class="cv-card-time">3 days ago</span>
+          </div>
+        </div>
+        <div class="cv-card-actions">
+          <button class="btn btn--outlined btn--small" data-navigate="editor">Edit</button>
+          <div class="more-btn-wrapper">
+            <button class="more-btn" aria-label="More actions" data-more-toggle>&middot;&middot;&middot;</button>
+            <div class="dropdown">
+              <button class="dropdown-item">
+                <span class="dropdown-item-icon">&#x2398;</span> Duplicate
+              </button>
+              <button class="dropdown-item">
+                <span class="dropdown-item-icon">&#x21E3;</span> Download PDF
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item dropdown-item--danger">
+                <span class="dropdown-item-icon">&#x2715;</span> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3: Master CV -->
+      <article class="cv-card">
+        <div class="cv-thumbnail">
+          <div class="cv-preview-doc">
+            <div class="doc-line doc-line--title"></div>
+            <div class="doc-line doc-line--subtitle"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--long"></div>
+            <div class="doc-section-gap"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--medium"></div>
+            <div class="doc-line doc-line--long"></div>
+            <div class="doc-section-gap"></div>
+            <div class="doc-line doc-line--section-head"></div>
+            <div class="doc-line doc-line--medium"></div>
+            <div class="doc-line doc-line--full"></div>
+            <div class="doc-line doc-line--short"></div>
+          </div>
+        </div>
+        <div class="cv-card-body">
+          <h3 class="cv-card-title">Master CV</h3>
+          <div class="cv-card-target">
+            <span class="cv-card-label">base</span>
+          </div>
+          <div class="cv-card-meta">
+            <span class="cv-card-time">1 week ago</span>
+          </div>
+        </div>
+        <div class="cv-card-actions">
+          <button class="btn btn--outlined btn--small" data-navigate="editor">Edit</button>
+          <div class="more-btn-wrapper">
+            <button class="more-btn" aria-label="More actions" data-more-toggle>&middot;&middot;&middot;</button>
+            <div class="dropdown">
+              <button class="dropdown-item">
+                <span class="dropdown-item-icon">&#x2398;</span> Duplicate
+              </button>
+              <button class="dropdown-item">
+                <span class="dropdown-item-icon">&#x21E3;</span> Download PDF
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item dropdown-item--danger">
+                <span class="dropdown-item-icon">&#x2715;</span> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Empty State (hidden by default) -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-icon"></div>
+      <h2 class="empty-state-title">No CVs yet</h2>
+      <p class="empty-state-desc">Create your first CV and tailor it to any job in seconds with AI.</p>
+      <button class="btn btn--primary" data-navigate="landing">
+        <span class="btn-icon">+</span>
+        Create your first CV
+      </button>
+    </div>
+
+  </main>
+
+</section>
+
+<script>
+  (function() {
+    "use strict";
+
+    // ── Dropdown toggle ──
+    const moreButtons = document.querySelectorAll("[data-more-toggle]");
+    let openDropdown = null;
+
+    function closeAllDropdowns() {
+      if (openDropdown) {
+        openDropdown.classList.remove("is-open");
+        openDropdown = null;
+      }
+    }
+
+    moreButtons.forEach(function(btn) {
+      btn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        const dropdown = btn.nextElementSibling;
+
+        if (dropdown === openDropdown) {
+          closeAllDropdowns();
+          return;
+        }
+
+        closeAllDropdowns();
+        dropdown.classList.add("is-open");
+        openDropdown = dropdown;
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function() {
+      closeAllDropdowns();
+    });
+
+    // Prevent dropdown items from bubbling to document close handler
+    document.querySelectorAll(".dropdown").forEach(function(dd) {
+      dd.addEventListener("click", function(e) {
+        e.stopPropagation();
+      });
+    });
+
+    // ── Empty state logic ──
+    function updateEmptyState() {
+      var grid = document.getElementById("cv-grid");
+      var empty = document.getElementById("empty-state");
+      var count = document.getElementById("cv-count");
+      var cards = grid.querySelectorAll(".cv-card");
+
+      if (cards.length === 0) {
+        grid.style.display = "none";
+        empty.classList.add("is-visible");
+        count.textContent = "(0)";
+      } else {
+        grid.style.display = "";
+        empty.classList.remove("is-visible");
+        count.textContent = "(" + cards.length + ")";
+      }
+    }
+
+    // ── Delete handler ──
+    document.querySelectorAll(".dropdown-item--danger").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var card = btn.closest(".cv-card");
+        if (card) {
+          card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+          card.style.opacity = "0";
+          card.style.transform = "scale(0.95)";
+          setTimeout(function() {
+            card.remove();
+            closeAllDropdowns();
+            updateEmptyState();
+          }, 300);
+        }
+      });
+    });
+
+    // Close dropdowns on Escape
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        closeAllDropdowns();
+      }
+    });
+
+  })();
+</script>
+
+</body>
+</html>

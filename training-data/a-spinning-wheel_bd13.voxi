@@ -1,0 +1,47 @@
+V 32 32 12
+
+-- wooden base
+B 1 0 4 30 2 4 a
+
+-- wheel support legs
+B 20 2 5 2 16 3 a
+B 24 2 5 2 12 3 a
+
+-- big wheel rim - horizontals
+B 14 25 4 14 2 2 a
+B 14 5 4 14 2 2 a
+
+-- big wheel rim - verticals
+B 13 7 4 2 18 2 a
+B 27 7 4 2 18 2 a
+
+-- big wheel corner fills
+B 15 23 4 3 3 2 a
+B 25 23 4 3 3 2 a
+B 15 5 4 3 3 2 a
+B 25 5 4 3 3 2 a
+
+-- big wheel hub
+S 20 16 5 2 7
+
+-- wheel spokes
+B 12 15 5 8 2 1 6
+B 20 15 5 8 2 1 6
+B 19 7 5 2 9 1 6
+B 19 17 5 2 8 1 6
+
+-- flyer post
+B 5 2 5 2 14 3 a
+
+-- flyer bobbin
+S 6 14 5 2 7
+
+-- flyer arms
+B 3 12 4 6 2 2 6
+B 3 15 4 6 2 2 6
+
+-- drive band
+B 6 15 5 14 1 1 9
+
+-- treadle pedal
+B 2 2 4 10 2 4 d

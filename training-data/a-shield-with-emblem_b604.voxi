@@ -1,0 +1,23 @@
+V 24 30 6
+
+-- outer shield frame (gold)
+B 6 2 2 12 20 2 6
+B 7 22 2 10 2 2 6
+B 8 24 2 8 2 2 6
+B 9 26 2 6 1 2 6
+B 10 27 2 4 1 2 6
+B 11 28 2 2 2 2 6
+
+-- inner shield face (blue)
+B 7 3 2 10 18 2 3
+B 8 22 2 8 2 2 3
+B 9 24 2 6 2 2 3
+B 10 26 2 4 1 2 3
+B 11 27 2 2 1 2 3
+
+-- cross emblem (gold)
+B 11 5 2 2 14 2 6
+B 8 11 2 8 2 2 6
+
+-- red center medallion
+S 12 12 3 2 1

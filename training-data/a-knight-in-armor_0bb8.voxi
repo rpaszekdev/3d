@@ -1,0 +1,63 @@
+V 24 32 24
+
+-- boots
+B 10 0 10 2 2 3 0
+B 13 0 10 2 2 3 0
+
+-- lower legs (greaves)
+B 10 2 10 2 5 3 9
+B 13 2 10 2 5 3 9
+
+-- knee guards
+B 10 7 10 2 2 3 7
+B 13 7 10 2 2 3 7
+
+-- upper legs (cuisses)
+B 10 9 10 2 4 3 9
+B 13 9 10 2 4 3 9
+
+-- hips and tassets
+B 9 13 10 6 1 4 6
+B 9 14 10 6 1 4 9
+
+-- torso breastplate
+B 9 15 10 6 5 4 9
+
+-- chest emblem
+S 12 17 9 1 6
+
+-- pauldrons
+B 7 18 10 3 2 4 9
+B 14 18 10 3 2 4 9
+
+-- arms (vambraces)
+B 7 14 11 2 4 2 9
+B 15 14 11 2 4 2 9
+
+-- gauntlets
+B 7 12 11 2 2 2 9
+B 15 12 11 2 2 2 9
+
+-- neck gorget
+B 11 20 10 2 2 3 9
+
+-- helmet
+B 9 22 9 6 5 5 9
+
+-- visor slit
+B 10 25 9 4 1 1 0
+
+-- plume
+B 11 27 10 2 3 1 1
+
+-- sword blade
+B 17 1 12 1 11 1 8
+
+-- crossguard
+B 15 12 12 4 1 1 6
+
+-- shield
+B 6 13 10 1 7 4 3
+
+-- shield boss
+B 6 16 12 1 1 1 6

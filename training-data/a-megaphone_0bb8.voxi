@@ -1,0 +1,26 @@
+V 24 18 24
+
+-- bell face (front, facing viewer)
+B 5 4 2 14 10 2 6
+
+-- speaker grille on bell
+S 12 9 2 4 0
+
+-- body sections tapering toward back
+B 6 5 4 12 8 2 6
+B 7 6 6 10 6 2 6
+B 8 6 8 8 6 2 6
+B 9 7 10 6 4 2 6
+B 10 7 12 4 4 2 6
+B 10 7 14 4 4 2 6
+B 10 8 16 4 2 2 6
+
+-- mouthpiece (narrow back end)
+B 11 8 18 2 2 4 9
+
+-- handle grip below body
+B 9 0 7 6 5 8 9
+B 10 0 8 4 3 6 0
+
+-- trigger button
+B 9 4 9 3 2 2 7

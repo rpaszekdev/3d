@@ -1,0 +1,26 @@
+V 26 20 18
+
+-- tabletop
+B 0 14 0 26 2 18 d
+
+-- left front leg
+B 0 0 0 2 14 2 a
+-- left back leg
+B 0 0 16 2 14 2 a
+
+-- drawer pedestal body
+B 18 0 1 8 14 16 a
+
+-- drawer front panels
+B 19 10 0 6 3 2 d
+B 19 6 0 6 3 2 d
+B 19 2 0 6 3 2 d
+
+-- drawer handles
+B 21 12 0 2 1 1 8
+B 21 8 0 2 1 1 8
+B 21 4 0 2 1 1 8
+
+-- drawer divider lines
+B 19 9 0 6 1 1 0
+B 19 5 0 6 1 1 0

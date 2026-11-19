@@ -1,0 +1,19 @@
+{
+  "name": "ssl-benchmark",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "SSL 3D Spatial Reasoning Benchmark — multi-model comparison pipeline",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "render": "node render-all.mjs",
+    "evaluate": "node evaluate.mjs",
+    "aggregate": "node aggregate.mjs",
+    "pipeline": "node generate.mjs && node render-all.mjs && node evaluate.mjs && node aggregate.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "openai": "^4.77.0",
+    "@google/genai": "^1.46.0",
+    "dotenv": "^16.4.7"
+  }
+}

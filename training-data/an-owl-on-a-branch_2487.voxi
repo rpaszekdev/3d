@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- branch
+B 2 8 14 28 2 2 d
+
+-- body
+E 16 14 15 4 6 4 7
+
+-- belly
+E 16 13 14 3 4 3 8
+
+-- head
+S 16 21 15 4 8
+
+-- facial disc
+E 16 21 14 3 3 2 8
+
+-- beak
+B 15 20 12 2 1 2 6
+
+-- left eye
+S 14 22 13 1 3
+-- right eye
+S 18 22 13 1 3
+
+-- left pupil
+S 14 22 12 1 0
+-- right pupil
+S 18 22 12 1 0
+
+-- left ear tuft
+B 13 25 14 2 3 1 7
+-- right ear tuft
+B 18 25 14 2 3 1 7
+
+-- left wing
+E 11 14 15 3 5 3 9
+-- right wing
+E 21 14 15 3 5 3 9
+
+-- tail feathers
+E 16 9 16 3 2 2 9
+
+-- left foot
+B 13 8 14 2 1 3 9
+-- right foot
+B 17 8 14 2 1 3 9
+
+-- left talon
+B 12 7 13 3 1 1 0
+-- right talon
+B 17 7 13 3 1 1 0

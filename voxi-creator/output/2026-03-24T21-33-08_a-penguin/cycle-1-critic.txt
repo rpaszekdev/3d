@@ -1,0 +1,15 @@
+`★ Insight ─────────────────────────────────────`
+**Critical rendering failure diagnosis:** All 6 camera angles return a completely black image. In VOXI, color `0` = black, which is also the default background color. A penguin built predominantly with `C=0` (black body) will be **completely invisible** — the model camouflages into the backdrop. This is one of the most common and catastrophic mistakes in voxel art for dark-colored subjects.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+STRENGTHS: The subject chosen (a penguin) is a reasonable voxel art target with a compact, upright silhouette that maps well to a grid. The attempt was made.
+
+ISSUES:
+- **Complete invisibility due to black-on-black rendering:** The penguin body was almost certainly built using color `0` (black) as the primary material, which is indistinguishable from the black void background. Fix: replace the body color with `0` (true black, used sparingly or not at all) → use dark navy `f` (navy) or very dark gray `9` (gray) for the back/sides instead, which will read as "black" visually but contrast against the background. Reserve `0` only if the renderer supports a non-black background.
+- **No visible accent colors to anchor recognition:** Even if the body were invisible, a correctly built penguin should have a white belly (`8`), an orange/yellow beak (`7`), and orange feet (`7`) that would still appear. None of these are visible, suggesting the entire model may be off-grid, zero-sized, or built entirely in black. Fix: ensure `B` (box) commands for the belly use color `8`, the beak uses `7`, and feet use `7` — these would survive even against a black body.
+- **Possible geometry placement error (off-grid or zero dimensions):** It's possible the model was placed at coordinates outside the defined grid volume, or box/sphere commands were given zero or negative dimensions. Fix: verify all coordinates satisfy `0 ≤ X < W`, `0 ≤ Y < H`, `0 ≤ Z < D`, and that width/height/depth values are all ≥ 1. Start with a simple sanity-check box like `B 12 0 12 8 18 8 9` (gray body block) to confirm the renderer is working.
+
+PRIORITY_FIX: **Replace color `0` (black) on the penguin body with color `f` (navy) or `9` (gray) so the silhouette is visible against the black background.** A penguin that reads as "very dark" is far better than one that is completely invisible. Add the white belly (`8`) and orange beak (`7`) as the next step — these high-contrast accents are what makes a penguin instantly recognizable.

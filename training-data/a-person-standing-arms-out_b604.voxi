@@ -1,0 +1,37 @@
+V 24 32 24
+
+-- feet
+B 9 0 10 3 2 4 0
+B 13 0 10 3 2 4 0
+
+-- legs
+B 9 2 10 3 8 4 9
+B 13 2 10 3 8 4 9
+
+-- torso
+B 8 10 10 8 10 4 3
+
+-- neck
+B 11 20 10 2 2 4 d
+
+-- head
+S 12 24 12 2 d
+
+-- hair
+S 12 26 12 1 a
+
+-- left arm extended
+B 2 16 10 6 2 4 d
+
+-- right arm extended
+B 16 16 10 6 2 4 d
+
+-- left hand
+S 3 17 12 1 d
+
+-- right hand
+S 21 17 12 1 d
+
+-- shoes
+B 9 0 9 3 2 5 e
+B 13 0 9 3 2 5 e

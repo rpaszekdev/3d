@@ -1,0 +1,47 @@
+V 36 20 18
+
+-- chassis/frame
+B 2 4 2 30 2 14 9
+
+-- front bumper
+B 0 3 3 2 4 12 9
+
+-- hood (low front section)
+B 2 6 2 10 3 14 7
+
+-- cab body (orange)
+B 12 6 2 12 10 14 7
+
+-- windshield (blue glass)
+B 12 9 3 3 7 12 3
+
+-- truck bed floor
+B 24 6 2 10 2 14 6
+
+-- bed left wall
+B 24 8 2 10 3 2 7
+
+-- bed right wall
+B 24 8 14 10 3 2 7
+
+-- bed rear wall
+B 32 8 2 2 3 14 7
+
+-- front grille (dark)
+B 0 4 4 2 3 10 0
+
+-- headlights (yellow)
+B 0 7 3 2 2 3 6
+B 0 7 13 2 2 3 6
+
+-- tires (black spheres)
+S 7 3 0 3 0
+S 7 3 17 3 0
+S 27 3 0 3 0
+S 27 3 17 3 0
+
+-- wheel rims (gray)
+S 7 3 1 2 9
+S 7 3 16 2 9
+S 27 3 1 2 9
+S 27 3 16 2 9

@@ -1,0 +1,41 @@
+V 32 32 32
+
+-- robe base
+B 11 0 12 10 9 7 8
+
+-- torso
+B 12 9 13 8 8 6 8
+
+-- head
+S 16 19 15 3 d
+
+-- hair
+E 16 21 15 3 2 2 a
+
+-- halo
+C 16 24 15 5 1 6
+
+-- left wing main
+B 1 10 13 11 9 5 8
+
+-- left wing tip
+B 1 16 13 5 4 4 4
+
+-- right wing main
+B 20 10 13 11 9 5 8
+
+-- right wing tip
+B 26 16 13 5 4 4 4
+
+-- left arm
+B 10 13 14 3 6 3 d
+
+-- right arm
+B 19 13 14 3 6 3 d
+
+-- eyes
+B 15 20 17 1 1 1 0
+B 17 20 17 1 1 1 0
+
+-- belt sash
+B 12 9 13 8 2 6 6

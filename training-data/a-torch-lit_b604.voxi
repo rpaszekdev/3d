@@ -1,0 +1,25 @@
+V 16 16 16
+
+-- wooden handle
+C 8 1 8 1 8 a
+
+-- torch head wrap
+C 8 9 8 2 3 a
+
+-- flame base
+S 8 12 8 1 6
+
+-- flame middle
+S 8 13 8 1 5
+
+-- flame tip
+S 8 14 8 1 7
+
+-- ember glow
+S 8 11 8 1 1
+
+-- light scatter left
+S 6 13 8 1 6
+
+-- light scatter right
+S 10 13 8 1 6

@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Castle Defense — VOXI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; color: #fff; }
+#game-canvas { display: block; position: fixed; top: 0; left: 0; z-index: 0; }
+</style>
+</head>
+<body>
+<canvas id="game-canvas"></canvas>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// Modules
+import {
+  createComposer, triggerShake, updateShake,
+  createDeathExplosion, updateAllJuice,
+  spawnDamageNumber, spawnGoldParticles,
+  createTrail, updateTrail, removeTrail,
+  flashMesh
+} from './juice.js';
+
+import { TOWER_DEFS, WALL_DEF, getTowerSellValue, getUpgradeCost, getTowerStats } from './towers.js';
+import { ENEMY_DEFS, generateWave, getScaledHp, isWaveBoss } from './enemies.js';
+
+// New modules: terrain, siege enemies, walls v2
+import {
+  generateTerrain, BIOMES, findPath,
+  canPlaceTower, canEnemyWalk, getEnemyMoveCost,
+  getElevationRangeBonus, getEnemySpeedMultiplier,
+  getForestClearCost, clearForest,
+  gridToWorld as terrainGridToWorld, worldToGrid as terrainWorldToGrid,
+  getWorldHeight
+} from './terrain.js';
+
+import {
+  createTerrainScene, getGroundMeshes, getCellWorldPos, disposeTerrainScene
+} from './terrain-render.js';
+
+import {
+  SIEGE_ENEMY_DEFS, generateSiegeWave, isSiegeWaveBoss, getSiegeSpecialBehavior
+} from './siege-enemies.js';
+
+import {
+  WALL_TIERS, GATE_DEF, getWallTierStats, getGateStats,
+  getWallPassiveDamage, repairWalls, canClimbWall,
+  getWallSellValue, getWallUpgradeCost, getNextWallTier
+} from './walls-v2.js';
+
+import {
+  createDayNight, updateAtmosphere, createLavaMoat, isInLava, getLavaDamagePerSec,
+  createWeather, createTorches, initAudio, playSound, toggleMute, setVolume, isMuted
+} from './atmosphere.js';
+
+import {
+  createEconomy, updateEconomy, getGold, spendGold, earnGold, getInterestRate,
+  awardWaveBonus, recordWaveDamage, getEconomyStats,
+  CHALLENGES, getActiveChallenge, setChallenge, getMultiplier,
+  saveScore, getLeaderboard,
+  ACHIEVEMENTS, checkAchievements, getUnlocked,
+  createStats, getStats, updateStat, incrementStat,
+  getGameCSS, createGameUI, createMinimap, updateMinimap,
+  updateHUD, showWaveBanner, showAchievement, showCombo,
+  showGameOver, hideStartScreen, togglePause, updateWavePreview
+} from './meta.js';
+
+// ══════════════════════════════════════════════
+//  VOXI PARSER
+// ══════════════════════════════════════════════
+const COLORS = [
+  0x111111, 0xcc2222, 0x22aa22, 0x2255cc, 0x22cccc, 0xcc22cc,
+  0xcccc22, 0xdd8822, 0xeeeeee, 0x888888, 0x8B4513, 0xff88aa,
+  0x226622, 0xd2b48c, 0x771122, 0x112266
+];
+
+function parseVoxi(code) {
+  let W = 16, H = 16, D = 16;
+  const vm = new Map();
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix >= 0 && ix < W && iy >= 0 && iy < H && iz >= 0 && iz < D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c || 9, 0), 15));
+  };
+  const addBox = (px, py, pz, w, h, d, c) => {
+    for (let x = px; x < px + w; x++)
+      for (let y = py; y < py + h; y++)
+        for (let z = pz; z < pz + d; z++) set(x, y, z, c);
+  };
+  const addSphere = (cx, cy, cz, r, c) => {
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let y = cy - r; y <= cy + r; y++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x-cx)**2 + (y-cy)**2 + (z-cz)**2 <= r*r) set(x, y, z, c);
+  };
+  const addCyl = (cx, cy, cz, r, h, c) => {
+    for (let x = cx - r; x <= cx + r; x++)
+      for (let z = cz - r; z <= cz + r; z++)
+        if ((x-cx)**2 + (z-cz)**2 <= r*r)
+          for (let y = cy; y < cy + h; y++) set(x, y, z, c);
+  };
+  const addCone = (cx, cy, cz, r, h, c) => {
+    for (let y = 0; y < h; y++) {
+      const rr = r * (1 - y / h);
+      for (let x = cx - r; x <= cx + r; x++)
+        for (let z = cz - r; z <= cz + r; z++)
+          if ((x-cx)**2 + (z-cz)**2 <= rr*rr) set(cx+(x-cx), cy+y, cz+(z-cz), c);
+    }
+  };
+  const addEllipsoid = (cx, cy, cz, rx, ry, rz, c) => {
+    for (let x = cx-rx; x <= cx+rx; x++)
+      for (let y = cy-ry; y <= cy+ry; y++)
+        for (let z = cz-rz; z <= cz+rz; z++)
+          if (((x-cx)/rx)**2 + ((y-cy)/ry)**2 + ((z-cz)/rz)**2 <= 1) set(x, y, z, c);
+  };
+  const addDome = (px, py, pz, w, h, d, c) => {
+    const rx = w/2, ry = h, rz = d/2, cx = px+rx, cz = pz+rz;
+    for (let x = px; x < px+w; x++)
+      for (let y = py; y < py+h; y++)
+        for (let z = pz; z < pz+d; z++)
+          if (((x-cx+.5)/rx)**2 + ((y-py)/ry)**2 + ((z-cz+.5)/rz)**2 <= 1) set(x, y, z, c);
+  };
+  const groups = {};
+  let currentGroup = null, currentGroupName = null;
+  function execCmd(cmd, n) {
+    switch (cmd) {
+      case 'B': addBox(n[0],n[1],n[2],n[3],n[4],n[5],n[6]); break;
+      case 'S': addSphere(n[0],n[1],n[2],n[3],n[4]); break;
+      case 'C': addCyl(n[0],n[1],n[2],n[3],n[4],n[5]); break;
+      case 'K': addCone(n[0],n[1],n[2],n[3],n[4],n[5]); break;
+      case 'P': set(n[0],n[1],n[2],n[3]); break;
+      case 'E': addEllipsoid(n[0],n[1],n[2],n[3],n[4],n[5],n[6]); break;
+      case 'D': addDome(n[0],n[1],n[2],n[3],n[4],n[5],n[6]); break;
+      default: return false;
+    }
+    return true;
+  }
+  function placeGroup(name, ox, oy, oz) {
+    const g = groups[name]; if (!g) return;
+    for (const e of g) {
+      const sn = [...e.args]; sn[0] += ox; sn[1] += oy; sn[2] += oz;
+      execCmd(e.cmd, sn);
+    }
+  }
+  for (const raw of code.split('\n')) {
+    const line = raw.replace(/\/\/.*|--.*/, '').trim();
+    if (!line) continue;
+    const parts = line.split(/\s+/);
+    const cmd = parts[0].toUpperCase();
+    const nums = parts.slice(1).map(v => { const h = parseInt(v, 16); return isNaN(h) ? 0 : h; });
+    if (cmd === 'V' && parts.length >= 4) { W = parseInt(parts[1]); H = parseInt(parts[2]); D = parseInt(parts[3]); continue; }
+    if (cmd === 'G') { currentGroupName = parts[1]; currentGroup = []; continue; }
+    if (cmd === '/G') { if (currentGroupName) groups[currentGroupName] = currentGroup; currentGroup = null; currentGroupName = null; continue; }
+    if (cmd === '@') { placeGroup(parts[1], parseInt(parts[2])||0, parseInt(parts[3])||0, parseInt(parts[4])||0); continue; }
+    if (currentGroup) { currentGroup.push({ cmd, args: nums }); } else { execCmd(cmd, nums); }
+  }
+  return { W, H, D, vm };
+}
+
+function buildVoxelMesh(parsed, scale = 0.12) {
+  const { W, H, D, vm } = parsed;
+  const group = new THREE.Group();
+  const geo = new THREE.BoxGeometry(scale, scale, scale);
+  const materials = COLORS.map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7, metalness: 0.1 }));
+  const byColor = {};
+  for (const [key, color] of vm) {
+    if (!byColor[color]) byColor[color] = [];
+    byColor[color].push(key);
+  }
+  for (const [color, keys] of Object.entries(byColor)) {
+    const mesh = new THREE.InstancedMesh(geo, materials[color], keys.length);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    const dummy = new THREE.Object3D();
+    const cx = W / 2, cz = D / 2;
+    keys.forEach((key, i) => {
+      const [x, y, z] = key.split(',').map(Number);
+      dummy.position.set((x - cx) * scale, y * scale, (z - cz) * scale);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    });
+    group.add(mesh);
+  }
+  return group;
+}
+
+function getVoxelColors(parsed) {
+  return [...new Set(parsed.vm.values())];
+}
+
+// Parse assets cache
+const assetCache = new Map();
+function getAssetMesh(voxiCode, scale) {
+  const key = voxiCode + '|' + scale;
+  if (!assetCache.has(key)) assetCache.set(key, parseVoxi(voxiCode));
+  return buildVoxelMesh(assetCache.get(key), scale);
+}
+function getAssetColors(voxiCode) {
+  const key = voxiCode + '|colors';
+  if (!assetCache.has(key)) assetCache.set(key, parseVoxi(voxiCode));
+  return getVoxelColors(assetCache.get(key));
+}
+
+// ══════════════════════════════════════════════
+//  CASTLE ASSET
+// ══════════════════════════════════════════════
+const CASTLE_ASSET = `V 16 16 16
+B 2 0 2 12 8 12 9
+B 2 8 2 3 2 3 9
+B 9 8 2 3 2 3 9
+B 2 8 9 3 2 3 9
+B 9 8 9 3 2 3 9
+B 0 0 0 4 12 4 9
+B 12 0 0 4 12 4 9
+B 0 0 12 4 12 4 9
+B 12 0 12 4 12 4 9
+K 2 12 2 2 4 9
+K 14 12 2 2 4 9
+K 2 12 14 2 4 9
+K 14 12 14 2 4 9
+D 0 11 0 4 3 4 1
+D 12 11 0 4 3 4 1
+D 0 11 12 4 3 4 1
+D 12 11 12 4 3 4 1
+B 6 0 1 4 5 2 a
+B 7 0 1 2 4 1 0
+B 8 12 2 1 4 a
+P 8 15 3 1
+P 8 14 3 1
+P 4 5 1 4
+P 11 5 1 4`;
+
+const TREE_ASSET = `V 8 12 8
+C 4 0 4 1 5 a
+S 4 7 4 3 c
+S 4 9 4 2 c`;
+
+const ROCK_ASSET = `V 6 4 6
+E 3 2 3 3 2 3 9`;
+
+// ── VILLAGE BUILDING ASSETS ──
+const VILLAGE_ASSETS = {
+  house: `V 8 8 8
+-- Cottage: produces gold (taxes)
+B 1 0 1 6 4 6 a
+-- Roof
+B 0 4 0 8 1 8 a
+B 1 5 1 6 1 6 e
+B 2 6 2 4 1 4 e
+-- Door
+B 3 0 1 2 3 1 a
+B 3 0 0 2 2 1 0
+-- Windows
+P 2 2 1 4
+P 5 2 1 4
+-- Chimney
+B 6 4 5 1 3 1 9
+P 6 7 5 7`,
+
+  farm: `V 8 6 8
+-- Farm: produces bonus gold
+B 0 0 0 8 1 8 a
+-- Barn
+B 1 1 4 3 3 3 1
+B 1 3 4 3 1 3 a
+-- Fenced fields
+P 0 1 0 a
+P 2 1 0 a
+P 4 1 0 a
+P 6 1 0 a
+P 0 1 2 a
+P 2 1 2 a
+P 4 1 2 a
+P 6 1 2 a
+-- Crops (green)
+P 1 1 1 2
+P 3 1 1 2
+P 5 1 1 2
+P 7 1 1 2
+P 1 1 3 c
+P 3 1 3 6
+P 5 1 3 2`,
+
+  blacksmith: `V 8 8 8
+-- Blacksmith: buffs nearby towers
+B 1 0 1 6 4 6 9
+-- Roof
+B 0 4 0 8 1 8 0
+B 1 5 1 6 1 6 0
+-- Anvil
+B 2 0 0 2 2 1 9
+P 3 2 0 8
+-- Forge (orange glow)
+B 5 0 1 2 3 2 0
+P 5 1 1 7
+P 6 1 1 7
+P 5 2 1 1
+P 6 2 1 1
+-- Chimney with smoke
+B 6 4 1 1 3 1 9
+P 6 7 1 9`,
+
+  barracks: `V 8 10 8
+-- Barracks: spawns patrol defenders
+B 0 0 0 8 5 8 9
+-- Battlements
+B 0 5 0 2 1 2 9
+B 3 5 0 2 1 2 9
+B 6 5 0 2 1 2 9
+B 0 5 6 2 1 2 9
+B 3 5 6 2 1 2 9
+B 6 5 6 2 1 2 9
+-- Flag pole
+B 4 5 4 1 5 1 a
+P 4 9 3 1
+P 4 8 3 1
+P 4 9 2 1
+-- Door
+B 3 0 0 2 3 1 a
+B 3 0 0 2 2 1 0
+-- Weapon rack
+P 1 1 1 8
+P 1 2 1 8
+P 1 3 1 9`,
+
+  church: `V 8 12 8
+-- Church: heals castle over time
+B 1 0 1 6 5 6 8
+-- Steeple
+B 3 5 3 2 4 2 8
+K 4 9 4 1 3 8
+-- Cross
+P 4 11 4 6
+P 3 11 4 6
+P 5 11 4 6
+P 4 10 4 6
+-- Door
+B 3 0 1 2 3 1 a
+B 3 0 0 2 2 1 0
+-- Stained glass
+P 2 3 1 3
+P 5 3 1 1
+-- Rose window
+P 4 4 1 5`,
+
+  market: `V 8 6 8
+-- Market: doubles interest rate
+B 0 0 0 8 3 8 a
+-- Awning / canopy
+B 0 3 0 8 1 4 1
+B 0 3 4 8 1 4 3
+-- Stalls
+B 1 0 1 2 2 2 6
+B 5 0 1 2 2 2 6
+-- Goods on display
+P 1 2 1 7
+P 2 2 1 5
+P 5 2 1 4
+P 6 2 1 6
+P 1 2 2 7
+P 6 2 2 b
+-- Signs
+P 0 3 2 6
+P 7 3 2 6`,
+};
+
+const VILLAGE_DEFS = {
+  house:      { name: 'House',      cost: 30,  asset: VILLAGE_ASSETS.house,      production: { gold: 2 },   desc: '+2 gold/5s' },
+  farm:       { name: 'Farm',       cost: 60,  asset: VILLAGE_ASSETS.farm,       production: { gold: 5 },   desc: '+5 gold/5s' },
+  blacksmith: { name: 'Blacksmith', cost: 100, asset: VILLAGE_ASSETS.blacksmith, production: { dmgBuff: 0.1 }, desc: '+10% tower dmg' },
+  barracks:   { name: 'Barracks',   cost: 120, asset: VILLAGE_ASSETS.barracks,   production: { defenders: 1 }, desc: 'Spawns defender' },
+  church:     { name: 'Church',     cost: 80,  asset: VILLAGE_ASSETS.church,     production: { heal: 2 },   desc: '+2 castle HP/5s' },
+  market:     { name: 'Market',     cost: 150, asset: VILLAGE_ASSETS.market,     production: { interestMult: 2 }, desc: '2x interest' },
+};
+
+// ══════════════════════════════════════════════
+//  THREE.JS SETUP
+// ══════════════════════════════════════════════
+const canvas = document.getElementById('game-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+scene.fog = new THREE.Fog(0x1a1a2e, 150, 300);
+
+const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 500);
+camera.position.set(50, 60, 50);
+camera.lookAt(0, 0, 0);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+controls.maxPolarAngle = Math.PI / 2.5;
+controls.minPolarAngle = Math.PI / 6;
+controls.target.set(0, 0, 0);
+controls.minDistance = 30;
+controls.maxDistance = 120;
+
+// Lighting
+const ambient = new THREE.AmbientLight(0x8888aa, 1.2);
+scene.add(ambient);
+const sun = new THREE.DirectionalLight(0xfff0dd, 2.0);
+sun.position.set(30, 50, 20);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = -60; sun.shadow.camera.right = 60;
+sun.shadow.camera.top = 60; sun.shadow.camera.bottom = -60;
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x88aaff, 0x443322, 0.8));
+
+// Post-processing
+const composer = createComposer(renderer, scene, camera);
+
+// ══════════════════════════════════════════════
+//  MAP SETUP
+// ══════════════════════════════════════════════
+const MAP_SIZE = 30;
+const CELL_SIZE = 2;
+const HALF_MAP = (MAP_SIZE * CELL_SIZE) / 2;
+
+// ── Terrain state (populated when game starts) ──
+let currentMap = null;
+let terrainHandle = null;
+let currentSeed = Date.now();
+let currentBiome = 'grassland';
+
+// Invisible ground plane for raycasting (always present)
+const groundGeo = new THREE.PlaneGeometry(MAP_SIZE * CELL_SIZE + 10, MAP_SIZE * CELL_SIZE + 10);
+const ground = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({
+  color: 0x4a9a44, roughness: 0.8, transparent: true, opacity: 0.0
+}));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+scene.add(ground);
+
+// Grid state: null = empty, object = building
+const grid = Array.from({ length: MAP_SIZE }, () => Array(MAP_SIZE).fill(null));
+
+const CASTLE_GX = 12, CASTLE_GZ = 12, CASTLE_SIZE = 6;
+const KEEP_GX = 14, KEEP_GZ = 14, KEEP_SIZE = 2; // inner keep (2x2)
+
+// All enemy + siege defs combined for lookups
+const ALL_ENEMY_DEFS = { ...ENEMY_DEFS, ...SIEGE_ENEMY_DEFS };
+
+function cellToWorld(gx, gz) {
+  const y = currentMap ? (getCellWorldPos(currentMap, gx, gz).y) : 0;
+  return new THREE.Vector3((gx - MAP_SIZE/2 + 0.5) * CELL_SIZE, y, (gz - MAP_SIZE/2 + 0.5) * CELL_SIZE);
+}
+
+function cellToWorldFlat(gx, gz) {
+  return new THREE.Vector3((gx - MAP_SIZE/2 + 0.5) * CELL_SIZE, 0, (gz - MAP_SIZE/2 + 0.5) * CELL_SIZE);
+}
+
+function worldToCell(wx, wz) {
+  return { gx: Math.floor((wx + HALF_MAP) / CELL_SIZE), gz: Math.floor((wz + HALF_MAP) / CELL_SIZE) };
+}
+
+function isCastleInner(gx, gz) {
+  return gx >= CASTLE_GX && gx < CASTLE_GX + CASTLE_SIZE &&
+         gz >= CASTLE_GZ && gz < CASTLE_GZ + CASTLE_SIZE;
+}
+
+function isKeep(gx, gz) {
+  return gx >= KEEP_GX && gx < KEEP_GX + KEEP_SIZE &&
+         gz >= KEEP_GZ && gz < KEEP_GZ + KEEP_SIZE;
+}
+
+/**
+ * Initialize the terrain, castle, and all map visuals.
+ * Called when game starts (after biome/seed selection).
+ */
+function initTerrain() {
+  // Generate procedural terrain
+  currentMap = generateTerrain(currentSeed, currentBiome);
+
+  // Build 3D terrain scene
+  terrainHandle = createTerrainScene(scene, currentMap, getAssetMesh);
+
+  // Place castle keep (2x2 center)
+  const castleMesh = getAssetMesh(CASTLE_ASSET, 0.35);
+  const castleWorldPos = cellToWorld(KEEP_GX + 1, KEEP_GZ + 1);
+  castleMesh.position.copy(castleWorldPos);
+  scene.add(castleMesh);
+
+  // Mark keep cells as castle, surrounding cells as village-buildable
+  for (let x = CASTLE_GX; x < CASTLE_GX + CASTLE_SIZE; x++) {
+    for (let z = CASTLE_GZ; z < CASTLE_GZ + CASTLE_SIZE; z++) {
+      if (isKeep(x, z)) {
+        grid[x][z] = { type: 'castle' };
+      } else {
+        grid[x][z] = { type: 'village_slot' };
+      }
+    }
+  }
+
+  // Mark terrain obstacles in grid (forests, water, mountains)
+  for (let x = 0; x < MAP_SIZE; x++) {
+    for (let z = 0; z < MAP_SIZE; z++) {
+      if (grid[x][z]) continue; // castle/village already marked
+      const terr = currentMap.terrain[x][z];
+      if (terr === 'water' || terr === 'mountain') {
+        grid[x][z] = { type: 'decoration' }; // impassable, can't build
+      } else if (terr === 'forest') {
+        grid[x][z] = { type: 'decoration' }; // forest blocks building (can be cleared)
+      }
+    }
+  }
+
+  // Castle compound ground (lighter to show buildable area)
+  const compoundGeo = new THREE.PlaneGeometry(CASTLE_SIZE * CELL_SIZE, CASTLE_SIZE * CELL_SIZE);
+  const compoundMat = new THREE.MeshStandardMaterial({ color: 0x5a7a54, roughness: 0.9 });
+  const compoundGround = new THREE.Mesh(compoundGeo, compoundMat);
+  compoundGround.rotation.x = -Math.PI / 2;
+  compoundGround.position.set(castleWorldPos.x, castleWorldPos.y + 0.03, castleWorldPos.z);
+  scene.add(compoundGround);
+
+  // Castle walls outline (stone border around compound)
+  const wallThickness = 0.15;
+  const cs = CASTLE_SIZE * CELL_SIZE;
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x777777, roughness: 0.8 });
+  [[-cs/2, 0, cs, wallThickness], [cs/2, 0, cs, wallThickness],
+   [0, -cs/2, wallThickness, cs], [0, cs/2, wallThickness, cs]].forEach(([ox, oz, w, d]) => {
+    const wm = new THREE.Mesh(new THREE.BoxGeometry(w, 1.5, d), wallMaterial);
+    wm.position.set(castleWorldPos.x + ox, castleWorldPos.y + 0.75, castleWorldPos.z + oz);
+    scene.add(wm);
+  });
+}
+
+// Castle position (used for atmosphere, defaults before terrain init)
+let castleWorldPos = cellToWorldFlat(KEEP_GX + 1, KEEP_GZ + 1);
+
+// Village building list for production ticks
+const villageBuildings = [];
+let villageProductionTimer = 0;
+
+// ══════════════════════════════════════════════
+//  ATMOSPHERE INIT (day/night + weather are scene-level, lava/torches deferred to game start)
+// ══════════════════════════════════════════════
+createDayNight(scene, sun, ambient);
+createWeather(scene);
+
+// ══════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════
+const state = {
+  phase: 'menu',  // menu | build | wave | paused | gameover
+  hp: 100,
+  maxHp: 100,
+  wave: 0,
+  kills: 0,
+  selectedBuild: null,
+  waveDelay: 10,
+  timeSinceWave: 0,
+  spawnQueue: [],
+  spawnTimer: 0,
+  gameSpeed: 1,
+  gameTime: 0,
+  newAchievements: [],
+  audioInitialized: false,
+  gateParentTier: 'wood', // default gate wall tier
+};
+
+const buildings = [];
+const enemies = [];
+const projectiles = [];
+
+// ══════════════════════════════════════════════
+//  UI SETUP
+// ══════════════════════════════════════════════
+const styleEl = document.createElement('style');
+styleEl.textContent = getGameCSS();
+document.head.appendChild(styleEl);
+
+const uiDiv = document.createElement('div');
+uiDiv.innerHTML = createGameUI();
+document.body.appendChild(uiDiv.firstElementChild);
+
+createMinimap('minimap', MAP_SIZE);
+
+// Side panel toggle
+document.getElementById('side-toggle')?.addEventListener('click', () => {
+  document.getElementById('side-panel')?.classList.toggle('collapsed');
+});
+
+// ══════════════════════════════════════════════
+//  PATHFINDING (Terrain A* + Building Awareness)
+// ══════════════════════════════════════════════
+
+/**
+ * Build a set of grid keys for cells blocked by player buildings.
+ */
+function getBuildingBlockedSet() {
+  const blocked = new Set();
+  for (let x = 0; x < MAP_SIZE; x++) {
+    for (let z = 0; z < MAP_SIZE; z++) {
+      const cell = grid[x][z];
+      if (cell && cell.type !== 'castle' && cell.type !== 'decoration' && cell.type !== 'village_slot' && cell.type !== 'village') {
+        blocked.add(x * MAP_SIZE + z);
+      }
+    }
+  }
+  return blocked;
+}
+
+/**
+ * Find path from (startX, startZ) to castle using terrain A*.
+ * Falls back to simple BFS if no terrain map is loaded.
+ */
+function bfs(startX, startZ) {
+  if (currentMap) {
+    const blocked = getBuildingBlockedSet();
+    return findPath(currentMap, startX, startZ, blocked);
+  }
+
+  // Fallback BFS for when terrain isn't initialized yet
+  const visited = Array.from({ length: MAP_SIZE }, () => Array(MAP_SIZE).fill(false));
+  const prev = Array.from({ length: MAP_SIZE }, () => Array(MAP_SIZE).fill(null));
+  const queue = [{ x: startX, z: startZ }];
+  visited[startX][startZ] = true;
+  const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    if (cur.x >= CASTLE_GX && cur.x < CASTLE_GX + CASTLE_SIZE &&
+        cur.z >= CASTLE_GZ && cur.z < CASTLE_GZ + CASTLE_SIZE) {
+      const path = []; let c = cur;
+      while (c) { path.unshift(c); c = prev[c.x][c.z]; }
+      return path;
+    }
+    for (const [dx, dz] of dirs) {
+      const nx = cur.x + dx, nz = cur.z + dz;
+      if (nx < 0 || nx >= MAP_SIZE || nz < 0 || nz >= MAP_SIZE) continue;
+      if (visited[nx][nz]) continue;
+      const cell = grid[nx][nz];
+      if (cell && cell.type !== 'castle' && cell.type !== 'decoration' && cell.type !== 'village_slot') continue;
+      visited[nx][nz] = true;
+      prev[nx][nz] = cur;
+      queue.push({ x: nx, z: nz });
+    }
+  }
+  return null;
+}
+
+function canPathExist(skipGx, skipGz) {
+  grid[skipGx][skipGz] = { type: 'temp' };
+  const spawnPoints = currentMap ? currentMap.spawnPoints : [{x:0,z:15},{x:15,z:0},{x:29,z:15},{x:15,z:29}];
+  let found = false;
+  for (const sp of spawnPoints) {
+    if (bfs(sp.x, sp.z)) { found = true; break; }
+  }
+  grid[skipGx][skipGz] = null;
+  return found;
+}
+
+function findNearestWall(gx, gz) {
+  let best = null, bestDist = Infinity;
+  for (const b of buildings) {
+    if (b.type !== 'wall') continue;
+    const d = Math.abs(b.gx - gx) + Math.abs(b.gz - gz); // manhattan
+    if (d < bestDist) { bestDist = d; best = { gx: b.gx, gz: b.gz }; }
+  }
+  // Also check towers — enemies attack whatever blocks their path
+  if (!best) {
+    for (const b of buildings) {
+      if (b.type === 'castle' || b.type === 'decoration') continue;
+      const d = Math.abs(b.gx - gx) + Math.abs(b.gz - gz);
+      if (d < bestDist) { bestDist = d; best = { gx: b.gx, gz: b.gz }; }
+    }
+  }
+  return best;
+}
+
+// ══════════════════════════════════════════════
+//  BUILDING
+// ══════════════════════════════════════════════
+function selectBuild(type) {
+  state.selectedBuild = state.selectedBuild === type ? null : type;
+  document.querySelectorAll('.build-btn').forEach(btn => {
+    const bType = btn.dataset.tower || btn.dataset.village;
+    const isMatch = bType === state.selectedBuild || (state.selectedBuild === 'sell' && btn.dataset.action === 'sell');
+    btn.classList.toggle('selected', isMatch);
+  });
+  // Hide upgrade panel when selecting build
+  const up = document.getElementById('upgrade-panel');
+  if (up) up.style.display = 'none';
+}
+
+function getBuffBoosts(gx, gz) {
+  let speedBoost = 0, damageBoost = 0;
+  for (const b of buildings) {
+    if (!b.special || b.special.type !== 'buff') continue;
+    const dist = Math.abs(b.gx - gx) + Math.abs(b.gz - gz);
+    if (dist <= b.stats.range) {
+      speedBoost += b.special.attackSpeedBoost || 0;
+      damageBoost += b.special.damageBoost || 0;
+    }
+  }
+  // Blacksmith village buildings buff all towers globally
+  for (const vb of villageBuildings) {
+    if (vb.def.production.dmgBuff) {
+      damageBoost += vb.def.production.dmgBuff;
+    }
+  }
+  return { speedBoost, damageBoost };
+}
+
+function placeVillageBuilding(gx, gz) {
+  const type = state.selectedBuild;
+  if (!type) return;
+  const def = VILLAGE_DEFS[type];
+  if (!def) return;
+
+  // Must be on a village_slot
+  const cell = grid[gx][gz];
+  if (!cell || cell.type !== 'village_slot') return;
+  if (!spendGold(def.cost)) return;
+
+  const mesh = getAssetMesh(def.asset, 0.22);
+  const pos = cellToWorld(gx, gz);
+  mesh.position.copy(pos);
+  scene.add(mesh);
+
+  const vb = { type, gx, gz, mesh, def, productionTimer: 0 };
+  villageBuildings.push(vb);
+  grid[gx][gz] = { type: 'village', villageType: type, mesh, building: vb };
+
+  playSound('build');
+  refreshHUD();
+}
+
+function placeBuilding(gx, gz) {
+  const type = state.selectedBuild;
+  if (!type || type === 'sell') return;
+
+  // Check if trying to place village building
+  if (VILLAGE_DEFS[type]) {
+    placeVillageBuilding(gx, gz);
+    return;
+  }
+
+  if (grid[gx][gz]) return;
+
+  // Check terrain buildability
+  if (currentMap && !canPlaceTower(currentMap, gx, gz) && !isCastleInner(gx, gz)) return;
+
+  // Wall tiers: wood_wall, stone_wall, iron_wall, gate
+  const wallTierMap = { wood_wall: 'wood', stone_wall: 'stone', iron_wall: 'iron' };
+  const isWallTier = !!wallTierMap[type];
+  const isGate = type === 'gate';
+  const isWall = type === 'wall'; // legacy single wall type
+  const isAnyWall = isWallTier || isGate || isWall;
+
+  let def, voxiCode, wallTier;
+
+  if (isWallTier) {
+    wallTier = wallTierMap[type];
+    const tierStats = getWallTierStats(wallTier);
+    def = { cost: tierStats.cost, stats: { range: 0, damage: 0, fireRate: 0, splash: 0, hp: tierStats.hp, canHitFlying: false }, special: tierStats.special === 'flammable' ? { type: 'flammable' } : null, asset: tierStats.asset };
+    voxiCode = tierStats.asset;
+  } else if (isGate) {
+    const parentTier = state.gateParentTier || 'wood';
+    const gateStats = getGateStats(parentTier);
+    def = { cost: gateStats.cost, stats: { range: 0, damage: 0, fireRate: 0, splash: 0, hp: gateStats.hp, canHitFlying: false }, special: null, asset: gateStats.asset };
+    voxiCode = gateStats.asset;
+    wallTier = parentTier;
+  } else if (isWall) {
+    def = WALL_DEF;
+    voxiCode = def.asset;
+    wallTier = 'wood'; // legacy wall = wood tier
+  } else {
+    def = TOWER_DEFS[type];
+    voxiCode = def?.asset;
+  }
+
+  if (!def) return;
+  if (!spendGold(def.cost)) return;
+
+  if (!canPathExist(gx, gz)) {
+    earnGold(def.cost); // refund
+    return;
+  }
+
+  const mesh = getAssetMesh(voxiCode, isAnyWall ? 0.28 : 0.25);
+  const pos = cellToWorld(gx, gz);
+  mesh.position.copy(pos);
+  scene.add(mesh);
+
+  const building = {
+    type: isWallTier ? 'wall' : type,
+    gx, gz, mesh,
+    stats: { ...def.stats, hp: def.stats.hp || (isAnyWall ? 100 : 60) },
+    special: def.special ? { ...def.special } : null,
+    upgradeLevel: 0,
+    branchIndex: -1,
+    fireCooldown: 0,
+    currentAsset: voxiCode,
+    wallTier: wallTier || null, // track wall tier for repair/upgrade
+    isGate: isGate,
+    gateOpen: false,
+  };
+
+  buildings.push(building);
+  grid[gx][gz] = building;
+
+  // Recalculate paths for all ground enemies so they respect the new building
+  recalcEnemyPaths();
+
+  updateStat('uniqueTowers', type);
+  incrementStat('towersBuilt');
+  playSound('build');
+  refreshHUD();
+}
+
+function recalcEnemyPaths() {
+  for (const enemy of enemies) {
+    if (enemy.flying) continue;
+    // Get current grid position
+    const cell = worldToCell(enemy.worldPos.x, enemy.worldPos.z);
+    const newPath = bfs(cell.gx, cell.gz);
+    if (newPath && newPath.length >= 2) {
+      enemy.path = newPath;
+      enemy.pathIdx = 0;
+    }
+    // If no path exists, enemy is trapped — it'll just stand still
+  }
+}
+
+function sellBuilding(gx, gz) {
+  const cell = grid[gx][gz];
+  if (!cell || cell.type === 'castle' || cell.type === 'decoration' || cell.type === 'village_slot') return;
+
+  // Sell village building
+  if (cell.type === 'village') {
+    const refund = Math.floor(VILLAGE_DEFS[cell.villageType].cost * 0.5);
+    earnGold(refund);
+    scene.remove(cell.mesh);
+    const idx = villageBuildings.indexOf(cell.building);
+    if (idx >= 0) villageBuildings.splice(idx, 1);
+    grid[gx][gz] = { type: 'village_slot' }; // restore slot
+    playSound('build');
+    refreshHUD();
+    return;
+  }
+  // Wall tier sell uses walls-v2 value, towers use towers.js value
+  const refund = cell.wallTier
+    ? getWallSellValue(cell.wallTier)
+    : getTowerSellValue(cell.type, cell.upgradeLevel, cell.branchIndex);
+  earnGold(refund);
+  scene.remove(cell.mesh);
+  buildings.splice(buildings.indexOf(cell), 1);
+  grid[gx][gz] = null;
+  recalcEnemyPaths();
+  playSound('build');
+  refreshHUD();
+}
+
+function upgradeBuilding(building, branchIndex) {
+  const nextLevel = building.upgradeLevel + 1;
+  const cost = getUpgradeCost(building.type, building.upgradeLevel, branchIndex);
+  if (cost === null || !spendGold(cost)) return;
+
+  const newStats = getTowerStats(building.type, nextLevel, branchIndex >= 0 ? branchIndex : 0);
+  if (!newStats) return;
+
+  // Replace mesh
+  scene.remove(building.mesh);
+  const mesh = getAssetMesh(newStats.asset, building.type === 'wall' ? 0.28 : 0.25);
+  mesh.position.copy(cellToWorld(building.gx, building.gz));
+  scene.add(mesh);
+
+  building.mesh = mesh;
+  building.stats = { ...newStats.stats };
+  building.special = newStats.special ? { ...newStats.special } : null;
+  building.upgradeLevel = nextLevel;
+  building.branchIndex = branchIndex >= 0 ? branchIndex : building.branchIndex;
+  building.currentAsset = newStats.asset;
+
+  incrementStat('towersUpgraded');
+  if (nextLevel > getStats().maxUpgrade) updateStat('maxUpgrade', nextLevel);
+  playSound('upgrade');
+  refreshHUD();
+}
+
+// ══════════════════════════════════════════════
+//  ENEMY SPAWNING
+// ══════════════════════════════════════════════
+function spawnEnemy(typeName) {
+  const def = ALL_ENEMY_DEFS[typeName];
+  if (!def) return;
+
+  // Use terrain spawn points if available, else random edges
+  let gx, gz;
+  if (currentMap && currentMap.spawnPoints.length > 0) {
+    const sp = currentMap.spawnPoints[Math.floor(Math.random() * currentMap.spawnPoints.length)];
+    gx = sp.x;
+    gz = sp.z;
+  } else {
+    const edge = Math.floor(Math.random() * 4);
+    switch (edge) {
+      case 0: gx = 0; gz = Math.floor(Math.random() * MAP_SIZE); break;
+      case 1: gx = MAP_SIZE - 1; gz = Math.floor(Math.random() * MAP_SIZE); break;
+      case 2: gx = Math.floor(Math.random() * MAP_SIZE); gz = 0; break;
+      case 3: gx = Math.floor(Math.random() * MAP_SIZE); gz = MAP_SIZE - 1; break;
+    }
+  }
+
+  const path = def.flying ? generateFlyingPath(gx, gz) : bfs(gx, gz);
+  if (!path || path.length < 2) return;
+
+  const scale = (def.scale || 0.14) * 1.8;
+  const mesh = getAssetMesh(def.asset, scale);
+  const pos = cellToWorld(gx, gz);
+  if (def.flying) pos.y = 3;
+  mesh.position.copy(pos);
+  scene.add(mesh);
+
+  // Health bar
+  const barBg = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.2), new THREE.MeshBasicMaterial({ color: 0x333333 }));
+  const barFg = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.2), new THREE.MeshBasicMaterial({ color: 0x22cc22 }));
+  barBg.position.y = def.flying ? 4 : 3.2; barFg.position.y = barBg.position.y + 0.01;
+  mesh.add(barBg); mesh.add(barFg);
+
+  const hpMult = getMultiplier('enemyHp');
+  const spdMult = getMultiplier('enemySpeed');
+  const scaledHp = Math.floor(getScaledHp(def.hp, state.wave) * hpMult);
+
+  const enemy = {
+    type: typeName, mesh, barFg, barBg,
+    hp: scaledHp, maxHp: scaledHp,
+    shieldHp: def.special?.type === 'shield' ? Math.floor(def.special.shieldHp * hpMult) : 0,
+    maxShieldHp: def.special?.type === 'shield' ? Math.floor(def.special.shieldHp * hpMult) : 0,
+    speed: def.speed * spdMult,
+    baseSpeed: def.speed * spdMult,
+    reward: def.reward,
+    damage: def.damage,
+    special: def.special ? { ...def.special } : null,
+    flying: def.flying || false,
+    path, pathIdx: 0,
+    worldPos: pos.clone(),
+    slowTimer: 0, slowFactor: 1,
+  };
+  enemies.push(enemy);
+}
+
+function generateFlyingPath(startGx, startGz) {
+  // Flying enemies go straight toward castle
+  const path = [{ x: startGx, z: startGz }];
+  const tx = CASTLE_GX + 2, tz = CASTLE_GZ + 2;
+  const steps = Math.max(Math.abs(tx - startGx), Math.abs(tz - startGz));
+  for (let i = 1; i <= steps; i++) {
+    const f = i / steps;
+    path.push({ x: Math.round(startGx + (tx - startGx) * f), z: Math.round(startGz + (tz - startGz) * f) });
+  }
+  return path;
+}
+
+// ══════════════════════════════════════════════
+//  PROJECTILES
+// ══════════════════════════════════════════════
+function createProjectile(fromPos, target, damage, splash, towerType, special) {
+  const isCanon = towerType === 'cannon';
+  const isFrost = towerType === 'frost';
+  const isLightning = towerType === 'lightning';
+  const color = isFrost ? 0x44ccff : isLightning ? 0xffff44 : isCanon ? 0xff4400 : 0xffdd44;
+  const size = isCanon ? 0.15 : 0.08;
+
+  const geo = new THREE.SphereGeometry(size, 6, 6);
+  const mat = new THREE.MeshBasicMaterial({ color });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(fromPos); mesh.position.y = 1.5;
+  scene.add(mesh);
+
+  const trail = createTrail(scene, mesh.position.clone(), color);
+
+  projectiles.push({
+    mesh, target, damage, splash, towerType, special,
+    speed: 20, pos: mesh.position.clone(), trail
+  });
+}
+
+// ══════════════════════════════════════════════
+//  COMBAT LOGIC
+// ══════════════════════════════════════════════
+function dealDamage(enemy, amount, towerType) {
+  // Arrow reduction for armored siege units (battering ram, heavy knight)
+  const def = ALL_ENEMY_DEFS[enemy.type];
+  if (def && def.arrowReduction > 0 && (towerType === 'arrow' || towerType === 'buff')) {
+    amount = Math.floor(amount * (1 - def.arrowReduction));
+  }
+
+  // Shield check
+  if (enemy.shieldHp > 0) {
+    const absorbed = Math.min(enemy.shieldHp, amount);
+    enemy.shieldHp -= absorbed;
+    amount -= absorbed;
+    if (enemy.shieldHp <= 0) flashMesh(enemy.mesh, 0.2); // shield break flash
+  }
+  enemy.hp -= amount;
+  incrementStat('totalDamageDealt', amount);
+
+  // Damage number color
+  const color = towerType === 'frost' ? 0x44ccff : towerType === 'lightning' ? 0xffff00 : 0xff4444;
+  spawnDamageNumber(scene, camera, enemy.worldPos.clone().setY(enemy.worldPos.y + 1.5), amount, color);
+  flashMesh(enemy.mesh, 0.08);
+  playSound('hit');
+}
+
+function applySpecial(enemy, special) {
+  if (!special) return;
+  if (special.type === 'slow') {
+    enemy.slowFactor = special.factor;
+    enemy.slowTimer = special.duration;
+  }
+}
+
+function handleChainLightning(origin, damage, special, sourceEnemy) {
+  if (!special || special.type !== 'chain') return;
+  let targets = special.targets - 1;
+  let currentDamage = Math.floor(damage * special.falloff);
+  let lastPos = sourceEnemy.worldPos.clone();
+  const hit = new Set([enemies.indexOf(sourceEnemy)]);
+
+  while (targets > 0) {
+    let closest = null, closestDist = 6;
+    for (let i = 0; i < enemies.length; i++) {
+      if (hit.has(i) || enemies[i].hp <= 0) continue;
+      const d = lastPos.distanceTo(enemies[i].worldPos);
+      if (d < closestDist) { closest = i; closestDist = d; }
+    }
+    if (closest === null) break;
+    hit.add(closest);
+    dealDamage(enemies[closest], currentDamage, 'lightning');
+    // Visual arc
+    const arcGeo = new THREE.BufferGeometry().setFromPoints([lastPos.clone().setY(1.5), enemies[closest].worldPos.clone().setY(1.5)]);
+    const arcMat = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.8 });
+    const arc = new THREE.Line(arcGeo, arcMat);
+    scene.add(arc);
+    setTimeout(() => { scene.remove(arc); arcGeo.dispose(); arcMat.dispose(); }, 150);
+
+    lastPos = enemies[closest].worldPos.clone();
+    currentDamage = Math.floor(currentDamage * special.falloff);
+    targets--;
+  }
+}
+
+// ══════════════════════════════════════════════
+//  WAVE MANAGEMENT
+// ══════════════════════════════════════════════
+function startWave() {
+  state.wave++;
+  state.phase = 'wave';
+
+  // Use siege wave generator (includes original + siege enemies)
+  const wave = generateSiegeWave(state.wave);
+  // Apply swarm multiplier
+  const countMult = getMultiplier('enemyCount');
+  if (countMult > 1) {
+    const expanded = [];
+    for (const entry of wave) {
+      for (let i = 0; i < countMult; i++) expanded.push({ ...entry, delay: entry.delay + i * 0.3 });
+    }
+    state.spawnQueue = expanded;
+  } else {
+    state.spawnQueue = [...wave];
+  }
+  state.spawnTimer = 0;
+
+  const bosses = isSiegeWaveBoss(state.wave);
+  showWaveBanner(state.wave, !!bosses);
+  playSound('waveStart');
+
+  // Repair walls between waves
+  const wallBuildings = buildings.filter(b => b.wallTier);
+  const repairEvents = repairWalls(wallBuildings.map(b => ({ tier: b.wallTier, hp: b.stats.hp })));
+  for (let i = 0; i < repairEvents.length; i++) {
+    const wallB = wallBuildings[i];
+    if (wallB && repairEvents[i]) {
+      wallB.stats.hp = Math.min(wallB.stats.hp + repairEvents[i].healAmount, WALL_TIERS[wallB.wallTier].hp);
+      const wpos = cellToWorld(wallB.gx, wallB.gz);
+      spawnDamageNumber(scene, camera, wpos.clone().setY(wpos.y + 2), repairEvents[i].healAmount, 0x44ff44);
+    }
+  }
+
+  // Update wave preview for next wave
+  const nextWave = generateSiegeWave(state.wave + 1);
+  const counts = {};
+  for (const e of nextWave) counts[e.type] = (counts[e.type] || 0) + 1;
+  updateWavePreview(Object.entries(counts).map(([type, count]) => ({ type, count })));
+
+  updateStat('wave', state.wave);
+  refreshHUD();
+}
+
+// ══════════════════════════════════════════════
+//  HOVER & CLICK
+// ══════════════════════════════════════════════
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const hoverIndicator = new THREE.Mesh(
+  new THREE.BoxGeometry(CELL_SIZE * 0.95, 0.1, CELL_SIZE * 0.95),
+  new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.3 })
+);
+hoverIndicator.visible = false;
+scene.add(hoverIndicator);
+
+const rangeGeo = new THREE.RingGeometry(0, 1, 32);
+const rangePreview = new THREE.Mesh(rangeGeo, new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.15, side: THREE.DoubleSide }));
+rangePreview.rotation.x = -Math.PI / 2; rangePreview.position.y = 0.05;
+rangePreview.visible = false;
+scene.add(rangePreview);
+
+function getGridFromMouse(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  // Raycast against terrain ground meshes if available, else fallback plane
+  const rayTargets = terrainHandle ? getGroundMeshes(terrainHandle) : [ground];
+  const hit = raycaster.intersectObjects(rayTargets, true);
+  if (!hit.length) {
+    // Fallback: hit the invisible ground plane
+    const fallbackHit = raycaster.intersectObject(ground);
+    if (!fallbackHit.length) return null;
+    const p = fallbackHit[0].point;
+    const gx = Math.floor((p.x + HALF_MAP) / CELL_SIZE);
+    const gz = Math.floor((p.z + HALF_MAP) / CELL_SIZE);
+    if (gx < 0 || gx >= MAP_SIZE || gz < 0 || gz >= MAP_SIZE) return null;
+    return { gx, gz };
+  }
+  const p = hit[0].point;
+  const gx = Math.floor((p.x + HALF_MAP) / CELL_SIZE);
+  const gz = Math.floor((p.z + HALF_MAP) / CELL_SIZE);
+  if (gx < 0 || gx >= MAP_SIZE || gz < 0 || gz >= MAP_SIZE) return null;
+  return { gx, gz };
+}
+
+canvas.addEventListener('mousemove', (e) => {
+  if (state.phase === 'menu' || state.phase === 'gameover') return;
+  const cell = getGridFromMouse(e);
+  if (!cell || !state.selectedBuild) { hoverIndicator.visible = false; rangePreview.visible = false; return; }
+  const pos = cellToWorld(cell.gx, cell.gz);
+  hoverIndicator.position.set(pos.x, pos.y + 0.06, pos.z);
+  hoverIndicator.visible = true;
+
+  const isWallType = ['wall', 'wood_wall', 'stone_wall', 'iron_wall', 'gate'].includes(state.selectedBuild);
+  if (!isWallType && state.selectedBuild !== 'sell') {
+    const def = TOWER_DEFS[state.selectedBuild];
+    if (def?.stats.range > 0) {
+      const elevBonus = currentMap ? getElevationRangeBonus(currentMap, cell.gx, cell.gz) : 0;
+      rangePreview.position.set(pos.x, pos.y + 0.05, pos.z);
+      rangePreview.scale.setScalar(def.stats.range + elevBonus);
+      rangePreview.visible = true;
+    } else { rangePreview.visible = false; }
+  } else { rangePreview.visible = false; }
+});
+
+canvas.addEventListener('click', (e) => {
+  if (state.phase === 'menu' || state.phase === 'gameover' || state.phase === 'paused') return;
+  ensureAudio();
+  const cell = getGridFromMouse(e);
+  if (!cell) return;
+
+  // Check if clicking existing building for upgrade
+  const existing = grid[cell.gx]?.[cell.gz];
+  if (existing && existing.type !== 'castle' && existing.type !== 'decoration' && state.selectedBuild !== 'sell') {
+    showUpgradePanel(existing);
+    return;
+  }
+
+  if (state.selectedBuild === 'sell') {
+    sellBuilding(cell.gx, cell.gz);
+  } else if (state.selectedBuild) {
+    placeBuilding(cell.gx, cell.gz);
+  }
+});
+
+function showUpgradePanel(building) {
+  const panel = document.getElementById('upgrade-panel');
+  const options = document.getElementById('upgrade-options');
+  const title = document.getElementById('upgrade-title');
+  if (!panel || !options) return;
+
+  // Wall tier upgrade system
+  if (building.wallTier) {
+    const tierStats = getWallTierStats(building.wallTier);
+    title.textContent = `${tierStats.name} (HP: ${Math.ceil(building.stats.hp)}/${tierStats.hp})`;
+
+    const nextTier = getNextWallTier(building.wallTier);
+    if (!nextTier) {
+      options.innerHTML = '<div style="color:#888;text-align:center;padding:8px">Max tier</div>';
+      panel.style.display = 'block';
+      return;
+    }
+
+    const upgradeCost = getWallUpgradeCost(building.wallTier);
+    const nextStats = getWallTierStats(nextTier);
+    options.innerHTML = `<div class="upgrade-option clickable" data-wall-tier="${nextTier}">
+      <span>${nextStats.name} (HP:${nextStats.hp}, H:${nextStats.height})</span>
+      <span class="upgrade-cost">${upgradeCost}g</span>
+    </div>`;
+    options.querySelector('.upgrade-option').addEventListener('click', () => {
+      if (!spendGold(upgradeCost)) return;
+      // Upgrade wall tier
+      building.wallTier = nextTier;
+      building.stats.hp = nextStats.hp;
+      building.special = nextStats.special === 'flammable' ? { type: 'flammable' } : null;
+      building.currentAsset = nextStats.asset;
+      // Replace mesh
+      scene.remove(building.mesh);
+      const mesh = getAssetMesh(nextStats.asset, 0.28);
+      mesh.position.copy(cellToWorld(building.gx, building.gz));
+      scene.add(mesh);
+      building.mesh = mesh;
+      playSound('upgrade');
+      panel.style.display = 'none';
+      refreshHUD();
+    });
+    panel.style.display = 'block';
+    return;
+  }
+
+  // Standard tower upgrade system
+  const currentStats = getTowerStats(building.type, building.upgradeLevel, building.branchIndex >= 0 ? building.branchIndex : 0);
+  title.textContent = `${currentStats?.name || building.type} (Lv.${building.upgradeLevel})`;
+
+  const def = building.type === 'wall' ? WALL_DEF : TOWER_DEFS[building.type];
+  const nextUpgrade = def?.upgrades?.[building.upgradeLevel];
+  if (!nextUpgrade) {
+    options.innerHTML = '<div style="color:#888;text-align:center;padding:8px">Max level</div>';
+    panel.style.display = 'block';
+    return;
+  }
+
+  if (nextUpgrade.branches) {
+    options.innerHTML = nextUpgrade.branches.map((branch, idx) =>
+      `<div class="upgrade-option clickable" data-branch="${idx}">
+        <span>${branch.name}</span>
+        <span class="upgrade-cost">${branch.cost}g</span>
+      </div>`
+    ).join('');
+    options.querySelectorAll('.upgrade-option').forEach(el => {
+      el.addEventListener('click', () => {
+        upgradeBuilding(building, parseInt(el.dataset.branch));
+        panel.style.display = 'none';
+      });
+    });
+  } else {
+    options.innerHTML = `<div class="upgrade-option clickable" data-branch="-1">
+      <span>${nextUpgrade.name}</span>
+      <span class="upgrade-cost">${nextUpgrade.cost}g</span>
+    </div>`;
+    options.querySelector('.upgrade-option').addEventListener('click', () => {
+      upgradeBuilding(building, -1);
+      panel.style.display = 'none';
+    });
+  }
+  panel.style.display = 'block';
+}
+
+// ══════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', (e) => {
+  if (state.phase === 'menu') return;
+  ensureAudio();
+  const keyMap = { '1': 'arrow', '2': 'cannon', '3': 'frost', '4': 'lightning', '5': 'buff',
+    '6': 'wood_wall', '7': 'stone_wall', '8': 'iron_wall', '9': 'gate', '0': 'sell',
+    'a': 'house', 'b': 'farm', 'c': 'blacksmith', 'd': 'barracks', 'e': 'church', 'f': 'market' };
+  if (keyMap[e.key]) selectBuild(keyMap[e.key]);
+  if (e.key === 'Escape') {
+    if (state.phase === 'paused') { state.phase = 'build'; togglePause(false); }
+    else if (state.phase !== 'gameover' && state.phase !== 'menu') { state.phase = 'paused'; togglePause(true); }
+    else { selectBuild(null); }
+  }
+  if (e.key === ' ' && state.phase === 'build') startWave();
+  if (e.key === 'm') toggleMute();
+});
+
+// ══════════════════════════════════════════════
+//  UI EVENT WIRING
+// ══════════════════════════════════════════════
+function ensureAudio() {
+  if (!state.audioInitialized) { initAudio(); state.audioInitialized = true; }
+}
+
+// Biome picker — inject into start screen
+const startScreen = document.getElementById('start-screen');
+if (startScreen) {
+  const biomeSection = document.createElement('div');
+  biomeSection.style.cssText = 'margin:12px 0;text-align:center;';
+  biomeSection.innerHTML = `
+    <div style="margin-bottom:8px;font-size:14px;color:#aaa;">Terrain Biome</div>
+    <div id="biome-picker" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+      ${Object.keys(BIOMES).map(name =>
+        `<button class="biome-btn clickable" data-biome="${name}" style="
+          padding:6px 12px;border:2px solid ${name === 'grassland' ? '#f59e0b' : '#555'};
+          border-radius:6px;background:rgba(0,0,0,0.4);color:#fff;cursor:pointer;font-size:12px;
+        ">${name.charAt(0).toUpperCase() + name.slice(1)}</button>`
+      ).join('')}
+    </div>
+    <div style="margin-top:8px;">
+      <label style="font-size:12px;color:#888;">Seed: </label>
+      <input id="seed-input" type="text" placeholder="random" style="
+        width:100px;padding:4px 8px;border:1px solid #555;border-radius:4px;
+        background:rgba(0,0,0,0.4);color:#fff;font-size:12px;text-align:center;
+      "/>
+    </div>
+  `;
+  // Insert before challenge buttons
+  const challengeSection = startScreen.querySelector('.challenge-btn')?.parentElement;
+  if (challengeSection) {
+    startScreen.insertBefore(biomeSection, challengeSection);
+  } else {
+    startScreen.appendChild(biomeSection);
+  }
+
+  // Biome button selection
+  document.querySelectorAll('.biome-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentBiome = btn.dataset.biome;
+      document.querySelectorAll('.biome-btn').forEach(b => b.style.borderColor = '#555');
+      btn.style.borderColor = '#f59e0b';
+    });
+  });
+}
+
+// Start screen — challenge buttons
+document.querySelectorAll('.challenge-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    ensureAudio();
+
+    // Read seed input
+    const seedInput = document.getElementById('seed-input');
+    const seedVal = seedInput?.value?.trim();
+    currentSeed = seedVal ? seedVal : Date.now();
+
+    // Initialize terrain before starting game
+    initTerrain();
+    castleWorldPos = cellToWorld(KEEP_GX + 1, KEEP_GZ + 1);
+
+    setChallenge(btn.dataset.challenge);
+    const challenge = getActiveChallenge();
+    const hp = challenge.multipliers.castleHp || 100;
+    state.hp = hp; state.maxHp = hp;
+    state.gameSpeed = getMultiplier('gameSpeed');
+    createEconomy(200);
+    createStats();
+    hideStartScreen();
+    state.phase = 'build';
+    state.timeSinceWave = 0;
+
+    // Re-init atmosphere with terrain-aware positions
+    createLavaMoat(scene, castleWorldPos.x, castleWorldPos.z, CASTLE_SIZE + 1, CELL_SIZE);
+    const torchPositions = [
+      cellToWorld(CASTLE_GX, CASTLE_GZ), cellToWorld(CASTLE_GX + 5, CASTLE_GZ),
+      cellToWorld(CASTLE_GX, CASTLE_GZ + 5), cellToWorld(CASTLE_GX + 5, CASTLE_GZ + 5)
+    ].map(p => { p.y += 4.5; return p; });
+    createTorches(scene, torchPositions);
+
+    refreshHUD();
+    // Preview first wave using siege wave generator
+    const w1 = generateSiegeWave(1);
+    const counts = {};
+    for (const e of w1) counts[e.type] = (counts[e.type] || 0) + 1;
+    updateWavePreview(Object.entries(counts).map(([type, count]) => ({ type, count })));
+  });
+});
+
+// Inject wall tier + gate buttons into build panel
+const buildPanel = document.getElementById('build-panel');
+if (buildPanel) {
+  const sellBtn = buildPanel.querySelector('[data-action="sell"]');
+
+  // Wall tier buttons
+  const wallTypes = [
+    { key: 'wood_wall', name: 'Wood Wall', cost: 20, color: '#a86', hotkey: '6' },
+    { key: 'stone_wall', name: 'Stone Wall', cost: 60, color: '#999', hotkey: '7' },
+    { key: 'iron_wall', name: 'Iron Wall', cost: 120, color: '#666', hotkey: '8' },
+    { key: 'gate', name: 'Gate', cost: 16, color: '#a72', hotkey: '9' },
+  ];
+  for (const wt of wallTypes) {
+    const btn = document.createElement('button');
+    btn.className = 'build-btn clickable';
+    btn.dataset.tower = wt.key;
+    btn.innerHTML = `<span class="btn-key">${wt.hotkey}</span>
+      <span class="btn-name" style="color:${wt.color}">${wt.name}</span>
+      <span class="btn-cost">${wt.cost}g</span>`;
+    btn.addEventListener('click', () => selectBuild(wt.key));
+    buildPanel.insertBefore(btn, sellBtn);
+  }
+
+  // Add separator before village
+  const sep = document.createElement('div');
+  sep.style.cssText = 'width:2px;height:40px;background:rgba(255,255,255,0.15);margin:0 4px;';
+  buildPanel.insertBefore(sep, sellBtn);
+
+  const villageKeys = Object.keys(VILLAGE_DEFS);
+  const keyStart = 8; // keyboard shortcuts start at 8
+  villageKeys.forEach((key, i) => {
+    const def = VILLAGE_DEFS[key];
+    const btn = document.createElement('button');
+    btn.className = 'build-btn clickable';
+    btn.dataset.village = key;
+    btn.innerHTML = `<span class="btn-key">${String.fromCharCode(97 + i)}</span>
+      <span class="btn-name" style="color:#8f8">${def.name}</span>
+      <span class="btn-cost">${def.cost}g</span>
+      <span style="font-size:9px;color:#888">${def.desc}</span>`;
+    btn.addEventListener('click', () => selectBuild(key));
+    buildPanel.insertBefore(btn, sellBtn);
+  });
+}
+
+// Build panel buttons
+document.querySelectorAll('.build-btn[data-tower]').forEach(btn => {
+  btn.addEventListener('click', () => selectBuild(btn.dataset.tower));
+});
+document.querySelector('.build-btn[data-action="sell"]')?.addEventListener('click', () => selectBuild('sell'));
+
+// Pause menu
+document.getElementById('pause-resume')?.addEventListener('click', () => { state.phase = 'build'; togglePause(false); });
+document.getElementById('pause-restart')?.addEventListener('click', () => location.reload());
+document.getElementById('pause-mute')?.addEventListener('click', (e) => { toggleMute(); e.target.textContent = `Mute: ${isMuted() ? 'ON' : 'OFF'}`; });
+document.getElementById('pause-volume')?.addEventListener('input', (e) => {
+  const v = parseInt(e.target.value) / 100;
+  setVolume(v);
+  document.getElementById('pause-volume-label').textContent = `${e.target.value}%`;
+});
+document.getElementById('go-play-again')?.addEventListener('click', () => location.reload());
+
+// ══════════════════════════════════════════════
+//  HUD REFRESH
+// ══════════════════════════════════════════════
+function refreshHUD() {
+  updateHUD({
+    gold: getGold(),
+    hp: state.hp,
+    maxHp: state.maxHp,
+    wave: state.wave,
+    kills: state.kills,
+    combo: getStats().currentCombo,
+    interestPerTick: getInterestRate(),
+    nextWaveIn: state.phase === 'build' ? Math.max(0, state.waveDelay - state.timeSinceWave) : 0,
+  });
+
+  // Minimap
+  const minimapGrid = grid.map(row => row.map(cell => cell ? 1 : 0));
+  const bldgs = buildings.map(b => ({ x: b.gx, z: b.gz }));
+  const enemyDots = enemies.map(e => {
+    const c = worldToCell(e.worldPos.x, e.worldPos.z);
+    return { x: c.gx, z: c.gz, flying: e.flying };
+  });
+  updateMinimap(minimapGrid, enemyDots, bldgs, { x: CASTLE_GX + 2, z: CASTLE_GZ + 2 });
+}
+
+// ══════════════════════════════════════════════
+//  GAME LOOP
+// ══════════════════════════════════════════════
+const clock = new THREE.Clock();
+let hudTimer = 0;
+
+function update() {
+  let dt = Math.min(clock.getDelta(), 0.05) * state.gameSpeed;
+  if (state.phase === 'menu' || state.phase === 'paused' || state.phase === 'gameover') dt = 0;
+
+  state.gameTime += dt;
+  incrementStat('gameTime', dt);
+
+  // Economy tick
+  const econResult = updateEconomy(dt);
+  if (econResult.interestEarned > 0) playSound('goldPickup');
+
+  // Village production (every 5 seconds)
+  villageProductionTimer += dt;
+  if (villageProductionTimer >= 5) {
+    villageProductionTimer -= 5;
+    let totalVillageGold = 0;
+    for (const vb of villageBuildings) {
+      const prod = vb.def.production;
+      if (prod.gold) { totalVillageGold += prod.gold; }
+      if (prod.heal) { state.hp = Math.min(state.maxHp, state.hp + prod.heal); }
+    }
+    if (totalVillageGold > 0) {
+      earnGold(totalVillageGold);
+      // Show gold particles at castle
+      spawnGoldParticles(scene, castleWorldPos.clone().setY(1), totalVillageGold);
+    }
+  }
+
+  // Blacksmith buff — add to getBuffBoosts calculation (handled inline)
+  // Market interest multiplier — handled via villageBuildings check in interest calc
+
+  // Atmosphere
+  updateAtmosphere(dt);
+
+  // Terrain animation (water, swamp particles)
+  if (terrainHandle) terrainHandle.update(dt);
+
+  // Wall passive damage (arrow slits + machicolation)
+  for (const b of buildings) {
+    if (!b.wallTier) continue;
+    // Find adjacent enemies
+    const wpos = cellToWorld(b.gx, b.gz);
+    const nearby = enemies
+      .map((e, idx) => ({ idx, dist: wpos.distanceTo(e.worldPos) / CELL_SIZE }))
+      .filter(e => e.dist <= 3)
+      .sort((a, c) => a.dist - c.dist);
+    const dmgEvents = getWallPassiveDamage({ tier: b.wallTier }, nearby, dt);
+    for (const evt of dmgEvents) {
+      const target = enemies[nearby[evt.enemyIdx]?.idx];
+      if (target && target.hp > 0) {
+        target.hp -= evt.damage;
+      }
+    }
+  }
+
+  // === BUILD PHASE ===
+  if (state.phase === 'build') {
+    state.timeSinceWave += dt;
+    if (state.timeSinceWave >= state.waveDelay) startWave();
+  }
+
+  // === SPAWN ===
+  if (state.phase === 'wave' && state.spawnQueue.length > 0) {
+    state.spawnTimer += dt;
+    const nextDelay = state.spawnQueue[0].delay;
+    if (state.spawnTimer >= nextDelay) {
+      const entry = state.spawnQueue.shift();
+      spawnEnemy(entry.type);
+    }
+  }
+
+  // === MOVE ENEMIES ===
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const enemy = enemies[i];
+
+    // Slow effect decay
+    if (enemy.slowTimer > 0) {
+      enemy.slowTimer -= dt;
+      if (enemy.slowTimer <= 0) { enemy.slowFactor = 1; enemy.slowTimer = 0; }
+    }
+
+    // Healer aura
+    if (enemy.special?.type === 'heal') {
+      for (const other of enemies) {
+        if (other === enemy || other.hp >= other.maxHp) continue;
+        if (enemy.worldPos.distanceTo(other.worldPos) <= enemy.special.range * CELL_SIZE) {
+          other.hp = Math.min(other.maxHp, other.hp + enemy.special.rate * dt);
+        }
+      }
+    }
+
+    // Boss speed aura
+    if (enemy.special?.type === 'boss' && enemy.special.aura === 'speed') {
+      for (const other of enemies) {
+        if (other === enemy) continue;
+        if (enemy.worldPos.distanceTo(other.worldPos) <= enemy.special.auraRange * CELL_SIZE) {
+          other.speed = other.baseSpeed * (1 + enemy.special.auraBoost);
+        }
+      }
+    }
+
+    // Movement
+    if (enemy.pathIdx >= enemy.path.length - 1) {
+      // Reached castle
+      state.hp -= enemy.damage;
+      recordWaveDamage(enemy.damage);
+      incrementStat('waveDamageTaken', enemy.damage);
+      scene.remove(enemy.mesh);
+      enemies.splice(i, 1);
+      playSound('hit');
+      triggerShake(camera, 0.3, 0.3);
+      if (state.hp <= 0) gameOver();
+      continue;
+    }
+
+    const target = enemy.path[enemy.pathIdx + 1];
+    // Check if next path cell is now blocked (wall placed after spawn)
+    if (!enemy.flying) {
+      const nextCell = grid[target.x]?.[target.z];
+      if (nextCell && nextCell.type !== 'castle' && nextCell.type !== 'decoration') {
+        // Try to find alternate path first
+        const cell = worldToCell(enemy.worldPos.x, enemy.worldPos.z);
+        const newPath = bfs(cell.gx, cell.gz);
+        if (newPath && newPath.length >= 2) {
+          enemy.path = newPath;
+          enemy.pathIdx = 0;
+        } else {
+          // No path exists — castle is fully walled off. Attack nearest wall!
+          const nearestWall = findNearestWall(cell.gx, cell.gz);
+          if (nearestWall) {
+            // Move toward the wall
+            const wallPos = cellToWorld(nearestWall.gx, nearestWall.gz);
+            const dirToWall = wallPos.clone().sub(enemy.worldPos);
+            const distToWall = dirToWall.length();
+
+            if (distToWall < CELL_SIZE * 1.2) {
+              // In range — attack the wall
+              if (!enemy.attackCooldown || enemy.attackCooldown <= 0) {
+                const wallBuilding = grid[nearestWall.gx][nearestWall.gz];
+                if (wallBuilding && wallBuilding.stats) {
+                  const wallDmg = Math.ceil(enemy.damage * 0.5);
+                  wallBuilding.stats.hp = (wallBuilding.stats.hp || 100) - wallDmg;
+                  spawnDamageNumber(scene, camera, wallPos.clone().setY(2), wallDmg, 0xff8800);
+                  flashMesh(wallBuilding.mesh, 0.1);
+                  playSound('hit');
+                  triggerShake(camera, 0.05, 0.08);
+
+                  // Spike wall reflects damage
+                  if (wallBuilding.special?.type === 'reflect') {
+                    enemy.hp -= wallBuilding.special.damage;
+                    spawnDamageNumber(scene, camera, enemy.worldPos.clone().setY(2), wallBuilding.special.damage, 0xff4444);
+                  }
+
+                  // Wall destroyed
+                  if (wallBuilding.stats.hp <= 0) {
+                    const colors = getAssetColors(wallBuilding.currentAsset);
+                    createDeathExplosion(scene, wallPos.clone(), colors, 0.8);
+                    scene.remove(wallBuilding.mesh);
+                    buildings.splice(buildings.indexOf(wallBuilding), 1);
+                    grid[nearestWall.gx][nearestWall.gz] = null;
+                    playSound('enemyDeath');
+                    recalcEnemyPaths(); // paths open up
+                  }
+                }
+                enemy.attackCooldown = 1.0; // 1 hit per second
+              } else {
+                enemy.attackCooldown -= dt;
+              }
+            } else {
+              // Walk toward wall
+              dirToWall.normalize();
+              const spd = enemy.speed * enemy.slowFactor;
+              enemy.worldPos.add(dirToWall.multiplyScalar(Math.min(spd * dt, distToWall)));
+              enemy.mesh.position.copy(enemy.worldPos);
+              enemy.mesh.lookAt(wallPos.x, enemy.worldPos.y, wallPos.z);
+            }
+          }
+        }
+        continue;
+      }
+    }
+
+    const targetPos = cellToWorld(target.x, target.z);
+    if (enemy.flying) targetPos.y = 3;
+    const dir = targetPos.clone().sub(enemy.worldPos);
+    const dist = dir.length();
+
+    // Terrain speed modifier
+    const terrainSpeedMult = (!enemy.flying && currentMap)
+      ? getEnemySpeedMultiplier(currentMap, target.x, target.z) : 1.0;
+    const effectiveSpeed = enemy.speed * enemy.slowFactor * terrainSpeedMult;
+
+    if (dist < 0.15) {
+      enemy.pathIdx++;
+    } else {
+      dir.normalize();
+      enemy.worldPos.add(dir.multiplyScalar(Math.min(effectiveSpeed * dt, dist)));
+      // Snap Y to terrain elevation for ground enemies
+      if (!enemy.flying && currentMap) {
+        const cell = worldToCell(enemy.worldPos.x, enemy.worldPos.z);
+        const cellPos = getCellWorldPos(currentMap, cell.gx, cell.gz);
+        enemy.worldPos.y = cellPos.y;
+      }
+      enemy.mesh.position.copy(enemy.worldPos);
+      enemy.mesh.lookAt(targetPos.x, enemy.worldPos.y, targetPos.z);
+    }
+
+    // Lava damage
+    if (!enemy.flying && isInLava(enemy.worldPos.x, enemy.worldPos.z)) {
+      enemy.hp -= getLavaDamagePerSec() * dt;
+    }
+
+    // Health bar
+    const hpRatio = Math.max(0, enemy.hp / enemy.maxHp);
+    enemy.barFg.scale.x = Math.max(0.01, hpRatio);
+    enemy.barFg.position.x = -(1 - hpRatio) * 0.75;
+    enemy.barFg.material.color.setHex(hpRatio > 0.5 ? 0x22cc22 : hpRatio > 0.25 ? 0xcccc22 : 0xcc2222);
+    enemy.barBg.lookAt(camera.position);
+    enemy.barFg.lookAt(camera.position);
+  }
+
+  // === TOWER FIRING ===
+  for (const b of buildings) {
+    if (!b.stats || b.stats.range <= 0 || b.stats.damage <= 0) continue;
+
+    const boosts = getBuffBoosts(b.gx, b.gz);
+    const effectiveFireRate = b.stats.fireRate * (1 - boosts.speedBoost);
+
+    b.fireCooldown -= dt;
+    if (b.fireCooldown > 0) continue;
+
+    const bpos = cellToWorld(b.gx, b.gz);
+    // Elevation range bonus from terrain
+    const elevBonus = currentMap ? getElevationRangeBonus(currentMap, b.gx, b.gz) : 0;
+    const effectiveRange = b.stats.range + elevBonus;
+    let closest = null, closestDist = Infinity;
+
+    for (const enemy of enemies) {
+      if (enemy.flying && !b.stats.canHitFlying) continue;
+      const d = bpos.distanceTo(enemy.worldPos);
+      if (d <= effectiveRange && d < closestDist) { closest = enemy; closestDist = d; }
+    }
+
+    if (closest) {
+      b.fireCooldown = effectiveFireRate;
+      const effectiveDamage = Math.floor(b.stats.damage * (1 + boosts.damageBoost));
+
+      // Multishot special
+      if (b.special?.type === 'multishot') {
+        const targets = enemies
+          .filter(e => bpos.distanceTo(e.worldPos) <= b.stats.range && (!e.flying || b.stats.canHitFlying))
+          .sort((a, c) => bpos.distanceTo(a.worldPos) - bpos.distanceTo(c.worldPos))
+          .slice(0, b.special.targets);
+        for (const t of targets) createProjectile(bpos, t, effectiveDamage, b.stats.splash, b.type, b.special);
+      } else {
+        createProjectile(bpos, closest, effectiveDamage, b.stats.splash, b.type, b.special);
+      }
+
+      // Sound
+      const soundMap = { arrow: 'arrowShoot', cannon: 'cannonFire', frost: 'frostShoot', lightning: 'lightningZap' };
+      if (soundMap[b.type]) playSound(soundMap[b.type]);
+      if (b.type === 'cannon') triggerShake(camera, 0.08, 0.12);
+    }
+  }
+
+  // === PROJECTILES ===
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const proj = projectiles[i];
+    if (!proj.target || proj.target.hp <= 0) {
+      scene.remove(proj.mesh);
+      removeTrail(scene, proj.trail);
+      projectiles.splice(i, 1);
+      continue;
+    }
+    const dir = proj.target.worldPos.clone().sub(proj.pos);
+    const dist = dir.length();
+    if (dist < 0.5) {
+      // Hit
+      if (proj.splash > 0) {
+        for (const e of enemies) {
+          if (e.worldPos.distanceTo(proj.target.worldPos) <= proj.splash) {
+            dealDamage(e, proj.damage, proj.towerType);
+            applySpecial(e, proj.special);
+          }
+        }
+      } else {
+        dealDamage(proj.target, proj.damage, proj.towerType);
+        applySpecial(proj.target, proj.special);
+      }
+      // Chain lightning
+      if (proj.special?.type === 'chain') handleChainLightning(proj.pos, proj.damage, proj.special, proj.target);
+
+      scene.remove(proj.mesh);
+      removeTrail(scene, proj.trail);
+      projectiles.splice(i, 1);
+    } else {
+      dir.normalize();
+      proj.pos.add(dir.multiplyScalar(proj.speed * dt));
+      proj.mesh.position.copy(proj.pos);
+      updateTrail(proj.trail, proj.pos.clone(), dt);
+    }
+  }
+
+  // === DEAD ENEMIES ===
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    if (enemies[i].hp <= 0) {
+      const dead = enemies[i];
+      const isBoss = dead.special?.type === 'boss';
+
+      // Juice
+      const deadDef = ALL_ENEMY_DEFS[dead.type];
+      const colors = deadDef ? getAssetColors(deadDef.asset) : [9];
+      createDeathExplosion(scene, dead.worldPos.clone(), colors, isBoss ? 1.5 : 1);
+      spawnGoldParticles(scene, dead.worldPos.clone(), dead.reward);
+      playSound(isBoss ? 'enemyDeathBoss' : 'enemyDeath');
+      if (isBoss) { triggerShake(camera, 0.4, 0.5); incrementStat('bossKills'); }
+
+      // Economy
+      const result = earnGold(dead.reward, { isKillGold: true });
+      if (result.isCombo) {
+        showCombo(result.comboCount);
+        incrementStat('currentCombo', 1);
+      }
+      state.kills++;
+      incrementStat('kills');
+      updateStat('gold', getGold());
+
+      // Achievements check
+      const newAch = checkAchievements(getStats());
+      for (const id of newAch) {
+        const ach = ACHIEVEMENTS[id];
+        if (ach) showAchievement(ach.name, ach.desc);
+        state.newAchievements.push(id);
+      }
+
+      scene.remove(dead.mesh);
+      enemies.splice(i, 1);
+    }
+  }
+
+  // === WAVE END ===
+  if (state.phase === 'wave' && state.spawnQueue.length === 0 && enemies.length === 0) {
+    state.phase = 'build';
+    state.timeSinceWave = 0;
+    const bonus = awardWaveBonus(state.wave);
+    updateStat('gold', getGold());
+
+    // Check wave achievements
+    const newAch = checkAchievements(getStats());
+    for (const id of newAch) {
+      const ach = ACHIEVEMENTS[id];
+      if (ach) showAchievement(ach.name, ach.desc);
+      state.newAchievements.push(id);
+    }
+  }
+
+  // Juice & shake updates
+  updateAllJuice(dt);
+  updateShake(camera, dt);
+
+  // HUD refresh throttled
+  hudTimer += dt;
+  if (hudTimer > 0.1) { hudTimer = 0; refreshHUD(); }
+}
+
+function gameOver() {
+  state.phase = 'gameover';
+  const econStats = getEconomyStats();
+  const pos = saveScore({
+    wave: state.wave, kills: state.kills,
+    gold: econStats.totalEarned,
+    challenge: getActiveChallenge().name,
+    time: state.gameTime,
+  });
+  showGameOver({
+    wave: state.wave, kills: state.kills,
+    totalEarned: econStats.totalEarned,
+    gameTime: state.gameTime,
+    newAchievements: state.newAchievements,
+  }, pos);
+}
+
+// ══════════════════════════════════════════════
+//  RENDER LOOP
+// ══════════════════════════════════════════════
+function animate() {
+  requestAnimationFrame(animate);
+  update();
+  controls.update();
+  composer.render();
+}
+animate();
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

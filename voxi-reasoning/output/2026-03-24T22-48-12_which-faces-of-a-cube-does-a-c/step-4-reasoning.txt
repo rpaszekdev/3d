@@ -1,0 +1,51 @@
+## Step 4: Ray Entry Point and Interior Traversal
+
+**What I learned from Step 3:** Face visibility is confirmed. Now I need to verify *which face the ray hits first*. The ray goes from (0,8,0) toward (8,4,8). Let me trace the intersection:
+
+- Ray: origin=(0,8,0), direction=(8,-4,8) normalized
+- Cube: X:6–10, Y:1–5, Z:6–10
+- Z=6 plane hit: t = 6/8 = **0.75** → X=6, Y=5 ✓ (inside cube bounds)
+- X=6 plane hit: t = 6/8 = **0.75** → same t
+- Y=5 plane hit: 8 - 4t = 5 → t = **0.75** → same t again
+
+**All three visible faces are hit simultaneously at the corner (6,5,6).** The ray grazes the front-top-left corner. Interior path follows: (6,4,6) → (7,4,7) → (8,4,8).
+
+```voxi
+V 16 12 16
+
+-- Gray floor
+B 0 0 0 16 1 16 9
+
+-- Cube body (gray) X:6-10, Y:1-5, Z:6-10
+B 6 1 6 4 4 4 9
+
+-- Camera (yellow)
+P 0 8 0 6
+
+-- Ray APPROACH from camera to cube entry corner (cyan)
+P 2 7 2 4
+P 4 6 4 4
+
+-- ENTRY CORNER at (6,5,6) — all 3 visible faces meet here (yellow)
+P 6 5 6 6
+
+-- Ray INTERIOR path through cube (orange)
+P 6 4 6 7
+P 7 4 7 7
+
+-- EXIT/TARGET at (8,4,8) t=1.0 (magenta)
+P 8 4 8 5
+```
+
+CHECK
+
+**What I expect:**
+- Gray cube with a yellow dot at its front-top-left corner (6,5,6)
+- Orange dots tracing diagonally through the cube interior
+- Magenta dot at (8,4,8) deep inside the cube
+- From **top view**: yellow → orange → magenta trace a clear diagonal line in XZ plane
+- From **front view**: yellow is at the top-left corner, orange descends into the cube body
+
+`★ Insight ─────────────────────────────────────`
+The ray hitting all 3 visible faces simultaneously at the corner (t=0.75) is a degenerate case of ray-box intersection. In production ray tracers (like DDA or slab method), you'd take the max of the 3 "entry t" values — here all equal 0.75, so the result is still correct. The corner hit is geometrically exact, not a floating-point accident.
+`─────────────────────────────────────────────────`

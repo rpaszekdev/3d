@@ -1,0 +1,16 @@
+`★ Insight ─────────────────────────────────────`
+In voxel art, a "hole" through an object (like a handle) requires explicit **negative space** — the surrounding frame voxels are placed, but the interior cells are left empty. The renderer won't carve holes automatically. The front-view angle is the single most revealing test for handle depth: if the handle appears as a thin line rather than a solid loop, it lacks Z-depth voxels.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 6
+
+STRENGTHS: The mug body is genuinely well-crafted — a convincing cylindrical form with a lovely white decorative band/stripe wrapping the middle. The handle **does have a real hole** through it (clearly visible in the front-iso, right, and top views), fulfilling the core requirement. The warm tan color (d) reads as ceramic immediately. The top view confirms a proper circular footprint, and the overall silhouette is instantly recognizable as a coffee mug.
+
+ISSUES:
+- **Handle is paper-thin (only ~1–2 voxels deep in Z).** From the front view the handle collapses into a single vertical column — it looks like a post, not a loop. Fix by making the handle 3–4 voxels thick in Z, e.g. replace single-voxel handle columns with `B handleX handleY handleZ 1 2 3 d` (depth=3) for top, bottom, and side bars so it reads as a 3-D loop from all angles.
+- **Handle bottom detaches and floats below the mug base.** The back view reveals a lone 2×2 cube sitting below and separate from the body — the lower attachment of the handle extends past Y=0 or is misaligned. Fix by ensuring the bottom bar of the handle lands at the same Y as the mug's lowest voxels (e.g. Y=1) and connects flush to the mug wall: `B attachX 1 handleZ 1 2 3 d`.
+- **Mug top is fully solid — no open interior.** A coffee mug should have a hollow opening at the top. Currently the top view shows a completely filled disc. Fix by subtracting a central cylinder: remove interior voxels from the top 2–3 rows, or use only a ring of wall voxels, e.g. keep the outer 2-voxel shell and leave the center open so you can "see inside."
+
+PRIORITY_FIX: **Thicken the handle to at least 3 voxels in Z.** Right now it's a flat decal — giving it Z-depth will make the hole readable from every camera angle and transform it from a 2D silhouette trick into a genuine 3D loop.

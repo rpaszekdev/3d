@@ -1,0 +1,26 @@
+V 32 32 32
+
+-- floor platform
+B 6 0 6 20 1 20 d
+
+-- columns (four corners, white)
+C 8 7 8 1 12 8
+C 24 7 8 1 12 8
+C 8 7 24 1 12 8
+C 24 7 24 1 12 8
+
+-- railings between columns
+B 9 4 8 15 1 1 8
+B 9 4 24 15 1 1 8
+B 8 4 9 1 1 15 8
+B 24 4 9 1 1 15 8
+
+-- roof pyramid layers (dark green)
+B 5 13 5 22 1 22 c
+B 7 14 7 18 1 18 c
+B 9 15 9 14 1 14 c
+B 11 16 11 10 1 10 c
+B 13 17 13 6 1 6 c
+
+-- roof peak (yellow)
+B 15 19 15 2 3 2 6

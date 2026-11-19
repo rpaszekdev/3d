@@ -1,0 +1,24 @@
+V 40 12 20
+
+-- bow tip (raised)
+B 4 0 9 4 6 2 a
+-- bow widening section
+B 8 0 8 4 4 4 a
+-- main hull body
+B 12 0 7 16 4 6 a
+-- stern widening section
+B 28 0 8 4 4 4 a
+-- stern tip (raised)
+B 32 0 9 4 6 2 a
+-- dark interior cavity
+B 10 3 8 20 1 4 0
+-- port gunwale
+B 9 4 7 22 1 1 d
+-- starboard gunwale
+B 9 4 13 22 1 1 d
+-- bow thwart
+B 14 3 8 2 1 4 d
+-- center thwart
+B 20 3 8 2 1 4 d
+-- stern thwart
+B 25 3 8 2 1 4 d

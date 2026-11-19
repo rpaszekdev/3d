@@ -1,0 +1,19 @@
+V 24 24 24
+
+-- base layer
+B 2 0 2 20 2 20 d
+
+-- second layer
+B 4 2 4 16 2 16 d
+
+-- third layer
+B 6 4 6 12 2 12 6
+
+-- fourth layer
+B 8 6 8 8 2 8 6
+
+-- fifth layer
+B 10 8 10 4 2 4 7
+
+-- apex
+B 11 10 11 2 2 2 8

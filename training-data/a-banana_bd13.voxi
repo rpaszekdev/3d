@@ -1,0 +1,14 @@
+V 24 16 24
+
+-- stem (brown)
+B 4 9 11 2 2 2 a
+
+-- banana body arc (yellow)
+E 7 9 12 2 3 2 6
+E 10 11 12 3 3 2 6
+E 13 12 12 3 3 2 6
+E 16 11 12 3 3 2 6
+E 18 9 12 2 3 2 6
+
+-- bottom tip (brown)
+S 20 8 12 1 a

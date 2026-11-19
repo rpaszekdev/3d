@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXI Renderer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#141414;--surface:#1c1c1c;--surface2:#242424;--border:#2a2a2a;--text:#fff;--text-mid:#888;--orange:#ff4d00}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden}
+
+.editor-panel{
+  width:45%;display:flex;flex-direction:column;border-right:1px solid var(--border);
+}
+.editor-header{
+  padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;gap:12px;font-size:13px;
+}
+.editor-header span{font-weight:600;letter-spacing:1px;font-family:'JetBrains Mono',monospace}
+.editor-header .time{color:var(--orange);min-width:60px}
+textarea{
+  flex:1;background:var(--surface2);color:var(--text);border:none;
+  padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  line-height:1.7;resize:none;outline:none;tab-size:2;
+}
+.controls{
+  padding:10px 16px;background:var(--surface);border-top:1px solid var(--border);
+  display:flex;gap:10px;align-items:center;
+}
+.controls label{font-size:11px;color:var(--text-mid);font-family:'JetBrains Mono',monospace}
+.controls input[type=range]{flex:1;accent-color:var(--orange)}
+.controls button{
+  background:var(--orange);border:none;border-radius:8px;color:#fff;
+  padding:8px 18px;font-size:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-weight:600;
+}
+.controls button.secondary{background:transparent;border:1px solid var(--border);color:var(--text-mid)}
+.controls button.secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+.viewport{
+  flex:1;display:flex;align-items:center;justify-content:center;position:relative;
+}
+.viewport canvas{display:block}
+.info{
+  position:absolute;top:12px;right:16px;font-size:11px;color:var(--text-mid);
+  font-family:'JetBrains Mono',monospace;text-align:right;line-height:1.8;
+}
+
+/* JSON paste modal */
+.json-modal{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;
+  align-items:center;justify-content:center;
+}
+.json-modal.open{display:flex}
+.json-modal-inner{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:20px;width:600px;max-height:80vh;display:flex;flex-direction:column;gap:12px;
+}
+.json-modal-inner h3{font-size:14px;font-weight:600;color:var(--orange)}
+.json-modal-inner textarea{
+  height:300px;background:var(--surface2);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;
+  resize:none;outline:none;
+}
+.json-modal-inner textarea:focus{border-color:var(--orange)}
+.json-modal-inner .btn-row{display:flex;gap:8px;justify-content:flex-end}
+</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+
+<div class="editor-panel">
+  <div class="editor-header">
+    <span>VOXI</span>
+    <span class="time" id="timeDisplay">T=0.0</span>
+    <div style="flex:1"></div>
+    <button class="secondary" onclick="document.getElementById('jsonModal').classList.add('open')" style="background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-mid);padding:4px 12px;font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace">Paste JSON</button>
+  </div>
+  <textarea id="code" spellcheck="false">V 32 32 32
+DUR 12
+B 0 0 0 32 1 32 9
+S 16 lerp(26,4,clamp((T-3)/2.5,0,1))+abs(sin(max(T-6,0)*3.5))*18*clamp(1-max(T-6,0)*0.15,0,1)*clamp(T-6,0,1) 16 4 1
+E 16 1 16 clamp(T-3,0,1)*(4+clamp(6-T,0,1)*2) 1 clamp(T-3,0,1)*(4+clamp(6-T,0,1)*2) 0</textarea>
+  <div class="controls">
+    <label>T</label>
+    <input type="range" id="slider" min="0" max="12" step="0.05" value="0">
+    <button id="playBtn" onclick="togglePlay()">PLAY</button>
+    <button class="secondary" onclick="resetT()">RESET</button>
+  </div>
+</div>
+
+<div class="viewport" id="viewport">
+  <div class="info" id="info">voxels: 0<br>grid: 0×0×0</div>
+</div>
+
+<div class="json-modal" id="jsonModal">
+  <div class="json-modal-inner">
+    <h3>Paste full JSON response</h3>
+    <textarea id="jsonInput" placeholder='{"title":"...","stages":[...],"chunks":[...],"code":"V 32 32 32\\nDUR 12\\n..."}'></textarea>
+    <div class="btn-row">
+      <button class="secondary" onclick="document.getElementById('jsonModal').classList.remove('open')">Cancel</button>
+      <button onclick="loadJSON()">Load</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+const VC=[0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+
+function tEval(T){
+  const e={T,PI:Math.PI,sin:Math.sin,cos:Math.cos,abs:Math.abs,floor:Math.floor,ceil:Math.ceil,sqrt:Math.sqrt,min:Math.min,max:Math.max,
+    clamp:(x,a,b)=>Math.min(Math.max(x,a),b),lerp:(a,b,t)=>a+(b-a)*t,saw:x=>x-Math.floor(x)};
+  return s=>{if(typeof s==='number')return s;const n=Number(s);if(!isNaN(n)&&s!=='')return n;
+    try{return new Function(...Object.keys(e),`"use strict";return(${s});`)(...Object.values(e))||0}catch{return 0}};
+}
+
+function parseVoxi(code,T){
+  const ev=tEval(T);let W=32,H=32,D=32;const vm=new Map();
+  const set=(x,y,z,c)=>{const ix=Math.round(x),iy=Math.round(y),iz=Math.round(z);if(ix>=0&&ix<W&&iy>=0&&iy<H&&iz>=0&&iz<D)vm.set(`${ix},${iy},${iz}`,Math.min(Math.max(c||9,0),15))};
+  const addB=(px,py,pz,w,h,d,c)=>{for(let x=px;x<px+w;x++)for(let y=py;y<py+h;y++)for(let z=pz;z<pz+d;z++)set(x,y,z,c)};
+  const addS=(cx,cy,cz,r,c)=>{if(r<.1)return;const r2=r*r,ri=Math.ceil(r);for(let x=cx-ri;x<=cx+ri;x++)for(let y=cy-ri;y<=cy+ri;y++)for(let z=cz-ri;z<=cz+ri;z++)if((x-cx)**2+(y-cy)**2+(z-cz)**2<=r2)set(x,y,z,c)};
+  const addC=(cx,cy,cz,r,h,c)=>{if(r<.1||h<.1)return;const r2=r*r,ri=Math.ceil(r);for(let x=cx-ri;x<=cx+ri;x++)for(let z=cz-ri;z<=cz+ri;z++)if((x-cx)**2+(z-cz)**2<=r2)for(let y=cy;y<cy+Math.ceil(h);y++)set(x,y,z,c)};
+  const addK=(cx,cy,cz,r,h,c)=>{if(r<.1||h<.1)return;for(let y=0;y<Math.ceil(h);y++){const rr=r*(1-y/h),rr2=rr*rr,ri=Math.ceil(rr);for(let x=cx-ri;x<=cx+ri;x++)for(let z=cz-ri;z<=cz+ri;z++)if((x-cx)**2+(z-cz)**2<=rr2)set(cx+(x-cx),cy+y,cz+(z-cz),c)}};
+  const addE=(cx,cy,cz,rx,ry,rz,c)=>{if(rx<.1||ry<.1||rz<.1)return;for(let x=cx-Math.ceil(rx);x<=cx+Math.ceil(rx);x++)for(let y=cy-Math.ceil(ry);y<=cy+Math.ceil(ry);y++)for(let z=cz-Math.ceil(rz);z<=cz+Math.ceil(rz);z++)if(((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2<=1)set(x,y,z,c)};
+  const lines=code.split('\n').map(l=>l.replace(/--.*$/,'').trim()).filter(Boolean);
+  for(const l of lines){const m=l.match(/^V\s+(.+)\s+(.+)\s+(.+)/);if(m){W=Math.round(ev(m[1]));H=Math.round(ev(m[2]));D=Math.round(ev(m[3]))}}
+  for(const l of lines){const p=l.split(/\s+/),c=p[0],a=p.slice(1),e=i=>ev(a[i]);
+    switch(c){case'B':addB(e(0),e(1),e(2),e(3),e(4),e(5),e(6));break;case'S':addS(e(0),e(1),e(2),e(3),e(4));break;
+    case'C':addC(e(0),e(1),e(2),e(3),e(4),e(5));break;case'K':addK(e(0),e(1),e(2),e(3),e(4),e(5));break;
+    case'E':addE(e(0),e(1),e(2),e(3),e(4),e(5),e(6));break;case'P':set(e(0),e(1),e(2),e(3));break}}
+  const vx=[];for(const[k,c]of vm){const[x,y,z]=k.split(',').map(Number);vx.push({x,y,z,color:c})}
+  return{W,H,D,voxels:vx};
+}
+
+function buildVoxelMesh(parsed){
+  const{voxels}=parsed;
+  if(!voxels.length)return null;
+  const boxGeo=new THREE.BoxGeometry(0.95,0.95,0.95);
+  const byColor=new Map();
+  for(const v of voxels){
+    if(!byColor.has(v.color))byColor.set(v.color,[]);
+    byColor.get(v.color).push(v);
+  }
+  const group=new THREE.Group();
+  for(const[ci,cvx]of byColor){
+    const mat=new THREE.MeshPhongMaterial({color:VC[ci]||VC[9],shininess:40});
+    const im=new THREE.InstancedMesh(boxGeo,mat,cvx.length);
+    const m=new THREE.Matrix4();
+    cvx.forEach((v,i)=>{m.makeTranslation(v.x+0.5,v.y+0.5,v.z+0.5);im.setMatrixAt(i,m)});
+    im.instanceMatrix.needsUpdate=true;
+    group.add(im);
+  }
+  return group;
+}
+
+// Setup renderer
+const vp=document.getElementById('viewport');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+const DPR=window.devicePixelRatio||1;
+renderer.setPixelRatio(DPR);
+renderer.setClearColor(0x141414,1);
+vp.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(35,1,0.1,500);
+scene.add(new THREE.AmbientLight(0xffffff,1.1));
+scene.add(new THREE.HemisphereLight(0xffffff,0x444444,0.5));
+const dl=new THREE.DirectionalLight(0xffffff,1.8);dl.position.set(30,50,25);scene.add(dl);
+const fl=new THREE.DirectionalLight(0xffffff,0.4);fl.position.set(-20,30,-15);scene.add(fl);
+
+let mesh=null;
+function updateMesh(parsed){
+  if(mesh){scene.remove(mesh);mesh.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()});mesh=null}
+  if(!parsed.voxels.length)return;
+  mesh=buildVoxelMesh(parsed);
+  if(mesh)scene.add(mesh);
+}
+
+function resize(){
+  const w=vp.clientWidth,h=vp.clientHeight;
+  renderer.setSize(w,h);
+  camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+resize();
+
+// State
+const codeEl=document.getElementById('code');
+const slider=document.getElementById('slider');
+const timeDisplay=document.getElementById('timeDisplay');
+const infoEl=document.getElementById('info');
+let playing=false, currentT=0, orbit=0, lastVoxCount=-1;
+
+// Update DUR from code
+function getDur(){
+  const m=codeEl.value.match(/DUR\s+(\d+)/);
+  return m?parseInt(m[1]):12;
+}
+
+window.togglePlay=function(){
+  playing=!playing;
+  document.getElementById('playBtn').textContent=playing?'PAUSE':'PLAY';
+};
+window.resetT=function(){
+  currentT=0;slider.value=0;playing=false;
+  document.getElementById('playBtn').textContent='PLAY';
+};
+
+// JSON loader
+window.loadJSON=function(){
+  const raw=document.getElementById('jsonInput').value.trim();
+  try{
+    const obj=JSON.parse(raw);
+    if(obj.code){
+      codeEl.value=obj.code.replace(/\\n/g,'\n');
+      const dur=getDur();
+      slider.max=dur;
+      currentT=0;slider.value=0;
+      document.getElementById('jsonModal').classList.remove('open');
+    } else {
+      alert('JSON must have a "code" field');
+    }
+  }catch(e){
+    alert('Invalid JSON: '+e.message);
+  }
+};
+
+// Render loop
+let lastCode='', lastT=-1, prevTime=performance.now();
+function tick(){
+  const now=performance.now();
+  const dt=(now-prevTime)/1000;
+  prevTime=now;
+
+  const dur=getDur();
+  slider.max=dur;
+
+  if(playing){
+    currentT+=dt;
+    if(currentT>dur)currentT=0;
+    slider.value=currentT;
+  } else {
+    currentT=parseFloat(slider.value);
+  }
+  timeDisplay.textContent=`T=${currentT.toFixed(1)}`;
+
+  const code=codeEl.value;
+  // Always re-parse when T changes or code changes (animations depend on T)
+  const tChanged=Math.abs(currentT-lastT)>0.001;
+  const parsed=parseVoxi(code,currentT);
+  if(tChanged||code!==lastCode){
+    updateMesh(parsed);
+    lastCode=code;
+    lastT=currentT;
+  }
+  infoEl.innerHTML=`voxels: ${parsed.voxels.length}<br>grid: ${parsed.W}×${parsed.H}×${parsed.D}`;
+
+  const md=Math.max(parsed.W,parsed.H,parsed.D)||32;
+  orbit+=0.005;
+  camera.position.set(parsed.W/2+Math.sin(orbit)*md*2,md*0.8,parsed.D/2+Math.cos(orbit)*md*2);
+  camera.lookAt(parsed.W/2,parsed.H/3,parsed.D/2);
+  renderer.render(scene,camera);
+
+  requestAnimationFrame(tick);
+}
+tick();
+
+// Live update on code change
+codeEl.addEventListener('input',()=>{lastCode=''});
+</script>
+</body>
+</html>

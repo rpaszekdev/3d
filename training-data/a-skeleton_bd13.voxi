@@ -1,0 +1,71 @@
+V 22 40 10
+
+-- skull
+S 11 36 5 2 8
+
+-- jaw
+B 10 33 4 2 1 2 9
+
+-- neck
+C 11 32 5 1 2 8
+
+-- spine
+C 11 18 5 1 13 9
+
+-- left collarbone
+B 5 29 4 5 1 1 8
+
+-- right collarbone
+B 11 29 4 5 1 1 8
+
+-- sternum
+B 10 22 4 2 6 1 8
+
+-- ribs left
+B 7 27 4 3 1 2 8
+B 7 25 4 3 1 2 8
+B 7 23 4 3 1 2 8
+
+-- ribs right
+B 11 27 4 3 1 2 8
+B 11 25 4 3 1 2 8
+B 11 23 4 3 1 2 8
+
+-- pelvis
+B 6 16 4 9 2 2 9
+
+-- left upper arm
+C 5 24 5 1 6 8
+
+-- left lower arm
+C 5 18 5 1 5 8
+
+-- left hand
+B 3 13 4 3 2 2 8
+
+-- right upper arm
+C 17 24 5 1 6 8
+
+-- right lower arm
+C 17 18 5 1 5 8
+
+-- right hand
+B 16 13 4 3 2 2 8
+
+-- left thigh
+C 8 10 5 1 7 8
+
+-- left shin
+C 8 3 5 1 6 8
+
+-- left foot
+B 6 0 4 3 1 3 9
+
+-- right thigh
+C 13 10 5 1 7 8
+
+-- right shin
+C 13 3 5 1 6 8
+
+-- right foot
+B 12 0 4 3 1 3 9

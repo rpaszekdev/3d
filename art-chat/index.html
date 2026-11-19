@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ART-CHAT</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#141414;--surface:#1c1c1c;--surface2:#242424;
+  --border:#2a2a2a;--text:#ffffff;--text-dim:#555;--text-mid:#888;
+  --orange:#ff4d00;--orange-glow:rgba(255,77,0,0.15);
+}
+body{
+  font-family:'Sora',sans-serif;
+  background:var(--bg);color:var(--text);
+  height:100vh;display:flex;flex-direction:column;overflow:hidden;
+}
+
+.header{
+  height:56px;display:flex;align-items:center;gap:16px;
+  padding:0 32px;border-bottom:1px solid var(--border);
+  background:var(--surface);flex-shrink:0;
+}
+.logo{font-size:18px;font-weight:700;letter-spacing:2px;}
+.tagline{font-size:11px;color:var(--text-mid);font-weight:300;}
+
+.demos{
+  padding:12px 32px;display:flex;gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;
+}
+.demos button{
+  background:transparent;border:1px solid var(--border);border-radius:24px;
+  color:var(--text-mid);padding:6px 16px;font-size:12px;cursor:pointer;
+  font-family:'Sora',sans-serif;font-weight:400;transition:all 0.25s;
+}
+.demos button:hover{border-color:var(--orange);color:var(--orange);}
+
+/* Main scroll area */
+.messages{
+  flex:1;overflow-y:auto;padding:0;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+
+/* User message */
+.msg-user{
+  padding:24px 32px;display:flex;justify-content:flex-end;
+}
+.msg-user .bubble{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:16px 16px 4px 16px;padding:12px 20px;
+  font-size:16px;max-width:60%;font-weight:400;
+}
+
+/* Assistant: scroll-synced layout */
+.msg-assistant{
+  position:relative;border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);margin-bottom:20px;
+}
+.msg-inner{
+  display:flex;min-height:80vh;
+}
+
+/* Text chunks column */
+.chunks-col{
+  flex:1;padding:60px 48px 120px 48px;
+}
+.chunk{
+  padding:40px 0;
+  transition:opacity 0.6s ease, transform 0.5s ease;
+  opacity:0.2;
+  transform:translateY(10px);
+}
+.chunk.active{
+  opacity:1;
+  transform:translateY(0);
+}
+.chunk.past{
+  opacity:0.4;
+  transform:translateY(0);
+}
+.chunk p{
+  font-size:22px;line-height:1.75;font-weight:300;
+  max-width:540px;
+}
+.chunk .highlight{
+  color:var(--orange);font-weight:700;
+  text-decoration:underline;text-decoration-color:var(--orange);
+  text-underline-offset:4px;
+}
+.chunk .stage-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--orange);letter-spacing:2px;margin-bottom:12px;
+  text-transform:uppercase;opacity:0;transition:opacity 0.4s;
+}
+.chunk.active .stage-label{opacity:1}
+
+/* 3D viewport column — sticky */
+.three-col{
+  width:50%;position:sticky;top:0;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+}
+.three-col canvas{
+  display:block;
+}
+
+/* Anim bar at bottom of assistant msg */
+.anim-bar{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:center;gap:10px;
+  padding:8px 32px;background:rgba(20,20,20,0.9);
+  border-top:1px solid var(--border);font-size:11px;
+  font-family:'JetBrains Mono',monospace;z-index:10;
+}
+.anim-bar .time{color:var(--text-mid);min-width:50px}
+.anim-bar .stage{color:var(--orange);font-weight:600}
+.anim-bar .title{color:var(--text-mid);flex:1;text-align:right}
+.anim-bar button{
+  background:none;border:1px solid var(--border);border-radius:4px;
+  color:var(--text);width:24px;height:22px;cursor:pointer;font-size:12px;
+}
+.anim-bar button:hover{border-color:var(--orange)}
+
+/* Input */
+.input-bar{
+  flex-shrink:0;border-top:1px solid var(--border);
+  background:var(--surface);padding:14px 32px;display:flex;gap:12px;
+}
+.input-bar input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;color:var(--text);padding:12px 18px;
+  font-size:15px;font-family:'Sora',sans-serif;font-weight:300;outline:none;
+}
+.input-bar input:focus{border-color:var(--orange);}
+.input-bar button{
+  background:var(--orange);border:none;border-radius:12px;
+  color:#fff;padding:12px 24px;font-size:13px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:1px;
+}
+
+/* Main split layout */
+.main-split{
+  flex:1;display:flex;overflow:hidden;
+}
+.robot-panel{
+  width:35%;min-width:300px;max-width:480px;
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.robot-panel canvas{display:block}
+.robot-status{
+  position:absolute;bottom:24px;left:0;right:0;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--text-mid);letter-spacing:1px;text-transform:uppercase;
+  transition:all 0.4s;
+}
+.robot-status.thinking{color:var(--orange)}
+.robot-status.talking{color:var(--orange)}
+.chat-panel{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+}
+
+.welcome{text-align:center;padding:120px 20px;color:var(--text-dim)}
+.welcome h2{font-size:32px;color:var(--text);font-weight:300;margin-bottom:8px}
+.welcome p{font-size:15px;line-height:1.7;max-width:400px;margin:0 auto;font-weight:300}
+
+/* API key area */
+.api-key-area{margin-left:auto;display:flex;gap:6px;align-items:center}
+.key-input{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:6px 12px;font-size:12px;font-family:'Sora',sans-serif;
+  width:180px;outline:none;
+}
+.key-input:focus{border-color:var(--orange)}
+.key-btn{
+  background:transparent;border:1px solid var(--border);border-radius:8px;
+  color:var(--text-mid);padding:6px 14px;font-size:11px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-weight:600;transition:all 0.2s;
+}
+.key-btn:hover{border-color:var(--orange);color:var(--orange)}
+.key-status{font-size:10px;color:var(--orange);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.api-key-area.hidden{display:none}
+
+/* Loading indicator */
+.msg-loading{padding:24px 48px;animation:fadeUp 0.3s ease}
+.msg-loading .dots{
+  display:inline-flex;gap:4px;align-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-mid);
+}
+.msg-loading .dot{
+  width:6px;height:6px;border-radius:50%;background:var(--orange);
+  animation:pulse 1.2s ease-in-out infinite;
+}
+.msg-loading .dot:nth-child(2){animation-delay:0.2s}
+.msg-loading .dot:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,80%,100%{opacity:0.2;transform:scale(0.8)}40%{opacity:1;transform:scale(1.2)}}
+
+/* Error message */
+.msg-error{padding:16px 48px}
+.msg-error .error-text{
+  font-size:14px;color:#e53935;font-family:'JetBrains Mono',monospace;
+  background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.2);
+  border-radius:12px;padding:12px 18px;display:inline-block;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="header">
+  <span class="logo">ART-CHAT</span>
+  <span class="tagline">illustrates its thoughts</span>
+  <div class="api-key-area" id="apiKeyArea">
+    <input type="password" id="apiKeyInput" placeholder="Qwen API key" class="key-input">
+    <button id="apiKeySave" class="key-btn">Set</button>
+  </div>
+  <span class="key-status" id="keyStatus"></span>
+</div>
+<div class="demos" id="demos">
+  <button data-d="quantum">Quantum</button>
+  <button data-d="gravity">Gravity</button>
+  <button data-d="volcano">Volcano</button>
+  <button data-d="tree">Tree growth</button>
+  <button data-d="sorting">Sorting</button>
+  <button data-d="solar">Solar system</button>
+  <button data-d="emotion">Joy</button>
+</div>
+<div class="main-split">
+  <div class="robot-panel" id="robotPanel">
+    <div class="robot-status" id="robotStatus">idle</div>
+  </div>
+  <div class="chat-panel">
+    <div class="messages" id="messages">
+      <div class="welcome">
+        <h2>Ask me anything</h2>
+        <p>I'll explain with words synchronized to living 3D animations. Scroll to explore.</p>
+      </div>
+    </div>
+    <div class="input-bar">
+      <input type="text" id="input" placeholder="Ask anything..." autofocus>
+      <button id="send">SEND</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+const VC=[0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+const DPR=window.devicePixelRatio||1;
+
+// ── Robot Panel ──
+(function initRobot(){
+  const panel=document.getElementById('robotPanel');
+  const statusEl=document.getElementById('robotStatus');
+  const W=panel.clientWidth||400, H=panel.clientHeight||600;
+
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(DPR);renderer.setSize(W,H);renderer.setClearColor(0x1c1c1c,1);
+  panel.insertBefore(renderer.domElement,statusEl);
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(30,W/H,0.1,200);
+  camera.position.set(0,2,18);camera.lookAt(0,1.5,0);
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.8));
+  const dl=new THREE.DirectionalLight(0xffffff,1.5);dl.position.set(5,10,8);scene.add(dl);
+  scene.add(new THREE.HemisphereLight(0x4488ff,0x442200,0.4));
+
+  const C={
+    body:0x2a2a2a, bodyAccent:0xff4d00, head:0x333333,
+    eye:0x00e5ff, eyeOff:0x333333, mouth:0xff4d00,
+    arm:0x3a3a3a, leg:0x3a3a3a, antenna:0xff4d00
+  };
+
+  function box(w,h,d,color){
+    return new THREE.Mesh(
+      new THREE.BoxGeometry(w,h,d),
+      new THREE.MeshPhongMaterial({color,shininess:60})
+    );
+  }
+
+  const robot=new THREE.Group();
+
+  // Head
+  const head=new THREE.Group();
+  const headBox=box(2.4,2,2,C.head);head.add(headBox);
+  // Eyes
+  const eyeL=box(0.45,0.45,0.3,C.eye);eyeL.position.set(-0.55,0.3,1.01);head.add(eyeL);
+  const eyeR=box(0.45,0.45,0.3,C.eye);eyeR.position.set(0.55,0.3,1.01);head.add(eyeR);
+  // Mouth
+  const mouth=box(0.8,0.2,0.3,C.mouth);mouth.position.set(0,-0.45,1.01);head.add(mouth);
+  // Antenna
+  const antennaStick=box(0.15,0.8,0.15,C.arm);antennaStick.position.set(0,1.4,0);head.add(antennaStick);
+  const antennaBall=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,8),new THREE.MeshPhongMaterial({color:C.antenna,emissive:C.antenna,emissiveIntensity:0.5}));
+  antennaBall.position.set(0,1.9,0);head.add(antennaBall);
+  head.position.set(0,4.2,0);
+  robot.add(head);
+
+  // Body
+  const body=new THREE.Group();
+  const torso=box(2.8,3,2,C.body);body.add(torso);
+  const chest=box(1.8,0.3,0.1,C.bodyAccent);chest.position.set(0,0.5,1.01);body.add(chest);
+  const chest2=box(1.2,0.3,0.1,C.bodyAccent);chest2.position.set(0,0,1.01);body.add(chest2);
+  const belly=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,8),new THREE.MeshPhongMaterial({color:C.antenna,emissive:C.antenna,emissiveIntensity:0.3}));
+  belly.position.set(0,-0.6,1.01);body.add(belly);
+  body.position.set(0,1.8,0);
+  robot.add(body);
+
+  // Arms
+  const armL=new THREE.Group();
+  const armLBox=box(0.6,2.2,0.6,C.arm);armLBox.position.set(0,-1,0);armL.add(armLBox);
+  const handL=box(0.7,0.5,0.7,C.head);handL.position.set(0,-2.2,0);armL.add(handL);
+  armL.position.set(-2,3,0);
+  robot.add(armL);
+
+  const armR=new THREE.Group();
+  const armRBox=box(0.6,2.2,0.6,C.arm);armRBox.position.set(0,-1,0);armR.add(armRBox);
+  const handR=box(0.7,0.5,0.7,C.head);handR.position.set(0,-2.2,0);armR.add(handR);
+  armR.position.set(2,3,0);
+  robot.add(armR);
+
+  // Legs
+  const legL=box(0.8,1.8,0.8,C.leg);legL.position.set(-0.7,-1,0);robot.add(legL);
+  const legR=box(0.8,1.8,0.8,C.leg);legR.position.set(0.7,-1,0);robot.add(legR);
+  const footL=box(1,0.4,1.2,C.head);footL.position.set(-0.7,-2.1,0.2);robot.add(footL);
+  const footR=box(1,0.4,1.2,C.head);footR.position.set(0.7,-2.1,0.2);robot.add(footR);
+
+  robot.scale.set(0.45,0.45,0.45);
+  scene.add(robot);
+
+  // State machine
+  let state='idle';
+  let t=0;
+
+  window.setRobotState=function(s){
+    state=s;
+    statusEl.textContent=s==='idle'?'ready':s==='thinking'?'thinking...':s==='talking'?'presenting':'ready';
+    statusEl.className='robot-status'+(s==='thinking'?' thinking':s==='talking'?' talking':'');
+  };
+
+  function tick(){
+    t+=0.016;
+
+    // Idle: gentle bob + slow breathe
+    if(state==='idle'){
+      robot.position.y=Math.sin(t*1.2)*0.15;
+      robot.rotation.y=Math.sin(t*0.3)*0.1;
+      head.rotation.z=Math.sin(t*0.8)*0.03;
+      head.rotation.x=Math.sin(t*0.5)*0.05;
+      armL.rotation.z=0.15+Math.sin(t*0.7)*0.05;
+      armR.rotation.z=-0.15+Math.sin(t*0.7+1)*0.05;
+      armL.rotation.x=0;armR.rotation.x=0;
+      mouth.scale.y=1;
+      antennaBall.material.emissiveIntensity=0.3+Math.sin(t*2)*0.2;
+    }
+
+    // Thinking: head tilt, antenna pulse, arms crossed
+    if(state==='thinking'){
+      robot.position.y=Math.sin(t*0.8)*0.1;
+      robot.rotation.y=Math.sin(t*0.2)*0.05;
+      head.rotation.z=0.15+Math.sin(t*2)*0.05;
+      head.rotation.x=-0.1;
+      armL.rotation.z=0.5+Math.sin(t*3)*0.1;
+      armR.rotation.z=-0.3;
+      armR.rotation.x=-0.5;
+      antennaBall.material.emissiveIntensity=0.5+Math.sin(t*6)*0.5;
+      eyeL.material.color.setHex(t%0.6<0.3?C.eye:C.eyeOff);
+      eyeR.material.color.setHex(t%0.6<0.3?C.eye:C.eyeOff);
+      mouth.scale.y=0.5;
+    }
+
+    // Talking: gestures, mouth animation, bouncy
+    if(state==='talking'){
+      robot.position.y=Math.sin(t*2)*0.2;
+      robot.rotation.y=Math.sin(t*0.5)*0.15;
+      head.rotation.z=Math.sin(t*1.5)*0.08;
+      head.rotation.x=Math.sin(t*1)*0.06;
+      armL.rotation.z=0.3+Math.sin(t*2.5)*0.4;
+      armL.rotation.x=Math.sin(t*2)*0.3;
+      armR.rotation.z=-0.2+Math.sin(t*1.8+1)*0.3;
+      armR.rotation.x=Math.sin(t*2.2+0.5)*0.2;
+      mouth.scale.y=0.5+Math.abs(Math.sin(t*8))*1.5;
+      antennaBall.material.emissiveIntensity=0.8;
+      eyeL.material.color.setHex(C.eye);
+      eyeR.material.color.setHex(C.eye);
+    }
+
+    renderer.render(scene,camera);
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Handle resize
+  const ro=new ResizeObserver(()=>{
+    const w=panel.clientWidth,h=panel.clientHeight;
+    renderer.setSize(w,h);
+    camera.aspect=w/h;camera.updateProjectionMatrix();
+  });
+  ro.observe(panel);
+})();
+
+// ── T-eval ──
+function tEval(T){
+  const e={T,PI:Math.PI,sin:Math.sin,cos:Math.cos,abs:Math.abs,floor:Math.floor,ceil:Math.ceil,sqrt:Math.sqrt,min:Math.min,max:Math.max,
+    clamp:(x,a,b)=>Math.min(Math.max(x,a),b),lerp:(a,b,t)=>a+(b-a)*t,saw:x=>x-Math.floor(x)};
+  return s=>{if(typeof s==='number')return s;const n=Number(s);if(!isNaN(n)&&s!=='')return n;
+    try{return new Function(...Object.keys(e),`"use strict";return(${s});`)(...Object.values(e))||0}catch{return 0}};
+}
+
+// ── VOXI parser ──
+function parseVoxi(code,T){
+  const ev=tEval(T);let W=16,H=16,D=16;const vm=new Map();
+  const set=(x,y,z,c)=>{const ix=Math.round(x),iy=Math.round(y),iz=Math.round(z);if(ix>=0&&ix<W&&iy>=0&&iy<H&&iz>=0&&iz<D)vm.set(`${ix},${iy},${iz}`,Math.min(Math.max(c||9,0),15))};
+  const addB=(px,py,pz,w,h,d,c)=>{for(let x=px;x<px+w;x++)for(let y=py;y<py+h;y++)for(let z=pz;z<pz+d;z++)set(x,y,z,c)};
+  const addS=(cx,cy,cz,r,c)=>{if(r<.1)return;const r2=r*r,ri=Math.ceil(r);for(let x=cx-ri;x<=cx+ri;x++)for(let y=cy-ri;y<=cy+ri;y++)for(let z=cz-ri;z<=cz+ri;z++)if((x-cx)**2+(y-cy)**2+(z-cz)**2<=r2)set(x,y,z,c)};
+  const addC=(cx,cy,cz,r,h,c)=>{if(r<.1||h<.1)return;const r2=r*r,ri=Math.ceil(r);for(let x=cx-ri;x<=cx+ri;x++)for(let z=cz-ri;z<=cz+ri;z++)if((x-cx)**2+(z-cz)**2<=r2)for(let y=cy;y<cy+Math.ceil(h);y++)set(x,y,z,c)};
+  const addK=(cx,cy,cz,r,h,c)=>{if(r<.1||h<.1)return;for(let y=0;y<Math.ceil(h);y++){const rr=r*(1-y/h),rr2=rr*rr,ri=Math.ceil(rr);for(let x=cx-ri;x<=cx+ri;x++)for(let z=cz-ri;z<=cz+ri;z++)if((x-cx)**2+(z-cz)**2<=rr2)set(cx+(x-cx),cy+y,cz+(z-cz),c)}};
+  const addE=(cx,cy,cz,rx,ry,rz,c)=>{if(rx<.1||ry<.1||rz<.1)return;for(let x=cx-Math.ceil(rx);x<=cx+Math.ceil(rx);x++)for(let y=cy-Math.ceil(ry);y<=cy+Math.ceil(ry);y++)for(let z=cz-Math.ceil(rz);z<=cz+Math.ceil(rz);z++)if(((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2<=1)set(x,y,z,c)};
+  const lines=code.split('\n').map(l=>l.replace(/--.*$/,'').trim()).filter(Boolean);
+  for(const l of lines){const m=l.match(/^V\s+(.+)\s+(.+)\s+(.+)/);if(m){W=Math.round(ev(m[1]));H=Math.round(ev(m[2]));D=Math.round(ev(m[3]))}}
+  for(const l of lines){const p=l.split(/\s+/),c=p[0],a=p.slice(1),e=i=>ev(a[i]);
+    switch(c){case'B':addB(e(0),e(1),e(2),e(3),e(4),e(5),e(6));break;case'S':addS(e(0),e(1),e(2),e(3),e(4));break;
+    case'C':addC(e(0),e(1),e(2),e(3),e(4),e(5));break;case'K':addK(e(0),e(1),e(2),e(3),e(4),e(5));break;
+    case'E':addE(e(0),e(1),e(2),e(3),e(4),e(5),e(6));break;case'P':set(e(0),e(1),e(2),e(3));break}}
+  const vx=[];for(const[k,c]of vm){const[x,y,z]=k.split(',').map(Number);vx.push({x,y,z,color:c})}
+  return{W,H,D,voxels:vx};
+}
+
+// ── Instanced Voxel Renderer ──
+function buildVoxelMesh(parsed){
+  const{voxels}=parsed;
+  if(!voxels.length)return null;
+  const boxGeo=new THREE.BoxGeometry(0.95,0.95,0.95);
+  const byColor=new Map();
+  for(const v of voxels){
+    if(!byColor.has(v.color))byColor.set(v.color,[]);
+    byColor.get(v.color).push(v);
+  }
+  const group=new THREE.Group();
+  for(const[ci,cvx]of byColor){
+    const mat=new THREE.MeshPhongMaterial({color:VC[ci]||VC[9],shininess:40});
+    const im=new THREE.InstancedMesh(boxGeo,mat,cvx.length);
+    const m=new THREE.Matrix4();
+    cvx.forEach((v,i)=>{m.makeTranslation(v.x+0.5,v.y+0.5,v.z+0.5);im.setMatrixAt(i,m)});
+    im.instanceMatrix.needsUpdate=true;
+    group.add(im);
+  }
+  return group;
+}
+
+// ── Build scroll-synced message ──
+function createMsg(data){
+  const {code, stages, chunks, title} = data;
+  const msgDiv=document.createElement('div');msgDiv.className='msg-assistant';msgDiv.style.animation='fadeUp 0.4s ease';
+  const inner=document.createElement('div');inner.className='msg-inner';
+
+  // Text chunks column
+  const chunksCol=document.createElement('div');chunksCol.className='chunks-col';
+  const chunkEls=[];
+  chunks.forEach((c,i)=>{
+    const div=document.createElement('div');div.className='chunk';div.dataset.stage=i;
+    const label=document.createElement('div');label.className='stage-label';
+    label.textContent=stages[i]?.name||`Part ${i+1}`;
+    const p=document.createElement('p');
+    // Parse highlights: **text** → <span class="highlight">text</span>
+    p.innerHTML=c.replace(/\*\*(.+?)\*\*/g,'<span class="highlight">$1</span>');
+    div.append(label,p);
+    chunksCol.appendChild(div);
+    chunkEls.push(div);
+  });
+
+  // 3D viewport column (sticky)
+  const threeCol=document.createElement('div');threeCol.className='three-col';
+  const sz=480;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(DPR);renderer.setSize(sz,sz);renderer.setClearColor(0x000000,0);
+  threeCol.appendChild(renderer.domElement);
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(35,1,.1,500);
+  scene.add(new THREE.AmbientLight(0xffffff,1.1));
+  scene.add(new THREE.HemisphereLight(0xffffff,0x444444,.5));
+  const dl=new THREE.DirectionalLight(0xffffff,1.8);dl.position.set(30,50,25);scene.add(dl);
+  const fl=new THREE.DirectionalLight(0xffffff,.4);fl.position.set(-20,30,-15);scene.add(fl);
+
+  let mesh=null;
+  function updateMesh(parsed){
+    if(mesh){scene.remove(mesh);mesh.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()});mesh=null}
+    if(!parsed.voxels.length)return;
+    mesh=buildVoxelMesh(parsed);
+    if(mesh)scene.add(mesh);
+  }
+
+  inner.append(chunksCol,threeCol);
+  msgDiv.appendChild(inner);
+
+  // Anim bar
+  const bar=document.createElement('div');bar.className='anim-bar';
+  const ts=document.createElement('span');ts.className='time';
+  const ss=document.createElement('span');ss.className='stage';
+  const tt=document.createElement('span');tt.className='title';tt.textContent=title||'';
+  bar.append(ts,ss,tt);
+  msgDiv.appendChild(bar);
+
+  // State
+  const dur=parseInt(code.match(/DUR\s+(\d+)/)?.[1]||'10');
+  let targetT=stages[0]?.start||0, currentT=0, orbit=0, lastN=-1;
+
+  const scrollContainer=document.getElementById('messages');
+
+  // Compute T from scroll position within chunks — continuous, not jumpy
+  function updateFromScroll(){
+    const containerRect=scrollContainer.getBoundingClientRect();
+    const viewCenter=containerRect.top+containerRect.height*0.45; // slightly above center
+
+    // Find which chunk the view center is in, and how far through it
+    let activeIdx=0;
+    let progress=0;
+
+    for(let i=0;i<chunkEls.length;i++){
+      const rect=chunkEls[i].getBoundingClientRect();
+      if(viewCenter>=rect.top && viewCenter<=rect.bottom){
+        activeIdx=i;
+        progress=(viewCenter-rect.top)/(rect.bottom-rect.top);
+        break;
+      } else if(viewCenter<rect.top){
+        activeIdx=Math.max(0,i-1);
+        progress=1;
+        break;
+      } else {
+        activeIdx=i;
+        progress=1;
+      }
+    }
+
+    // Map to continuous T: interpolate within the stage's time range
+    if(stages[activeIdx]){
+      const s=stages[activeIdx];
+      targetT=s.start+(s.end-s.start)*Math.min(progress,1);
+    }
+
+    // Update chunk styles
+    chunkEls.forEach((el,i)=>{
+      el.classList.remove('active','past');
+      if(i===activeIdx) el.classList.add('active');
+      else if(i<activeIdx) el.classList.add('past');
+    });
+  }
+
+  // Listen to scroll events on the messages container
+  scrollContainer.addEventListener('scroll',updateFromScroll,{passive:true});
+
+  // Initialize: first chunk active, T=start of first stage
+  setTimeout(()=>{
+    chunkEls[0]?.classList.add('active');
+    targetT=stages[0]?.start||0;
+    currentT=targetT;
+    updateFromScroll();
+  },50);
+
+  // Render loop
+  function tick(){
+    if(!msgDiv.isConnected){observer.disconnect();return}
+
+    // Smooth lerp T toward target — fast enough to feel connected
+    currentT+=(targetT-currentT)*0.08;
+
+    ts.textContent=`${currentT.toFixed(1)}s`;
+    const stg=stages.find(s=>currentT>=s.start&&currentT<s.end);
+    ss.textContent=stg?stg.name:'';
+
+    const parsed=parseVoxi(code,currentT);
+    updateMesh(parsed);
+
+    const md=Math.max(parsed.W,parsed.H,parsed.D);
+    orbit+=.003;
+    camera.position.set(parsed.W/2+Math.sin(orbit)*md*2.5,md*.85,parsed.D/2+Math.cos(orbit)*md*2.5);
+    camera.lookAt(parsed.W/2,parsed.H/3,parsed.D/2);
+    camera.updateProjectionMatrix();
+    renderer.render(scene,camera);
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  return msgDiv;
+}
+
+// ── Demos with chunked text ──
+const D={
+quantum:{q:"Explain quantum superposition",
+  title:"Superposition",
+  stages:[{start:0,end:4,name:"The Box"},{start:4,end:8,name:"Superposition"},{start:8,end:12,name:"Collapse"}],
+  chunks:[
+    "Schrödinger imagined a cat sealed in a box with a poison vial triggered by a **radioactive atom**. The box is closed. You cannot see inside.",
+    "Without looking, the cat is genuinely **both alive and dead** at once. Not unknown — both states existing simultaneously. This is superposition.",
+    "Open the box and the superposition **collapses**. Measurement doesn't reveal reality — it decides it. This is the foundation of quantum computing.",
+  ],
+  code:`V 16 16 16\nDUR 12\nB 2 1 2 12 1 12 9\nB 2 1 2 1 12 12 9\nB 13 1 2 1 12 12 9\nB 2 1 2 12 12 1 9\nB 2 1 13 12 12 1 9\nB 2 12 2 12 1 12 9\nS 8 5 8 clamp(4-T,0,1)*3 2\nS 6 5 8 clamp(T-4,0,1)*clamp(8-T,0,1)*abs(sin(T*5))*2.5 2\nS 10 5 8 clamp(T-4,0,1)*clamp(8-T,0,1)*abs(cos(T*5))*2.5 1\nS 8 5 8 clamp(T-8,0,1)*3 2\nC 4 2 4 1 clamp(8-T,0,1)*3 6`},
+
+gravity:{q:"How does gravity work?",
+  title:"Gravity",
+  stages:[{start:0,end:3,name:"Suspended"},{start:3,end:7,name:"Free Fall"},{start:7,end:12,name:"Bounce"}],
+  chunks:[
+    "A ball hangs motionless in the air. Gravity isn't a force pulling it down — it's **spacetime curving** around mass.",
+    "Released, it **accelerates** — each moment falling faster than the last. That's 9.8 m/s², the signature of Earth's gravitational field.",
+    "It **bounces**. Energy returns but less each time. Remove the floor entirely and you'd be weightless, even right next to Earth.",
+  ],
+  code:`V 16 16 16\nDUR 12\nB 0 0 0 16 1 16 9\nS 8 lerp(13,2,clamp((T-3)/2.5,0,1))+abs(sin(max(T-6,0)*3.5))*9*clamp(1-max(T-6,0)*0.15,0,1)*clamp(T-6,0,1) 8 2 1\nE 8 1 8 clamp(T-3,0,1)*(2+clamp(6-T,0,1)) 1 clamp(T-3,0,1)*(2+clamp(6-T,0,1)) 0`},
+
+volcano:{q:"How do volcanoes erupt?",
+  title:"Volcano",
+  stages:[{start:0,end:5,name:"Pressure"},{start:5,end:8,name:"Eruption"},{start:8,end:12,name:"Aftermath"}],
+  chunks:[
+    "Magma builds pressure in an **underground chamber**. The mountain sits quiet, but beneath the surface, molten rock is rising.",
+    "When pressure exceeds the strength of the rock above — it **erupts**. Lava, ash, and gas explode upward with devastating force.",
+    "The **ash cloud** rises 20 km into the atmosphere. Pyroclastic flows race downhill at 700 km/h. The landscape is transformed.",
+  ],
+  code:`V 20 20 20\nDUR 12\nK 10 0 10 8 12 9\nE 10 0 10 4 2 4 1\nC 10 0 10 1 clamp(T,0,1)*8 1\nS 10 12+clamp(T-5,0,1)*6 10 clamp(T-5,0,1)*clamp(8-T,0,1)*2 1\nS 9 12+clamp(T-5.3,0,1)*5 9 clamp(T-5.3,0,1)*clamp(8.5-T,0,1)*1.5 6\nS 11 12+clamp(T-5.5,0,1)*7 11 clamp(T-5.5,0,1)*clamp(9-T,0,1)*1 7\nS 10 lerp(14,18,clamp((T-6)/3,0,1)) 10 clamp(T-6,0,1)*5 9\nE 10+clamp(T-7,0,1)*4 lerp(10,2,clamp((T-7)/3,0,1)) 10 clamp(T-7,0,1)*1.5 clamp(T-7,0,1)*1 clamp(T-7,0,1)*1.5 1`},
+
+tree:{q:"How does a tree grow?",
+  title:"Growth",
+  stages:[{start:0,end:3,name:"Seed"},{start:3,end:7,name:"Sprouting"},{start:7,end:12,name:"Canopy"}],
+  chunks:[
+    "A **seed** sits in the soil. Inside: a tiny embryo and stored food. Water seeps in and triggers germination.",
+    "Roots push down. A stem pushes up toward light. The trunk **grows thicker**, reaching for the sky.",
+    "Leaves unfurl and begin **photosynthesis** — turning sunlight into sugar. A tree is a solar-powered factory rooted in place.",
+  ],
+  code:`V 16 20 16\nDUR 12\nB 0 0 0 16 1 16 7\nE 8 1 8 clamp(3-T,0,1)*1 clamp(3-T,0,1)*0.5 clamp(3-T,0,1)*1 7\nC 8 1 8 clamp(T-2,0,1)*1.5 clamp(T-2,0,1)*10 7\nS 8 lerp(6,12,clamp((T-5)/3,0,1)) 8 clamp(T-5,0,1)*4 2\nS 8 lerp(8,15,clamp((T-6)/3,0,1)) 8 clamp(T-6,0,1)*3 2\nS 8 lerp(10,17,clamp((T-7)/3,0,1)) 8 clamp(T-7,0,1)*2 2\nC 8 0 8 clamp(T-1,0,1)*3 1 7`},
+
+sorting:{q:"How does sorting work?",
+  title:"Bubble Sort",
+  stages:[{start:0,end:3,name:"Unsorted"},{start:3,end:7,name:"Comparing"},{start:7,end:10,name:"Sorted"}],
+  chunks:[
+    "Five blocks sit in **random order**. Each has a different height. The goal: arrange them smallest to largest.",
+    "Bubble sort **compares neighbors** and swaps them if they're wrong. Each pass, the largest unsorted element bubbles to its place.",
+    "After enough passes, everything is **sorted**. Simple but O(n²) — fine for 10 items, catastrophic for a million.",
+  ],
+  code:`V 16 16 16\nDUR 10\nB 0 0 0 16 1 16 0\nB lerp(1,10,clamp((T-3)/4,0,1)) 1 5 2 4 4 1\nB lerp(4,4,clamp((T-3)/4,0,1)) 1 5 2 2 4 2\nB lerp(7,13,clamp((T-3)/4,0,1)) 1 5 2 5 4 3\nB lerp(10,1,clamp((T-3)/4,0,1)) 1 5 2 1 4 6\nB lerp(13,7,clamp((T-3)/4,0,1)) 1 5 2 3 4 4\nS lerp(2,14,saw(T*0.4))*clamp(7-T,0,1) 12 8 1 5`},
+
+solar:{q:"Explain the solar system",
+  title:"Solar System",
+  stages:[{start:0,end:4,name:"The Sun"},{start:4,end:8,name:"Rocky Worlds"},{start:8,end:15,name:"Gas Giants"}],
+  chunks:[
+    "At the center: **the Sun**. A star so massive it bends spacetime around it, holding eight planets in orbit for 4.6 billion years.",
+    "The **inner rocky planets** — Mercury, Venus, Earth, Mars — are small, dense, and close. Mercury screams around in just 88 days.",
+    "The **gas giants** — Jupiter and Saturn — dominate the outer system. Jupiter alone is 1,300 times Earth's volume. Saturn's rings span 280,000 km.",
+  ],
+  code:`V 32 16 32\nDUR 15\nS 16 8 16 3+sin(T*2)*0.3 6\nS 16+sin(T*3)*5 8 16+cos(T*3)*5 clamp(T-4,0,1)*1 9\nS 16+sin(T*2.2)*7 8 16+cos(T*2.2)*7 clamp(T-4.5,0,1)*1 7\nS 16+sin(T*1.8)*9 8 16+cos(T*1.8)*9 clamp(T-5,0,1)*1.2 3\nS 16+sin(T*1.4)*11 8 16+cos(T*1.4)*11 clamp(T-5.5,0,1)*0.8 1\nS 16+sin(T*0.7)*15 8 16+cos(T*0.7)*15 clamp(T-8,0,1)*2.5 7\nS 16+sin(T*0.5)*20 8 16+cos(T*0.5)*20 clamp(T-9,0,1)*2 6\nE 16+sin(T*0.5)*20 8 16+cos(T*0.5)*20 clamp(T-9,0,1)*3.5 clamp(T-9,0,1)*0.3 clamp(T-9,0,1)*3.5 9`},
+
+emotion:{q:"What is joy?",
+  title:"Joy",
+  stages:[{start:0,end:4,name:"Stillness"},{start:4,end:8,name:"Spark"},{start:8,end:14,name:"Radiance"}],
+  chunks:[
+    "Joy begins as a single **still point**. A contained feeling, not yet expressed. Just potential.",
+    "Then a **spark** catches. Dopamine floods the prefrontal cortex. Your visual field literally widens. Social circuits activate.",
+    "Joy **radiates outward** until it touches everything. Your smile triggers smiles. Your laughter triggers laughter. It cannot be contained.",
+  ],
+  code:`V 16 16 16\nDUR 14\nS 8 8 8 1+clamp(T-4,0,1)*2 6\nS 8 8 8 clamp(T-5,0,1)*(3+sin(T*3)*0.8) 7\nS 8+sin(T*2.1)*clamp(T-6,0,1)*6 8+cos(T*2.1)*clamp(T-6,0,1)*4 8 clamp(T-6,0,1)*0.8 6\nS 8+sin(T*2.1+2)*clamp(T-6.3,0,1)*5 8 8+cos(T*2.1+2)*clamp(T-6.3,0,1)*6 clamp(T-6.3,0,1)*0.8 7\nS 8 8+sin(T*1.8)*clamp(T-6.6,0,1)*5 8+cos(T*1.8)*clamp(T-6.6,0,1)*5 clamp(T-6.6,0,1)*0.8 6\nE 8 8 8 clamp(T-8,0,1)*(5+sin(T*2)) clamp(T-8,0,1)*(5+sin(T*2)) clamp(T-8,0,1)*(5+sin(T*2)) 6\nS 8+sin(T*3)*clamp(T-10,0,1)*7 8+cos(T*2.5)*clamp(T-10,0,1)*7 8+sin(T*1.7+1)*clamp(T-10,0,1)*7 clamp(T-10,0,1)*0.5 8`},
+};
+
+// ── System Prompt for Gemini ──
+const SYSTEM_PROMPT=`You are ART-CHAT. You explain concepts with synchronized 3D voxel animations.
+
+OUTPUT FORMAT: Return ONLY valid JSON — no markdown fences, no explanation, no extra text.
+
+VOXI LANGUAGE:
+V W H D — grid size (ALWAYS use 32 32 32)
+DUR N — duration in seconds (ALWAYS use 12)
+B x y z w h d color — box (position + width/height/depth + color)
+S cx cy cz r color — sphere (center + radius + color)
+K cx cy cz r h color — cone (center + radius + height + color)
+C cx cy cz r h color — cylinder (center + radius + height + color)
+E cx cy cz rx ry rz color — ellipsoid (center + 3 radii + color)
+Colors: 0=black 1=red 2=green 3=blue 4=cyan 5=magenta 6=yellow 7=orange 8=white 9=gray 10=brown 11=pink 12=dark-green 13=tan 14=dark-red 15=navy
+
+T-EXPRESSIONS: Every number can be a T-expression (T = time 0-12):
+- clamp(T-5,0,1) — equals 0 before T=5, ramps to 1 at T=6, stays 1 after
+- clamp(8-T,0,1) — equals 1 before T=7, ramps to 0 at T=8 (fade OUT)
+- lerp(2,10,clamp((T-3)/4,0,1)) — move from 2 to 10 starting at T=3 over 4 seconds
+- sin(T*2)*3 — oscillate with amplitude 3
+- 8+sin(T*1.5)*5 — orbit around center 8 with radius 5
+Functions: sin, cos, clamp, lerp, abs, floor, ceil, sqrt, min, max, saw, PI
+
+CRITICAL ANIMATION RULES:
+- To make object APPEAR at time X: use clamp(T-X,0,1) as its radius/size
+- To make object DISAPPEAR at time X: multiply size by clamp(X-T,0,1)
+- To MOVE object: use lerp(from, to, clamp((T-start)/duration, 0, 1)) for position
+- To ORBIT: use center+sin(T*speed)*radius for x, center+cos(T*speed)*radius for z
+- Stage 1 (T=0-4): show objects for first chunk only
+- Stage 2 (T=4-8): transition, add new objects with clamp(T-4,0,1)
+- Stage 3 (T=8-12): final state, add objects with clamp(T-8,0,1)
+- Objects from stage 1 should fade or shrink: multiply by clamp(4-T,0,1)
+- Keep coordinates WITHIN the grid (0-31 for a 32x32x32 grid)
+- Use 8-15 primitives total for a rich scene
+
+FULL WORKING EXAMPLE — question "How does gravity work?":
+{"title":"Gravity","stages":[{"start":0,"end":4,"name":"Suspended"},{"start":4,"end":8,"name":"Free Fall"},{"start":8,"end":12,"name":"Bounce"}],"chunks":["A ball hangs motionless in the air. Gravity isn't a force pulling it down — it's **spacetime curving** around mass.","Released, it **accelerates** — each moment falling faster than the last. That's 9.8 m/s², the signature of Earth's gravitational field.","It **bounces**. Energy returns but less each time. Remove the floor entirely and you'd be weightless, even right next to Earth."],"code":"V 32 32 32\\nDUR 12\\nB 0 0 0 32 1 32 9\\nS 16 lerp(26,4,clamp((T-3)/2.5,0,1))+abs(sin(max(T-6,0)*3.5))*18*clamp(1-max(T-6,0)*0.15,0,1)*clamp(T-6,0,1) 16 4 1\\nE 16 1 16 clamp(T-3,0,1)*(4+clamp(6-T,0,1)*2) 1 clamp(T-3,0,1)*(4+clamp(6-T,0,1)*2) 0"}
+
+ANOTHER EXAMPLE — question "How do volcanoes erupt?":
+{"title":"Volcano","stages":[{"start":0,"end":4,"name":"Pressure"},{"start":4,"end":8,"name":"Eruption"},{"start":8,"end":12,"name":"Aftermath"}],"chunks":["Magma builds pressure in an **underground chamber**. The mountain sits quiet, but beneath the surface, molten rock is rising.","When pressure exceeds the strength of the rock above — it **erupts**. Lava, ash, and gas explode upward with devastating force.","The **ash cloud** rises 20 km into the atmosphere. Pyroclastic flows race downhill at 700 km/h. The landscape is transformed."],"code":"V 32 32 32\\nDUR 12\\nK 16 0 16 14 20 9\\nE 16 0 16 6 4 6 1\\nC 16 0 16 2 clamp(T,0,1)*14 1\\nS 16 20+clamp(T-5,0,1)*10 16 clamp(T-5,0,1)*clamp(8-T,0,1)*4 1\\nS 14 20+clamp(T-5.3,0,1)*8 14 clamp(T-5.3,0,1)*clamp(8.5-T,0,1)*3 6\\nS 18 20+clamp(T-5.5,0,1)*12 18 clamp(T-5.5,0,1)*clamp(9-T,0,1)*2 7\\nS 16 lerp(24,30,clamp((T-6)/3,0,1)) 16 clamp(T-6,0,1)*8 9\\nE 16+clamp(T-7,0,1)*6 lerp(16,4,clamp((T-7)/3,0,1)) 16 clamp(T-7,0,1)*3 clamp(T-7,0,1)*2 clamp(T-7,0,1)*3 1"}
+
+RULES:
+- EXACTLY 3 chunks, 3 stages, 12 seconds, grid 32x32x32
+- Each chunk = 2-3 sentences with **bold** key terms
+- Animation MUST change across all 3 stages — use T-expressions!
+- Newlines in code MUST be \\n (escaped for JSON)
+- Return ONLY the JSON object, nothing else`;
+
+// ── Qwen API (DashScope OpenAI-compatible) ──
+async function callLLM(userQuestion){
+  const key=localStorage.getItem('claude-key');
+  if(!key)throw new Error('NO_KEY');
+  const resp=await fetch('https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${key}`
+    },
+    body:JSON.stringify({
+      model:'qwen-plus-latest',
+      messages:[
+        {role:'system',content:SYSTEM_PROMPT},
+        {role:'user',content:userQuestion}
+      ],
+      temperature:0.7
+    })
+  });
+  if(!resp.ok){const err=await resp.text();console.error('API error:',resp.status,err);throw new Error(`API ${resp.status}: ${err}`)}
+  const data=await resp.json();
+  // With thinking enabled, content may be in the last non-thinking part
+  const msg=data.choices?.[0]?.message;
+  let text=msg?.content;
+  // If thinking mode returned structured content, extract the non-thinking part
+  if(!text && Array.isArray(msg?.content)){
+    const parts=msg.content.filter(p=>p.type!=='thinking');
+    text=parts.map(p=>p.text||'').join('');
+  }
+  if(!text)throw new Error('Empty response');
+  console.log('Raw LLM response:',text.substring(0,200));
+  const cleaned=text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'').trim();
+  return JSON.parse(cleaned);
+}
+
+// ── API Key Management ──
+const apiKeyInput=document.getElementById('apiKeyInput');
+const apiKeySave=document.getElementById('apiKeySave');
+const apiKeyArea=document.getElementById('apiKeyArea');
+const keyStatus=document.getElementById('keyStatus');
+
+function refreshKeyUI(){
+  const key=localStorage.getItem('claude-key');
+  if(key){
+    apiKeyArea.classList.add('hidden');
+    keyStatus.textContent='● key set';
+    keyStatus.style.cursor='pointer';
+    keyStatus.title='Click to change API key';
+  } else {
+    apiKeyArea.classList.remove('hidden');
+    keyStatus.textContent='';
+  }
+}
+apiKeySave.onclick=()=>{
+  const v=apiKeyInput.value.trim();
+  if(v){localStorage.setItem('claude-key',v);apiKeyInput.value='';refreshKeyUI()}
+};
+apiKeyInput.onkeydown=e=>{if(e.key==='Enter')apiKeySave.click()};
+keyStatus.onclick=()=>{localStorage.removeItem('claude-key');refreshKeyUI()};
+refreshKeyUI();
+
+// ── Chat UI ──
+const msgs=document.getElementById('messages'),inp=document.getElementById('input'),sendBtn=document.getElementById('send');
+function addUser(text){const w=msgs.querySelector('.welcome');if(w)w.remove();
+  const d=document.createElement('div');d.className='msg-user';
+  const b=document.createElement('div');b.className='bubble';b.textContent=text;
+  d.appendChild(b);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight}
+
+function addAssistant(data){const w=msgs.querySelector('.welcome');if(w)w.remove();
+  msgs.appendChild(createMsg(data));msgs.scrollTop=msgs.scrollHeight}
+
+function showLoading(){
+  const d=document.createElement('div');d.className='msg-loading';d.id='loadingMsg';
+  d.innerHTML='<div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span> thinking...</div>';
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function hideLoading(){const el=document.getElementById('loadingMsg');if(el)el.remove()}
+
+function showError(text){
+  const d=document.createElement('div');d.className='msg-error';
+  d.innerHTML=`<span class="error-text">${text}</span>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function setInputEnabled(enabled){
+  inp.disabled=!enabled;sendBtn.disabled=!enabled;
+  sendBtn.style.opacity=enabled?'1':'0.4';
+}
+
+async function send(){
+  const t=inp.value.trim();if(!t)return;inp.value='';addUser(t);
+
+  // Try demo match first (instant, no API call)
+  const lo=t.toLowerCase();
+  // Only match demos on topic keywords, not common words like "explain"
+  const stopWords=new Set(['explain','how','does','what','the','about','work','system']);
+  let k=Object.keys(D).find(k=>lo.includes(k));
+  if(!k) k=Object.keys(D).find(k=>D[k].q.toLowerCase().split(' ').some(w=>w.length>5&&!stopWords.has(w)&&lo.includes(w)));
+  if(k){window.setRobotState('talking');setTimeout(()=>{addAssistant(D[k]);setTimeout(()=>window.setRobotState('idle'),15000)},200);return}
+
+  // No demo match — try Gemini API
+  const hasKey=!!localStorage.getItem('claude-key');
+  if(!hasKey){
+    showError('Enter a Qwen API key in the header to get AI responses.');
+    return;
+  }
+
+  setInputEnabled(false);
+  showLoading();
+  window.setRobotState('thinking');
+  try{
+    const result=await callLLM(t);
+    hideLoading();
+    window.setRobotState('talking');
+    // Validate the response has required fields
+    if(!result.chunks||!result.stages||!result.code){
+      throw new Error('INVALID_FORMAT');
+    }
+    addAssistant(result);
+  }catch(err){
+    hideLoading();
+    if(err instanceof SyntaxError){
+      showError('Invalid JSON returned. Try rephrasing your question.');
+    } else if(err.message==='INVALID_FORMAT'){
+      showError('Response missing required fields. Try again.');
+    } else if(err.message.includes('API 401')){
+      showError('Auth failed (401) — click "● key set" to reset, then re-enter your key.');
+    } else if(err.message.includes('API 4')){
+      showError('API error — check your API key.');
+    } else {
+      showError(`Error: ${err.message}`);
+    }
+    window.setRobotState('idle');
+  }finally{
+    setInputEnabled(true);
+    inp.focus();
+  }
+}
+
+document.getElementById('send').onclick=send;
+inp.onkeydown=e=>{if(e.key==='Enter')send()};
+document.getElementById('demos').onclick=e=>{const b=e.target.closest('[data-d]');if(b&&D[b.dataset.d]){inp.value=D[b.dataset.d].q;send()}};
+</script>
+</body>
+</html>

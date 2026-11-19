@@ -1,0 +1,25 @@
+V 24 18 24
+
+-- tabletop (brown wood)
+B 2 10 8 20 2 8 a
+
+-- bench seats (tan wood)
+B 2 6 4 20 1 4 d
+B 2 6 16 20 1 4 d
+
+-- table legs x4 (brown)
+B 3 0 9 2 10 2 a
+B 3 0 13 2 10 2 a
+B 19 0 9 2 10 2 a
+B 19 0 13 2 10 2 a
+
+-- bench support legs near side
+B 3 0 4 2 6 4 a
+B 19 0 4 2 6 4 a
+
+-- bench support legs far side
+B 3 0 16 2 6 4 a
+B 19 0 16 2 6 4 a
+
+-- center cross brace under table
+B 2 8 9 20 2 6 6

@@ -1,0 +1,37 @@
+V 32 32 32
+
+-- foundation
+B 4 0 6 24 1 20 a
+
+-- main barn body (red)
+B 4 1 6 24 13 20 1
+
+-- front barn door (black)
+B 11 1 5 10 9 2 0
+
+-- loft door above entrance
+B 13 10 5 6 4 2 e
+
+-- left side window
+B 5 5 5 3 4 2 6
+
+-- right side window
+B 24 5 5 3 4 2 6
+
+-- roof base layer (wide overhang)
+B 2 14 4 28 3 24 e
+
+-- roof middle layer
+B 5 17 6 22 3 20 e
+
+-- roof upper layer
+B 8 20 8 16 3 16 e
+
+-- roof ridge
+B 12 23 10 8 2 12 e
+
+-- cupola base
+B 14 25 12 4 4 8 a
+
+-- cupola roof
+B 15 29 13 2 1 6 9

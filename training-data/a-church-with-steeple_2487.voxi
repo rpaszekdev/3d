@@ -1,0 +1,41 @@
+V 32 32 32
+
+-- church main body
+B 6 0 8 20 12 16 8
+
+-- roof
+B 6 12 8 20 4 16 7
+
+-- steeple base
+B 13 12 12 6 6 8 7
+
+-- steeple tower
+B 14 18 13 4 8 6 9
+
+-- steeple spire
+B 15 26 14 2 6 4 e
+
+-- front door arch
+B 14 0 7 4 6 2 6
+
+-- door
+B 14 0 7 4 5 1 0
+
+-- windows left side
+B 7 4 7 3 4 1 4
+B 7 4 14 3 4 1 4
+
+-- windows right side
+B 22 4 7 3 4 1 4
+B 22 4 14 3 4 1 4
+
+-- front window
+B 10 6 7 5 4 1 4
+
+-- cross on steeple
+B 15 30 13 2 3 1 8
+B 14 31 13 4 1 1 8
+
+-- steps
+B 12 0 6 8 1 2 9
+B 11 0 5 10 1 1 9

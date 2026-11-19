@@ -1,0 +1,25 @@
+V 32 24 12
+
+-- bow outer ring
+S 8 12 6 6 6
+
+-- bow inner hole (simulate ring)
+S 8 12 6 4 9
+
+-- neck connecting bow to blade
+B 12 10 5 3 4 2 6
+
+-- main blade shaft
+B 15 10 5 13 4 2 6
+
+-- tooth 1
+B 17 7 5 3 3 2 6
+
+-- tooth 2
+B 22 7 5 2 3 2 6
+
+-- tooth 3
+B 25 7 5 3 4 2 6
+
+-- tip
+B 28 10 5 2 4 2 d

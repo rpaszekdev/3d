@@ -1,0 +1,43 @@
+V 32 32 32
+
+-- couch base/frame
+B 4 0 8 24 4 12 a
+
+-- couch back
+B 4 4 16 24 10 3 a
+
+-- left arm
+B 4 4 8 3 8 12 a
+
+-- right arm
+B 25 4 8 3 8 12 a
+
+-- seat cushion left
+B 5 4 8 10 4 11 1
+
+-- seat cushion right
+B 16 4 8 10 4 11 1
+
+-- back cushion left
+B 5 8 14 10 7 3 5
+
+-- back cushion right
+B 16 8 14 10 7 3 5
+
+-- left back cushion top round
+S 10 14 15 2 5
+
+-- right back cushion top round
+S 21 14 15 2 5
+
+-- couch legs front-left
+B 5 0 8 2 4 2 0
+
+-- couch legs front-right
+B 25 0 8 2 4 2 0
+
+-- couch legs back-left
+B 5 0 17 2 4 2 0
+
+-- couch legs back-right
+B 25 0 17 2 4 2 0

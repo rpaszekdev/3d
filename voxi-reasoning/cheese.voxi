@@ -1,0 +1,33 @@
+V 20 14 16
+-- Swiss Cheese Wedge
+
+-- Main cheese body (yellow block)
+B 2 0 3 16 10 10 6
+
+-- Wedge slope: top layers get shorter (front to back taper)
+B 2 10 4 16 1 9 6
+B 2 11 5 15 1 8 6
+B 2 12 6 13 1 6 6
+B 2 13 7 10 1 4 6
+
+-- Rind on bottom (orange-tan)
+B 2 0 3 16 1 10 7
+-- Rind on back
+B 2 0 12 16 14 1 7
+-- Rind left side
+B 2 0 3 1 14 10 7
+-- Rind right side
+B 17 0 3 1 14 10 7
+
+-- Swiss cheese holes (black = empty)
+S 6 4 7 2 0
+S 12 3 6 1 0
+S 9 7 9 2 0
+S 14 5 5 1 0
+S 5 8 5 1 0
+S 10 2 8 1 0
+S 15 7 8 1 0
+S 7 6 4 1 0
+
+-- Cut face detail (lighter yellow on the diagonal cut)
+B 2 10 4 16 1 9 6

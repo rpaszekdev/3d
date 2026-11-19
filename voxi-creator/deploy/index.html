@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOXI — A New Way to Create</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --white: #ffffff;
+    --grey: #666;
+    --grey-dim: #444;
+    --grey-faint: #222;
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  canvas { display: block; }
+
+  #three-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+  }
+
+  /* ─── Overlay ─── */
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cta-card {
+    pointer-events: auto;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .cta-card .eyebrow {
+    font-family: 'Fira Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+
+  .cta-card h2 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    color: var(--white);
+    margin-bottom: 48px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+
+  .prompt-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    background: rgba(10, 10, 10, 0.7);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 0;
+    padding: 8px 8px 8px 28px;
+    backdrop-filter: blur(12px);
+    transition: border-color 0.3s;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+
+  .prompt-row:focus-within {
+    border-color: rgba(255,255,255,0.6);
+  }
+
+  .prompt-row input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-size: 18px;
+    font-family: 'Fira Mono', monospace;
+    font-weight: 400;
+    padding: 20px 0;
+    letter-spacing: 0.02em;
+  }
+
+  .prompt-row input::placeholder {
+    color: var(--grey);
+  }
+
+  .prompt-row button {
+    background: var(--white);
+    border: none;
+    border-radius: 0;
+    color: var(--bg);
+    font-size: 12px;
+    font-family: 'Fira Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 22px 40px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+
+  .prompt-row button:hover {
+    background: var(--bg);
+    color: var(--white);
+    outline: 1px solid var(--white);
+    outline-offset: -1px;
+  }
+
+  .prompt-row button:active {
+    opacity: 0.7;
+  }
+
+  .model-count {
+    margin-top: 28px;
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.9s;
+  }
+
+  /* ─── Corner Details ─── */
+  .corner-mark {
+    position: fixed;
+    z-index: 20;
+    pointer-events: none;
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--grey-dim);
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 1.2s;
+  }
+
+  .corner-mark.tl { top: 28px; left: 32px; }
+  .corner-mark.tr { top: 28px; right: 32px; }
+  .corner-mark.bl { bottom: 28px; left: 32px; }
+  .corner-mark.br { bottom: 28px; right: 32px; }
+
+  .corner-mark .logo {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--white);
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── Loading ─── */
+  #loading {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: var(--bg);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s;
+  }
+
+  #loading.done {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #loading span {
+    font-family: 'Fira Mono', monospace;
+    font-size: 11px;
+    color: var(--grey-dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ─── Result View ─── */
+  .result-view {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: var(--bg);
+    flex-direction: column;
+  }
+  .result-view.active { display: flex; }
+
+  .result-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--grey-faint);
+  }
+  .result-nav .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: none; border: 1px solid var(--grey-faint);
+    color: var(--grey); font-family: 'Fira Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 10px 20px; cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .result-nav .back-btn:hover { border-color: var(--grey); color: var(--white); }
+
+  .result-prompt {
+    font-family: 'Fira Mono', monospace;
+    font-size: 12px; color: var(--grey); letter-spacing: 0.02em;
+  }
+
+  .result-actions { display: flex; gap: 10px; }
+  .result-actions button {
+    background: transparent; border: 1px solid var(--grey-faint);
+    color: var(--grey); font-family: 'Fira Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 10px 20px; cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .result-actions button:hover { border-color: var(--grey); color: var(--white); }
+  .result-actions .btn-primary {
+    background: var(--white); color: var(--bg); border-color: transparent;
+  }
+  .result-actions .btn-primary:hover { opacity: 0.85; }
+
+  .result-split {
+    flex: 1; display: flex; flex-wrap: wrap; position: relative;
+  }
+
+  .result-pane {
+    width: 33.333%; height: 50%;
+    position: relative; background: #060606;
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--grey-faint);
+    border-bottom: 1px solid var(--grey-faint);
+  }
+  .result-pane:nth-child(3n) { border-right: none; }
+
+  .result-pane .pane-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--grey-faint);
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .pane-header .model-label { color: var(--grey); }
+  .pane-header .pane-status { color: var(--grey-dim); }
+  .pane-header .pane-info { color: var(--grey-dim); }
+
+  .result-pane .pane-canvas { flex: 1; position: relative; }
+
+  .pane-canvas .loading-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px;
+    background: rgba(6,6,6,0.85); z-index: 10;
+  }
+  .loading-overlay .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid var(--grey-faint);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-overlay .load-text {
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px; color: var(--grey-dim);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .pane-exports {
+    position: absolute; bottom: 12px; right: 12px; z-index: 5;
+    display: flex; gap: 6px;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .pane-exports.visible { opacity: 1; pointer-events: auto; }
+
+  .pane-export {
+    background: var(--white); color: var(--bg); border: none;
+    font-family: 'Fira Mono', monospace; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 8px 16px; cursor: pointer;
+  }
+  .pane-export:hover { opacity: 0.85; }
+  .pane-export.glb {
+    background: transparent; color: var(--grey);
+    border: 1px solid var(--grey-faint);
+  }
+  .pane-export.glb:hover { color: var(--white); border-color: var(--grey); }
+  .pane-export.smooth {
+    background: transparent; color: var(--grey);
+    border: 1px solid var(--grey-faint);
+  }
+  .pane-export.smooth:hover { color: var(--white); border-color: var(--grey); }
+
+  /* ─── Generating state on prompt row ─── */
+  .prompt-row.generating { border-color: rgba(255,255,255,0.3); }
+  .prompt-row.generating button {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  .resolution-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-top: 16px;
+    max-width: 700px; width: 100%;
+    margin-left: auto; margin-right: auto;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.9s;
+  }
+  .resolution-row label {
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px; color: var(--grey);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .resolution-row input[type="range"] {
+    flex: 1; height: 2px;
+    -webkit-appearance: none; appearance: none;
+    background: var(--grey-faint);
+    outline: none; cursor: pointer;
+  }
+  .resolution-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 12px; height: 12px;
+    background: var(--white);
+    border-radius: 0; cursor: pointer;
+  }
+  .resolution-row .res-value {
+    font-family: 'Fira Mono', monospace;
+    font-size: 11px; color: var(--white);
+    letter-spacing: 0.05em;
+    min-width: 32px; text-align: right;
+  }
+
+  .status-text {
+    margin-top: 12px;
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px; color: var(--grey-dim);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    height: 14px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1s;
+  }
+  .status-text.error { color: #e53935; }
+</style>
+</head>
+<body>
+
+<div id="loading"><span>Loading...</span></div>
+
+<!-- Corner marks -->
+<div class="corner-mark tl"><span class="logo">VOXI</span></div>
+<div class="corner-mark tr">[ 3D creation engine ]</div>
+<div class="corner-mark bl" id="model-count"></div>
+<div class="corner-mark br">[ scroll to explore ]</div>
+
+<div id="three-canvas"></div>
+
+<div class="overlay">
+  <div class="cta-card">
+    <p class="eyebrow">A new way to</p>
+    <h2>Create.</h2>
+    <div class="prompt-row">
+      <input type="text" id="prompt-input" placeholder="describe anything..." autocomplete="off" />
+      <button id="generate-btn">Generate</button>
+    </div>
+    <div class="resolution-row">
+      <label>Resolution</label>
+      <input type="range" id="res-slider" min="24" max="96" step="8" value="32" />
+      <span class="res-value" id="res-value">32</span>
+    </div>
+    <div class="status-text" id="status"></div>
+  </div>
+</div>
+
+<!-- Result View — Dual Pane -->
+<div class="result-view" id="resultView">
+  <div class="result-nav">
+    <button class="back-btn" id="btnBack">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back
+    </button>
+    <span class="result-prompt" id="resultPrompt"></span>
+    <div class="result-actions">
+      <button id="btnRegenerate">Regenerate</button>
+    </div>
+  </div>
+  <div class="result-split">
+    <!-- Fast model pane -->
+    <div class="result-pane" id="paneA">
+      <div class="pane-header">
+        <span class="model-label">Qwen 3.5 27B</span>
+        <span class="pane-status" id="statusA">Waiting...</span>
+        <span class="pane-info" id="infoA">&mdash;</span>
+      </div>
+      <div class="pane-canvas" id="canvasA">
+        <div class="loading-overlay" id="loaderA">
+          <div class="spinner"></div>
+          <span class="load-text" id="loadTextA">Thinking...</span>
+        </div>
+        <div class="pane-exports" id="exportsA"><button class="pane-export" id="exportA">OBJ</button><button class="pane-export glb" id="glbA">GLB</button><button class="pane-export smooth" id="smoothA">Smooth</button></div>
+      </div>
+    </div>
+    <!-- Qwen Plus pane -->
+    <div class="result-pane" id="paneB">
+      <div class="pane-header">
+        <span class="model-label">Qwen Turbo</span>
+        <span class="pane-status" id="statusB">Waiting...</span>
+        <span class="pane-info" id="infoB">&mdash;</span>
+      </div>
+      <div class="pane-canvas" id="canvasB">
+        <div class="loading-overlay" id="loaderB">
+          <div class="spinner"></div>
+          <span class="load-text" id="loadTextB">Thinking...</span>
+        </div>
+        <div class="pane-exports" id="exportsB"><button class="pane-export" id="exportB">OBJ</button><button class="pane-export glb" id="glbB">GLB</button><button class="pane-export smooth" id="smoothB">Smooth</button></div>
+      </div>
+    </div>
+    <!-- Claude Sonnet pane -->
+    <div class="result-pane" id="paneC">
+      <div class="pane-header">
+        <span class="model-label">Claude Sonnet 4</span>
+        <span class="pane-status" id="statusC">Waiting...</span>
+        <span class="pane-info" id="infoC">&mdash;</span>
+      </div>
+      <div class="pane-canvas" id="canvasC">
+        <div class="loading-overlay" id="loaderC">
+          <div class="spinner"></div>
+          <span class="load-text" id="loadTextC">Thinking...</span>
+        </div>
+        <div class="pane-exports" id="exportsC"><button class="pane-export" id="exportC">OBJ</button><button class="pane-export glb" id="glbC">GLB</button><button class="pane-export smooth" id="smoothC">Smooth</button></div>
+      </div>
+    </div>
+    <!-- Gemma 4 pane -->
+    <div class="result-pane" id="paneD">
+      <div class="pane-header">
+        <span class="model-label">Gemma 4</span>
+        <span class="pane-status" id="statusD">Waiting...</span>
+        <span class="pane-info" id="infoD">&mdash;</span>
+      </div>
+      <div class="pane-canvas" id="canvasD">
+        <div class="loading-overlay" id="loaderD">
+          <div class="spinner"></div>
+          <span class="load-text" id="loadTextD">Thinking...</span>
+        </div>
+        <div class="pane-exports" id="exportsD"><button class="pane-export" id="exportD">OBJ</button><button class="pane-export glb" id="glbD">GLB</button><button class="pane-export smooth" id="smoothD">Smooth</button></div>
+      </div>
+    </div>
+    <!-- Gemini 2.5 Pro pane -->
+    <div class="result-pane" id="paneE">
+      <div class="pane-header">
+        <span class="model-label">Gemini 3 Flash</span>
+        <span class="pane-status" id="statusE">Waiting...</span>
+        <span class="pane-info" id="infoE">&mdash;</span>
+      </div>
+      <div class="pane-canvas" id="canvasE">
+        <div class="loading-overlay" id="loaderE">
+          <div class="spinner"></div>
+          <span class="load-text" id="loadTextE">Thinking...</span>
+        </div>
+        <div class="pane-exports" id="exportsE"><button class="pane-export" id="exportE">OBJ</button><button class="pane-export glb" id="glbE">GLB</button><button class="pane-export smooth" id="smoothE">Smooth</button></div>
+      </div>
+    </div>
+    <!-- Claude Haiku pane -->
+    <div class="result-pane" id="paneG">
+      <div class="pane-header">
+        <span class="model-label">Claude Haiku</span>
+        <span class="pane-status" id="statusG">Waiting...</span>
+        <span class="pane-info" id="infoG">&mdash;</span>
+      </div>
+      <div class="pane-canvas" id="canvasG">
+        <div class="loading-overlay" id="loaderG">
+          <div class="spinner"></div>
+          <span class="load-text" id="loadTextG">Thinking...</span>
+        </div>
+        <div class="pane-exports" id="exportsG"><button class="pane-export" id="exportG">OBJ</button><button class="pane-export glb" id="glbG">GLB</button><button class="pane-export smooth" id="smoothG">Smooth</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+// OrbitControls used only for result viewer, not the background scene
+
+// ─── VOXI Color Palette ───
+const COLORS = [0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+const CKEYS = '0123456789abcdef';
+
+// ─── VOXI Parser ───
+function parse(code) {
+  let W=64, H=64, D=64;
+  const vm = new Map();
+  const set = (x,y,z,c) => {
+    const ix=Math.round(x), iy=Math.round(y), iz=Math.round(z);
+    if (ix>=0 && ix<W && iy>=0 && iy<H && iz>=0 && iz<D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c||9,0),15));
+  };
+  const addBox = (px,py,pz,w,h,d,c) => { for (let x=px;x<px+w;x++) for (let y=py;y<py+h;y++) for (let z=pz;z<pz+d;z++) set(x,y,z,c); };
+  const addSphere = (cx,cy,cz,r,c) => { const r2=r*r; for (let x=cx-r;x<=cx+r;x++) for (let y=cy-r;y<=cy+r;y++) for (let z=cz-r;z<=cz+r;z++) if ((x-cx)**2+(y-cy)**2+(z-cz)**2<=r2) set(x,y,z,c); };
+  const addCyl = (cx,cy,cz,r,h,c) => { const r2=r*r; for (let x=cx-r;x<=cx+r;x++) for (let z=cz-r;z<=cz+r;z++) if ((x-cx)**2+(z-cz)**2<=r2) for (let y=cy;y<cy+h;y++) set(x,y,z,c); };
+  const addCone = (cx,cy,cz,r,h,c) => { for (let y=0;y<h;y++) { const rr=r*(1-y/h),rr2=rr*rr; for (let x=cx-r;x<=cx+r;x++) for (let z=cz-r;z<=cz+r;z++) if ((x-cx)**2+(z-cz)**2<=rr2) set(x,cy+y,z,c); } };
+  const addEllipsoid = (cx,cy,cz,rx,ry,rz,c) => { for (let x=cx-rx;x<=cx+rx;x++) for (let y=cy-ry;y<=cy+ry;y++) for (let z=cz-rz;z<=cz+rz;z++) if (((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2<=1) set(x,y,z,c); };
+  const addDome = (px,py,pz,w,h,d,c) => { const rx=w/2,ry=h,rz=d/2,cx=px+rx,cz=pz+rz; for (let x=px;x<px+w;x++) for (let y=py;y<py+h;y++) for (let z=pz;z<pz+d;z++) if (((x-cx+.5)/rx)**2+((y-py)/ry)**2+((z-cz+.5)/rz)**2<=1) set(x,y,z,c); };
+
+  const groups = {};
+  let currentGroup = null, currentGroupName = null, scale = 1;
+
+  function scaled(cmd, n) {
+    if (scale === 1) return n;
+    const s = [...n];
+    switch(cmd) {
+      case 'B': case 'D': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale));s[4]=Math.max(1,Math.round(s[4]*scale));s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+      case 'S': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale)); break;
+      case 'C': case 'K': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale));s[4]=Math.max(1,Math.round(s[4]*scale)); break;
+      case 'P': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale); break;
+      case 'E': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale));s[4]=Math.max(1,Math.round(s[4]*scale));s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+    }
+    return s;
+  }
+
+  function execCmd(cmd, n) {
+    const sn = scaled(cmd, n);
+    switch(cmd) {
+      case 'B': addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'S': addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]); break;
+      case 'C': addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'K': addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'P': set(sn[0],sn[1],sn[2],sn[3]); break;
+      case 'E': addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'D': addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      default: return false;
+    }
+    return true;
+  }
+
+  function placeGroup(name, ox, oy, oz) {
+    const g = groups[name]; if (!g) return;
+    const sox=Math.round(ox*scale),soy=Math.round(oy*scale),soz=Math.round(oz*scale);
+    for (const entry of g) {
+      const sn = scaled(entry.cmd, entry.args);
+      sn[0]+=sox; sn[1]+=soy; sn[2]+=soz;
+      switch(entry.cmd) {
+        case 'B': addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+        case 'S': addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]); break;
+        case 'C': addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+        case 'K': addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+        case 'P': set(sn[0],sn[1],sn[2],sn[3]); break;
+        case 'E': addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+        case 'D': addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      }
+    }
+  }
+
+  const allLines = code.split('\n');
+  for (let i=0; i<allLines.length; i++) {
+    const line = allLines[i].trim();
+    if (!line || line.startsWith('--') || line.startsWith('//')) continue;
+    const p = line.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+    try {
+      if (cmd === 'G') { currentGroupName = p[1]||`g${i}`; currentGroup = []; continue; }
+      if (cmd === '/G') { if (currentGroup && currentGroupName) groups[currentGroupName]=currentGroup; currentGroup=null; currentGroupName=null; continue; }
+      if (cmd === '@') { placeGroup(p[1], Number(p[2])||0, Number(p[3])||0, Number(p[4])||0); continue; }
+      if (cmd === 'V') { W=Number(p[1])||32; H=Number(p[2])||32; D=Number(p[3])||32; continue; }
+      if (cmd === 'R') { scale = Number(p[1]) || 1; continue; }
+      const parseArg = (s, isColor) => { if (isColor && /^[a-f]$/i.test(s)) return CKEYS.indexOf(s.toLowerCase()); return Number(s); };
+      const rawArgs = p.slice(1);
+      const n = rawArgs.map((s, idx) => parseArg(s, idx === rawArgs.length - 1));
+      execCmd(cmd, n);
+      if (currentGroup) currentGroup.push({ cmd, args: n });
+    } catch(e) {}
+  }
+
+  const voxels = [];
+  for (const [k,c] of vm) { const [x,y,z] = k.split(',').map(Number); voxels.push({x,y,z,color:c}); }
+  return { gridW:W, gridH:H, gridD:D, voxels };
+}
+
+// ─── Embedded Models ───
+const MODELS = {
+"castle": `V 48 48 48
+B 8 0 8 32 1 32 c
+B 14 0 14 20 12 20 9
+C 14 9 14 4 18 9
+C 34 9 14 4 18 9
+C 14 9 34 4 18 9
+C 34 9 34 4 18 9
+S 14 19 14 3 1
+S 34 19 14 3 1
+S 14 19 34 3 1
+S 34 19 34 3 1
+B 14 12 14 20 2 2 9
+B 14 12 32 20 2 2 9
+B 20 0 13 8 8 2 0
+B 14 22 13 1 3 1 6
+B 34 22 13 1 3 1 6`,
+
+"lighthouse": `V 32 48 32
+B 5 0 5 22 3 22 9
+B 3 0 8 5 2 8 a
+B 24 0 8 5 2 8 a
+C 16 3 16 5 4 8
+C 16 7 16 4 7 8
+B 12 13 12 8 3 8 1
+C 16 16 16 4 6 8
+B 12 21 12 8 3 8 1
+C 16 24 16 4 5 8
+C 16 29 16 6 2 9
+B 12 31 12 8 5 8 4
+S 16 33 16 2 6
+B 12 36 12 8 1 8 e
+B 13 37 13 6 1 6 e
+B 14 38 14 4 1 4 e
+B 15 39 15 2 2 2 e`,
+
+"cat": `V 24 24 24
+E 12 4 12 5 4 4 7
+E 12 10 12 3 5 3 7
+C 12 15 12 2 2 7
+S 12 18 12 4 7
+B 9 21 10 2 3 2 7
+B 13 21 10 2 3 2 7
+B 10 21 10 1 2 1 b
+B 14 21 10 1 2 1 b
+S 10 18 9 1 2
+S 14 18 9 1 2
+S 12 16 9 1 b
+B 9 0 9 3 2 3 7
+B 12 0 9 3 2 3 7
+B 17 1 12 2 5 2 7
+B 19 5 12 2 3 2 7`,
+
+"rocket": `V 32 48 32
+B 4 0 4 24 2 24 9
+B 6 2 6 2 6 2 9
+B 24 2 6 2 6 2 9
+C 16 5 16 2 4 9
+C 16 19 16 3 22 8
+C 16 12 16 3 3 1
+E 16 32 16 3 5 3 8
+S 16 37 16 3 1
+B 12 7 12 2 9 2 1
+B 18 7 12 2 9 2 1
+B 12 7 20 2 9 2 1
+B 18 7 20 2 9 2 1
+E 16 2 16 3 6 3 7
+E 16 1 16 2 5 2 6`,
+
+"samurai": `V 32 32 32
+B 13 0 12 3 2 4 0
+B 18 0 12 3 2 4 0
+B 13 2 13 3 6 3 9
+B 18 2 13 3 6 3 9
+B 12 7 13 8 2 4 e
+B 12 9 13 8 7 4 e
+B 13 11 12 6 5 2 3
+B 10 14 13 3 3 4 e
+B 21 14 13 3 3 4 e
+B 10 9 13 3 5 3 e
+B 21 9 13 3 5 3 e
+B 15 16 14 2 2 2 d
+S 16 19 14 3 d
+B 13 19 12 6 3 4 e
+B 14 22 13 4 2 4 e
+B 15 24 14 2 3 2 1
+B 22 11 14 1 11 1 8`,
+
+"balloon": `V 32 48 32
+E 16 32 16 11 15 11 6
+B 15 17 5 2 30 2 1
+B 15 17 25 2 30 2 2
+B 5 17 15 2 30 2 3
+B 25 17 15 2 30 2 5
+S 16 47 16 4 7
+B 12 9 12 1 10 1 9
+B 20 9 12 1 10 1 9
+B 12 9 20 1 10 1 9
+B 20 9 20 1 10 1 9
+B 11 1 11 10 8 10 a
+B 12 2 12 8 5 8 7
+C 16 9 16 1 4 7`,
+
+"robot": `V 24 32 24
+B 8 0 10 4 2 4 7
+B 13 0 10 4 2 4 7
+B 9 2 11 3 5 3 9
+B 13 2 11 3 5 3 9
+B 7 7 10 11 8 4 9
+B 9 9 10 7 5 1 3
+B 4 8 10 3 7 4 9
+B 18 8 10 3 7 4 9
+B 8 15 10 9 6 4 9
+S 10 18 10 1 4
+S 14 18 10 1 4
+B 10 15 10 5 1 1 1
+B 11 21 11 3 3 3 6
+S 12 25 12 2 1`,
+
+"giraffe": `V 32 48 32
+B 10 0 10 4 2 4 a
+B 18 0 10 4 2 4 a
+B 10 0 18 4 2 4 a
+B 18 0 18 4 2 4 a
+C 12 9 12 2 14 d
+C 20 9 12 2 14 d
+C 12 9 20 2 14 d
+C 20 9 20 2 14 d
+E 16 19 16 8 5 6 d
+B 13 18 14 3 3 3 7
+B 19 21 15 2 2 2 7
+C 16 31 13 3 17 d
+B 15 27 11 2 10 2 7
+E 16 43 11 4 3 3 d
+C 14 47 11 1 4 a
+C 18 47 11 1 4 a
+S 13 43 8 1 0
+S 19 43 8 1 0`,
+
+"christmas-tree": `V 24 28 24
+C 12 0 12 2 3 a
+B 3 3 3 18 4 18 2
+B 5 6 5 14 4 14 2
+B 7 9 7 10 4 10 c
+B 8 12 8 8 4 8 2
+B 9 15 9 6 4 6 c
+B 10 18 10 4 3 4 2
+S 12 22 12 2 6
+S 6 4 12 1 1
+S 18 4 12 1 1`,
+
+"pirate": `V 32 48 32
+B 12 0 13 3 3 4 0
+B 17 0 13 3 3 4 0
+B 12 3 13 3 5 4 9
+B 17 3 13 3 5 4 9
+B 11 8 12 10 9 5 1
+B 11 8 12 10 2 5 0
+B 15 8 11 2 2 1 6
+B 9 8 12 2 8 4 1
+B 21 8 12 2 8 4 1
+B 14 16 12 4 3 3 d
+S 16 22 14 4 d
+B 14 23 10 3 2 1 0
+B 9 26 11 14 1 8 0
+B 11 27 12 10 7 5 0
+S 16 30 11 2 8`,
+
+"windmill": `V 24 32 24
+B 4 0 4 16 1 16 c
+B 8 1 8 8 18 8 9
+B 10 1 8 4 5 1 a
+B 10 10 8 4 3 1 8
+B 7 19 7 10 2 10 d
+B 8 21 8 8 2 8 d
+B 9 23 9 6 1 6 6
+S 12 20 7 2 7
+B 11 10 7 2 20 1 8
+B 3 19 7 18 2 1 8`,
+
+"penguin": `V 24 24 24
+B 9 0 10 2 1 3 7
+B 13 0 10 2 1 3 7
+C 10 1 11 1 3 0
+C 14 1 11 1 3 0
+E 12 8 11 4 6 3 0
+E 12 8 10 3 5 2 8
+B 7 6 10 2 7 3 0
+B 15 6 10 2 7 3 0
+S 12 15 11 3 0
+S 10 16 9 1 8
+S 14 16 9 1 8
+B 11 14 8 2 1 2 7`,
+
+"dog": `V 24 20 24
+B 9 5 6 6 4 10 d
+B 10 8 5 4 3 3 d
+S 12 11 4 3 d
+B 10 9 1 4 2 4 a
+B 11 10 1 2 1 1 0
+B 8 10 2 2 4 2 a
+B 14 10 2 2 4 2 a
+C 10 0 7 1 5 a
+C 14 0 7 1 5 a
+C 10 0 15 1 5 a
+C 14 0 15 1 5 a
+B 11 9 16 2 4 2 a`,
+
+"butterfly": `V 32 32 32
+E 9 13 16 7 4 1 7
+E 23 13 16 7 4 1 7
+E 11 8 16 5 3 1 7
+E 21 8 16 5 3 1 7
+B 3 10 15 4 6 1 0
+B 25 10 15 4 6 1 0
+E 16 6 16 1 5 1 0
+S 16 12 16 2 a
+S 16 15 16 2 a
+B 14 16 16 1 3 1 0
+B 17 16 16 1 3 1 0
+S 13 19 16 1 0
+S 18 19 16 1 0`,
+
+"dolphin": `V 32 32 32
+B 2 8 11 5 2 4 9
+B 2 8 17 5 2 4 9
+E 7 8 16 3 4 3 9
+E 13 13 16 7 5 4 9
+E 20 18 16 6 5 4 9
+E 13 12 16 5 3 3 8
+E 20 17 16 4 3 3 8
+B 15 19 15 2 7 2 3
+S 26 20 16 4 9
+E 30 18 16 3 2 2 9
+S 27 22 14 1 0
+S 27 22 18 1 0`,
+
+"panda": `V 24 24 24
+E 12 4 12 5 4 4 8
+E 12 11 12 3 6 3 8
+S 12 18 12 4 8
+S 9 19 10 2 0
+S 15 19 10 2 0
+S 10 18 9 1 8
+S 14 18 9 1 8
+S 12 16 9 1 0
+B 9 0 10 3 2 3 0
+B 12 0 10 3 2 3 0
+B 17 2 13 2 6 2 0
+B 5 2 13 2 6 2 0`,
+
+"cupcake": `V 16 16 16
+B 5 0 5 6 4 6 a
+B 5 4 5 6 2 6 d
+C 8 6 8 3 2 b
+S 8 9 8 3 b
+S 8 10 8 1 8
+S 8 13 8 1 1`,
+
+"snake": `V 28 22 28
+E 14 2 22 5 2 2 2
+E 22 2 17 2 2 5 2
+E 23 2 11 5 2 2 2
+E 18 2 5 2 2 5 2
+E 12 2 5 5 2 2 2
+E 6 2 11 2 2 5 2
+E 5 2 17 5 2 2 2
+C 14 4 14 2 7 2
+E 14 12 12 3 2 3 2
+B 11 11 8 5 2 5 2
+S 12 13 9 1 8
+S 16 13 9 1 8
+B 13 10 7 1 1 3 1
+B 15 10 7 1 1 3 1`,
+
+"deer": `V 32 32 32
+C 14 4 12 1 8 a
+C 18 4 12 1 8 a
+C 14 4 20 1 8 a
+C 18 4 20 1 8 a
+E 16 12 16 4 4 6 d
+C 16 17 13 2 5 a
+S 16 22 11 3 d
+C 14 27 11 1 5 a
+B 10 30 11 5 1 1 a
+C 18 27 11 1 5 a
+B 17 30 11 5 1 1 a`,
+
+"chicken": `V 24 24 24
+E 12 6 12 4 3 5 8
+C 12 9 11 1 3 8
+S 12 12 9 3 8
+B 11 15 9 2 2 1 1
+B 11 11 6 2 2 2 6
+B 7 4 9 2 5 6 d
+B 15 4 9 2 5 6 d
+B 11 7 17 4 5 2 8
+C 10 0 12 1 4 7
+C 14 0 12 1 4 7`,
+
+"cow": `V 32 20 24
+E 16 10 12 10 5 6 8
+S 24 12 12 4 8
+B 26 10 11 3 2 3 d
+B 18 13 10 3 3 2 0
+B 13 11 13 3 4 2 0
+C 21 4 10 1 8 8
+C 21 4 14 1 8 8
+C 11 4 10 1 8 8
+C 11 4 14 1 8 8
+B 14 5 11 4 2 3 b`,
+
+"donut": `V 24 12 24
+E 18 3 12 2 2 2 d
+E 16 3 16 2 2 2 d
+E 12 3 18 2 2 2 d
+E 8 3 16 2 2 2 d
+E 6 3 12 2 2 2 d
+E 8 3 8 2 2 2 d
+E 12 3 6 2 2 2 d
+E 16 3 8 2 2 2 d
+E 18 5 12 2 1 2 b
+E 16 5 16 2 1 2 b
+E 12 5 18 2 1 2 b
+E 8 5 16 2 1 2 b
+E 6 5 12 2 1 2 b
+E 8 5 8 2 1 2 b
+E 12 5 6 2 1 2 b
+E 16 5 8 2 1 2 b`,
+
+"fox": `V 24 20 24
+E 12 7 12 4 4 5 7
+C 12 11 12 2 3 7
+S 12 15 10 3 7
+B 9 17 9 2 3 2 7
+B 13 17 9 2 3 2 7
+S 11 15 8 1 0
+S 13 15 8 1 0
+S 12 14 7 1 0
+C 10 0 10 1 5 7
+C 14 0 10 1 5 7
+C 10 0 14 1 5 7
+C 14 0 14 1 5 7
+B 6 6 14 2 4 3 8`,
+
+"frog": `V 24 16 24
+E 12 4 14 5 3 4 2
+E 12 4 14 4 2 3 c
+S 10 8 10 2 2
+S 14 8 10 2 2
+S 10 9 9 1 0
+S 14 9 9 1 0
+B 10 4 8 4 1 2 2
+B 8 0 10 2 2 3 2
+B 14 0 10 2 2 3 2`,
+
+"owl": `V 24 24 24
+E 12 6 12 4 5 4 a
+S 12 14 12 4 a
+B 8 14 10 3 3 1 6
+B 13 14 10 3 3 1 6
+S 10 15 9 1 0
+S 14 15 9 1 0
+B 11 13 8 2 1 2 7
+B 7 8 10 2 5 4 a
+B 15 8 10 2 5 4 a`,
+
+"anchor": `V 24 28 24
+B 11 26 11 2 2 2 9
+B 10 22 11 4 4 2 9
+C 12 14 12 1 8 9
+B 4 2 11 16 2 2 9
+E 4 4 12 3 3 1 9
+E 20 4 12 3 3 1 9
+B 4 0 11 2 2 2 9
+B 18 0 11 2 2 2 9`,
+
+"mushroom": `V 20 20 20
+C 10 0 10 2 8 d
+E 10 10 10 7 4 7 1
+S 10 10 6 2 8
+S 7 11 10 1 8
+S 13 10 12 2 8`,
+
+"cactus": `V 24 32 24
+B 0 0 0 24 2 24 d
+C 12 2 12 2 16 2
+B 6 11 11 6 2 2 2
+B 6 11 11 2 7 2 2
+B 12 14 11 6 2 2 2
+B 16 14 11 2 5 2 2
+S 12 18 12 2 2
+S 7 18 12 2 2
+S 17 19 12 2 2`,
+
+"candle": `V 24 28 24
+C 12 0 12 5 2 a
+C 12 2 12 1 4 9
+C 12 6 12 3 2 9
+C 12 8 12 2 12 8
+S 12 20 12 2 d
+E 12 21 12 1 3 1 6
+E 12 22 12 1 2 1 7
+S 12 24 12 1 1`,
+
+"treasure": `V 28 20 20
+B 4 0 4 20 2 12 a
+B 4 2 4 20 8 12 a
+B 5 3 5 18 6 10 0
+B 5 3 5 18 3 10 6
+B 6 4 6 16 2 8 7
+B 4 10 4 20 2 12 a
+E 14 14 4 2 3 1 9
+B 13 10 3 2 2 1 6`,
+
+"trophy": `V 24 28 24
+B 8 0 8 8 2 8 9
+C 12 2 12 2 4 a
+B 10 6 10 4 2 4 6
+C 12 8 12 4 8 6
+S 12 16 12 4 6
+B 5 10 11 3 4 2 6
+B 16 10 11 3 4 2 6
+S 12 20 12 2 6`,
+
+"bear": `V 32 32 32
+B 11 0 12 4 9 4 a
+B 17 0 12 4 9 4 a
+E 16 15 13 6 6 5 a
+E 16 14 11 3 5 3 d
+C 10 16 13 2 7 a
+C 22 16 13 2 7 a
+S 16 23 13 4 a
+E 16 22 10 2 2 3 d
+S 16 23 9 1 0
+S 14 25 11 1 0
+S 18 25 11 1 0
+S 13 27 13 2 a
+S 19 27 13 2 a`,
+
+"banana": `V 32 16 16
+E 3 2 8 2 1 2 d
+E 7 4 8 3 2 2 6
+E 11 7 8 3 2 2 6
+E 16 9 8 3 2 2 6
+E 21 7 8 3 2 2 6
+E 25 4 8 3 2 2 6
+E 29 2 8 2 1 2 d`,
+
+"birthday-cake": `V 24 24 24
+B 3 0 3 18 5 18 d
+B 3 5 3 18 1 18 8
+B 5 6 5 14 4 14 b
+B 5 10 5 14 1 14 8
+B 7 11 7 10 3 10 d
+B 7 14 7 10 1 10 8
+C 10 15 10 1 4 6
+C 14 15 10 1 4 6
+C 12 15 12 1 4 5
+S 10 20 10 1 6
+S 14 20 10 1 6
+S 12 20 12 1 6`,
+
+"crocodile": `V 40 12 16
+B 8 2 5 20 5 6 2
+B 28 2 6 6 4 4 2
+B 34 2 7 4 3 2 2
+B 4 2 4 4 5 8 2
+B 0 3 5 4 2 6 2
+B 0 2 5 4 2 6 c
+B 8 2 6 20 2 4 d
+S 6 7 6 1 6
+S 6 7 10 1 6
+B 12 7 7 2 1 2 c
+B 16 7 7 2 1 2 c
+B 20 7 7 2 1 2 c`,
+
+"lion": `V 28 24 24
+E 14 8 12 5 4 5 7
+C 14 12 12 2 3 7
+S 14 16 12 4 7
+E 14 17 12 5 4 5 d
+S 14 21 12 2 d
+S 12 18 10 1 0
+S 16 18 10 1 0
+E 14 16 9 2 1 2 d
+S 14 15 8 1 0
+C 11 0 10 1 6 7
+C 17 0 10 1 6 7
+C 11 0 14 1 6 7
+C 17 0 14 1 6 7`,
+
+"ninja": `V 24 32 24
+B 9 0 10 3 2 4 0
+B 13 0 10 3 2 4 0
+B 9 2 11 3 6 3 0
+B 13 2 11 3 6 3 0
+B 8 8 10 9 8 4 0
+B 6 8 10 2 7 4 0
+B 17 8 10 2 7 4 0
+S 12 18 12 3 0
+B 10 18 10 5 2 1 9
+S 11 18 10 1 8
+S 13 18 10 1 8`,
+
+"snowman": `V 20 24 20
+S 10 4 10 5 8
+S 10 12 10 4 8
+S 10 18 10 3 8
+B 9 18 7 1 1 1 0
+B 11 18 7 1 1 1 0
+B 10 17 6 1 1 2 7
+B 10 15 7 1 1 1 0
+B 10 13 7 1 1 1 0
+C 10 22 10 1 3 a
+B 4 7 10 2 1 1 a
+B 14 7 10 2 1 1 a`,
+
+"pig": `V 24 16 20
+E 12 7 10 6 4 5 b
+S 18 8 10 3 b
+B 18 7 8 3 2 4 b
+B 21 7 9 1 1 1 0
+B 21 7 11 1 1 1 0
+C 10 0 7 1 5 b
+C 14 0 7 1 5 b
+C 10 0 13 1 5 b
+C 14 0 13 1 5 b
+B 5 7 10 2 3 1 b`,
+
+"ice-cream": `V 16 24 16
+K 8 0 8 4 10 d
+S 8 10 8 4 b
+S 8 14 8 3 8
+S 8 17 8 2 1
+S 8 19 8 1 6`,
+
+"igloo": `V 24 16 24
+B 0 0 0 24 1 24 8
+D 12 1 4 16 10 16 8
+B 8 1 1 8 6 4 8
+B 9 1 0 6 5 2 0`,
+
+"palm-tree": `V 20 28 20
+C 10 0 10 2 16 a
+B 10 16 3 2 2 7 2
+B 10 16 10 2 2 8 2
+B 3 16 10 7 2 2 2
+B 10 16 10 8 2 2 2
+S 10 18 10 3 2`,
+
+"tent": `V 24 16 24
+B 0 0 0 24 1 24 2
+B 4 1 5 16 1 14 d
+E 12 6 12 7 5 6 c`,
+
+"spider": `V 24 12 24
+S 12 5 12 3 0
+S 12 3 8 2 0
+B 5 2 6 3 1 1 0
+B 3 0 4 2 1 1 0
+B 16 2 6 3 1 1 0
+B 19 0 4 2 1 1 0
+B 5 2 17 3 1 1 0
+B 3 0 19 2 1 1 0
+B 16 2 17 3 1 1 0
+B 19 0 19 2 1 1 0
+S 10 6 10 1 1
+S 14 6 10 1 1`,
+
+"pizza": `V 24 8 24
+B 12 0 4 2 2 16 d
+B 10 0 6 2 2 12 d
+B 8 0 8 2 2 8 d
+B 14 0 6 2 2 12 d
+B 16 0 8 2 2 8 d
+B 12 2 8 2 1 4 1
+B 10 2 10 2 1 2 1
+B 14 2 12 2 1 2 1`,
+
+"submarine": `V 40 16 16
+E 20 6 8 16 4 5 9
+E 4 6 8 4 2 3 9
+E 36 6 8 4 2 3 9
+B 18 10 7 4 6 2 9
+B 14 14 7 12 2 2 8
+B 18 16 7 2 2 2 9`,
+
+"church": `V 32 32 32
+B 6 0 8 20 10 20 8
+B 7 10 8 18 2 20 9
+B 9 12 8 14 2 20 9
+B 13 0 6 6 16 8 8
+C 16 16 10 2 8 9
+B 14 0 5 4 8 2 0
+S 16 10 6 2 3
+B 15 24 9 2 4 1 8
+B 13 26 9 6 1 1 8`,
+
+"duck": `V 24 16 24
+B 0 3 0 24 2 24 3
+E 12 6 12 6 3 4 8
+E 6 8 12 2 3 2 8
+S 17 10 12 3 2
+B 18 9 9 4 2 4 6`,
+
+};
+
+// ─── Scene Setup ───
+const container = document.getElementById('three-canvas');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x0a0a0a);
+renderer.shadowMap.enabled = false;
+container.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const fogColor = new THREE.Color(0x0a0a0a);
+scene.fog = new THREE.Fog(fogColor, 200, 700);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 1200);
+// Camera high up, shallow angle — horizon sits at ~70% down screen (models in bottom 30%)
+camera.position.set(0, 150, 250);
+camera.rotation.order = 'YXZ';
+camera.rotation.x = -0.14; // tilt down ~8° — horizon in bottom ~20%
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.6));
+const dl = new THREE.DirectionalLight(0xffffff, 1.2);
+dl.position.set(40, 80, 60);
+scene.add(dl);
+const fl = new THREE.DirectionalLight(0xffffff, 0.4);
+fl.position.set(-30, 40, -20);
+scene.add(fl);
+
+const groundGeo = new THREE.PlaneGeometry(2000, 2000);
+const groundMat = new THREE.MeshLambertMaterial({ color: 0x080808 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -1;
+scene.add(ground);
+
+// ─── Parse & Place Models ───
+const modelNames = Object.keys(MODELS);
+const parsedModels = {};
+
+for (const name of modelNames) {
+  parsedModels[name] = parse(MODELS[name]);
+}
+
+const GRID_COLS = 14;
+const SPACING_X = 45;
+const SPACING_Z = 45;
+const ROWS = 16;
+
+// ─── Surface Nets Mesh Builder ───
+// Converts voxel data into a smooth triangulated mesh (like .obj)
+const smoothMeshMat = new THREE.MeshPhongMaterial({
+  vertexColors: true, shininess: 40, side: THREE.DoubleSide,
+});
+
+// Cache: pre-build geometry per model name so we don't recompute Surface Nets
+const geoCache = {};
+
+function buildSmoothGeo(parsed) {
+  const W = parsed.gridW, H = parsed.gridH, D = parsed.gridD;
+  const occ = new Uint8Array(W * H * D);
+  const colGrid = new Int8Array(W * H * D).fill(-1);
+  const idx = (x, y, z) => x + y * W + z * W * H;
+
+  for (const v of parsed.voxels) {
+    if (v.x >= 0 && v.x < W && v.y >= 0 && v.y < H && v.z >= 0 && v.z < D) {
+      occ[idx(v.x, v.y, v.z)] = 1;
+      colGrid[idx(v.x, v.y, v.z)] = v.color;
+    }
+  }
+
+  const cornerOff = [[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]];
+  const edges = [[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+
+  const vertMap = new Int32Array(W * H * D).fill(-1);
+  const verts = [];
+  const vCols = [];
+
+  // Compute center for offset
+  let minX=Infinity, maxX=-Infinity, minZ=Infinity, maxZ=-Infinity;
+  for (const v of parsed.voxels) {
+    if (v.x < minX) minX = v.x;
+    if (v.x > maxX) maxX = v.x;
+    if (v.z < minZ) minZ = v.z;
+    if (v.z > maxZ) maxZ = v.z;
+  }
+  const cx = (minX + maxX) / 2;
+  const cz = (minZ + maxZ) / 2;
+
+  for (let z = 0; z < D - 1; z++) {
+    for (let y = 0; y < H - 1; y++) {
+      for (let x = 0; x < W - 1; x++) {
+        const corners = cornerOff.map(([dx,dy,dz]) =>
+          (x+dx < W && y+dy < H && z+dz < D) ? occ[idx(x+dx, y+dy, z+dz)] : 0
+        );
+        let inside = 0;
+        for (let i = 0; i < 8; i++) if (corners[i]) inside++;
+        if (inside === 0 || inside === 8) continue;
+
+        let sx = 0, sy = 0, sz = 0, count = 0;
+        for (const [a, b] of edges) {
+          if (corners[a] !== corners[b]) {
+            sx += (x + cornerOff[a][0] + x + cornerOff[b][0]) * 0.5;
+            sy += (y + cornerOff[a][1] + y + cornerOff[b][1]) * 0.5;
+            sz += (z + cornerOff[a][2] + z + cornerOff[b][2]) * 0.5;
+            count++;
+          }
+        }
+        if (count === 0) continue;
+
+        vertMap[idx(x, y, z)] = verts.length / 3;
+        // Store centered vertices (subtract cx/cz so geometry is origin-centered)
+        verts.push(sx / count + 0.5 - cx, sy / count + 0.5, sz / count + 0.5 - cz);
+
+        let bc = 9;
+        for (let dz2 = 0; dz2 <= 1; dz2++) for (let dy2 = 0; dy2 <= 1; dy2++) for (let dx2 = 0; dx2 <= 1; dx2++) {
+          const nx = x+dx2, ny = y+dy2, nz = z+dz2;
+          if (nx < W && ny < H && nz < D) {
+            const c = colGrid[idx(nx, ny, nz)];
+            if (c >= 0) { bc = c; }
+          }
+        }
+        vCols.push(bc);
+      }
+    }
+  }
+
+  const positions = [], colors = [];
+  const dirs = [[1,0,0], [0,1,0], [0,0,1]];
+  const quadCells = [
+    [[0,0,0],[0,-1,0],[0,-1,-1],[0,0,-1]],
+    [[0,0,0],[0,0,-1],[-1,0,-1],[-1,0,0]],
+    [[0,0,0],[-1,0,0],[-1,-1,0],[0,-1,0]],
+  ];
+
+  for (let z = 0; z < D - 1; z++) {
+    for (let y = 0; y < H - 1; y++) {
+      for (let x = 0; x < W - 1; x++) {
+        if (vertMap[idx(x, y, z)] < 0) continue;
+
+        for (let d = 0; d < 3; d++) {
+          const [dx, dy, dz] = dirs[d];
+          const nx = x + dx, ny = y + dy, nz = z + dz;
+          if (nx >= W-1 || ny >= H-1 || nz >= D-1) continue;
+
+          const a0 = cornerOff[0], a1 = dirs[d];
+          const v0 = (x+a0[0]<W && y+a0[1]<H && z+a0[2]<D) ? occ[idx(x+a0[0],y+a0[1],z+a0[2])] : 0;
+          const v1 = (x+a1[0]<W && y+a1[1]<H && z+a1[2]<D) ? occ[idx(x+a1[0],y+a1[1],z+a1[2])] : 0;
+          if (v0 === v1) continue;
+
+          const qc = quadCells[d];
+          const vi = [];
+          for (const [qx, qy, qz] of qc) {
+            const cx2 = x + qx, cy = y + qy, cz2 = z + qz;
+            if (cx2 >= 0 && cx2 < W-1 && cy >= 0 && cy < H-1 && cz2 >= 0 && cz2 < D-1) {
+              const vi2 = vertMap[idx(cx2, cy, cz2)];
+              if (vi2 >= 0) vi.push(vi2);
+            }
+          }
+          if (vi.length < 3) continue;
+
+          const pushTri = (a, b, c) => {
+            positions.push(
+              verts[a*3], verts[a*3+1], verts[a*3+2],
+              verts[b*3], verts[b*3+1], verts[b*3+2],
+              verts[c*3], verts[c*3+1], verts[c*3+2]
+            );
+            const col = new THREE.Color(COLORS[vCols[a]] || COLORS[9]);
+            for (let j = 0; j < 3; j++) colors.push(col.r, col.g, col.b);
+          };
+
+          if (v0) {
+            pushTri(vi[0], vi[1], vi[2]);
+            if (vi.length === 4) pushTri(vi[0], vi[2], vi[3]);
+          } else {
+            pushTri(vi[0], vi[2], vi[1]);
+            if (vi.length === 4) pushTri(vi[0], vi[3], vi[2]);
+          }
+        }
+      }
+    }
+  }
+
+  if (positions.length === 0) return null;
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function createModelMesh(parsed, name, offsetX, offsetZ) {
+  if (parsed.voxels.length === 0) return null;
+
+  // Build or reuse cached geometry
+  if (!geoCache[name]) {
+    geoCache[name] = buildSmoothGeo(parsed);
+  }
+  const geo = geoCache[name];
+  if (!geo) return null;
+
+  const mesh = new THREE.Mesh(geo, smoothMeshMat);
+  mesh.position.set(offsetX, 0, offsetZ);
+  return mesh;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Store row meshes for recycling
+const rowMeshes = []; // array of { meshes: [...], baseZ: number }
+let totalModelsPlaced = 0;
+const TOTAL_DEPTH = ROWS * SPACING_Z;
+
+function createRow(rowIndex, baseZ) {
+  const shuffled = shuffle(modelNames);
+  const meshes = [];
+  for (let col = 0; col < GRID_COLS; col++) {
+    const name = shuffled[col % shuffled.length];
+    const parsed = parsedModels[name];
+    const xOffset = (col - GRID_COLS / 2) * SPACING_X + (rowIndex % 2 ? SPACING_X / 2 : 0);
+    const mesh = createModelMesh(parsed, name, xOffset, baseZ);
+    if (mesh) {
+      scene.add(mesh);
+      meshes.push(mesh);
+      totalModelsPlaced++;
+    }
+  }
+  return { meshes, baseZ };
+}
+
+// Initial placement
+for (let row = 0; row < ROWS; row++) {
+  const baseZ = -row * SPACING_Z;
+  rowMeshes.push(createRow(row, baseZ));
+}
+
+document.getElementById('model-count').textContent = `[ ${totalModelsPlaced} models ]`;
+// model-count-center was replaced by status element
+
+function onResize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+window.addEventListener('resize', onResize);
+onResize();
+
+// Camera drift speed
+const DRIFT_SPEED = 12; // units per second
+let rowRecycleCounter = ROWS;
+
+function animate(time) {
+  requestAnimationFrame(animate);
+
+  const dt = 1 / 60;
+  camera.position.z -= DRIFT_SPEED * dt;
+
+  // Recycle rows that have passed behind the camera
+  for (const row of rowMeshes) {
+    // If this row is now behind the camera (camera passed it)
+    if (row.baseZ > camera.position.z + 80) {
+      // Remove old meshes (geometry is cached, don't dispose it)
+      for (const m of row.meshes) {
+        scene.remove(m);
+      }
+      // Find the furthest row Z
+      let minZ = Infinity;
+      for (const r of rowMeshes) {
+        if (r.baseZ < minZ) minZ = r.baseZ;
+      }
+      // Place new row one step further
+      const newZ = minZ - SPACING_Z;
+      const shuffled = shuffle(modelNames);
+      const newMeshes = [];
+      for (let col = 0; col < GRID_COLS; col++) {
+        const name = shuffled[col % shuffled.length];
+        const parsed = parsedModels[name];
+        const xOffset = (col - GRID_COLS / 2) * SPACING_X + (rowRecycleCounter % 2 ? SPACING_X / 2 : 0);
+        const mesh = createModelMesh(parsed, name, xOffset, newZ);
+        if (mesh) {
+          scene.add(mesh);
+          newMeshes.push(mesh);
+        }
+      }
+      row.meshes = newMeshes;
+      row.baseZ = newZ;
+      rowRecycleCounter++;
+    }
+  }
+
+  // Move lights and ground with camera
+  dl.position.set(camera.position.x + 40, 80, camera.position.z - 60);
+  fl.position.set(camera.position.x - 30, 40, camera.position.z - 20);
+  ground.position.z = camera.position.z - 500;
+
+  renderer.render(scene, camera);
+}
+animate(0);
+
+requestAnimationFrame(() => {
+  document.getElementById('loading').classList.add('done');
+  setTimeout(() => document.getElementById('loading').remove(), 700);
+});
+
+// ─── VOXI DSL Reference for LLM ───
+const VOXI_REF = `VOXI DSL reference:
+V W H D          — Grid size
+B X Y Z W H D C  — Box at position, size, color
+S X Y Z R C      — Sphere at center, radius, color
+C X Y Z R H C    — Cylinder at center, radius, height, color
+K X Y Z R H C    — Cone at center, radius, height, color
+P X Y Z C        — Single voxel point
+E X Y Z RX RY RZ C — Ellipsoid at center, radii, color
+D X Y Z W H D C  — Dome at position, size, color
+G name / /G      — Named group
+@ name X Y Z     — Place group copy at offset
+-- comment
+
+Colors: 0=black 1=red 2=green 3=blue 4=cyan 5=magenta 6=yellow 7=orange 8=white 9=gray a=brown b=pink c=dark-green d=tan e=maroon f=navy
+
+Y axis is UP. Origin (0,0,0) = bottom-left-front corner.`;
+
+// ─── Dual Result Viewer ───
+// Each pane gets its own Three.js scene, camera, controls
+function createResultPane(containerId) {
+  const pane = document.getElementById(containerId);
+  const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  r.setClearColor(0x060606);
+  r.shadowMap.enabled = true;
+  pane.appendChild(r.domElement);
+
+  const sc = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+  const ctrl = new OrbitControls(cam, r.domElement);
+  ctrl.enableDamping = true;
+  ctrl.dampingFactor = 0.08;
+
+  sc.add(new THREE.AmbientLight(0xffffff, 1.0));
+  sc.add(new THREE.HemisphereLight(0xffffff, 0x333344, 0.6));
+  const dl1 = new THREE.DirectionalLight(0xffffff, 1.4);
+  dl1.position.set(40, 60, 30); dl1.castShadow = true;
+  dl1.shadow.mapSize.set(1024, 1024); sc.add(dl1);
+  const dl2 = new THREE.DirectionalLight(0xffffff, 0.5);
+  dl2.position.set(-30, 40, -20); sc.add(dl2);
+  const dl3 = new THREE.DirectionalLight(0xffffff, 0.3);
+  dl3.position.set(-10, 20, 50); sc.add(dl3);
+
+  const gnd = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.1 }));
+  gnd.rotation.x = -Math.PI / 2; gnd.receiveShadow = true; sc.add(gnd);
+
+  function resize() {
+    const { clientWidth: w, clientHeight: h } = pane;
+    if (w === 0 || h === 0) return;
+    r.setSize(w, h);
+    cam.aspect = w / h;
+    cam.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let mesh = null;
+  let lastParsed = null;
+
+  function render(parsed) {
+    lastParsed = parsed;
+    if (mesh) { sc.remove(mesh); mesh.dispose(); mesh = null; }
+    if (!parsed || parsed.voxels.length === 0) return;
+
+    const geo = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+    const mat = new THREE.MeshLambertMaterial();
+    const im = new THREE.InstancedMesh(geo, mat, parsed.voxels.length);
+    im.castShadow = true; im.receiveShadow = true;
+    const mx = new THREE.Matrix4(), cl = new THREE.Color();
+
+    for (let i = 0; i < parsed.voxels.length; i++) {
+      const v = parsed.voxels[i];
+      mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+      im.setMatrixAt(i, mx);
+      cl.setHex(COLORS[v.color] || COLORS[9]);
+      im.setColorAt(i, cl);
+    }
+    im.instanceMatrix.needsUpdate = true;
+    im.instanceColor.needsUpdate = true;
+    sc.add(im);
+    mesh = im;
+
+    const s = Math.max(parsed.gridW, parsed.gridH, parsed.gridD);
+    cam.position.set(s * 1.5, s * 1.0, s * 1.5);
+    ctrl.target.set(parsed.gridW / 2, parsed.gridH / 4, parsed.gridD / 2);
+    ctrl.update();
+  }
+
+  (function animate() {
+    requestAnimationFrame(animate);
+    ctrl.update();
+    r.render(sc, cam);
+  })();
+
+  return { render, resize, getParsed: () => lastParsed };
+}
+
+// Lazy-init panes
+let paneA = null, paneB = null, paneC = null, paneD = null, paneE = null, paneG = null;
+function ensurePanes() {
+  if (!paneA) paneA = createResultPane('canvasA');
+  if (!paneB) paneB = createResultPane('canvasB');
+  if (!paneC) paneC = createResultPane('canvasC');
+  if (!paneD) paneD = createResultPane('canvasD');
+  if (!paneE) paneE = createResultPane('canvasE');
+  if (!paneG) paneG = createResultPane('canvasG');
+  setTimeout(() => { [paneA,paneB,paneC,paneD,paneE,paneG].forEach(p => p.resize()); }, 50);
+}
+
+// ─── OBJ Export ───
+// ─── Greedy Meshing ───
+// Merges adjacent coplanar faces into large quads for clean Blender-friendly OBJ
+function greedyMesh(parsed) {
+  const W = parsed.gridW, H = parsed.gridH, D = parsed.gridD;
+  const grid = new Uint8Array(W * H * D);
+  for (const v of parsed.voxels) grid[v.x + v.y * W + v.z * W * H] = 1;
+
+  const get = (x, y, z) => {
+    if (x < 0 || x >= W || y < 0 || y >= H || z < 0 || z >= D) return 0;
+    return grid[x + y * W + z * W * H];
+  };
+
+  // 6 face directions
+  const dirs = [
+    { axis: 2, dir: -1, u: 0, v: 1, uSize: W, vSize: H, slices: D }, // -Z
+    { axis: 2, dir:  1, u: 0, v: 1, uSize: W, vSize: H, slices: D }, // +Z
+    { axis: 0, dir: -1, u: 2, v: 1, uSize: D, vSize: H, slices: W }, // -X
+    { axis: 0, dir:  1, u: 2, v: 1, uSize: D, vSize: H, slices: W }, // +X
+    { axis: 1, dir: -1, u: 0, v: 2, uSize: W, vSize: D, slices: H }, // -Y
+    { axis: 1, dir:  1, u: 0, v: 2, uSize: W, vSize: D, slices: H }, // +Y
+  ];
+
+  const quads = [];
+
+  for (let fi = 0; fi < 6; fi++) {
+    const d = dirs[fi];
+
+    for (let slice = 0; slice < d.slices; slice++) {
+      // Build 2D mask of exposed faces for this slice
+      const mask = new Uint8Array(d.uSize * d.vSize);
+
+      for (let iv = 0; iv < d.vSize; iv++) {
+        for (let iu = 0; iu < d.uSize; iu++) {
+          const pos = [0, 0, 0];
+          pos[d.axis] = slice;
+          pos[d.u] = iu;
+          pos[d.v] = iv;
+
+          if (!get(pos[0], pos[1], pos[2])) continue;
+
+          // Check if neighbor in normal direction exists (face hidden)
+          const npos = [pos[0], pos[1], pos[2]];
+          npos[d.axis] += d.dir;
+          if (get(npos[0], npos[1], npos[2])) continue;
+
+          mask[iu + iv * d.uSize] = 1;
+        }
+      }
+
+      // Greedy merge: sweep and expand rectangles
+      for (let iv = 0; iv < d.vSize; iv++) {
+        for (let iu = 0; iu < d.uSize; iu++) {
+          if (!mask[iu + iv * d.uSize]) continue;
+
+          // Expand width (u direction)
+          let w = 1;
+          while (iu + w < d.uSize && mask[iu + w + iv * d.uSize]) w++;
+
+          // Expand height (v direction)
+          let h = 1, canExpand = true;
+          while (canExpand && iv + h < d.vSize) {
+            for (let k = 0; k < w; k++) {
+              if (!mask[iu + k + (iv + h) * d.uSize]) { canExpand = false; break; }
+            }
+            if (canExpand) h++;
+          }
+
+          // Clear merged area
+          for (let jv = 0; jv < h; jv++)
+            for (let ju = 0; ju < w; ju++)
+              mask[iu + ju + (iv + jv) * d.uSize] = 0;
+
+          // Compute quad in 3D
+          const origin = [0, 0, 0];
+          origin[d.axis] = slice + (d.dir > 0 ? 1 : 0);
+          origin[d.u] = iu;
+          origin[d.v] = iv;
+
+          const size = [0, 0, 0];
+          size[d.u] = w;
+          size[d.v] = h;
+
+          quads.push({ fi, origin, size, uAxis: d.u, vAxis: d.v });
+        }
+      }
+    }
+  }
+
+  return quads;
+}
+
+function exportOBJ(parsed) {
+  if (!parsed || parsed.voxels.length === 0) return;
+
+  const quads = greedyMesh(parsed);
+
+  // Vertex dedup with merge by distance
+  const MERGE_DIST = 0.0001;
+  const vertList = [];
+  const vertMap = new Map();
+
+  function getVertIdx(x, y, z) {
+    const key = `${Math.round(x*10000)},${Math.round(y*10000)},${Math.round(z*10000)}`;
+    let idx = vertMap.get(key);
+    if (idx !== undefined) return idx;
+    idx = vertList.length + 1;
+    vertMap.set(key, idx);
+    vertList.push([x, y, z]);
+    return idx;
+  }
+
+  // No per-face normals — let Blender compute smooth normals
+  const faces = [];
+  for (const q of quads) {
+    const v0 = [...q.origin];
+    const v1 = [...q.origin]; v1[q.uAxis] += q.size[q.uAxis];
+    const v2 = [...q.origin]; v2[q.uAxis] += q.size[q.uAxis]; v2[q.vAxis] += q.size[q.vAxis];
+    const v3 = [...q.origin]; v3[q.vAxis] += q.size[q.vAxis];
+
+    const i0 = getVertIdx(v0[0], v0[1], v0[2]);
+    const i1 = getVertIdx(v1[0], v1[1], v1[2]);
+    const i2 = getVertIdx(v2[0], v2[1], v2[2]);
+    const i3 = getVertIdx(v3[0], v3[1], v3[2]);
+
+    if (q.fi === 0 || q.fi === 3 || q.fi === 5) {
+      faces.push(`f ${i0} ${i1} ${i2} ${i3}`);
+    } else {
+      faces.push(`f ${i0} ${i3} ${i2} ${i1}`);
+    }
+  }
+
+  let obj = `# VOXI Export — greedy meshed, merged vertices\n`;
+  obj += `# ${quads.length} quads, ${vertList.length} unique vertices\n`;
+  for (const v of vertList) obj += `v ${v[0]} ${v[1]} ${v[2]}\n`;
+  obj += faces.join('\n') + '\n';
+
+  console.log(`Export: ${parsed.voxels.length} voxels → ${quads.length} quads, ${vertList.length} unique verts`);
+
+  const blob = new Blob([obj], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'model.obj'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ─── GLB Export (binary GLTF — Blender-native, replaces FBX) ───
+function exportGLB(parsed) {
+  if (!parsed || parsed.voxels.length === 0) return;
+
+  // Build a Three.js mesh from greedy quads
+  const quads = greedyMesh(parsed);
+  const positions = [];
+  const indices = [];
+  const vertMap = new Map();
+
+  function gv(x, y, z) {
+    const key = `${x},${y},${z}`;
+    let idx = vertMap.get(key);
+    if (idx !== undefined) return idx;
+    idx = positions.length / 3;
+    vertMap.set(key, idx);
+    positions.push(x, y, z);
+    return idx;
+  }
+
+  for (const q of quads) {
+    const v0 = [...q.origin];
+    const v1 = [...q.origin]; v1[q.uAxis] += q.size[q.uAxis];
+    const v2 = [...q.origin]; v2[q.uAxis] += q.size[q.uAxis]; v2[q.vAxis] += q.size[q.vAxis];
+    const v3 = [...q.origin]; v3[q.vAxis] += q.size[q.vAxis];
+
+    const i0 = gv(v0[0], v0[1], v0[2]);
+    const i1 = gv(v1[0], v1[1], v1[2]);
+    const i2 = gv(v2[0], v2[1], v2[2]);
+    const i3 = gv(v3[0], v3[1], v3[2]);
+
+    // Two triangles per quad (GLTF needs triangles)
+    if (q.fi === 0 || q.fi === 3 || q.fi === 5) {
+      indices.push(i0, i1, i2, i0, i2, i3);
+    } else {
+      indices.push(i0, i3, i2, i0, i2, i1);
+    }
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.6, metalness: 0.1 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = 'voxi_model';
+
+  const exportScene = new THREE.Scene();
+  exportScene.add(mesh);
+
+  const exporter = new GLTFExporter();
+  exporter.parse(exportScene, (buffer) => {
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'model.glb';
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    // Cleanup
+    geo.dispose();
+    mat.dispose();
+  }, (err) => {
+    console.error('GLB export failed:', err);
+  }, { binary: true });
+}
+
+// ─── Surface Nets (smooth mesh from voxels) ───
+function surfaceNets(parsed) {
+  const W = parsed.gridW, H = parsed.gridH, D = parsed.gridD;
+  const occ = new Uint8Array(W * H * D);
+  const idx = (x, y, z) => x + y * W + z * W * H;
+
+  for (const v of parsed.voxels) {
+    if (v.x >= 0 && v.x < W && v.y >= 0 && v.y < H && v.z >= 0 && v.z < D)
+      occ[idx(v.x, v.y, v.z)] = 1;
+  }
+
+  const cornerOff = [[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]];
+  const edges = [[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+
+  const vertMap = new Int32Array(W * H * D).fill(-1);
+  const verts = [];
+
+  // Pass 1: compute one vertex per surface cell
+  for (let z = 0; z < D - 1; z++) {
+    for (let y = 0; y < H - 1; y++) {
+      for (let x = 0; x < W - 1; x++) {
+        const corners = cornerOff.map(([dx,dy,dz]) =>
+          (x+dx < W && y+dy < H && z+dz < D) ? occ[idx(x+dx, y+dy, z+dz)] : 0
+        );
+        let inside = 0;
+        for (let i = 0; i < 8; i++) if (corners[i]) inside++;
+        if (inside === 0 || inside === 8) continue;
+
+        let sx = 0, sy = 0, sz = 0, count = 0;
+        for (const [a, b] of edges) {
+          if (corners[a] !== corners[b]) {
+            sx += (x + cornerOff[a][0] + x + cornerOff[b][0]) * 0.5;
+            sy += (y + cornerOff[a][1] + y + cornerOff[b][1]) * 0.5;
+            sz += (z + cornerOff[a][2] + z + cornerOff[b][2]) * 0.5;
+            count++;
+          }
+        }
+        if (count === 0) continue;
+
+        vertMap[idx(x, y, z)] = verts.length / 3;
+        verts.push(sx / count + 0.5, sy / count + 0.5, sz / count + 0.5);
+      }
+    }
+  }
+
+  // Pass 2: connect adjacent surface cells with quads
+  const dirs = [[1,0,0], [0,1,0], [0,0,1]];
+  const quadCells = [
+    [[0,0,0],[0,-1,0],[0,-1,-1],[0,0,-1]],
+    [[0,0,0],[0,0,-1],[-1,0,-1],[-1,0,0]],
+    [[0,0,0],[-1,0,0],[-1,-1,0],[0,-1,0]],
+  ];
+
+  const positions = [];
+  const indices = [];
+
+  for (let z = 0; z < D - 1; z++) {
+    for (let y = 0; y < H - 1; y++) {
+      for (let x = 0; x < W - 1; x++) {
+        if (vertMap[idx(x, y, z)] < 0) continue;
+
+        for (let d = 0; d < 3; d++) {
+          const [dx, dy, dz] = dirs[d];
+          const nx = x + dx, ny = y + dy, nz = z + dz;
+          if (nx >= W-1 || ny >= H-1 || nz >= D-1) continue;
+
+          const a0 = cornerOff[0], a1 = dirs[d];
+          const v0 = (x+a0[0]<W && y+a0[1]<H && z+a0[2]<D) ? occ[idx(x+a0[0],y+a0[1],z+a0[2])] : 0;
+          const v1 = (x+a1[0]<W && y+a1[1]<H && z+a1[2]<D) ? occ[idx(x+a1[0],y+a1[1],z+a1[2])] : 0;
+          if (v0 === v1) continue;
+
+          const qc = quadCells[d];
+          const vi = [];
+          for (const [qx, qy, qz] of qc) {
+            const cx2 = x + qx, cy = y + qy, cz2 = z + qz;
+            if (cx2 >= 0 && cx2 < W-1 && cy >= 0 && cy < H-1 && cz2 >= 0 && cz2 < D-1) {
+              const vi2 = vertMap[idx(cx2, cy, cz2)];
+              if (vi2 >= 0) vi.push(vi2);
+            }
+          }
+          if (vi.length < 3) continue;
+
+          if (v0) {
+            indices.push(vi[0], vi[1], vi[2]);
+            if (vi.length === 4) indices.push(vi[0], vi[2], vi[3]);
+          } else {
+            indices.push(vi[0], vi[2], vi[1]);
+            if (vi.length === 4) indices.push(vi[0], vi[3], vi[2]);
+          }
+        }
+      }
+    }
+  }
+
+  return { verts: new Float32Array(verts), indices };
+}
+
+function exportSmoothOBJ(parsed) {
+  if (!parsed || parsed.voxels.length === 0) return;
+
+  const { verts, indices } = surfaceNets(parsed);
+  if (indices.length === 0) return;
+
+  let obj = `# VOXI Export — Surface Nets smooth mesh\n`;
+  obj += `# ${verts.length / 3} vertices, ${indices.length / 3} triangles\n`;
+  obj += `s 1\n`; // smooth shading group
+
+  for (let i = 0; i < verts.length; i += 3) {
+    obj += `v ${verts[i]} ${verts[i+1]} ${verts[i+2]}\n`;
+  }
+
+  for (let i = 0; i < indices.length; i += 3) {
+    obj += `f ${indices[i]+1} ${indices[i+1]+1} ${indices[i+2]+1}\n`;
+  }
+
+  console.log(`Smooth export: ${verts.length/3} verts, ${indices.length/3} tris`);
+
+  const blob = new Blob([obj], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'model_smooth.obj'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportSmoothGLB(parsed) {
+  if (!parsed || parsed.voxels.length === 0) return;
+
+  const { verts, indices: idxArr } = surfaceNets(parsed);
+  if (idxArr.length === 0) return;
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+  geo.setIndex(idxArr);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.5, metalness: 0.1 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = 'voxi_smooth';
+
+  const exportScene = new THREE.Scene();
+  exportScene.add(mesh);
+
+  const exporter = new GLTFExporter();
+  exporter.parse(exportScene, (buffer) => {
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'model_smooth.glb'; a.click();
+    URL.revokeObjectURL(a.href);
+    geo.dispose(); mat.dispose();
+  }, (err) => {
+    console.error('Smooth GLB export failed:', err);
+  }, { binary: true });
+}
+
+// ─── Qwen API ───
+let API_KEY = localStorage.getItem('qwen_api_key') || '';
+
+function getSystemPrompt(res) {
+  return `You are a 3D voxel model generator. You output ONLY valid VOXI DSL code — no explanation, no markdown, no wrapping.
+
+${VOXI_REF}
+
+Your process:
+1. DECOMPOSE: First analyze what structural parts make up the object. What are its key components? (e.g. a chair = seat + backrest + 4 legs; a person = head + torso + arms + legs + feet)
+2. PLAN DIMENSIONS: Decide the grid size and how much space each part needs. Parts should be proportionally correct relative to each other.
+3. BUILD BOTTOM-UP: Start with the base/feet/ground-level parts at Y=0, then build upward. Each part should connect to adjacent parts with no floating gaps. Use the best primitive for each shape — boxes for flat/rectangular parts, cylinders for round columns, spheres for round objects, ellipsoids for organic shapes, cones for tapered forms.
+
+Rules:
+- Output raw VOXI code only. No \`\`\` fences, no text before or after.
+- Use a ${res}x${res}x${res} grid. Start your code with V ${res} ${res} ${res}.
+- Use -- comments to label each part clearly (e.g. "-- left wheel", "-- roof", "-- eye").
+- Use multiple colors to distinguish different materials and parts.
+- Y axis is UP.
+- Make sure parts connect — no floating disconnected pieces.`;
+}
+
+const MODEL_A = 'qwen3.5-27b';
+const MODEL_B = 'qwen-turbo';
+const MODEL_C = 'claude-sonnet-4-20250514';
+const MODEL_G = 'claude-haiku-4-5-20251001';
+const MODEL_D = 'gemma-4-31b-it';
+const MODEL_E = 'gemini-3-flash-preview';
+let GOOGLE_KEY = localStorage.getItem('google_api_key') || '';
+
+async function generateVoxiStream(prompt, modelName) {
+  if (!API_KEY) throw new Error('Qwen API key not configured');
+
+  const userPrompt = `Make a 3D voxel model of: ${prompt}\n\nFirst think about what parts this object is made of, then build each part.`;
+
+  const res = await fetch('https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: modelName,
+      messages: [
+        { role: 'system', content: getSystemPrompt(currentRes) },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+      enable_thinking: true,
+      stream: true,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API error ${res.status}: ${err}`);
+  }
+
+  return res;
+}
+
+// ─── Stream parser: reads SSE chunks, calls onCode with accumulated VOXI ───
+async function streamVoxi(response, onCode, onThinking) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullContent = '';
+  let inThinking = false;
+  let thinkBuffer = '';
+  let lastLineCount = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop(); // keep incomplete line
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') continue;
+
+      try {
+        const json = JSON.parse(data);
+        const delta = json.choices?.[0]?.delta;
+        if (!delta) continue;
+
+        // Handle reasoning/thinking content
+        if (delta.reasoning_content) {
+          thinkBuffer += delta.reasoning_content;
+          if (onThinking) onThinking(thinkBuffer);
+          continue;
+        }
+
+        if (delta.content) {
+          fullContent += delta.content;
+
+          // Strip think tags and markdown fences from accumulated content
+          let clean = fullContent.replace(/<think>[\s\S]*?<\/think>/gi, '');
+          clean = clean.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '');
+
+          // Only re-render if we got new complete lines
+          const currentLines = clean.split('\n').length;
+          if (currentLines > lastLineCount) {
+            lastLineCount = currentLines;
+            onCode(clean);
+          }
+        }
+      } catch (e) { /* skip malformed chunks */ }
+    }
+  }
+
+  // Final parse
+  let finalCode = fullContent.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  finalCode = finalCode.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '').trim();
+  return finalCode;
+}
+
+// ─── Anthropic Claude API (streaming) ───
+let ANTHROPIC_KEY = localStorage.getItem('anthropic_api_key') || '';
+
+async function generateClaudeStream(prompt, modelOverride) {
+  if (!ANTHROPIC_KEY) throw new Error('Anthropic API key not configured');
+
+  const userPrompt = `Make a 3D voxel model of: ${prompt}\n\nFirst think about what parts this object is made of, then build each part.`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: modelOverride || MODEL_C,
+      max_tokens: 4096,
+      stream: true,
+      system: getSystemPrompt(currentRes),
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Anthropic error ${res.status}: ${err}`);
+  }
+  return res;
+}
+
+async function streamClaude(response, onCode, onThinking) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullContent = '';
+  let lastLineCount = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') continue;
+
+      try {
+        const json = JSON.parse(data);
+
+        // Anthropic SSE events
+        if (json.type === 'content_block_delta') {
+          const delta = json.delta;
+          if (delta.type === 'thinking_delta') {
+            if (onThinking) onThinking(delta.thinking || '');
+          } else if (delta.type === 'text_delta') {
+            fullContent += delta.text;
+
+            let clean = fullContent.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '');
+
+            const currentLines = clean.split('\n').length;
+            if (currentLines > lastLineCount) {
+              lastLineCount = currentLines;
+              onCode(clean);
+            }
+          }
+        }
+      } catch (e) { /* skip */ }
+    }
+  }
+
+  let finalCode = fullContent.trim();
+  finalCode = finalCode.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '').trim();
+  return finalCode;
+}
+
+// ─── Google Generative Language API (Gemini/Gemma streaming) ───
+async function generateGoogleStream(prompt, modelName) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${GOOGLE_KEY}`;
+  const userText = `Make a 3D voxel model of: ${prompt}\n\nFirst think about what parts this object is made of, then build each part.`;
+
+  // Gemma models don't support systemInstruction — inline it
+  const isGemma = modelName.startsWith('gemma');
+  const body = isGemma ? {
+    contents: [{
+      parts: [{ text: getSystemPrompt(currentRes) + '\n\n' + userText }]
+    }],
+    generationConfig: { temperature: 0.7 },
+  } : {
+    systemInstruction: { parts: [{ text: getSystemPrompt(currentRes) }] },
+    contents: [{
+      parts: [{ text: userText }]
+    }],
+    generationConfig: { temperature: 0.7 },
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Google API error ${res.status}: ${err}`);
+  }
+  return res;
+}
+
+async function streamGoogle(response, onCode, onThinking) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullContent = '';
+  let lastLineCount = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (!data) continue;
+
+      try {
+        const json = JSON.parse(data);
+        const parts = json.candidates?.[0]?.content?.parts;
+        if (!parts) continue;
+
+        for (const part of parts) {
+          if (part.thought && onThinking) {
+            onThinking(part.text || '');
+            continue;
+          }
+          if (part.text) {
+            fullContent += part.text;
+
+            let clean = fullContent.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '');
+            const currentLines = clean.split('\n').length;
+            if (currentLines > lastLineCount) {
+              lastLineCount = currentLines;
+              onCode(clean);
+            }
+          }
+        }
+      } catch (e) { /* skip */ }
+    }
+  }
+
+  let finalCode = fullContent.trim();
+  finalCode = finalCode.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '').trim();
+  return finalCode;
+}
+
+// ─── Resolution Slider ───
+let currentRes = 32;
+const resSlider = document.getElementById('res-slider');
+const resValue = document.getElementById('res-value');
+resSlider.addEventListener('input', () => {
+  currentRes = parseInt(resSlider.value);
+  resValue.textContent = currentRes;
+});
+
+// ─── UI Logic ───
+const promptRow = document.querySelector('.prompt-row');
+const promptInput = document.getElementById('prompt-input');
+const btnGenerate = document.getElementById('generate-btn');
+const statusEl = document.getElementById('status');
+const resultView = document.getElementById('resultView');
+let currentPrompt = '';
+
+const RENDER_INTERVAL = 100;
+
+// Run one pane's streaming generation
+// Generic pane runner — takes fetchFn (returns response) and streamFn (parses SSE)
+async function runPane(prompt, label, fetchFn, streamFn, paneRenderer, loaderId, loadTextId, statusId, infoId, exportBtnId) {
+  const loaderEl = document.getElementById(loaderId);
+  const loadText = document.getElementById(loadTextId);
+  const statusPane = document.getElementById(statusId);
+  const infoEl = document.getElementById(infoId);
+  const exportBtn = document.getElementById(exportBtnId);
+
+  loaderEl.style.display = 'flex';
+  loadText.textContent = 'Thinking...';
+  statusPane.textContent = 'Waiting...';
+  infoEl.textContent = '—';
+  exportBtn.classList.remove('visible');
+
+  let lastRenderTime = 0;
+
+  try {
+    const response = await fetchFn(prompt);
+    loadText.textContent = 'Analyzing...';
+    statusPane.textContent = 'Analyzing...';
+
+    let isThinking = true;
+
+    const finalCode = await streamFn(
+      response,
+      (code) => {
+        if (isThinking) {
+          isThinking = false;
+          loaderEl.style.display = 'none';
+          statusPane.textContent = 'Building...';
+        }
+
+        const now = Date.now();
+        if (now - lastRenderTime < RENDER_INTERVAL) return;
+        lastRenderTime = now;
+
+        const parsed = parse(code);
+        if (parsed.voxels.length > 0) {
+          paneRenderer.render(parsed);
+          infoEl.textContent = `${parsed.voxels.length} voxels`;
+          const lines = code.split('\n');
+          const lastComment = [...lines].reverse().find(l => l.trim().startsWith('--'));
+          if (lastComment) {
+            statusPane.textContent = lastComment.trim().replace(/^--\s*/, '');
+          }
+        }
+      },
+      (thinkText) => {
+        loadText.textContent = 'Decomposing parts...';
+        statusPane.textContent = 'Thinking...';
+      }
+    );
+
+    const parsed = parse(finalCode);
+    if (parsed.voxels.length > 0) {
+      paneRenderer.render(parsed);
+      infoEl.textContent = `${parsed.voxels.length} voxels`;
+      statusPane.textContent = 'Done';
+      exportBtn.classList.add('visible');
+    } else {
+      statusPane.textContent = 'Failed';
+    }
+    loaderEl.style.display = 'none';
+  } catch (err) {
+    loaderEl.style.display = 'none';
+    statusPane.textContent = 'Error';
+    console.error(`${label}:`, err);
+  }
+}
+
+async function handleGenerate() {
+  const prompt = promptInput.value.trim();
+  if (!prompt) return;
+  currentPrompt = prompt;
+
+  promptRow.classList.add('generating');
+  btnGenerate.disabled = true;
+  statusEl.textContent = 'Generating with two models...';
+  statusEl.className = 'status-text';
+  statusEl.style.opacity = '1';
+
+  resultView.classList.add('active');
+  document.getElementById('resultPrompt').textContent = `"${prompt}"`;
+  ensurePanes();
+
+  // Launch all 6 models in parallel
+  const runs = [
+    runPane(prompt, MODEL_A, (p) => generateVoxiStream(p, MODEL_A), streamVoxi,
+      paneA, 'loaderA', 'loadTextA', 'statusA', 'infoA', 'exportsA'),
+    runPane(prompt, MODEL_B, (p) => generateVoxiStream(p, MODEL_B), streamVoxi,
+      paneB, 'loaderB', 'loadTextB', 'statusB', 'infoB', 'exportsB'),
+    runPane(prompt, MODEL_C, generateClaudeStream, streamClaude,
+      paneC, 'loaderC', 'loadTextC', 'statusC', 'infoC', 'exportsC'),
+    runPane(prompt, MODEL_D, (p) => generateGoogleStream(p, MODEL_D), streamGoogle,
+      paneD, 'loaderD', 'loadTextD', 'statusD', 'infoD', 'exportsD'),
+    runPane(prompt, MODEL_E, (p) => generateGoogleStream(p, MODEL_E), streamGoogle,
+      paneE, 'loaderE', 'loadTextE', 'statusE', 'infoE', 'exportsE'),
+    runPane(prompt, MODEL_G, (p) => generateClaudeStream(p, MODEL_G), streamClaude,
+      paneG, 'loaderG', 'loadTextG', 'statusG', 'infoG', 'exportsG'),
+  ];
+
+  await Promise.allSettled(runs);
+
+  statusEl.style.opacity = '0';
+  setTimeout(() => { statusEl.textContent = ''; }, 300);
+  promptRow.classList.remove('generating');
+  btnGenerate.disabled = false;
+}
+
+btnGenerate.addEventListener('click', handleGenerate);
+promptInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleGenerate();
+});
+
+document.getElementById('btnBack').addEventListener('click', () => {
+  resultView.classList.remove('active');
+});
+
+document.getElementById('btnRegenerate').addEventListener('click', () => {
+  if (currentPrompt) handleGenerate();
+});
+
+document.getElementById('exportA').addEventListener('click', () => {
+  const p = paneA?.getParsed();
+  if (p) exportOBJ(p);
+});
+
+document.getElementById('exportB').addEventListener('click', () => {
+  const p = paneB?.getParsed();
+  if (p) exportOBJ(p);
+});
+
+document.getElementById('exportC').addEventListener('click', () => {
+  const p = paneC?.getParsed();
+  if (p) exportOBJ(p);
+});
+document.getElementById('exportD').addEventListener('click', () => {
+  const p = paneD?.getParsed();
+  if (p) exportOBJ(p);
+});
+document.getElementById('exportE').addEventListener('click', () => {
+  const p = paneE?.getParsed();
+  if (p) exportOBJ(p);
+});
+document.getElementById('exportG').addEventListener('click', () => {
+  const p = paneG?.getParsed();
+  if (p) exportOBJ(p);
+});
+
+// GLB export handlers
+document.getElementById('glbA').addEventListener('click', () => { const p = paneA?.getParsed(); if (p) exportGLB(p); });
+document.getElementById('glbB').addEventListener('click', () => { const p = paneB?.getParsed(); if (p) exportGLB(p); });
+document.getElementById('glbC').addEventListener('click', () => { const p = paneC?.getParsed(); if (p) exportGLB(p); });
+document.getElementById('glbD').addEventListener('click', () => { const p = paneD?.getParsed(); if (p) exportGLB(p); });
+document.getElementById('glbE').addEventListener('click', () => { const p = paneE?.getParsed(); if (p) exportGLB(p); });
+document.getElementById('glbG').addEventListener('click', () => { const p = paneG?.getParsed(); if (p) exportGLB(p); });
+
+// Smooth export handlers (Surface Nets OBJ)
+document.getElementById('smoothA').addEventListener('click', () => { const p = paneA?.getParsed(); if (p) exportSmoothOBJ(p); });
+document.getElementById('smoothB').addEventListener('click', () => { const p = paneB?.getParsed(); if (p) exportSmoothOBJ(p); });
+document.getElementById('smoothC').addEventListener('click', () => { const p = paneC?.getParsed(); if (p) exportSmoothOBJ(p); });
+document.getElementById('smoothD').addEventListener('click', () => { const p = paneD?.getParsed(); if (p) exportSmoothOBJ(p); });
+document.getElementById('smoothE').addEventListener('click', () => { const p = paneE?.getParsed(); if (p) exportSmoothOBJ(p); });
+document.getElementById('smoothG').addEventListener('click', () => { const p = paneG?.getParsed(); if (p) exportSmoothOBJ(p); });
+
+// ─── Cycling Placeholders ───
+const placeholders = [
+  'a medieval sword with ornate handle...',
+  'a penguin standing on ice...',
+  'a japanese pagoda in a garden...',
+  'a rocket on a launch pad...',
+  'a cozy log cabin in the woods...',
+  'a pirate ship with sails...',
+  'a robot with glowing eyes...',
+  'a treasure chest overflowing with gold...',
+];
+let phIdx = 0;
+function cyclePlaceholder() {
+  if (document.activeElement === promptInput && promptInput.value) return;
+  promptInput.style.transition = 'opacity 0.3s';
+  promptInput.style.opacity = '0.3';
+  setTimeout(() => {
+    phIdx = (phIdx + 1) % placeholders.length;
+    promptInput.placeholder = placeholders[phIdx];
+    promptInput.style.opacity = '1';
+  }, 300);
+}
+setInterval(cyclePlaceholder, 3500);
+
+// ─── API Key (click VOXI logo to set) ───
+// Click VOXI logo to set API keys
+document.querySelector('.corner-mark.tl').style.pointerEvents = 'auto';
+document.querySelector('.corner-mark.tl').style.cursor = 'pointer';
+document.querySelector('.corner-mark.tl').addEventListener('click', () => {
+  const choice = window.prompt('Which key? Type "qwen", "anthropic" or "google":', 'qwen');
+  if (choice === 'qwen') {
+    const key = window.prompt('Enter Qwen API key:', API_KEY);
+    if (key !== null) { API_KEY = key; localStorage.setItem('qwen_api_key', key); }
+  } else if (choice === 'anthropic') {
+    const key = window.prompt('Enter Anthropic API key:', ANTHROPIC_KEY);
+    if (key !== null) { ANTHROPIC_KEY = key; localStorage.setItem('anthropic_api_key', key); }
+  } else if (choice === 'google') {
+    const key = window.prompt('Enter Google API key:', GOOGLE_KEY);
+    if (key !== null) { GOOGLE_KEY = key; localStorage.setItem('google_api_key', key); }
+  }
+});
+
+</script>
+</body>
+</html>

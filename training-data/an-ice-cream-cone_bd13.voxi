@@ -1,0 +1,16 @@
+V 20 32 20
+
+-- waffle cone (tan)
+C 10 2 10 1 2 d
+C 10 5 10 2 3 d
+C 10 8 10 3 3 d
+C 10 11 10 4 2 d
+
+-- vanilla scoop (white)
+S 10 17 10 5 8
+
+-- strawberry scoop (pink)
+S 10 24 10 4 b
+
+-- cherry on top (red)
+S 10 29 10 1 1

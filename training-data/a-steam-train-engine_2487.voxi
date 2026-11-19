@@ -1,0 +1,53 @@
+V 36 20 14
+
+-- pilot/cowcatcher (front)
+B 1 3 5 3 4 4 7
+
+-- smokebox (front boiler section)
+B 4 6 5 5 7 4 0
+
+-- main boiler
+B 9 6 5 18 7 4 9
+
+-- running board along base
+B 4 6 5 27 1 4 7
+
+-- cab body
+B 27 6 4 8 12 6 1
+
+-- cab roof overhang
+B 26 17 4 10 2 7 d
+
+-- cab window
+B 28 11 3 4 4 1 3
+
+-- smokestack
+C 6 13 7 2 5 0
+
+-- steam dome
+S 16 14 7 2 9
+
+-- safety valve
+S 22 14 7 1 9
+
+-- headlight
+B 3 11 6 2 2 2 6
+
+-- large drive wheels (3)
+S 14 3 7 3 0
+S 20 3 7 3 0
+S 24 3 7 3 0
+
+-- pilot wheel (front, small)
+S 7 2 7 2 0
+
+-- trailing wheel (back)
+S 31 2 7 2 0
+
+-- connecting rod
+B 12 4 7 14 1 1 e
+
+-- wheel centers
+S 14 3 7 1 6
+S 20 3 7 1 6
+S 24 3 7 1 6

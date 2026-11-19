@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload your CV — ChatResume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --brand: #1d4ed8;
+      --brand-light: #3b82f6;
+      --brand-dark: #1e3a8a;
+      --dark: #0f172a;
+      --dark-muted: #1e293b;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --surface: #ffffff;
+      --surface-warm: #fafaf9;
+      --surface-cool: #f8fafc;
+      --accent: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --radius-lg: 24px;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background: var(--surface-cool);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0 20px;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease-out 0.1s forwards;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+    }
+
+    .back-link svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s ease;
+    }
+
+    .back-link:hover svg {
+      transform: translateX(-3px);
+    }
+
+    .step-indicator {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar-container {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease-out 0.15s forwards;
+    }
+
+    .progress-bar-fill {
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--brand-light));
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ── Main content ── */
+    .upload-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 0 40px;
+    }
+
+    .page-heading {
+      font-family: "Instrument Serif", serif;
+      font-size: 40px;
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--dark);
+      text-align: center;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.2s forwards;
+    }
+
+    /* ── Drop zone ── */
+    .drop-zone {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      background: var(--surface);
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.3s forwards;
+    }
+
+    .drop-zone:hover {
+      border-color: var(--brand-light);
+      background: rgba(29, 78, 216, 0.02);
+    }
+
+    .drop-zone.dragover {
+      border-color: var(--brand);
+      background: rgba(29, 78, 216, 0.04);
+      transform: scale(1.015);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.08), 0 8px 32px rgba(29, 78, 216, 0.1);
+    }
+
+    .drop-zone.has-file {
+      border-color: var(--brand);
+      border-style: solid;
+      background: rgba(29, 78, 216, 0.03);
+    }
+
+    .drop-zone-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 20px;
+      color: var(--text-muted);
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .drop-zone.dragover .drop-zone-icon {
+      color: var(--brand);
+      transform: translateY(-4px);
+    }
+
+    .drop-zone.has-file .drop-zone-icon {
+      color: var(--brand);
+    }
+
+    .drop-zone-label {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--dark-muted);
+      margin-bottom: 16px;
+    }
+
+    .drop-zone.has-file .drop-zone-label {
+      color: var(--brand-dark);
+    }
+
+    .file-name-display {
+      display: none;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .drop-zone.has-file .file-name-display {
+      display: block;
+    }
+
+    .browse-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 24px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brand);
+      background: rgba(29, 78, 216, 0.06);
+      border: 1.5px solid rgba(29, 78, 216, 0.15);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+      margin-bottom: 16px;
+    }
+
+    .browse-btn:hover {
+      background: rgba(29, 78, 216, 0.1);
+      border-color: rgba(29, 78, 216, 0.25);
+    }
+
+    .browse-btn:active {
+      transform: scale(0.97);
+    }
+
+    .formats-note {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.4s forwards;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ── Textarea ── */
+    .paste-area {
+      width: 100%;
+      min-height: 180px;
+      padding: 20px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      resize: vertical;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.45s forwards;
+    }
+
+    .paste-area::placeholder {
+      color: #94a3b8;
+    }
+
+    .paste-area:focus {
+      outline: none;
+      border-color: var(--brand-light);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.08);
+    }
+
+    /* ── Continue button row ── */
+    .action-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 32px;
+      padding-bottom: 48px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.55s forwards;
+    }
+
+    .continue-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--brand);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease, opacity 0.25s ease, box-shadow 0.2s ease;
+    }
+
+    .continue-btn:not(:disabled):hover {
+      background: var(--brand-dark);
+      box-shadow: 0 4px 16px rgba(29, 78, 216, 0.25);
+    }
+
+    .continue-btn:not(:disabled):active {
+      transform: scale(0.97);
+    }
+
+    .continue-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .continue-btn svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s ease;
+    }
+
+    .continue-btn:not(:disabled):hover svg {
+      transform: translateX(3px);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .page {
+        padding: 0 16px;
+      }
+
+      .page-heading {
+        font-size: 30px;
+        margin-bottom: 28px;
+      }
+
+      .drop-zone {
+        padding: 36px 20px;
+      }
+
+      .drop-zone-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .drop-zone-label {
+        font-size: 15px;
+      }
+
+      .paste-area {
+        min-height: 140px;
+      }
+
+      .continue-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section id="page-upload" class="page">
+  <!-- Top bar -->
+  <div class="top-bar">
+    <button class="back-link" data-navigate="landing" aria-label="Go back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      <span>Back</span>
+    </button>
+    <span class="step-indicator">Step 1 of 2</span>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill"></div>
+  </div>
+
+  <!-- Main content -->
+  <div class="upload-content">
+    <h1 class="page-heading">Upload your CV</h1>
+
+    <!-- Drop zone -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" class="file-input" id="fileInput" accept=".pdf,.docx,.doc,.txt">
+
+      <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 32V12"/>
+        <polyline points="16 20 24 12 32 20"/>
+        <path d="M40 32v6a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4v-6"/>
+      </svg>
+
+      <p class="drop-zone-label" id="dropLabel">Drop PDF or DOCX here</p>
+      <p class="file-name-display" id="fileName"></p>
+
+      <button class="browse-btn" type="button" id="browseBtn">Browse files</button>
+
+      <p class="formats-note">Supported: PDF, DOCX, TXT</p>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider">
+      <span class="divider-text">or paste your CV text below</span>
+    </div>
+
+    <!-- Textarea -->
+    <textarea
+      class="paste-area"
+      id="pasteArea"
+      placeholder="Paste your CV text here..."
+      aria-label="Paste your CV text"
+    ></textarea>
+
+    <!-- Continue button -->
+    <div class="action-row">
+      <button class="continue-btn" id="continueBtn" data-navigate="paste-job" disabled>
+        Continue
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    "use strict";
+
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const browseBtn = document.getElementById("browseBtn");
+    const dropLabel = document.getElementById("dropLabel");
+    const fileNameEl = document.getElementById("fileName");
+    const pasteArea = document.getElementById("pasteArea");
+    const continueBtn = document.getElementById("continueBtn");
+
+    const ALLOWED_TYPES = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
+      "text/plain",
+    ];
+    const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".doc", ".txt"];
+
+    let selectedFile = null;
+
+    function isValidFile(file) {
+      if (ALLOWED_TYPES.includes(file.type)) return true;
+      const name = file.name.toLowerCase();
+      return ALLOWED_EXTENSIONS.some(function (ext) {
+        return name.endsWith(ext);
+      });
+    }
+
+    function updateContinueState() {
+      const hasFile = selectedFile !== null;
+      const hasText = pasteArea.value.trim().length > 0;
+      continueBtn.disabled = !(hasFile || hasText);
+    }
+
+    function handleFile(file) {
+      if (!isValidFile(file)) {
+        dropLabel.textContent = "Unsupported format. Try PDF, DOCX, or TXT.";
+        dropZone.classList.remove("has-file");
+        selectedFile = null;
+        fileNameEl.textContent = "";
+        updateContinueState();
+        return;
+      }
+      selectedFile = file;
+      dropLabel.textContent = "File selected";
+      fileNameEl.textContent = file.name;
+      dropZone.classList.add("has-file");
+      updateContinueState();
+    }
+
+    // Browse button
+    browseBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      fileInput.click();
+    });
+
+    // Clicking the drop zone also opens file picker
+    dropZone.addEventListener("click", function () {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files.length > 0) {
+        handleFile(fileInput.files[0]);
+      }
+    });
+
+    // Drag and drop
+    var dragCounter = 0;
+
+    dropZone.addEventListener("dragenter", function (e) {
+      e.preventDefault();
+      dragCounter++;
+      dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", function (e) {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        dropZone.classList.remove("dragover");
+      }
+    });
+
+    dropZone.addEventListener("dragover", function (e) {
+      e.preventDefault();
+    });
+
+    dropZone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      dragCounter = 0;
+      dropZone.classList.remove("dragover");
+      if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    // Textarea input
+    pasteArea.addEventListener("input", updateContinueState);
+
+    // Back button navigation
+    document.querySelector("[data-navigate='landing']").addEventListener("click", function () {
+      window.history.back();
+    });
+
+    // Continue button navigation
+    continueBtn.addEventListener("click", function () {
+      if (!continueBtn.disabled) {
+        // Navigate to paste-job page (adjust path as needed)
+        var target = continueBtn.getAttribute("data-navigate");
+        if (target) {
+          window.location.href = target + ".html";
+        }
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

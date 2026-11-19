@@ -1,0 +1,22 @@
+-- Master Bedroom — 4m × 3.5m
+-- Double bed against north wall, wardrobe on east, desk near window
+
+ROOM 4.0 3.5 2.7
+
+DOOR west @1.5 w:0.9
+WINDOW south @2.0 w:1.4 h:1.4
+
+-- Sleeping (bed centered against north wall)
+BED double @1.3 1.3 facing:south
+NIGHTSTAND standard @0.7 1.7
+NIGHTSTAND standard @2.8 1.7
+
+-- Storage (east wall, south end — away from door)
+STORAGE wardrobe @2.7 0.1 facing:west
+
+-- Work (desk under window for light)
+DESK standard @1.3 0.1 facing:north
+CHAIR office @1.5 0.8 facing:north
+
+-- Decor
+LAMP floor @0.1 3.2

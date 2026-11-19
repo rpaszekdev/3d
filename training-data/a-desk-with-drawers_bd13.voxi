@@ -1,0 +1,46 @@
+V 32 32 32
+
+-- desk surface
+B 2 14 8 28 2 14 d
+
+-- left leg
+B 2 0 8 3 14 3 8
+
+-- right leg
+B 27 0 8 3 14 3 8
+
+-- back left leg
+B 2 0 21 3 14 3 8
+
+-- back right leg
+B 27 0 21 3 14 3 8
+
+-- drawer unit left side
+B 2 2 8 3 12 14 7
+
+-- drawer unit back
+B 2 2 20 14 12 2 7
+
+-- drawer unit bottom
+B 2 2 8 14 2 14 7
+
+-- drawer 1
+B 3 10 9 12 3 12 d
+
+-- drawer 2
+B 3 6 9 12 3 12 d
+
+-- drawer 3
+B 3 2 9 12 3 12 d
+
+-- drawer handle 1
+B 8 11 8 3 1 1 9
+
+-- drawer handle 2
+B 8 7 8 3 1 1 9
+
+-- drawer handle 3
+B 8 3 8 3 1 1 9
+
+-- open right side of desk
+B 16 2 8 14 12 14 7

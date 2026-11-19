@@ -1,0 +1,51 @@
+V 24 32 24
+
+-- shoes
+B 9 0 10 3 2 4 0
+B 13 0 10 3 2 4 0
+
+-- legs (gray checkered pants)
+B 9 2 11 3 7 2 9
+B 13 2 11 3 7 2 9
+
+-- torso (white chef coat)
+B 8 9 11 9 9 2 8
+
+-- apron front
+B 10 10 10 5 7 1 8
+
+-- coat buttons
+B 12 12 10 1 1 1 0
+B 12 14 10 1 1 1 0
+
+-- left arm
+B 5 9 11 3 8 2 8
+-- right arm
+B 17 9 11 3 8 2 8
+
+-- left hand (skin)
+S 6 8 12 2 d
+-- right hand (skin)
+S 18 8 12 2 d
+
+-- neck (skin)
+B 11 18 11 2 2 2 d
+
+-- head (skin)
+S 12 21 12 3 d
+
+-- eyes
+B 11 22 9 1 1 1 0
+B 13 22 9 1 1 1 0
+
+-- mustache (brown)
+B 11 20 9 3 1 1 a
+
+-- red neckerchief
+B 10 18 10 5 1 1 1
+
+-- hat brim (white)
+B 8 24 10 9 1 4 8
+
+-- hat body (tall white cylinder)
+C 12 25 12 3 6 8

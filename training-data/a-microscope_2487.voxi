@@ -1,0 +1,49 @@
+V 32 36 24
+
+-- base
+B 8 0 6 16 2 12 9
+
+-- arm pillar
+B 14 2 16 4 22 4 9
+
+-- stage platform
+B 9 12 8 14 2 8 7
+
+-- stage clip
+B 13 13 10 6 1 4 3
+
+-- condenser housing
+C 16 8 12 2 4 9
+
+-- light source
+S 16 3 12 2 6
+
+-- body tube
+C 16 14 12 2 12 9
+
+-- objective turret
+C 16 13 12 3 2 8
+
+-- objective lens long
+C 15 9 12 1 4 0
+
+-- objective lens short
+C 17 10 12 1 3 0
+
+-- eye tube
+C 16 26 12 2 5 9
+
+-- eyepiece
+C 16 30 12 2 2 0
+
+-- coarse focus knob left
+B 10 16 14 2 5 3 6
+
+-- coarse focus knob right
+B 20 16 14 2 5 3 6
+
+-- fine focus knob left
+B 10 14 14 2 3 2 3
+
+-- fine focus knob right
+B 20 14 14 2 3 2 3

@@ -1,0 +1,19 @@
+V 24 24 24
+
+-- wooden handle
+C 12 1 12 1 8 a
+
+-- torch head wrap
+C 12 9 12 2 3 7
+
+-- flame base
+S 12 13 12 2 6
+
+-- flame mid
+S 12 15 12 1 6
+
+-- flame tip
+S 12 17 12 1 4
+
+-- glow halo
+E 12 13 12 3 2 3 6

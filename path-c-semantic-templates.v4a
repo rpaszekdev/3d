@@ -1,0 +1,196 @@
+-- Path C: Semantic Recognition + Parametric Templates
+-- Recognizing objects in 2D, matching 3D templates, assembling a room
+-- FILM-TITLE: "Path C: Semantic Templates"
+-- FILM: 0 5 "The Photograph" "A flat **2D image** of a room. Each pixel has color but **no depth**. The algorithm sees a table, chair, and lamp — but only their front silhouettes."
+-- FILM: 5 10 "Segmentation" "The algorithm **scans the image** and classifies each region. Colored bounding boxes identify: **green** = table, **purple** = chair, **yellow** = lamp. It knows WHAT things are, but not their 3D shape."
+-- FILM: 10 16 "Template Library" "Instead of hallucinating 3D geometry, we **look up pre-built templates**. Each is a complete, solid 3D model — a chair with four legs, a table with a top, a lamp with a shade. Full geometry, no guessing."
+-- FILM: 16 22 "Fitting + Placement" "Templates **fly from the shelf** to their positions in the room. The algorithm scales each template to match the detected proportions and places it at the correct coordinates. Walls and floor grow in as simple boxes."
+-- FILM: 22 28 "Complete 3D Room" "The result: a **full 3D room** you can view from any angle. Every object is solid, editable, and stored as reusable V4 groups. Unlike 2.5D relief, the back side is complete."
+V 96 56 56
+DUR 28
+L 1
+
+-- =============================================
+-- STAGE 1 (T=0-5): The 2D Input Image
+-- Flat room photograph: 1-voxel-deep silhouettes
+-- =============================================
+-- NOTE: 0 5 "Stage 1: The 2D Photograph"
+-- NOTE: 1 4.5 "A room with table, chair, and lamp"
+
+-- Floor (flat, 1 deep)
+B 0 -24 0 70*clamp(T,0,1)*(1-clamp(T-16,0,1)) 1 1*(1-clamp(T-16,0,1)) d
+
+-- Back wall (flat)
+B 0 -6 -15*clamp(T*0.8,0,1)*(1-clamp(T-16,0,1)) 70*clamp(T,0,1)*(1-clamp(T-16,0,1)) 34*clamp(T*0.8,0,1)*(1-clamp(T-16,0,1)) 1*(1-clamp(T-16,0,1)) 9
+
+-- 2D Table (brown)
+B 12 -16 0 18*clamp(T-1,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) a
+B 5 -20 0 1*(1-clamp(T-10,0,1)) 7*clamp(T-1.2,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) a
+B 19 -20 0 1*(1-clamp(T-10,0,1)) 7*clamp(T-1.2,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) a
+
+-- 2D Chair (orange)
+B -14 -18 0 8*clamp(T-1.5,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 7
+B -14 -14 0 1*(1-clamp(T-10,0,1)) 8*clamp(T-1.7,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 7
+B -18 -10 0 1*(1-clamp(T-10,0,1)) 14*clamp(T-1.8,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 7
+
+-- 2D Lamp (yellow/white)
+C 30 -22 0 2*clamp(T-2,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 9
+B 30 -15 0 1*(1-clamp(T-10,0,1)) 12*clamp(T-2.2,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 9
+K 30 -7 0 4*clamp(T-2.4,0,1)*(1-clamp(T-10,0,1)) 1*(1-clamp(T-10,0,1)) 6
+S 30 -6 0 2*clamp(T-2.5,0,1)*(1-clamp(T-10,0,1)) 8
+
+-- Window (flat)
+B 24 -2 -14*clamp(T*0.8,0,1)*(1-clamp(T-16,0,1)) 8*clamp(T-2.5,0,1)*(1-clamp(T-16,0,1)) 8*clamp(T-2.5,0,1)*(1-clamp(T-16,0,1)) 1*(1-clamp(T-16,0,1)) 4
+
+-- =============================================
+-- STAGE 2 (T=5-10): Semantic Segmentation
+-- Bounding boxes highlight detected objects
+-- =============================================
+-- NOTE: 5 10 "Stage 2: Semantic Segmentation"
+-- NOTE: 5.5 9 "Algorithm identifies WHAT each pixel region is"
+
+-- Table bbox (green) — visible T=5-10
+B 12 -14 0 20*clamp(T-5,0,1)*clamp(10.5-T,0,1) 1*clamp(10.5-T,0,1) 1 2
+B 12 -23 0 20*clamp(T-5,0,1)*clamp(10.5-T,0,1) 1*clamp(10.5-T,0,1) 1 2
+B 2 -18 0 1*clamp(10.5-T,0,1) 8*clamp(T-5.2,0,1)*clamp(10.5-T,0,1) 1 2
+B 22 -18 0 1*clamp(10.5-T,0,1) 8*clamp(T-5.2,0,1)*clamp(10.5-T,0,1) 1 2
+S 12 -12 0 1*clamp(T-5.5,0,1)*clamp(10.5-T,0,1) 2
+
+-- Chair bbox (magenta) — visible T=6-10
+B -14 -5 0 10*clamp(T-6,0,1)*clamp(10.5-T,0,1) 1*clamp(10.5-T,0,1) 1 5
+B -14 -23 0 10*clamp(T-6,0,1)*clamp(10.5-T,0,1) 1*clamp(10.5-T,0,1) 1 5
+B -20 -14 0 1*clamp(10.5-T,0,1) 18*clamp(T-6.2,0,1)*clamp(10.5-T,0,1) 1 5
+B -8 -14 0 1*clamp(10.5-T,0,1) 18*clamp(T-6.2,0,1)*clamp(10.5-T,0,1) 1 5
+S -14 -3 0 1*clamp(T-6.5,0,1)*clamp(10.5-T,0,1) 5
+
+-- Lamp bbox (yellow) — visible T=7-10
+B 30 -2 0 6*clamp(T-7,0,1)*clamp(10.5-T,0,1) 1*clamp(10.5-T,0,1) 1 6
+B 30 -24 0 6*clamp(T-7,0,1)*clamp(10.5-T,0,1) 1*clamp(10.5-T,0,1) 1 6
+B 26 -13 0 1*clamp(10.5-T,0,1) 22*clamp(T-7.2,0,1)*clamp(10.5-T,0,1) 1 6
+B 34 -13 0 1*clamp(10.5-T,0,1) 22*clamp(T-7.2,0,1)*clamp(10.5-T,0,1) 1 6
+S 30 -1 0 1*clamp(T-7.5,0,1)*clamp(10.5-T,0,1) 6
+
+-- Wall/floor labels (cyan and tan dots)
+S -30 -6 -13 1*clamp(T-8,0,1)*clamp(10.5-T,0,1) 4
+S 0 -23 2 1*clamp(T-8.5,0,1)*clamp(10.5-T,0,1) d
+
+-- Scanning line sweeping across image
+B -35+70*saw(T-5)*clamp(T-5,0,1)*clamp(9.5-T,0,1) -6 0 1*clamp(T-5,0,1)*clamp(9.5-T,0,1) 34*clamp(T-5,0,1)*clamp(9.5-T,0,1) 1 8
+
+-- =============================================
+-- STAGE 3 (T=10-16): Template Library
+-- Full 3D templates appear on a display shelf
+-- =============================================
+-- NOTE: 10 16 "Stage 3: Template Library"
+-- NOTE: 10.5 15 "Pre-built 3D parametric models"
+
+-- Display shelf — visible T=10-16
+B 0 -24 24*clamp(T-10,0,1)*clamp(16.5-T,0,1) 60*clamp(T-10,0,1)*clamp(16.5-T,0,1) 1 12*clamp(T-10,0,1)*clamp(16.5-T,0,1) 9
+-- Shelf backing
+B 0 -14 28*clamp(T-10,0,1)*clamp(16.5-T,0,1) 60*clamp(T-10,0,1)*clamp(16.5-T,0,1) 18*clamp(T-10,0,1)*clamp(16.5-T,0,1) 1*clamp(16.5-T,0,1) 9
+
+-- === 3D CHAIR TEMPLATE ===
+G chair3d
+  B 0 0 0 8 1 8 7
+  B 0 5 -3 8 8 1 7
+  B -3 -5 3 1 9 1 a
+  B 3 -5 3 1 9 1 a
+  B -3 -5 -3 1 9 1 a
+  B 3 -5 -3 1 9 1 a
+/G
+
+-- === 3D TABLE TEMPLATE ===
+G table3d
+  B 0 0 0 16 2 10 a
+  B -6 -6 4 2 10 2 a
+  B 6 -6 4 2 10 2 a
+  B -6 -6 -4 2 10 2 a
+  B 6 -6 -4 2 10 2 a
+/G
+
+-- === 3D LAMP TEMPLATE ===
+G lamp3d
+  C 0 -9 0 3 2 9
+  C 0 -4 0 1 10 9
+  K 0 3 0 5 4 6
+  S 0 3 0 2 8
+/G
+
+-- Chair on shelf (T=11-16), then flies to room (T=16-19), stays (T=19+)
+-- X: shelf=-20, room=-14. Y: shelf=-14, room=-14. Z: shelf=24, room=2
+@ chair3d lerp(-20,-14,clamp((T-16)*0.4,0,1))*clamp(T-11,0,1) (-14+bounce(clamp((T-11)*2,0,PI))*4*(1-clamp(T-13,0,1)))*clamp(T-11,0,1) lerp(24,2,clamp((T-16)*0.4,0,1))*clamp(T-11,0,1)
+
+-- Table on shelf (T=12-16), then flies to room (T=17-20), stays
+-- X: shelf=0, room=12. Y: shelf=-14, room=-14. Z: shelf=24, room=2
+@ table3d lerp(0,12,clamp((T-17)*0.4,0,1))*clamp(T-12,0,1) (-14+bounce(clamp((T-12)*2,0,PI))*4*(1-clamp(T-14,0,1)))*clamp(T-12,0,1) lerp(24,2,clamp((T-17)*0.4,0,1))*clamp(T-12,0,1)
+
+-- Lamp on shelf (T=13-16), then flies to room (T=18-21), stays
+-- X: shelf=20, room=30. Y: shelf=-14, room=-14. Z: shelf=24, room=2
+@ lamp3d lerp(20,30,clamp((T-18)*0.4,0,1))*clamp(T-13,0,1) (-14+bounce(clamp((T-13)*2,0,PI))*4*(1-clamp(T-15,0,1)))*clamp(T-13,0,1) lerp(24,2,clamp((T-18)*0.4,0,1))*clamp(T-13,0,1)
+
+-- Template sparkles on shelf (T=11-16)
+P -20+sin(T*5)*4 -8+cos(T*3)*4 24+cos(T*5)*4 8
+P sin(T*4)*4 -8+cos(T*3.5)*4 24+sin(T*4)*4 8
+P 20+cos(T*4.5)*4 -8+sin(T*3)*4 24+cos(T*4.5)*4 8
+
+-- =============================================
+-- STAGE 4 (T=16-22): Parameter Fitting
+-- Flight trails and sizing indicators
+-- =============================================
+-- NOTE: 16 22 "Stage 4: Fitting and Placement"
+-- NOTE: 17 21 "Templates scale to match detected proportions"
+
+-- Flight trail particles (visible during flight)
+P lerp(-20,-14,clamp((T-16)*0.4,0,1))+sin(T*10)*2 -10+cos(T*8)*3 lerp(24,2,clamp((T-16)*0.4,0,1)) 8
+P lerp(0,12,clamp((T-17)*0.4,0,1))+cos(T*10)*2 -10+sin(T*8)*3 lerp(24,2,clamp((T-17)*0.4,0,1)) 8
+P lerp(20,30,clamp((T-18)*0.4,0,1))+sin(T*9)*2 -10+cos(T*7)*3 lerp(24,2,clamp((T-18)*0.4,0,1)) 8
+
+-- 3D room structure growing in (replaces flat image)
+-- Floor (3D)
+B 0 -25 2 70*clamp(T-16,0,1) 2*clamp(T-16,0,1) 36*clamp((T-16)*0.3,0,1) d
+
+-- Back wall (3D, thick)
+B 0 -6 -14 70*clamp(T-16.5,0,1) 34*clamp(T-16.5,0,1) 3*clamp((T-16.5)*0.4,0,1) 9
+
+-- Left wall (3D, thick)
+B -34*clamp(T-17,0,1) -6 2 3*clamp((T-17)*0.4,0,1) 34*clamp(T-17,0,1) 36*clamp((T-17)*0.3,0,1) 9
+
+-- Sizing pulse rings as objects arrive
+S -14 -8 2 bounce(clamp((T-19)*3,0,PI))*2*clamp(T-19,0,1)*clamp(21-T,0,1) 5
+S 12 -8 2 bounce(clamp((T-20)*3,0,PI))*2*clamp(T-20,0,1)*clamp(22-T,0,1) 2
+S 30 -8 2 bounce(clamp((T-21)*3,0,PI))*2*clamp(T-21,0,1)*clamp(23-T,0,1) 6
+
+-- =============================================
+-- STAGE 5 (T=22-28): Complete 3D Room
+-- Celebration, sparkles, labels
+-- =============================================
+-- NOTE: 22 26 "Editable V4 code: each object is a reusable group"
+-- NOTE: 25 28 "Full 3D from templates — back side is complete!"
+
+-- Window (3D recess)
+B 24 -2 -12 10*clamp(T-22,0,1) 10*clamp(T-22,0,1) 2*clamp(T-22,0,1) 4
+
+-- Rug on floor
+E 6 -23 4 12*clamp(T-22.5,0,1) 1 8*clamp(T-22.5,0,1) 1
+
+-- Celebration sparkles
+P sin(T*5)*35*clamp(T-22,0,1) cos(T*3)*15*clamp(T-22,0,1) sin(T*4)*20*clamp(T-22,0,1) 8
+P cos(T*4.5+1)*30*clamp(T-22,0,1) sin(T*3.5+0.5)*12*clamp(T-22,0,1) cos(T*5.5+1)*18*clamp(T-22,0,1) 8
+P sin(T*6+2)*25*clamp(T-22.5,0,1) cos(T*4+1)*10*clamp(T-22.5,0,1) cos(T*3+2)*22*clamp(T-22.5,0,1) 8
+P cos(T*5+3)*28*clamp(T-22.5,0,1) sin(T*2.5+1.5)*14*clamp(T-22.5,0,1) sin(T*4.5+2)*16*clamp(T-22.5,0,1) 6
+P sin(T*7+1)*32*clamp(T-23,0,1) cos(T*5+0.5)*8*clamp(T-23,0,1) cos(T*6+3)*24*clamp(T-23,0,1) 6
+P cos(T*3.5+2)*20*clamp(T-23,0,1) sin(T*4.5+1)*16*clamp(T-23,0,1) sin(T*5+3)*14*clamp(T-23,0,1) 1
+
+-- Orbiting dots showing full 3D (visible T=22+)
+P sin(T*1.2)*42*clamp(T-22,0,1) -6 cos(T*1.2)*26*clamp(T-22,0,1) 4
+P sin(T*1.2+PI)*42*clamp(T-22,0,1) -6 cos(T*1.2+PI)*26*clamp(T-22,0,1) 4
+P sin(T*1.2+PI/2)*42*clamp(T-22,0,1) -6 cos(T*1.2+PI/2)*26*clamp(T-22,0,1) 4
+P sin(T*1.2+PI*1.5)*42*clamp(T-22,0,1) -6 cos(T*1.2+PI*1.5)*26*clamp(T-22,0,1) 4
+
+-- Glow markers on final placed objects
+S -14 4 2 (1+sin(T*3)*0.5)*clamp(T-22,0,1) 8
+S 12 2 2 (1+sin(T*3+1)*0.5)*clamp(T-22,0,1) 8
+S 30 7 2 (1+sin(T*3+2)*0.5)*clamp(T-22,0,1) 8
+
+-- Window warm glow in final scene
+S 24 -2 -10 (3+sin(T*2)*1)*clamp(T-23,0,1) 4

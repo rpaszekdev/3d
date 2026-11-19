@@ -1,0 +1,31 @@
+V 32 24 32
+
+-- bed legs
+B 5 0 2 2 3 2 a
+B 25 0 2 2 3 2 a
+B 5 0 28 2 3 2 a
+B 25 0 28 2 3 2 a
+
+-- bed frame base
+B 5 2 2 22 2 28 a
+
+-- headboard
+B 5 4 2 22 10 2 a
+
+-- footboard
+B 5 4 28 22 5 2 a
+
+-- mattress
+B 6 4 4 20 3 24 8
+
+-- sheets lower half
+B 6 7 12 20 2 16 3
+
+-- blanket fold
+B 6 9 12 20 1 6 3
+
+-- pillow left
+E 12 8 7 3 2 3 8
+
+-- pillow right
+E 22 8 7 3 2 3 b

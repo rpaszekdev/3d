@@ -1,0 +1,42 @@
+V 24 28 20
+
+-- cabinet body (gray metal)
+B 8 0 7 8 26 6 9
+
+-- drawer 1 face (bottom)
+B 9 1 6 6 5 1 8
+
+-- drawer 2 face
+B 9 7 6 6 5 1 8
+
+-- drawer 3 face
+B 9 13 6 6 5 1 8
+
+-- drawer 4 face (top)
+B 9 19 6 6 5 1 8
+
+-- drawer divider lines (dark gray)
+B 9 6 6 6 1 1 0
+B 9 12 6 6 1 1 0
+B 9 18 6 6 1 1 0
+
+-- drawer handles (orange accent)
+B 11 3 5 2 1 1 7
+B 11 9 5 2 1 1 7
+B 11 15 5 2 1 1 7
+B 11 21 5 2 1 1 7
+
+-- cabinet top panel
+B 8 26 7 8 1 6 9
+
+-- label slot strips (tan)
+B 9 5 6 6 1 1 d
+B 9 11 6 6 1 1 d
+B 9 17 6 6 1 1 d
+B 9 23 6 6 1 1 d
+
+-- feet
+B 8 0 7 1 1 1 0
+B 15 0 7 1 1 1 0
+B 8 0 12 1 1 1 0
+B 15 0 12 1 1 1 0

@@ -1,0 +1,32 @@
+V 32 20 16
+
+-- left A-frame legs
+B 5 0 5 2 15 2 7
+B 5 0 9 2 15 2 7
+B 4 13 5 4 2 6 7
+
+-- right A-frame legs
+B 25 0 5 2 15 2 7
+B 25 0 9 2 15 2 7
+B 25 13 5 4 2 6 7
+
+-- top horizontal bar
+B 5 14 7 22 2 2 7
+
+-- ground stabilizer bars
+B 3 0 5 4 1 6 7
+B 25 0 5 4 1 6 7
+
+-- left swing chains
+B 11 7 8 1 7 1 9
+B 13 7 8 1 7 1 9
+
+-- left swing seat
+B 10 5 8 5 2 3 d
+
+-- right swing chains
+B 19 7 8 1 7 1 9
+B 21 7 8 1 7 1 9
+
+-- right swing seat
+B 18 5 8 5 2 3 d

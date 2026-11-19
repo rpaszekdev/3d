@@ -1,0 +1,33 @@
+V 24 30 20
+
+-- four corner posts
+B 4 0 4 2 26 2 a
+B 18 0 4 2 26 2 a
+B 4 0 16 2 26 2 a
+B 18 0 16 2 26 2 a
+
+-- bottom bed frame
+B 4 6 4 16 1 14 a
+
+-- bottom mattress
+B 5 7 5 14 2 12 8
+
+-- bottom pillow
+B 5 9 5 5 1 4 d
+
+-- top bed frame
+B 4 16 4 16 1 14 a
+
+-- top mattress
+B 5 17 5 14 2 12 5
+
+-- top pillow
+B 5 19 5 5 1 4 d
+
+-- guard rail front of top bunk
+B 4 19 4 16 3 1 a
+
+-- ladder rungs
+B 20 8 10 2 1 2 6
+B 20 12 10 2 1 2 6
+B 20 16 10 2 1 2 6

@@ -1,0 +1,32 @@
+V 40 20 16
+
+-- main pressure hull
+E 20 8 8 16 4 5 3
+
+-- conning tower / sail
+B 15 12 7 6 6 2 9
+
+-- periscope mast
+B 18 15 8 1 4 1 9
+
+-- fore hydroplanes
+B 27 7 4 2 1 8 9
+
+-- aft hydroplanes
+B 7 7 4 2 1 8 9
+
+-- vertical rudder
+B 5 9 7 2 5 2 9
+
+-- propeller hub
+S 4 8 8 2 6
+
+-- torpedo tubes bow
+B 34 7 6 2 2 2 9
+B 34 9 6 2 2 2 9
+
+-- bow light
+S 36 8 8 1 1
+
+-- stern light
+S 3 8 8 1 2

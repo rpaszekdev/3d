@@ -1,0 +1,44 @@
+V 32 32 32
+
+-- base platform
+B 4 0 6 24 1 20 9
+
+-- main prayer hall walls
+B 6 1 8 20 9 16 d
+
+-- facade front wall accent
+B 6 1 8 20 9 2 7
+
+-- dome drum
+C 16 11 16 5 4 9
+
+-- main dome
+S 16 15 16 6 8
+
+-- front-left minaret
+C 7 11 9 2 22 a
+
+-- front-right minaret
+C 25 11 9 2 22 a
+
+-- rear-left minaret
+C 7 11 23 2 22 a
+
+-- rear-right minaret
+C 25 11 23 2 22 a
+
+-- minaret caps
+S 7 23 9 2 6
+S 25 23 9 2 6
+S 7 23 23 2 6
+S 25 23 23 2 6
+
+-- entrance archway
+B 13 1 7 6 7 2 8
+
+-- entrance inner recess
+B 14 2 7 4 5 1 7
+
+-- side windows
+B 8 4 8 2 3 1 3
+B 22 4 8 2 3 1 3

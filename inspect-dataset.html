@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>V4 Dataset Inspector</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f1117; color: #e0e0e8; font-family: monospace; }
+.header { padding: 12px 20px; background: #1a1d27; border-bottom: 1px solid #2d3244; display: flex; align-items: center; gap: 16px; }
+.header h1 { font-size: 16px; }
+.header .stats { color: #888; font-size: 13px; }
+.controls { padding: 8px 20px; background: #1a1d27; border-bottom: 1px solid #2d3244; display: flex; gap: 8px; align-items: center; }
+button { background: #2d3244; color: #e0e0e8; border: 1px solid #3d4254; padding: 6px 14px; cursor: pointer; font-family: monospace; border-radius: 4px; }
+button:hover { background: #3d4254; }
+button.active { background: #6c8cff; color: white; border-color: #6c8cff; }
+.main { display: flex; height: calc(100vh - 90px); }
+.sidebar { width: 280px; overflow-y: auto; border-right: 1px solid #2d3244; background: #13151d; }
+.sidebar .item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #1a1d27; font-size: 12px; }
+.sidebar .item:hover { background: #1a1d27; }
+.sidebar .item.active { background: #2d3244; border-left: 3px solid #6c8cff; }
+.sidebar .item .name { font-weight: bold; color: #6c8cff; }
+.sidebar .item .meta { color: #666; font-size: 11px; margin-top: 2px; }
+.viewer { flex: 1; position: relative; }
+canvas { width: 100%; height: 100%; }
+.info { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 4px; font-size: 12px; max-width: 300px; }
+.bad { color: #ff6b6b; }
+.good { color: #51cf66; }
+#code-panel { display: none; position: absolute; bottom: 0; left: 0; right: 0; height: 200px; background: #1a1d27; border-top: 1px solid #2d3244; overflow: auto; }
+#code-panel pre { padding: 8px 12px; font-size: 11px; white-space: pre-wrap; }
+.toggle-code { position: absolute; bottom: 10px; left: 10px; z-index: 10; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>V4 Dataset Inspector</h1>
+  <span class="stats" id="stats">Loading...</span>
+  <input type="file" id="folder-input" webkitdirectory multiple style="margin-left:auto">
+</div>
+<div class="controls">
+  <button onclick="prevModel()">← Prev</button>
+  <button onclick="nextModel()">Next →</button>
+  <span id="counter" style="color:#888; font-size:13px; margin: 0 8px;">0/0</span>
+  <button onclick="markBad()" id="bad-btn">✗ Bad</button>
+  <button onclick="markGood()" id="good-btn">✓ Good</button>
+  <span id="quality-stats" style="color:#888; font-size:12px; margin-left: auto;"></span>
+</div>
+<div class="main">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="viewer" id="viewer">
+    <div class="info" id="info"></div>
+    <button class="toggle-code" onclick="toggleCode()">Show Code</button>
+    <div id="code-panel"><pre id="code-text"></pre></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+let models = [];
+let currentIdx = 0;
+let scene, camera, renderer, controls;
+let quality = {}; // uid -> 'good' | 'bad'
+
+// Init Three.js
+function initRenderer() {
+  const container = document.getElementById('viewer');
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f1117);
+
+  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(40, 30, 40);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.insertBefore(renderer.domElement, container.firstChild);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(12, 12, 12);
+  controls.update();
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(30, 50, 30);
+  scene.add(dir);
+  scene.add(new THREE.HemisphereLight(0x8888ff, 0x444422, 0.4));
+
+  // Grid
+  const grid = new THREE.GridHelper(48, 48, 0x333333, 0x222222);
+  grid.position.set(12, 0, 12);
+  scene.add(grid);
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  animate();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// Parse V4 code
+const COLORS = [
+  0x111111, 0xff3333, 0x33cc33, 0x3366ff,
+  0x00cccc, 0xcc33cc, 0xffcc00, 0xff8800,
+  0xeeeeee, 0x888888
+];
+
+function parseV4(code) {
+  const shapes = [];
+  let gridSize = [24, 24, 24];
+
+  for (const line of code.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('--')) continue;
+    const parts = trimmed.split(/\s+/);
+    const cmd = parts[0];
+    const nums = parts.slice(1).map(Number);
+
+    if (cmd === 'V') {
+      gridSize = [nums[0], nums[1], nums[2]];
+    } else if (cmd === 'B') {
+      shapes.push({ type: 'box', x: nums[0], y: nums[1], z: nums[2], w: nums[3], h: nums[4], d: nums[5], c: nums[6] || 9 });
+    } else if (cmd === 'S') {
+      shapes.push({ type: 'sphere', x: nums[0], y: nums[1], z: nums[2], r: nums[3], c: nums[4] || 9 });
+    } else if (cmd === 'C') {
+      shapes.push({ type: 'cylinder', x: nums[0], y: nums[1], z: nums[2], r: nums[3], h: nums[4], c: nums[5] || 9 });
+    }
+  }
+  return { shapes, gridSize };
+}
+
+function renderModel(code) {
+  // Clear old meshes
+  const toRemove = [];
+  scene.traverse(obj => { if (obj.userData.isModel) toRemove.push(obj); });
+  toRemove.forEach(obj => { scene.remove(obj); obj.geometry?.dispose(); obj.material?.dispose(); });
+
+  const { shapes, gridSize } = parseV4(code);
+
+  for (const s of shapes) {
+    let geo, mesh;
+    const mat = new THREE.MeshLambertMaterial({ color: COLORS[s.c] || 0x888888 });
+
+    if (s.type === 'box') {
+      geo = new THREE.BoxGeometry(s.w, s.h, s.d);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(s.x + s.w/2, s.y + s.h/2, s.z + s.d/2);
+    } else if (s.type === 'sphere') {
+      geo = new THREE.SphereGeometry(s.r, 16, 16);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(s.x, s.y, s.z);
+    } else if (s.type === 'cylinder') {
+      geo = new THREE.CylinderGeometry(s.r, s.r, s.h, 16);
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(s.x, s.y + s.h/2, s.z);
+    }
+
+    if (mesh) {
+      mesh.userData.isModel = true;
+      scene.add(mesh);
+    }
+  }
+
+  // Center camera on model
+  const cx = gridSize[0] / 2, cy = gridSize[1] / 2, cz = gridSize[2] / 2;
+  controls.target.set(cx, cy, cz);
+  const dist = Math.max(...gridSize) * 1.8;
+  camera.position.set(cx + dist, cy + dist * 0.7, cz + dist);
+  controls.update();
+
+  return shapes.length;
+}
+
+// UID → name mapping (embedded)
+const uidNames = {"01854fec03744ba98d56811ceefeb77b":{"name":"Irish The Hedgehog","cats":["mascot"]},"0365227fa8014beeab7b4597704c4485":{"name":"Hueco Erotico 2","cats":["figurine"]},"06a27c6218924332b32f1c26c5b42959":{"name":"shadow fredbear","cats":["mascot"]},"073cb121501144e3927e364f7f979772":{"name":"File","cats":["doll"]},"0ae58b68696843fa89548626d5d5f674":{"name":"Alex Armstrong","cats":["person"]},"0de8117fc262431e81066cba6697bc6c":{"name":"Monument à Balzac","cats":["statue"]},"117b47eb89f2490e82826d200755d64f":{"name":"sculptris self portrait","cats":["person"]},"1681865c1a414f3f8c473a4e47774571":{"name":"3D model","cats":["statue"]},"16882819ed9c4727add47d620d8eb4d1":{"name":"Buddha","cats":["statue"]},"1b19bd9ac878433a84765fb6dc0f10ed":{"name":"Colossus","cats":["person"]},"1c6a25801ca8491db982368118a1acb1":{"name":"Walk Animation","cats":["person"]},"2020a7a4caeb4cbd836d92da1c6b7de6":{"name":"KEVIN CUB MAN (FORTNITE)","cats":["mascot"]},"21d0acd2bd6f4401ba65a0677f857d91":{"name":"Personagem","cats":["person"]},"223339de9de34ef0bda79697060c3da0":{"name":"Imhotep","cats":["figurine"]},"29a8029d6022411ca4a6911ca13f9b3b":{"name":"female sculpture","cats":["figurine"]},"2b5fdb4154fc4fa7957d885ab45c2a15":{"name":"Gummibar Peter Dodd","cats":["mascot"]},"2ce349f95b78493f8fd15c103d84e5f8":{"name":"Toiley T Paper","cats":["mascot"]},"2cead2a7cc0c45cbb5c79a50516a6104":{"name":"Gummy Hipolito","cats":["mascot"]},"2dbe18b7a81a4331bfbbd9cd2263e37f":{"name":"Statue Marble 1","cats":["figurine"]},"2e09fa7e7f994779b18135f93cdda111":{"name":"Bronze Fountain Sculpture","cats":["statue"]},"2ecfb73d86e64c5280e231a8c9b28e29":{"name":"Radioactive Foxy","cats":["mascot"]},"354b6549e6f74c18bf8665f4990faf8e":{"name":"The grey Idle","cats":["person"]},"36a37af9cdfb4ccc8e129910a35fec92":{"name":"GUMMYBEAR","cats":["mascot"]},"376e251851b44ceeb2ffe737b5c22562":{"name":"Gummibar V2","cats":["mascot"]},"39ae5039479f47c99fa64e267ede82ec":{"name":"Busty figurine","cats":["figurine"]},"3c4373bf947b4745ba4058505d2a86a5":{"name":"Statue from Camera","cats":["statue"]},"3d4fdebfcef342739eee585ad95338d2":{"name":"Gb Toons Real","cats":["mascot"]},"4038bc3ae5cf4fe0bc93d194883ec151":{"name":"Uganda Knuckles","cats":["mascot"]},"4162eeba6c054e6981943a6dee197044":{"name":"Nike of Samothrace","cats":["statue"]},"435b21641c9c407392b6c98ab09ebff4":{"name":"Talking Gummibar","cats":["mascot"]},"43e2865757e74fbba4de6cf05eed6a37":{"name":"Costume Man","cats":["mascot"]},"458f2154d1cf4bbba3787aaecf5389c9":{"name":"Forgotten Candy","cats":["mascot"]},"4687429745f4495ea866a5078c98753f":{"name":"Egyptian statue Amunwahsu","cats":["figurine"]},"46ab1b12bcd34eb9b091720b1185c4e0":{"name":"Hulk Buster","cats":["person"]},"477f82df74674dedb22544d181644fc0":{"name":"Rymdi the gnome","cats":["person"]},"4cb1dec5f8a447079c2fed94bcfdbee4":{"name":"Fumo Reimu","cats":["doll"]},"4d6074af12144035a518e878a82aabb3":{"name":"cara (face)","cats":["person"]},"4d6837029c354d74b51f32a9bdc8270a":{"name":"Blue Cartoon Cat","cats":["mascot"]},"4f56bd97eaa7421a80e12d35ef78d22b":{"name":"Humanoid Model","cats":["person"]},"4fd347fd9f3e481186a7f167faa80ea8":{"name":"Heart-shaped clay figurine","cats":["figurine"]},"52f0d02914de4f088596d72a50a7062c":{"name":"Poppy Playtime Poppy","cats":["doll"]},"53a420067008447db18575937f4bf5e0":{"name":"d'Artagnan","cats":["statue"]},"557485c4726f4183944282b8fbc55d3a":{"name":"St. Olav","cats":["figurine"]},"55f48e1d7ca14780900e27dfe1721bb7":{"name":"Gritty LowPoly","cats":["mascot"]},"57dc3919998d439895e800ee5e0b0c64":{"name":"Diógenes","cats":["statue"]},"5a0ac6f0906d4857a8f8877c02b6f851":{"name":"Shrine Dog 4","cats":["figurine"]},"5a9ca3b40a02464fa385f3e95d4f45d3":{"name":"Darwin","cats":["mascot"]},"5c46931b6ce24bb6b1cd73b43512589c":{"name":"Wild Man Candle Holder","cats":["figurine"]},"5e7c4694b6284888bbb7832aca9afde8":{"name":"androgyne head","cats":["person"]},"5fea87d107234eb89fbe267510939763":{"name":"Talking Gummibär Dance","cats":["mascot"]},"60d2fa9af6254551ad59f5077680a8f1":{"name":"Dame de Brassempouy","cats":["statue"]},"62897c52e967469c85df9c6abdd09d16":{"name":"chibi character","cats":["doll"]},"6671776968a747ff8f2fb665a62d1be9":{"name":"Gummy","cats":["mascot"]},"67746002feed40c68b31b87a0670d68c":{"name":"3M Project","cats":["person"]},"678269e0220943e08404d555ffbf3873":{"name":"Pillar Figurine","cats":["figurine"]},"6a7a77caca23487d8020fcc688bef662":{"name":"Toy Freddy","cats":["mascot"]},"6d02909a15964a36b49714ba6798c422":{"name":"test figurine","cats":["figurine"]},"6d410ac9ce234b6aa19cbf30afa0cb31":{"name":"Kind mit Bär","cats":["figurine"]},"6db16794a695461685033677fecf9639":{"name":"Deity sculpture","cats":["figurine"]},"6fbf8fc861c74578a6aa137ec0495915":{"name":"Terracota woman","cats":["figurine"]},"70d78705ad7749d5b25d0f54850ccfc7":{"name":"Old Chinese","cats":["figurine"]},"72e14bb8e3d14b4496d8ea999aa87ab8":{"name":"Doll test","cats":["doll"]},"7314e90200754806bd3e2bde64ae5d23":{"name":"yumekawa pripara","cats":["doll"]},"734bb2181e7a47108fa77779ba9e5532":{"name":"Rockstar Chica","cats":["mascot"]},"73d244a9d14f4d78bdc8b0b6bbaca4e8":{"name":"Anime Hair 10","cats":["doll"]},"74e1bc192b244fbd898b4d81d3f78daa":{"name":"Rosary","cats":["person"]},"75684e1baeec45d3a5510b97e985af03":{"name":"Sculpture of a Saint","cats":["figurine"]},"778e3d26cc8b4de18135ae8fc48206fa":{"name":"Mother with Child","cats":["statue"]},"77b02d4303744f2e883cb58552887a18":{"name":"Uganden Knuckles","cats":["mascot"]},"7cb4d3334b2646df933df23c00a87c39":{"name":"Dama Sin Nombre","cats":["figurine"]},"7d1349aba9e346c592a4f91bfd422a20":{"name":"Corotinho","cats":["mascot"]},"7e18ed62e98042e2a358d91611a9e8c6":{"name":"TF2 Heavy","cats":["person"]},"7eaae497d8b746b19a8f5417db7f9ff6":{"name":"Digimon Gaomon","cats":["mascot"]},"8922e3fa1f2b479fbcfb14f86c104872":{"name":"Fixed mascot","cats":["mascot"]},"897b5e5a269546e39add395e57c73628":{"name":"Boyfriend NICKTOONS","cats":["mascot"]},"8b1981e3cbeb4706807b7f327fcc310d":{"name":"New Model statue","cats":["statue"]},"8d193f5ff00d47fbb75e9f0a9a53c7c7":{"name":"Thinking man","cats":["figurine"]},"90029d3d459f4570866f15d73628993e":{"name":"Extreme Expression","cats":["figurine"]},"907a4dcea6b04b4c920936860c308323":{"name":"Barriguinha Mole","cats":["mascot"]},"91be501188314db69e32288ca00e97ee":{"name":"FNAF AR Special Delivery","cats":["mascot"]},"9212a8e1f14844b49caf64c72a663201":{"name":"Clip4","cats":["person"]},"93afc1976ad24e90821f13ef35cfdadc":{"name":"Ball Guy","cats":["mascot"]},"94291db4b36a4eac836b6ce85290164c":{"name":"SAN ESTEBAN","cats":["figurine"]},"96462cb1626f4b51ba2b0a5cb3dee1b8":{"name":"J Nepomuk Golab","cats":["statue"]},"9720489b1f334922826174fd16492c2c":{"name":"Shrine Kannon statue","cats":["statue"]},"98b5159012984430b5fca9e17a62ff4a":{"name":"Standing figure of Babaef","cats":["statue"]},"992b77d4b62445348abedc2cd7de1fc7":{"name":"Poppy Playtime animated","cats":["doll"]},"9c91238e7d1748cba41f4d28777c7c3d":{"name":"Estatua a Cefiso","cats":["figurine"]},"9e2fdfd32ff84406908df18eaff64e79":{"name":"Purple Cartoon Cat","cats":["mascot"]},"9eec71c525e349709e77caa342a2c694":{"name":"Rosie doll","cats":["doll"]},"9fd4666fd5284fb1a578365d4d775a17":{"name":"Marina figure","cats":["person"]},"a331ca50b4d44c02be1db4a3e7a0ca9e":{"name":"Feline Attack","cats":["mascot"]},"a35230380ea44282b0f71d13b89a382b":{"name":"proto chica","cats":["mascot"]},"a3aaade040604897984219c197fdc1b1":{"name":"scp-096 Idle","cats":["person"]},"a55aa27f5b124dfc8391c6445c49b23f":{"name":"Shrine Dog 2","cats":["statue"]},"a7d136ab51aa4d8291ace5294c90befc":{"name":"King mascot","cats":["mascot"]},"a9b75ddf1a2645bcb985effc0261dfd0":{"name":"IK Walk Cycle","cats":["person"]},"acee2feffdd64389adf9b996f12e6cfb":{"name":"Sandstone Shabti","cats":["figurine"]},"ad73491e7e9144dbb2f2bd97e97f96fe":{"name":"Funtime Foxy","cats":["mascot"]},"ae38d8c85b83447dbbc3b64ab2447968":{"name":"Yokai Watch Orange Cat","cats":["mascot"]},"b0b86391b71743b3a0763f10f44897fd":{"name":"Hat doll","cats":["doll"]},"b281514344f14915913da72ca8b4d89f":{"name":"Ugandan Knuckles HD","cats":["mascot"]},"b48082dde0c249bcbce009a5c619e7f5":{"name":"avriel doll","cats":["doll"]},"b8ab1fa91bdf493e8e61daad5bf0411a":{"name":"Visnu statue","cats":["statue"]},"ba394828546644b0a2d5eecca4b9a3f9":{"name":"Betende Figur","cats":["figurine"]},"bef4da2a0676483ebd0b9b3b6d571ad3":{"name":"Iwatsutsukowake L","cats":["statue"]},"c24266661092477d8c1b5242abfa7c4a":{"name":"Spring statue","cats":["statue"]},"c464fb60bc134c3db590a6a3790d6675":{"name":"Gummibar 3d","cats":["mascot"]},"c54e11b16d24453689d59088d88841d8":{"name":"Circus Baby","cats":["doll"]},"c71f50f1039b439e83e4c1048d1c4dd6":{"name":"Gothic Girl","cats":["doll"]},"ca53ad389b8148bc8541b78bc2d87b8a":{"name":"Sint-Petrus","cats":["statue"]},"cb2a0591372249809f607e6ec942093d":{"name":"Stone Woman","cats":["figurine"]},"cb3ab88d6a3f4441b391d450c2d59778":{"name":"Figura Ocidental","cats":["statue"]},"cc6e3402df74426b9fe77c6b2626d6d9":{"name":"Court case figure","cats":["person"]},"d13af35cd3e140b3b78bbf995d333ec9":{"name":"Eve","cats":["figurine"]},"d1cbadb78dc641f1be9e3a16782d4821":{"name":"New Gummibar","cats":["mascot"]},"d1dff8ae79cc413ca0ed64308786baa1":{"name":"Balinese Dwarapala Statue","cats":["figurine"]},"d3b271b83d024ccc8764d95cb7851360":{"name":"Toriel undertale","cats":["mascot"]},"d82a2ceda86640d79592ea5ca5544cbf":{"name":"Ballerina 55","cats":["figurine"]},"d9e27e854aa3427882da1405bce5de61":{"name":"Gary the Snail","cats":["figurine"]},"dac3128164cb4b708c05243c80cb6fd1":{"name":"Female saint","cats":["statue"]},"db2394b5766f4f2c8e464afadc912b19":{"name":"Nicky Act1","cats":["person"]},"dcd16c31187d43df98a7480b8b2b63bb":{"name":"Golden Freddy","cats":["mascot"]},"dcfac118b89b4b8f842a6d521486f54d":{"name":"Aug 8 poly figure","cats":["figurine"]},"e34f758004b24837a6688ad7cfce70fd":{"name":"Nue Au Soleil","cats":["statue"]},"e579fbdd53384c198f502b905a567614":{"name":"Estatua","cats":["figurine"]},"e6a846a1ab9149d3a0614c7b82bcc8eb":{"name":"Enshrined Buddha","cats":["statue"]},"e8b32da76b8444c59aa13b749db5fc56":{"name":"Tretyakovskaya Sculpture","cats":["statue"]},"e8dad8ff07324ed5ab46ed37f808255b":{"name":"Seth.B project","cats":["person"]},"ebdf3dc34c814e15b28abe626efa08c9":{"name":"Asklepios statue","cats":["statue"]},"ec33f88c15f041638f5b7c8ecc0705d5":{"name":"Motherhood II","cats":["figurine"]},"f0b2f344b4a24141ab2f714bcbce1e71":{"name":"St. Yusuf","cats":["figurine"]},"f1155a4e9a1c431aa5264f7450dd2286":{"name":"Base woman character","cats":["person"]},"f3fb4a2015b0415a8502d9641e9a52d4":{"name":"Elf WIP","cats":["person"]},"f549eccaae964c1689ab054037c9a199":{"name":"High Poly character","cats":["person"]},"f5847f80ad0f4a4da4684eb10bad6633":{"name":"Lapidarium Artifact 4","cats":["statue"]},"f5e5722fe1b042179d8d6fd88dfea884":{"name":"VLV15 statue","cats":["statue"]},"f61b549e1980446498df40ba6f21999e":{"name":"White Bishop Chess","cats":["figurine"]},"fab02e58e5e7458eaa83b5e33a925d99":{"name":"Monument statue","cats":["statue"]},"fac949a2ce8f4a58aa5b61aa5ec8ed11":{"name":"Female Purple Hair","cats":["doll"]},"fb0a0e9e62674beb8a48d8a1744419de":{"name":"PolyPieces figurine","cats":["figurine"]},"fe230ad740ee4907bf2dbc66099096eb":{"name":"Footie","cats":["statue"]},"ffc3230bf88242859de41c0e2c7b9954":{"name":"Citizen sbox","cats":["person"]}};
+
+// Load from folder
+document.getElementById('folder-input').addEventListener('change', async (e) => {
+  models = [];
+  const files = Array.from(e.target.files).filter(f => f.name.endsWith('.v4'));
+  files.sort((a, b) => a.name.localeCompare(b.name));
+
+  for (const file of files) {
+    const code = await file.text();
+    const lines = code.split('\n').filter(l => l.trim() && !l.startsWith('--')).length;
+    const uid = file.name.replace('.v4', '');
+    const info = uidNames[uid];
+    models.push({
+      uid,
+      name: info ? info.name : uid.slice(0, 16) + '...',
+      categories: info ? info.cats : [],
+      code,
+      lines,
+    });
+  }
+
+  document.getElementById('stats').textContent = `${models.length} models loaded`;
+  renderSidebar();
+  if (models.length > 0) showModel(0);
+});
+
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = models.map((m, i) => `
+    <div class="item ${i === currentIdx ? 'active' : ''} ${quality[m.uid] || ''}" onclick="showModel(${i})" id="item-${i}">
+      <div class="name">${m.name}</div>
+      <div class="meta">${m.categories ? m.categories.join(', ') : ''} · ${m.lines} lines ${quality[m.uid] === 'bad' ? '<span class="bad">✗</span>' : quality[m.uid] === 'good' ? '<span class="good">✓</span>' : ''}</div>
+    </div>
+  `).join('');
+}
+
+function showModel(idx) {
+  currentIdx = idx;
+  const m = models[idx];
+  const shapeCount = renderModel(m.code);
+
+  document.getElementById('counter').textContent = `${idx + 1}/${models.length}`;
+  document.getElementById('info').innerHTML = `
+    <div><b>${m.name}</b></div>
+    <div style="color:#888">${m.categories ? m.categories.join(', ') : m.uid}</div>
+    <div>${m.lines} lines · ${shapeCount} shapes</div>
+  `;
+  document.getElementById('code-text').textContent = m.code;
+
+  renderSidebar();
+  document.getElementById(`item-${idx}`)?.scrollIntoView({ block: 'nearest' });
+  updateQualityStats();
+}
+
+function nextModel() { if (currentIdx < models.length - 1) showModel(currentIdx + 1); }
+function prevModel() { if (currentIdx > 0) showModel(currentIdx - 1); }
+
+function markBad() {
+  quality[models[currentIdx].uid] = quality[models[currentIdx].uid] === 'bad' ? null : 'bad';
+  renderSidebar();
+  updateQualityStats();
+}
+
+function markGood() {
+  quality[models[currentIdx].uid] = quality[models[currentIdx].uid] === 'good' ? null : 'good';
+  renderSidebar();
+  updateQualityStats();
+}
+
+function updateQualityStats() {
+  const good = Object.values(quality).filter(v => v === 'good').length;
+  const bad = Object.values(quality).filter(v => v === 'bad').length;
+  document.getElementById('quality-stats').textContent = `Good: ${good} · Bad: ${bad} · Unreviewed: ${models.length - good - bad}`;
+}
+
+function toggleCode() {
+  const panel = document.getElementById('code-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'n') nextModel();
+  if (e.key === 'ArrowLeft' || e.key === 'p') prevModel();
+  if (e.key === 'g') markGood();
+  if (e.key === 'b') markBad();
+  if (e.key === 'c') toggleCode();
+});
+
+initRenderer();
+</script>
+</body>
+</html>

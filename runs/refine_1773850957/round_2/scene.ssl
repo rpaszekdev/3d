@@ -1,0 +1,92 @@
+I can see the reference image. The current renders don't exist yet (round_1 hasn't been generated). Let me analyze the reference carefully and improve the SSL code.
+
+**Reference analysis:**
+- 4 corner towers (square, tall) with crenellations on top
+- One tower (back-left) is taller — the keep
+- Connecting walls between all towers, lower than towers, also with crenellations
+- Arched gate on the front wall with a drawbridge/ramp extending outward
+- Small dark windows on the towers
+- Overall gray/stone color scheme
+
+**Current code issues:**
+1. No drawbridge/ramp (prominent in reference)
+2. Gate arch is just a small cylinder — needs proper arch opening
+3. Walls are too thin and not clearly separated from towers
+4. Crenellations are overly numerous and cluttered
+5. No height difference for the keep tower
+6. Windows are tiny and poorly positioned
+
+P1
+0 140 0 140 44 120 44 9
+0 260 0 140 44 120 44 9
+0 140 0 260 44 160 44 9
+0 260 0 260 44 120 44 9
+0 178 0 134 52 75 12 9
+0 230 0 134 52 75 12 9
+0 200 0 260 80 75 12 9
+0 134 0 178 12 75 52 9
+0 134 0 230 12 75 52 9
+0 266 0 178 12 75 52 9
+0 266 0 230 12 75 52 9
+0 200 0 128 16 52 8 0
+2 200 52 128 12 20 12 9 10 11
+0 200 0 108 20 6 16 9
+0 200 0 90 20 4 18 9
+0 200 0 72 20 2 20 9
+0 140 120 128 10 16 10 9 10 0
+0 156 120 128 10 16 10 9 10 0
+0 140 120 144 10 16 10 9 10 0
+0 156 120 144 10 16 10 9 10 0
+0 140 120 156 10 16 10 9 10 0
+0 156 120 156 10 16 10 9 10 0
+0 260 120 128 10 16 10 9 10 1
+0 276 120 128 10 16 10 9 10 1
+0 260 120 144 10 16 10 9 10 1
+0 276 120 144 10 16 10 9 10 1
+0 260 120 156 10 16 10 9 10 1
+0 276 120 156 10 16 10 9 10 1
+0 140 160 248 10 16 10 9 10 2
+0 156 160 248 10 16 10 9 10 2
+0 140 160 264 10 16 10 9 10 2
+0 156 160 264 10 16 10 9 10 2
+0 140 160 276 10 16 10 9 10 2
+0 156 160 276 10 16 10 9 10 2
+0 260 120 248 10 16 10 9 10 3
+0 276 120 248 10 16 10 9 10 3
+0 260 120 264 10 16 10 9 10 3
+0 276 120 264 10 16 10 9 10 3
+0 260 120 276 10 16 10 9 10 3
+0 276 120 276 10 16 10 9 10 3
+0 178 75 134 12 14 10 9 10 4
+0 196 75 134 12 14 10 9 10 4
+0 218 75 134 12 14 10 9 10 5
+0 234 75 134 12 14 10 9 10 5
+0 176 75 260 12 14 10 9 10 6
+0 194 75 260 12 14 10 9 10 6
+0 212 75 260 12 14 10 9 10 6
+0 230 75 260 12 14 10 9 10 6
+0 134 75 178 10 14 12 9 10 7
+0 134 75 198 10 14 12 9 10 7
+0 134 75 218 10 14 12 9 10 7
+0 134 75 238 10 14 12 9 10 7
+0 266 75 178 10 14 12 9 10 9
+0 266 75 198 10 14 12 9 10 9
+0 266 75 218 10 14 12 9 10 9
+0 266 75 238 10 14 12 9 10 9
+0 148 60 130 6 6 2 0
+0 148 40 130 6 6 2 0
+0 268 60 130 6 6 2 0
+0 268 40 130 6 6 2 0
+0 148 80 270 6 6 2 0
+0 148 60 270 6 6 2 0
+0 268 60 270 6 6 2 0
+0 268 40 270 6 6 2 0
+0 130 60 148 2 6 6 0
+0 130 40 148 2 6 6 0
+0 278 60 148 2 6 6 0
+0 278 40 148 2 6 6 0
+4 200 72 128 16 24 16 9 10 11
+0 160 100 200 8 8 2 0
+0 160 80 200 8 8 2 0
+0 250 100 200 2 8 8 0
+0 250 80 200 2 8 8 0

@@ -1,0 +1,45 @@
+V 32 40 32
+
+-- boots
+B 12 0 13 4 3 5 9
+B 18 0 13 4 3 5 9
+
+-- legs
+C 14 4 16 2 10 8
+C 19 4 16 2 10 8
+
+-- suit torso
+B 9 14 12 14 12 8 8
+
+-- life support backpack
+B 10 15 20 12 10 4 9
+
+-- chest panel
+B 13 18 12 6 5 1 7
+
+-- flag patch
+B 10 22 12 2 2 1 1
+
+-- arms
+C 7 19 16 2 9 8
+C 25 19 16 2 9 8
+
+-- gloves
+S 7 14 16 2 9
+S 25 14 16 2 9
+
+-- shoulder rings
+C 9 24 16 3 2 9
+C 23 24 16 3 2 9
+
+-- neck ring
+C 16 26 16 3 2 9
+
+-- helmet
+S 16 31 16 6 8
+
+-- visor
+S 16 30 12 4 4
+
+-- helmet ring base
+C 16 25 16 4 2 9

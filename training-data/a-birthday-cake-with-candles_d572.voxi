@@ -1,0 +1,40 @@
+V 24 24 24
+
+-- bottom tier
+B 3 0 3 18 5 18 b
+
+-- bottom tier frosting
+B 3 5 3 18 1 18 8
+
+-- frosting drips
+B 4 4 3 2 2 1 8
+B 10 4 3 2 2 1 8
+B 16 4 3 2 2 1 8
+B 4 4 20 2 2 1 8
+B 16 4 20 2 2 1 8
+
+-- top tier
+B 6 6 6 12 5 12 5
+
+-- top tier frosting
+B 6 11 6 12 1 12 8
+
+-- candle 1
+C 9 12 9 1 4 6
+-- candle 2
+C 12 12 12 1 4 1
+-- candle 3
+C 15 12 9 1 4 3
+
+-- flames
+S 9 16 9 1 7
+S 12 16 12 1 7
+S 15 16 9 1 7
+
+-- side decorations bottom
+S 3 3 8 1 6
+S 3 3 14 1 6
+S 20 3 8 1 6
+S 20 3 14 1 6
+S 8 3 3 1 6
+S 14 3 3 1 6

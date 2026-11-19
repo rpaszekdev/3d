@@ -1,0 +1,77 @@
+CANVAS 595 842 #ffffff
+
+-- ── Header ──────────────────────────────────────────
+RECT 0 0 595 160 0 #3ecf8e
+
+-- Photo (top-left corner of header)
+PHOTO 10 8 142 1 #ffffff 2
+
+-- Name and role
+TEXT 176 22 "Herman Walton" 26 1 #1a1a2e bold
+TEXT 176 60 "Junior Student" 13 1 #14321e
+
+-- Address and contact
+TEXT 176 96 "4200 Patterno Avenue, New York, NY 10471, United States" 8.5 1 #14321e
+TEXT 176 116 "(917)324-1818" 8.5 1 #14321e
+TEXT 290 116 "hw_alton77_x@yahoo.com" 8.5 1 #14321e
+
+-- ═══════════════════════════════════════════════════
+-- LEFT SIDEBAR  (x 0-200)
+-- ═══════════════════════════════════════════════════
+
+-- Skills
+TEXT 15 178 "Skills" 11 1 #1a1a2e bold
+
+TEXT 15 198 "Attention to Detail" 9 1 #444444
+TEXT 15 214 "Basic Computer Skills" 9 1 #444444
+TEXT 15 230 "Team Collaboration" 9 1 #444444
+TEXT 15 246 "Organizational Skills" 9 1 #444444
+TEXT 15 262 "Introductory Sales" 9 1 #444444
+TEXT 15 278 "Techniques" 9 1 #444444
+TEXT 15 294 "Basic Communication Skills" 9 1 #444444
+TEXT 15 310 "Customer Service" 9 1 #444444
+
+-- Languages
+TEXT 15 336 "Languages" 11 1 #1a1a2e bold
+
+TEXT 15 356 "French" 9 1 #444444
+SKILL-BAR 15 371 170 6 1 80 #2d2d2d #cccccc
+
+TEXT 15 394 "Dutch" 9 1 #444444
+SKILL-BAR 15 409 170 6 1 60 #2d2d2d #cccccc
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT MAIN COLUMN  (x 215-580)
+-- ═══════════════════════════════════════════════════
+
+-- Profile ────────────────────────────────────────────
+TEXT 215 178 "Profile" 18 1 #1a1a2e bold
+
+TEXT 215 206 "Ambitious Sales Assistant with foundational experience in customer service" 9 1 #333333
+TEXT 215 222 "and retail environments. Skilled in recommending products and maintaining" 9 1 #333333
+TEXT 215 238 "organizational standards, while collaborating effectively with team members." 9 1 #333333
+TEXT 215 254 "Adept at utilizing basic computer skills and eager to expand knowledge in" 9 1 #333333
+TEXT 215 270 "sales techniques and communication. Committed to delivering exceptional" 9 1 #333333
+TEXT 215 286 "service and contributing positively to team objectives." 9 1 #333333
+
+-- Employment History ─────────────────────────────────
+TEXT 215 318 "Employment History" 18 1 #1a1a2e bold
+
+TEXT 215 346 "Entry Level Sales Assistant, Big Apple Bookstore" 11 1 #1a1a2e bold
+TEXT 215 362 "September 2015 — June 2018" 9 1 #888888
+
+TEXT 225 382 "•  Welcomed customers and supported them in locating books" 9 1 #333333
+TEXT 225 398 "•  Learned to offer book recommendations based on customer interests" 9 1 #333333
+TEXT 225 414 "•  Followed guidance from supervisors to complete tasks accurately" 9 1 #333333
+TEXT 225 430 "•  Assisted in organizing books and maintaining store policies" 9 1 #333333
+
+-- Education ──────────────────────────────────────────
+TEXT 215 462 "Education" 18 1 #1a1a2e bold
+
+TEXT 215 490 "Bachelor of Communications, New York University, New York" 11 1 #1a1a2e bold
+TEXT 215 506 "August 2016 — August 2021" 9 1 #888888
+TEXT 225 524 "•  Working towards a Communications Degree." 9 1 #333333
+
+TEXT 215 552 "High School Diploma, Regis High School, New York" 11 1 #1a1a2e bold
+TEXT 215 568 "September 2012 — May 2016" 9 1 #888888
+TEXT 225 586 "•  Graduated with High Honors" 9 1 #333333

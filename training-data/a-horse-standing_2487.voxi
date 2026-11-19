@@ -1,0 +1,51 @@
+V 32 32 32
+
+-- body
+B 11 9 7 10 7 18 a
+
+-- neck
+B 12 14 4 7 7 4 a
+
+-- head
+B 12 19 1 7 5 6 a
+
+-- muzzle
+B 13 17 0 5 3 4 d
+
+-- left ear
+B 13 24 2 2 3 1 a
+
+-- right ear
+B 17 24 2 2 3 1 a
+
+-- mane
+B 15 20 2 2 4 7 0
+
+-- left eye
+B 13 22 1 1 1 1 0
+
+-- right eye
+B 17 22 1 1 1 1 0
+
+-- front left leg
+C 13 5 9 1 10 a
+
+-- front right leg
+C 19 5 9 1 10 a
+
+-- back left leg
+C 13 5 22 1 10 a
+
+-- back right leg
+C 19 5 22 1 10 a
+
+-- front hooves
+B 12 0 8 2 2 2 0
+B 18 0 8 2 2 2 0
+
+-- back hooves
+B 12 0 21 2 2 2 0
+B 18 0 21 2 2 2 0
+
+-- tail
+B 11 10 25 7 9 4 0

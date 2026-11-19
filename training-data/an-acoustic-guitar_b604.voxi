@@ -1,0 +1,50 @@
+V 32 48 16
+
+-- lower bout
+E 16 9 8 9 8 4 a
+-- upper bout
+E 16 21 8 7 6 4 a
+-- waist fill
+B 12 15 5 8 3 6 a
+-- body top binding
+B 11 8 8 1 14 1 d
+B 21 8 8 1 14 1 d
+
+-- sound hole
+S 16 14 9 3 0
+
+-- bridge
+B 13 5 8 6 2 2 7
+-- saddle
+B 13 5 9 6 1 1 8
+
+-- neck
+B 14 25 6 4 17 3 d
+-- fretboard
+B 14 25 7 4 17 2 c
+-- frets
+B 14 27 8 4 1 1 8
+B 14 30 8 4 1 1 8
+B 14 33 8 4 1 1 8
+B 14 36 8 4 1 1 8
+B 14 39 8 4 1 1 8
+
+-- nut
+B 14 42 6 4 1 3 8
+
+-- headstock
+B 12 43 5 7 5 4 d
+
+-- tuning pegs left
+S 13 44 4 1 9
+S 13 46 4 1 9
+S 13 48 4 1 9
+-- tuning pegs right
+S 19 44 4 1 9
+S 19 46 4 1 9
+S 19 48 4 1 9
+
+-- strings
+B 15 5 9 1 37 1 9
+B 16 5 9 1 37 1 9
+B 17 5 9 1 37 1 9

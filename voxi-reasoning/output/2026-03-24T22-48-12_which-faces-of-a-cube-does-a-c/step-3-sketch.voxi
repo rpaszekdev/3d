@@ -1,0 +1,47 @@
+V 16 12 16
+
+-- Gray floor
+B 0 0 0 16 1 16 9
+
+-- Cube body (gray)
+B 6 1 6 4 4 4 9
+
+-- VISIBLE face markers (green) - offset 1 voxel outward
+-- Left face marker at X=5
+B 5 2 6 1 3 4 2
+-- Top face marker at Y=5
+B 6 5 6 4 1 4 2
+-- Front face marker at Z=5
+B 6 2 5 4 3 1 2
+
+-- HIDDEN face markers (red) - offset 1 voxel outward
+-- Right face marker at X=10
+B 10 2 6 1 3 4 1
+-- Back face marker at Z=10
+B 6 2 10 4 3 1 1
+-- Bottom (red dot only)
+P 7 0 7 1
+
+-- Normal arrows: green = toward camera, red = away
+-- Left normal -> -X (toward camera at X=0)
+P 4 3 8 2
+P 3 3 8 2
+-- Top normal -> +Y (toward camera at Y=8)
+P 8 6 8 2
+P 8 7 8 2
+-- Front normal -> -Z (toward camera at Z=0)
+P 8 3 4 2
+P 8 3 3 2
+-- Right normal -> +X (away from camera)
+P 11 3 8 1
+P 12 3 8 1
+-- Back normal -> +Z (away from camera)
+P 8 3 11 1
+P 8 3 12 1
+
+-- Camera (yellow)
+B 0 8 0 1 1 1 6
+-- Ray points (cyan)
+P 2 7 2 4
+P 4 6 4 4
+P 6 5 6 4

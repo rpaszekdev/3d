@@ -1,0 +1,35 @@
+V 24 24 24
+
+-- wand handle
+C 12 9 12 1 16 d
+
+-- handle accent rings
+B 11 2 11 2 1 2 7
+B 11 6 11 2 1 2 7
+
+-- star center glow
+S 12 19 12 2 6
+
+-- star top spike
+B 11 21 11 2 3 2 6
+
+-- star upper-right arm
+B 14 20 11 3 2 2 6
+
+-- star upper-left arm
+B 7 20 11 3 2 2 6
+
+-- star lower-right arm
+B 14 17 11 3 2 2 6
+
+-- star lower-left arm
+B 7 17 11 3 2 2 6
+
+-- star bottom spike
+B 11 14 11 2 3 2 6
+
+-- magical sparkles
+S 12 23 11 1 8
+S 16 22 11 1 8
+S 8 22 11 1 8
+S 17 19 11 1 8

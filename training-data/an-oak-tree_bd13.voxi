@@ -1,0 +1,42 @@
+V 32 40 32
+
+-- root flare
+B 13 0 13 6 2 6 a
+
+-- trunk
+C 16 2 16 2 12 a
+
+-- lower branches
+C 16 12 16 1 6 a
+C 10 14 16 1 5 a
+C 22 14 16 1 5 a
+C 16 14 10 1 5 a
+C 16 14 22 1 5 a
+
+-- inner canopy dark
+S 16 22 16 9 c
+
+-- outer canopy lobes
+S 10 20 16 7 2
+S 22 20 16 7 2
+S 16 20 10 7 2
+S 16 20 22 7 2
+S 11 20 11 6 c
+S 21 20 11 6 c
+S 11 20 21 6 c
+S 21 20 21 6 c
+
+-- mid canopy fill
+S 16 24 16 8 2
+S 13 25 13 5 c
+S 19 25 13 5 c
+S 13 25 19 5 c
+S 19 25 19 5 c
+
+-- top crown
+S 16 29 16 6 2
+S 14 31 14 4 c
+S 18 31 14 4 c
+S 14 31 18 4 c
+S 18 31 18 4 c
+S 16 33 16 4 2

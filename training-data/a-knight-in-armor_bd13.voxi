@@ -1,0 +1,64 @@
+V 24 44 24
+
+-- boots
+B 9 0 11 3 3 3 9
+B 12 0 11 3 3 3 9
+
+-- greaves
+B 9 3 11 3 6 3 9
+B 12 3 11 3 6 3 9
+
+-- knees
+S 10 9 12 2 8
+S 13 9 12 2 8
+
+-- thighs
+B 9 9 11 3 5 3 9
+B 12 9 11 3 5 3 9
+
+-- tabard cloth
+B 8 8 10 8 6 2 3
+
+-- breastplate
+B 8 13 10 8 9 3 8
+
+-- backplate
+B 8 13 13 8 9 2 9
+
+-- golden belt
+B 8 12 10 8 2 3 6
+
+-- left arm
+C 7 17 12 2 8 9
+
+-- right arm
+C 17 17 12 2 8 9
+
+-- pauldrons
+B 6 21 10 4 3 4 9
+B 14 21 10 4 3 4 9
+
+-- gauntlets
+S 7 12 12 2 9
+S 17 12 12 2 9
+
+-- neck
+C 12 22 12 2 3 9
+
+-- helmet
+S 12 26 12 4 9
+
+-- visor slot
+B 10 24 9 4 2 2 0
+
+-- helmet plume
+B 11 28 11 2 5 2 1
+
+-- sword blade
+B 18 5 12 1 16 1 8
+
+-- sword crossguard
+B 16 9 11 5 1 2 6
+
+-- shield
+B 5 14 10 2 8 5 3

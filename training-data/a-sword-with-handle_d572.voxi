@@ -1,0 +1,30 @@
+V 24 24 24
+
+-- pommel
+S 12 2 12 2 6
+
+-- grip
+B 11 3 11 2 5 2 a
+
+-- crossguard
+B 6 7 11 12 1 2 6
+
+-- crossguard gems
+S 7 7 12 1 5
+S 17 7 12 1 5
+
+-- blade lower
+B 11 8 11 2 9 2 8
+
+-- blade upper (narrows)
+B 11 17 11 2 4 2 8
+
+-- blade tip
+B 11 21 11 2 2 2 7
+
+-- fuller groove
+B 12 8 11 1 13 1 9
+
+-- blade edge highlight
+B 11 8 12 1 13 1 7
+B 12 8 10 1 13 1 7

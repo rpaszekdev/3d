@@ -1,0 +1,31 @@
+V 24 32 24
+
+-- bottom base
+B 5 0 5 14 2 14 a
+
+-- frame left pillar
+B 5 2 9 2 28 6 a
+
+-- frame right pillar
+B 17 2 9 2 28 6 a
+
+-- bottom glass bulb
+E 12 8 12 5 6 5 8
+
+-- bottom sand pile
+E 12 6 12 3 4 3 6
+
+-- neck glass tube
+C 12 15 12 2 4 8
+
+-- sand falling through neck
+B 11 14 11 2 5 2 6
+
+-- top glass bulb
+E 12 23 12 5 6 5 8
+
+-- top sand (emptying)
+E 12 22 12 3 2 3 6
+
+-- top cap
+B 5 29 5 14 2 14 a

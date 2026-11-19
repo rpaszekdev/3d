@@ -1,0 +1,43 @@
+V 32 32 32
+
+-- tree trunk
+C 16 0 16 2 13 a
+
+-- canopy foliage
+S 16 24 16 10 2
+
+-- platform floor
+B 10 13 10 12 1 12 d
+
+-- left wall
+B 10 14 10 1 5 12 d
+-- right wall
+B 21 14 10 1 5 12 d
+-- back wall
+B 10 14 21 12 5 1 d
+-- front wall left of door
+B 10 14 10 4 5 1 d
+-- front wall right of door
+B 18 14 10 4 5 1 d
+
+-- back window
+B 12 16 21 3 2 1 4
+-- side window
+B 21 16 13 1 2 4 4
+
+-- roof layer 1 (eave)
+B 9 19 9 14 1 14 7
+-- roof layer 2
+B 10 20 10 12 1 12 7
+-- roof layer 3
+B 11 21 11 10 1 10 7
+-- roof peak
+B 12 22 12 8 2 8 7
+
+-- ladder rails
+B 14 3 9 1 10 1 a
+B 17 3 9 1 10 1 a
+-- ladder rungs
+B 14 5 9 4 1 1 d
+B 14 8 9 4 1 1 d
+B 14 11 9 4 1 1 d

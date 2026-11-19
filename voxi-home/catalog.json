@@ -1,0 +1,232 @@
+{
+  "sofa": {
+    "3seat": {
+      "name": "3-Seat Sofa",
+      "width": 228,
+      "depth": 95,
+      "height": 83,
+      "clearance": { "front": 45, "sides": 5, "back": 0 },
+      "color": 5,
+      "tags": ["seating", "living-room"]
+    },
+    "2seat": {
+      "name": "2-Seat Sofa",
+      "width": 190,
+      "depth": 95,
+      "height": 83,
+      "clearance": { "front": 45, "sides": 5, "back": 0 },
+      "color": 5,
+      "tags": ["seating", "living-room"]
+    },
+    "armchair": {
+      "name": "Armchair",
+      "width": 80,
+      "depth": 80,
+      "height": 83,
+      "clearance": { "front": 40, "sides": 5, "back": 0 },
+      "color": 5,
+      "tags": ["seating", "living-room"]
+    }
+  },
+  "table": {
+    "coffee": {
+      "name": "Coffee Table",
+      "width": 90,
+      "depth": 55,
+      "height": 45,
+      "clearance": { "all": 30 },
+      "color": 13,
+      "tags": ["surface", "living-room"]
+    },
+    "dining-4": {
+      "name": "Dining Table (4 person)",
+      "width": 120,
+      "depth": 75,
+      "height": 74,
+      "clearance": { "all": 60 },
+      "color": 10,
+      "tags": ["surface", "dining"]
+    },
+    "dining-6": {
+      "name": "Dining Table (6 person)",
+      "width": 180,
+      "depth": 90,
+      "height": 74,
+      "clearance": { "all": 60 },
+      "color": 10,
+      "tags": ["surface", "dining"]
+    },
+    "side": {
+      "name": "Side Table",
+      "width": 45,
+      "depth": 45,
+      "height": 55,
+      "clearance": { "all": 5 },
+      "color": 13,
+      "tags": ["surface", "living-room", "bedroom"]
+    }
+  },
+  "chair": {
+    "dining": {
+      "name": "Dining Chair",
+      "width": 45,
+      "depth": 52,
+      "height": 80,
+      "clearance": { "back": 60, "sides": 5, "front": 5 },
+      "color": 7,
+      "tags": ["seating", "dining"]
+    },
+    "office": {
+      "name": "Office Chair",
+      "width": 65,
+      "depth": 65,
+      "height": 110,
+      "clearance": { "back": 70, "sides": 10, "front": 10 },
+      "color": 9,
+      "tags": ["seating", "office"]
+    }
+  },
+  "bed": {
+    "single": {
+      "name": "Single Bed",
+      "width": 90,
+      "depth": 200,
+      "height": 45,
+      "clearance": { "sides": 50, "front": 60, "back": 0 },
+      "color": 10,
+      "tags": ["sleeping", "bedroom"]
+    },
+    "double": {
+      "name": "Double Bed",
+      "width": 140,
+      "depth": 200,
+      "height": 45,
+      "clearance": { "sides": 50, "front": 60, "back": 0 },
+      "color": 10,
+      "tags": ["sleeping", "bedroom"]
+    },
+    "king": {
+      "name": "King Bed",
+      "width": 180,
+      "depth": 200,
+      "height": 45,
+      "clearance": { "sides": 50, "front": 60, "back": 0 },
+      "color": 10,
+      "tags": ["sleeping", "bedroom"]
+    }
+  },
+  "tv": {
+    "43": {
+      "name": "43\" TV",
+      "width": 97,
+      "depth": 8,
+      "height": 57,
+      "clearance": { "front": 170 },
+      "color": 0,
+      "tags": ["media", "living-room"],
+      "wallMount": true,
+      "viewingDistance": 1.7
+    },
+    "55": {
+      "name": "55\" TV",
+      "width": 124,
+      "depth": 8,
+      "height": 72,
+      "clearance": { "front": 210 },
+      "color": 0,
+      "tags": ["media", "living-room"],
+      "wallMount": true,
+      "viewingDistance": 2.1
+    }
+  },
+  "storage": {
+    "bookshelf": {
+      "name": "Bookshelf",
+      "width": 80,
+      "depth": 30,
+      "height": 180,
+      "clearance": { "front": 40, "sides": 0, "back": 0 },
+      "color": 7,
+      "tags": ["storage", "living-room", "office"],
+      "wallMount": true
+    },
+    "wardrobe": {
+      "name": "Wardrobe",
+      "width": 120,
+      "depth": 60,
+      "height": 200,
+      "clearance": { "front": 60, "sides": 0, "back": 0 },
+      "color": 10,
+      "tags": ["storage", "bedroom"],
+      "doorSwing": 60
+    }
+  },
+  "desk": {
+    "standard": {
+      "name": "Desk",
+      "width": 120,
+      "depth": 60,
+      "height": 75,
+      "clearance": { "front": 70, "sides": 10, "back": 0 },
+      "color": 13,
+      "tags": ["surface", "office", "bedroom"]
+    }
+  },
+  "rug": {
+    "small": {
+      "name": "Small Rug",
+      "width": 140,
+      "depth": 80,
+      "height": 1,
+      "clearance": { "all": 0 },
+      "color": 14,
+      "tags": ["decor", "living-room"]
+    },
+    "medium": {
+      "name": "Medium Rug",
+      "width": 200,
+      "depth": 150,
+      "height": 1,
+      "clearance": { "all": 0 },
+      "color": 14,
+      "tags": ["decor", "living-room"]
+    }
+  },
+  "lamp": {
+    "floor": {
+      "name": "Floor Lamp",
+      "width": 30,
+      "depth": 30,
+      "height": 160,
+      "clearance": { "all": 10 },
+      "color": 6,
+      "tags": ["lighting", "living-room", "bedroom"]
+    }
+  },
+  "nightstand": {
+    "standard": {
+      "name": "Nightstand",
+      "width": 45,
+      "depth": 40,
+      "height": 55,
+      "clearance": { "front": 5, "sides": 0, "back": 0 },
+      "color": 10,
+      "tags": ["surface", "bedroom"]
+    }
+  },
+  "_meta": {
+    "units": "centimeters",
+    "colorMap": {
+      "0": "black", "1": "red", "2": "green", "3": "blue",
+      "4": "cyan", "5": "magenta", "6": "yellow", "7": "orange",
+      "8": "white", "9": "gray", "10": "brown", "11": "pink",
+      "12": "dark-green", "13": "tan", "14": "maroon", "15": "navy"
+    },
+    "version": "1.0",
+    "defaultConstraints": {
+      "minWalkway": 80,
+      "doorSwingArc": 90,
+      "windowBlockMaxHeight": 90
+    }
+  }
+}

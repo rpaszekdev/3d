@@ -1,0 +1,37 @@
+V 24 18 18
+
+-- body
+E 12 9 9 6 3 3 7
+
+-- belly
+E 13 8 9 4 2 3 6
+
+-- head
+S 18 9 9 3 7
+
+-- mouth
+B 22 9 9 1 1 2 e
+
+-- eye right
+S 20 10 7 1 0
+
+-- eye left
+S 20 10 11 1 0
+
+-- dorsal fin
+B 9 12 8 6 4 2 7
+
+-- pectoral fin right
+B 14 7 6 3 1 3 7
+
+-- pectoral fin left
+B 14 7 10 3 1 3 7
+
+-- tail base
+E 5 9 9 3 3 2 7
+
+-- tail upper lobe
+B 1 11 8 4 5 2 7
+
+-- tail lower lobe
+B 1 4 8 4 5 2 7

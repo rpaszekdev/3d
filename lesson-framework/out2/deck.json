@@ -1,0 +1,333 @@
+{
+  "source": "/Users/robertpaszek/Desktop/Tilburg University/Deep Learning/Lecture Presentations/2. Backporpagation.pptx",
+  "slide_count": 35,
+  "slides": [
+    {
+      "index": 1,
+      "title": "Backpropagation",
+      "body": "Dr. Juan Sebastián OlierIntroduction to Deep Learning\nDepartment of Cognitive Sciences and Artificial Intelligence\nTilburg University",
+      "notes": "",
+      "images": [
+        "slide1_img1.png"
+      ]
+    },
+    {
+      "index": 2,
+      "title": "Limitations of Perceptrons",
+      "body": "x2\n\nx1\n\nx1\n\nx2\n\nXOR\n\nCombining the output of two perceptrons with a third one might solve the XOR problem.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 3,
+      "title": "Limitations of Perceptrons",
+      "body": "x2\n\nx1\n\nXOR\n\nThis solves the problem, but the update rule of the perceptron does not apply to this configuration.\n\np1\n\np2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 4,
+      "title": "Universal Function Approximator",
+      "body": "NN\n\nOutput\ny\n\nInput \nx\n\nApproximate an unknown function\ny = f(x)",
+      "notes": "Parameters are adjusted over training to approximate a possibly unknown function mapping inputs to outputs.",
+      "images": []
+    },
+    {
+      "index": 5,
+      "title": "Neural Networks",
+      "body": "Train\n\nNN\n\nOutput\n\nExpected Output\n\nError",
+      "notes": "The parameters are updated depending on how different the output generated is from the expected one for the given input.",
+      "images": [
+        "slide5_img1.png",
+        "slide5_img2.png"
+      ]
+    },
+    {
+      "index": 6,
+      "title": "Optimization and Gradient Descent",
+      "body": "Gradient descent:Minimize the loss, by moving the parameters (w) oppositely to the loss’ gradient.\n\nThe changes to w depend on the definition of the loss function.",
+      "notes": "Looking at it from a mathematical perspective, we can do this by using partial derivatives. A partial derivative will allow us to understand how two mathematical expressions affect each other. Let us take X and Y, which are connected by some arbitrary mathematical relationship. If we find the partial derivative of X with respect to Y, we can understand how changing X will affect Y. If the partial derivative is positive, that means increasing X will also increase Y. If it’s negative that means increasing X will decrease Y.\nHence we need to find the partial derivatives of each and every weight in the neural network with respect to the loss. At a particular instant, if the weight’s partial derivative is positive, then we will decrease that weight in order to decrease the loss. If the partial derivative is negative, then we will increase that weight in order to decrease the loss. Our ultimate goal is to decrease the loss afterall.",
+      "images": [
+        "slide6_img1.png"
+      ]
+    },
+    {
+      "index": 7,
+      "title": "Optimization",
+      "body": "The selection of the best parameters, with regard to some criterion, from some set of alternatives. \nQuestion:\nIn DL, what are the parameters, criterion and alternatives?",
+      "notes": "Types of Optimizes\n- e.g. solves for one point\nIterative: gradient descent applied to logistic regression\nIterattive and non-convex cost functions => NNs => parameter initialization plays a critical role in speeding up convergence and reducing the error rates.",
+      "images": []
+    },
+    {
+      "index": 8,
+      "title": "Optimization",
+      "body": "The selection of the best parameters, with regard to some criterion, from some set of alternatives. \nParameters: Weights and biases\nCriterion: The loss function\nAlternatives: All possible values the parameters can take",
+      "notes": "Types of Optimizes\n- e.g. solves for one point\nIterative: gradient descent applied to logistic regression\nIterattive and non-convex cost functions => NNs => parameter initialization plays a critical role in speeding up convergence and reducing the error rates.",
+      "images": []
+    },
+    {
+      "index": 9,
+      "title": "Optimization and Backpropagation",
+      "body": "For the output layer (n), the derivative of the loss with respect to z is defined as:\nThe derivative (gradient) depends on the output Activation and Loss functions\n\nActivation function\n\nLossfunction",
+      "notes": "",
+      "images": [
+        "slide9_img1.gif"
+      ]
+    },
+    {
+      "index": 10,
+      "title": "Problem",
+      "body": "Update parameters in a neural network:\n\nWe need to know how to change the parameters for each layer",
+      "notes": "",
+      "images": [
+        "slide10_img1.gif",
+        "slide10_img2.gif"
+      ]
+    },
+    {
+      "index": 11,
+      "title": "Backpropagation",
+      "body": "The goal is to know how each parameter contributes to the error (loss L).\nThus, the derivative of the error with respect to each parameter is needed.",
+      "notes": "",
+      "images": [
+        "slide11_img1.gif"
+      ]
+    },
+    {
+      "index": 12,
+      "title": "Notation reminder",
+      "body": "x2\n\nx1\n\nx3\n\nLayer 1\n\nLayer 2\n\nLayer 3n=3 in this network\n\nInputs",
+      "notes": "",
+      "images": [
+        "slide12_img1.png",
+        "slide12_img2.gif"
+      ]
+    },
+    {
+      "index": 13,
+      "title": "Loss Function",
+      "body": "x2\n\nx1\n\nx3\n\nInputs\n\ny2\n\ny1\n\nL\n\nLoss functionAlso called Error or Cost. Calculates the “cost”, or distance between the network’s output and a expected one.",
+      "notes": "",
+      "images": [
+        "slide13_img1.png"
+      ]
+    },
+    {
+      "index": 14,
+      "title": "The Chain Rule",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide14_img1.png",
+        "slide14_img2.png"
+      ]
+    },
+    {
+      "index": 15,
+      "title": "Exercise",
+      "body": "Expand \t\t\tusing the chain rule\nUse:\t\t\t\t\t\t\nand assume that the loss L is a function of al",
+      "notes": "",
+      "images": [
+        "slide15_img1.png",
+        "slide15_img2.png",
+        "slide15_img3.png",
+        "slide15_img4.png"
+      ]
+    },
+    {
+      "index": 16,
+      "title": "Exercise",
+      "body": "Expand \t\t\tusing the chain rule\nUse:\t\t\t\t\t\t\n\t\t\t\tanswer:",
+      "notes": "",
+      "images": [
+        "slide16_img1.png",
+        "slide16_img2.png",
+        "slide16_img3.png",
+        "slide16_img4.gif",
+        "slide16_img5.png"
+      ]
+    },
+    {
+      "index": 17,
+      "title": "Backpropagation: Output Layer",
+      "body": "Applying the chain rule to get the derivative of the loss function with respect to the output layer (n) parameters:",
+      "notes": "with respect to each individual weight (i, j) in each layer (n)",
+      "images": [
+        "slide17_img1.png"
+      ]
+    },
+    {
+      "index": 18,
+      "title": "Backpropagation Output Layer",
+      "body": "How the error (Loss) changes as the layer’s output changes.This is the error component of the gradient calculation.",
+      "notes": "",
+      "images": [
+        "slide18_img1.png"
+      ]
+    },
+    {
+      "index": 19,
+      "title": "Backpropagation Output Layer",
+      "body": "How the activation changes as the weighted sum changes.\nThis is the derivative of the activation function.",
+      "notes": "",
+      "images": [
+        "slide19_img1.png"
+      ]
+    },
+    {
+      "index": 20,
+      "title": "Backpropagation Output Layer",
+      "body": "How the weighted sum changes as the weights change.\nIn an MLP this is the input to the layer",
+      "notes": "",
+      "images": [
+        "slide20_img1.png"
+      ]
+    },
+    {
+      "index": 21,
+      "title": "Backpropagation Output Layer",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide21_img1.png",
+        "slide21_img2.png"
+      ]
+    },
+    {
+      "index": 22,
+      "title": "Backpropagation Output Layer",
+      "body": "Divide the expression into two parts for convenience.",
+      "notes": "",
+      "images": [
+        "slide22_img1.png"
+      ]
+    },
+    {
+      "index": 23,
+      "title": "Derivative of the Activation function",
+      "body": "Derivative of the Activation function\n\nDerivative of the Loss wrt the output",
+      "notes": "",
+      "images": [
+        "slide23_img1.png",
+        "slide23_img2.png"
+      ]
+    },
+    {
+      "index": 24,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide24_img1.png",
+        "slide24_img2.png",
+        "slide24_img3.png"
+      ]
+    },
+    {
+      "index": 25,
+      "title": "Backpropagation",
+      "body": "Gradient: How the Loss changes as the weights change",
+      "notes": "",
+      "images": [
+        "slide25_img1.png"
+      ]
+    },
+    {
+      "index": 26,
+      "title": "Loss Function",
+      "body": "x2\n\nx1\n\nx3",
+      "notes": "",
+      "images": [
+        "slide26_img1.png",
+        "slide26_img2.gif"
+      ]
+    },
+    {
+      "index": 27,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide27_img1.png"
+      ]
+    },
+    {
+      "index": 28,
+      "title": "Backpropagation Other Layers",
+      "body": "To propagate from the output layer to the previous one, we start by applying the the same process, but for zl-1:",
+      "notes": "",
+      "images": [
+        "slide28_img1.gif"
+      ]
+    },
+    {
+      "index": 29,
+      "title": "Backpropagation",
+      "body": "Replacing:",
+      "notes": "",
+      "images": [
+        "slide29_img1.png",
+        "slide29_img2.gif",
+        "slide29_img3.gif",
+        "slide29_img4.png"
+      ]
+    },
+    {
+      "index": 30,
+      "title": "Backpropagation",
+      "body": "The error propagated from layer l to layer l-1. Also can be seen as the error of layer l-1",
+      "notes": "",
+      "images": [
+        "slide30_img1.png",
+        "slide30_img2.gif"
+      ]
+    },
+    {
+      "index": 31,
+      "title": "Backpropagation: General form",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide31_img1.png"
+      ]
+    },
+    {
+      "index": 32,
+      "title": "Backpropagation: General form",
+      "body": "Error propagated from layer l to layer l-1. Also can be seen as the error of layer l-1\n\nDerivative of the activation function",
+      "notes": "",
+      "images": [
+        "slide32_img1.png"
+      ]
+    },
+    {
+      "index": 33,
+      "title": "Backpropagation",
+      "body": "Using matrix and vector operations:\nFor the output layer:\nThe gradient of L multiplied by the derivative of the activation",
+      "notes": "",
+      "images": [
+        "slide33_img1.gif",
+        "slide33_img2.png"
+      ]
+    },
+    {
+      "index": 34,
+      "title": "Backpropagation: Updating Parameters",
+      "body": "General algorithm:\nUpdate:\nWith:",
+      "notes": "",
+      "images": [
+        "slide34_img1.gif",
+        "slide34_img2.gif",
+        "slide34_img3.gif",
+        "slide34_img4.png"
+      ]
+    },
+    {
+      "index": 35,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": []
+    }
+  ]
+}

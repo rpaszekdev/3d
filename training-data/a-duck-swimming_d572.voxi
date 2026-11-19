@@ -1,0 +1,39 @@
+V 24 16 20
+
+-- water body
+B 0 0 0 24 5 20 3
+-- water surface ripple
+B 0 5 0 24 1 20 4
+
+-- duck body (white, low in water)
+E 12 6 11 4 2 4 8
+
+-- tail feathers (angled up at back)
+B 11 8 14 2 3 2 8
+
+-- neck
+C 12 8 8 1 2 8
+
+-- head
+S 12 10 7 2 8
+
+-- bill (yellow, facing front)
+B 11 9 4 2 1 3 6
+
+-- eye
+B 13 10 6 1 1 1 0
+
+-- wing left highlight
+B 9 6 10 2 1 4 9
+
+-- wing right highlight
+B 13 6 10 2 1 4 9
+
+-- water wake left
+B 6 5 12 2 1 5 4
+
+-- water wake right
+B 16 5 12 2 1 5 4
+
+-- water ripple front
+B 10 5 6 4 1 2 4

@@ -1,0 +1,65 @@
+V 32 32 32
+
+-- rear tires (large, black)
+S 7 6 22 6 0
+S 25 6 22 6 0
+
+-- rear wheel hubs (gray)
+S 7 6 22 2 9
+S 25 6 22 2 9
+
+-- front tires (smaller)
+S 11 4 8 4 0
+S 21 4 8 4 0
+
+-- front wheel hubs
+S 11 4 8 1 9
+S 21 4 8 1 9
+
+-- rear axle
+B 7 5 21 19 2 2 9
+
+-- front axle
+B 11 3 7 11 2 2 9
+
+-- main chassis (green)
+B 10 9 10 12 4 14 2
+
+-- engine hood (dark green)
+B 11 7 4 10 6 8 c
+
+-- front grill (gray)
+B 12 7 4 8 5 1 9
+
+-- exhaust stack (gray)
+C 14 10 6 1 8 9
+
+-- cab body (green)
+B 10 13 16 12 8 8 2
+
+-- cab roof (green)
+B 9 20 15 14 2 10 2
+
+-- front windshield (cyan)
+B 11 14 15 10 5 1 4
+
+-- rear window (cyan)
+B 11 14 23 10 5 1 4
+
+-- left side window (cyan)
+B 10 14 16 1 5 8 4
+
+-- right side window (cyan)
+B 21 14 16 1 5 8 4
+
+-- seat (yellow)
+B 14 21 20 4 2 4 6
+
+-- left rear fender (green)
+B 5 11 17 6 3 10 2
+
+-- right rear fender (green)
+B 21 11 17 6 3 10 2
+
+-- rear hitch (gray)
+B 14 6 26 4 3 2 9

@@ -1,0 +1,32 @@
+V 32 24 16
+
+-- legs
+B 7 0 5 2 4 4 0
+B 23 0 5 2 4 4 0
+
+-- pedals
+B 10 0 4 3 3 2 9
+B 14 0 4 3 3 2 9
+B 18 0 4 3 3 2 9
+
+-- main body/case (black)
+B 5 4 4 22 18 8 0
+
+-- white keys
+B 6 4 3 20 3 2 8
+
+-- black keys
+B 7 6 3 2 2 1 0
+B 10 6 3 2 2 1 0
+B 14 6 3 2 2 1 0
+B 17 6 3 2 2 1 0
+B 20 6 3 2 2 1 0
+
+-- fallboard above keys
+B 5 7 3 22 1 1 0
+
+-- music desk
+B 9 14 3 14 4 1 d
+
+-- top lid
+B 5 22 4 22 1 8 0

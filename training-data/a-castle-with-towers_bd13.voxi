@@ -1,0 +1,58 @@
+V 48 48 48
+
+-- courtyard ground
+B 8 0 8 32 1 32 d
+
+-- front-left tower
+C 10 10 10 4 20 a
+
+-- front-right tower
+C 38 10 10 4 20 a
+
+-- back-left tower
+C 10 10 38 4 20 a
+
+-- back-right tower
+C 38 10 38 4 20 a
+
+-- tower caps
+S 10 22 10 5 7
+S 38 22 10 5 7
+S 10 22 38 5 7
+S 38 22 38 5 7
+
+-- front wall left of gate
+B 14 0 8 6 12 4 7
+
+-- front wall right of gate
+B 28 0 8 6 12 4 7
+
+-- gate arch
+B 14 10 8 14 3 4 3
+
+-- back wall
+B 14 0 38 20 12 4 7
+
+-- left wall
+B 8 0 14 4 12 20 7
+
+-- right wall
+B 38 0 14 4 12 20 7
+
+-- wall battlements
+B 14 12 8 20 2 4 9
+B 14 12 38 20 2 4 9
+B 8 12 14 4 2 20 9
+B 38 12 14 4 2 20 9
+
+-- main keep
+B 18 0 18 12 24 12 6
+
+-- keep battlements
+B 17 24 17 14 3 14 9
+
+-- keep spire
+C 24 31 24 1 8 1
+
+-- flag tip
+S 24 36 24 1 5

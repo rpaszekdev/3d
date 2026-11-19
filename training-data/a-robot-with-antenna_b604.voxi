@@ -1,0 +1,33 @@
+V 24 24 24
+
+-- legs
+B 9 0 10 3 5 4 9
+B 14 0 10 3 5 4 9
+
+-- body
+B 8 5 9 8 8 6 3
+
+-- left arm
+B 5 6 10 3 6 4 9
+
+-- right arm
+B 16 6 10 3 6 4 9
+
+-- head
+B 9 13 9 6 6 6 8
+
+-- eyes
+S 11 16 9 1 0
+S 14 16 9 1 0
+
+-- mouth
+B 10 14 9 4 1 1 0
+
+-- chest panel
+B 10 7 9 4 3 1 6
+
+-- antenna stem
+C 12 19 12 1 4 9
+
+-- antenna tip
+S 12 23 12 1 5

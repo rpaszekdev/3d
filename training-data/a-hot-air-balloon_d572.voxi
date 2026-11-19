@@ -1,0 +1,36 @@
+V 32 48 32
+
+-- balloon envelope - main body
+E 16 30 16 11 14 11 1
+
+-- decorative color panels (stripes)
+B 15 17 5 2 26 2 6
+B 15 17 25 2 26 2 3
+B 5 17 15 2 26 2 5
+B 25 17 15 2 26 2 4
+
+-- top crown
+S 16 44 16 3 6
+
+-- bottom opening of envelope
+S 16 17 16 4 7
+
+-- burner flame
+S 16 15 16 2 6
+S 16 14 16 1 6
+
+-- ropes connecting basket to balloon
+C 13 11 13 1 5 d
+C 19 11 13 1 5 d
+C 13 11 19 1 5 d
+C 19 11 19 1 5 d
+
+-- basket / gondola body
+B 11 2 11 10 8 10 a
+
+-- basket rim
+B 10 9 10 12 2 12 c
+
+-- basket weave detail
+B 11 4 10 10 1 1 c
+B 11 7 10 10 1 1 c

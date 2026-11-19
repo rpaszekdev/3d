@@ -1,0 +1,88 @@
+Looking at the renders, I can see the key issues: top view is nearly all black (head obscures everything), body is over-segmented into rings, beak isn't orange/visible, flippers are boxy, and feet are detached.
+
+P1
+# === FEET (orange) ===
+# Left foot pad
+0 185 2 212 14 4 18 7
+# Left toes
+0 182 2 206 4 4 10 7
+0 188 2 206 4 4 10 7
+# Right foot pad
+0 215 2 212 14 4 18 7
+# Right toes
+0 212 2 206 4 4 10 7
+0 218 2 206 4 4 10 7
+# Toenails
+1 182 3 203 2 2 2 0
+1 188 3 203 2 2 2 0
+1 212 3 203 2 2 2 0
+1 218 3 203 2 2 2 0
+# === LEGS (black, short stubby) ===
+0 185 10 210 10 12 10 0
+0 215 10 210 10 12 10 0
+# === BODY - WHITE BELLY (single smooth ellipsoid) ===
+12 200 62 208 40 70 32 8
+# Lower belly rounding
+12 200 32 210 34 20 26 8
+# === BODY - BLACK BACK (single smooth ellipsoid) ===
+12 200 62 192 44 74 34 0
+# Black top cap
+12 200 105 198 40 16 30 0
+# === BLACK SIDE WRAPPING ===
+# Left side wrap
+12 172 62 200 12 68 26 0
+# Right side wrap
+12 228 62 200 12 68 26 0
+# === NECK (black) ===
+12 200 116 200 30 18 26 0
+# White throat
+12 200 116 212 20 14 8 8
+# === HEAD (black, round) ===
+1 200 140 202 30 28 28 0
+# Head crown
+1 200 154 198 22 12 20 0
+# === WHITE FACE / CHEEKS ===
+12 193 136 214 10 10 6 8
+12 207 136 214 10 10 6 8
+# White chin
+12 200 130 214 14 8 6 8
+# === EYES ===
+# Eye whites
+1 192 143 214 6 6 5 8
+1 208 143 214 6 6 5 8
+# Pupils
+1 192 143 218 3 3 3 0
+1 208 143 218 3 3 3 0
+# Highlights
+1 193 144 219 1 1 1 8
+1 209 144 219 1 1 1 8
+# === BEAK (orange, prominent) ===
+3 200 134 224 10 8 18 7
+# Beak ridge
+0 200 137 222 5 2 12 7
+# Nostrils
+1 198 135 230 1 1 1 0
+1 202 135 230 1 1 1 0
+# === FLIPPERS (tapered, angled down) ===
+# Left flipper - upper
+10 162 90 202 8 50 16 4 0
+# Left flipper - lower
+10 160 58 204 6 34 14 3 0
+# Left flipper tip
+10 159 42 206 4 16 10 2 9
+# Right flipper - upper
+10 238 90 202 8 50 16 4 0
+# Right flipper - lower
+10 240 58 204 6 34 14 3 0
+# Right flipper tip
+10 241 42 206 4 16 10 2 9
+# === TAIL (small, black, pointing back) ===
+3 200 24 180 12 18 10 0
+# Tail tip
+0 200 18 176 6 8 4 0
+# === TOP-DOWN VISIBILITY ===
+# White belly visible from top (front of body)
+0 200 100 216 30 6 8 8
+# Black-white boundary markers (gray transition)
+0 174 70 210 3 56 2 9
+0 226 70 210 3 56 2 9

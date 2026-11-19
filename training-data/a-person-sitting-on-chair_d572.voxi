@@ -1,0 +1,47 @@
+V 24 24 24
+
+-- chair legs
+B 8 0 8 2 5 2 a
+B 14 0 8 2 5 2 a
+B 8 0 15 2 5 2 a
+B 14 0 15 2 5 2 a
+
+-- chair seat
+B 7 5 7 10 1 10 a
+
+-- chair back rest
+B 7 6 16 10 6 1 a
+
+-- person lower legs
+B 9 0 7 2 5 2 d
+B 13 0 7 2 5 2 d
+
+-- person feet
+B 8 0 5 3 1 3 a
+B 13 0 5 3 1 3 a
+
+-- person thighs (horizontal, resting on seat)
+B 9 6 7 2 2 8 9
+B 13 6 7 2 2 8 9
+
+-- person torso
+B 9 8 12 6 6 3 3
+
+-- person neck
+C 12 14 13 1 2 d
+
+-- person head
+S 12 16 13 2 d
+
+-- person hair
+E 12 17 13 2 1 2 0
+
+-- person left arm
+B 8 9 12 1 4 3 3
+
+-- person right arm
+B 15 9 12 1 4 3 3
+
+-- person hands
+S 8 8 13 1 d
+S 16 8 13 1 d

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Terrain Generator — Castle Defense</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+h1 { margin-bottom: 8px; font-size: 1.4rem; color: #ddd; }
+.controls {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+label { font-size: 0.85rem; color: #aaa; }
+input, select, button {
+  background: #2a2a44;
+  border: 1px solid #444;
+  color: #e0e0e0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+button { cursor: pointer; }
+button:hover { background: #3a3a5e; }
+button.primary { background: #446688; border-color: #6688aa; }
+button.primary:hover { background: #5577aa; }
+canvas {
+  border: 2px solid #333;
+  border-radius: 4px;
+  image-rendering: pixelated;
+}
+.info {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: #888;
+  max-width: 600px;
+  text-align: center;
+  line-height: 1.5;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  max-width: 600px;
+  width: 100%;
+}
+.stat {
+  background: #2a2a44;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+.stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+.stat-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
+.legend {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #555;
+  border-radius: 2px;
+}
+#batch-results { margin-top: 12px; font-size: 0.85rem; color: #8f8; }
+</style>
+</head>
+<body>
+
+<h1>Castle Defense — Terrain Generator</h1>
+
+<div class="controls">
+  <label>Seed: <input id="seed-input" type="number" value="42" style="width:80px"></label>
+  <label>Biome:
+    <select id="biome-select">
+      <option value="">Random</option>
+      <option value="grassland" selected>Grassland</option>
+      <option value="forest">Forest</option>
+      <option value="desert">Desert</option>
+      <option value="snow">Snow</option>
+      <option value="swamp">Swamp</option>
+      <option value="mountain">Mountain</option>
+    </select>
+  </label>
+  <button class="primary" id="btn-generate">Generate</button>
+  <button id="btn-random">Random Seed</button>
+  <button id="btn-batch">Test 100 Seeds</button>
+</div>
+
+<canvas id="map-canvas" width="300" height="300"></canvas>
+
+<div class="legend" id="legend"></div>
+<div class="stats" id="stats"></div>
+<div id="batch-results"></div>
+
+<div class="info">
+  30x30 grid. Castle (gold) in center. 4 spawn points (red dots) on edges.
+  Colored lines show A* paths from each spawn to castle.
+  Click "Test 100 Seeds" to validate generation reliability.
+</div>
+
+<script type="module">
+import { generateTerrain, BIOMES, renderToCanvas } from './terrain.js';
+
+const canvas = document.getElementById('map-canvas');
+const ctx = canvas.getContext('2d');
+const seedInput = document.getElementById('seed-input');
+const biomeSelect = document.getElementById('biome-select');
+const statsDiv = document.getElementById('stats');
+const legendDiv = document.getElementById('legend');
+const batchDiv = document.getElementById('batch-results');
+const CELL_PX = 10;
+
+canvas.width = 30 * CELL_PX;
+canvas.height = 30 * CELL_PX;
+
+function generate() {
+  const seed = parseInt(seedInput.value) || 0;
+  const biome = biomeSelect.value || undefined;
+  const t0 = performance.now();
+  const map = generateTerrain(seed, biome);
+  const elapsed = (performance.now() - t0).toFixed(1);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  renderToCanvas(ctx, map, CELL_PX);
+
+  // Count terrain types
+  const counts = {};
+  for (let x = 0; x < 30; x++) {
+    for (let z = 0; z < 30; z++) {
+      const t = map.terrain[x][z];
+      counts[t] = (counts[t] || 0) + 1;
+    }
+  }
+
+  const pathLengths = map.paths.map(p => p.length);
+
+  statsDiv.innerHTML = `
+    <div class="stat"><div class="stat-label">Biome</div><div class="stat-value">${map.biomeData.name}</div></div>
+    <div class="stat"><div class="stat-label">Seed</div><div class="stat-value">${map.seed}</div></div>
+    <div class="stat"><div class="stat-label">Gen Time</div><div class="stat-value">${elapsed}ms</div></div>
+    <div class="stat"><div class="stat-label">Valid</div><div class="stat-value" style="color:${map.valid ? '#8f8' : '#f88'}">${map.valid ? 'YES' : 'NO'}</div></div>
+    <div class="stat"><div class="stat-label">Path Lengths</div><div class="stat-value">${pathLengths.join(', ')}</div></div>
+    <div class="stat"><div class="stat-label">Ground</div><div class="stat-value">${counts.ground || 0}</div></div>
+    <div class="stat"><div class="stat-label">Hills</div><div class="stat-value">${counts.hill || 0}</div></div>
+    <div class="stat"><div class="stat-label">Water</div><div class="stat-value">${counts.water || 0}</div></div>
+    <div class="stat"><div class="stat-label">Mountains</div><div class="stat-value">${counts.mountain || 0}</div></div>
+    <div class="stat"><div class="stat-label">Forest</div><div class="stat-value">${counts.forest || 0}</div></div>
+    <div class="stat"><div class="stat-label">Swamp</div><div class="stat-value">${counts.swamp || 0}</div></div>
+    <div class="stat"><div class="stat-label">Bridges</div><div class="stat-value">${counts.bridge || 0}</div></div>
+  `;
+
+  // Update legend
+  const biomeData = map.biomeData;
+  legendDiv.innerHTML = [
+    ['Ground', biomeData.groundColor],
+    ['Hill', biomeData.hillColor],
+    ['Water', biomeData.waterColor],
+    ['Mountain', biomeData.mountainColor],
+    ['Forest', biomeData.forestColor],
+    ['Swamp', biomeData.swampColor],
+    ['Bridge', biomeData.bridgeColor],
+    ['Castle', '#8a8a8a'],
+  ].map(([label, color]) =>
+    `<div class="legend-item"><div class="legend-swatch" style="background:${color}"></div>${label}</div>`
+  ).join('');
+}
+
+document.getElementById('btn-generate').addEventListener('click', generate);
+
+document.getElementById('btn-random').addEventListener('click', () => {
+  seedInput.value = (Math.random() * 999999) | 0;
+  generate();
+});
+
+document.getElementById('btn-batch').addEventListener('click', () => {
+  const biome = biomeSelect.value || undefined;
+  let valid = 0;
+  let total = 100;
+  let totalTime = 0;
+  const failedSeeds = [];
+
+  for (let i = 0; i < total; i++) {
+    const seed = i * 137 + 1;
+    try {
+      const t0 = performance.now();
+      const map = generateTerrain(seed, biome);
+      totalTime += performance.now() - t0;
+      if (map.valid) valid++;
+      else failedSeeds.push(seed);
+    } catch {
+      failedSeeds.push(seed);
+    }
+  }
+
+  const avgTime = (totalTime / total).toFixed(1);
+  batchDiv.innerHTML = `
+    <strong>Batch test (${total} seeds):</strong>
+    ${valid}/${total} valid (${(valid / total * 100).toFixed(0)}%)
+    | Avg gen time: ${avgTime}ms
+    ${failedSeeds.length > 0 ? `| Failed seeds: ${failedSeeds.join(', ')}` : ''}
+  `;
+});
+
+// Initial render
+generate();
+</script>
+</body>
+</html>

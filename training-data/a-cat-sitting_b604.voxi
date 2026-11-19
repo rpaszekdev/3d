@@ -1,0 +1,50 @@
+V 24 24 24
+
+-- haunches / lower body
+B 8 0 9 8 6 6 7
+
+-- torso
+B 9 5 10 6 7 5 7
+
+-- belly (lighter)
+B 10 1 9 4 7 3 d
+
+-- front left paw
+B 9 0 10 2 4 2 d
+
+-- front right paw
+B 13 0 10 2 4 2 d
+
+-- neck
+C 12 11 10 2 3 7
+
+-- head
+S 12 15 10 4 7
+
+-- left ear
+B 9 18 9 2 3 2 7
+B 10 18 9 1 2 2 b
+
+-- right ear
+B 13 18 9 2 3 2 7
+B 14 18 9 1 2 2 b
+
+-- eyes (green)
+S 10 16 7 1 2
+S 14 16 7 1 2
+
+-- pupils
+S 10 16 6 1 0
+S 14 16 6 1 0
+
+-- nose
+E 12 14 7 1 1 1 b
+
+-- mouth whisker dots
+S 10 13 7 1 0
+S 14 13 7 1 0
+
+-- tail curling right side
+B 16 1 10 2 6 2 7
+B 17 6 11 2 3 2 7
+B 15 8 13 2 2 3 7

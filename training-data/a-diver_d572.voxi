@@ -1,0 +1,22 @@
+V 24 32 24
+-- flippers
+B 6 0 9 5 2 6 0
+B 13 0 9 5 2 6 0
+-- legs
+B 8 2 10 4 10 4 0
+B 12 2 10 4 10 4 0
+-- torso wetsuit
+B 7 12 10 10 10 4 0
+-- oxygen tank
+B 8 13 14 8 8 2 6
+-- arms
+B 4 13 10 3 8 4 0
+B 17 13 10 3 8 4 0
+-- weight belt
+B 7 12 10 10 2 4 7
+-- hood
+S 12 25 12 3 0
+-- mask visor
+B 9 23 9 6 3 3 4
+-- regulator
+B 10 22 8 3 2 2 9

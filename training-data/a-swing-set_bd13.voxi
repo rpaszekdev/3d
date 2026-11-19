@@ -1,0 +1,30 @@
+V 32 24 16
+
+-- Left support frame
+C 6 8 4 1 16 7
+C 6 8 12 1 16 7
+B 4 15 3 4 2 10 7
+
+-- Right support frame
+C 26 8 4 1 16 7
+C 26 8 12 1 16 7
+B 24 15 3 4 2 10 7
+
+-- Top crossbar
+B 6 16 7 20 2 2 7
+
+-- Ground feet
+B 2 0 2 6 1 12 9
+B 24 0 2 6 1 12 9
+
+-- Swing 1 chains
+B 12 9 7 1 7 1 9
+B 12 9 9 1 7 1 9
+-- Swing 1 seat
+B 11 8 7 3 1 3 3
+
+-- Swing 2 chains
+B 20 9 7 1 7 1 9
+B 20 9 9 1 7 1 9
+-- Swing 2 seat
+B 19 8 7 3 1 3 1

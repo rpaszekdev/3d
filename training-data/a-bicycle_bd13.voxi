@@ -1,0 +1,43 @@
+V 40 24 8
+
+-- rear wheel
+C 7 7 4 6 2 0
+
+-- rear rim
+S 7 7 4 4 8
+
+-- front wheel
+C 31 7 4 6 2 0
+
+-- front rim
+S 31 7 4 4 8
+
+-- chain stay
+B 8 4 4 10 2 2 9
+
+-- seat tube
+B 18 4 4 2 10 2 9
+
+-- top tube
+B 18 13 4 12 2 2 9
+
+-- down tube
+B 21 8 4 9 6 2 9
+
+-- head tube
+B 29 8 4 2 5 2 9
+
+-- fork
+B 29 4 4 2 4 2 9
+
+-- seat
+B 15 15 3 6 2 3 5
+
+-- handlebar stem
+B 30 12 4 2 4 2 1
+
+-- handlebars
+B 28 16 3 5 2 3 1
+
+-- pedal cranks
+B 14 3 3 8 2 3 a

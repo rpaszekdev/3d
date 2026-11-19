@@ -1,0 +1,37 @@
+V 24 32 24
+
+-- bottom snowball
+S 12 6 12 6 8
+
+-- middle snowball
+S 12 15 12 4 8
+
+-- head
+S 12 22 12 3 8
+
+-- hat brim
+B 8 25 9 8 1 6 0
+
+-- hat top
+B 10 26 10 4 5 4 0
+
+-- eyes
+B 11 23 9 1 1 1 0
+B 13 23 9 1 1 1 0
+
+-- nose
+B 12 22 9 1 1 1 7
+
+-- buttons
+B 12 16 8 1 1 1 0
+B 12 14 8 1 1 1 0
+B 12 12 8 1 1 1 0
+
+-- left arm
+B 4 15 11 4 1 2 a
+
+-- right arm
+B 16 15 11 4 1 2 a
+
+-- scarf
+B 9 19 9 6 2 6 1

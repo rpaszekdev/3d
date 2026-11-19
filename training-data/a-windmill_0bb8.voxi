@@ -1,0 +1,31 @@
+V 24 32 24
+
+-- foundation
+B 4 0 4 16 1 16 c
+
+-- tower
+B 8 1 8 8 18 8 9
+
+-- door
+B 10 1 8 4 5 1 a
+
+-- window
+B 10 10 8 4 3 1 8
+
+-- cap base
+B 7 19 7 10 2 10 d
+
+-- cap mid
+B 8 21 8 8 2 8 d
+
+-- cap top
+B 9 23 9 6 1 6 6
+
+-- blade hub
+S 12 20 7 2 7
+
+-- blade vertical arm
+B 11 10 7 2 20 1 8
+
+-- blade horizontal arm
+B 3 19 7 18 2 1 8

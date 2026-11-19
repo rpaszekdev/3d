@@ -1,0 +1,36 @@
+## Reasoning
+
+**Moving the deer to the moat:**
+
+The terrain's front face sits at Z=8 (high-res). The deer is currently at (35, 8, 35) — behind and to the right of the castle, partially out of the 48×28×48 bounds (X goes to 60). Moving it to approximately (22, 8, 6) places it just at the front moat area (Z=6–14), graze-able near the castle entrance, and brings it within bounds (X[22..47], Z[6..14]).
+
+- dx = 22 − 35 = **−13**
+- dz = 6 − 35 = **−29**
+
+**Rotating the knight to face the deer:**
+
+The knight currently stands at X[14..33], Z[5..25], facing toward the castle (roughly +Z). After the deer moves to the front-right (X≈22–47, Z≈6–14), the deer is now to the knight's **right** (+X direction). A single 90° Y-rotation swings the knight from facing the castle toward facing +X, pointing it at the relocated deer.
+
+`★ Insight ─────────────────────────────────────`
+- The MOVE action uses **high-res delta coordinates**, so even though the low-res view shows the deer at cell (8–9, 8–9), the actual shift must account for the full 1:1 voxel coordinate system.
+- ROTATE_Y90 rotates the *entire object* around its local Y-axis — useful here because the knight's facing is encoded in its geometry, not a stored orientation vector.
+- The deer was already partially out-of-bounds (X up to 60 in a 48-wide grid), so this move corrects that as a side effect.
+`─────────────────────────────────────────────────`
+
+```json
+[
+  {
+    "action": "MOVE",
+    "object": "deer",
+    "dx": -13,
+    "dy": 0,
+    "dz": -29
+  },
+  {
+    "action": "ROTATE_Y90",
+    "object": "knight"
+  }
+]
+```
+
+**Result:** The deer now grazes near the front-right of the castle moat (Z≈6, X≈22–47), just where the terrain meets open ground. The knight has pivoted 90° to face toward the deer rather than the castle gate — a watchful guardian's gaze.

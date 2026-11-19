@@ -1,0 +1,19 @@
+V 24 24 24
+-- stand legs
+B 7 0 12 2 4 2 9
+B 15 0 12 2 4 2 9
+B 12 0 7 2 4 2 9
+-- drum shell
+C 12 8 12 6 8 a
+-- bottom hoop
+C 12 4 12 7 1 9
+-- top hoop
+C 12 12 12 7 1 9
+-- top drumhead
+C 12 12 12 6 1 8
+-- bottom drumhead
+C 12 4 12 6 1 d
+-- drumstick left
+B 9 12 9 1 5 1 d
+-- drumstick right
+B 14 12 9 1 5 1 d

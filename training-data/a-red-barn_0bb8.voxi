@@ -1,0 +1,32 @@
+V 32 32 32
+
+-- foundation
+B 5 0 7 22 1 18 9
+
+-- barn body
+B 6 1 8 20 13 16 1
+
+-- roof bottom (overhangs)
+B 5 14 7 22 3 18 a
+
+-- roof mid
+B 7 17 9 18 3 14 a
+
+-- roof upper
+B 10 20 10 12 3 12 a
+
+-- roof peak
+B 13 23 11 6 4 10 a
+
+-- front door
+B 13 1 7 6 9 1 0
+
+-- front windows
+B 8 8 7 3 3 1 8
+B 21 8 7 3 3 1 8
+
+-- hay loft window
+B 14 12 7 4 2 1 6
+
+-- side vent
+B 5 9 14 1 3 4 8

@@ -1,0 +1,28 @@
+V 32 28 16
+
+-- stand feet
+B 7 0 5 2 2 6 9
+B 23 0 5 2 2 6 9
+
+-- stand body
+B 5 2 4 22 5 8 a
+
+-- stand top surface
+B 5 7 4 22 1 8 d
+
+-- stand door panels
+B 7 3 4 7 3 8 8
+B 18 3 4 7 3 8 8
+
+-- door handles
+B 12 4 3 1 1 1 9
+B 23 4 3 1 1 1 9
+
+-- TV outer bezel
+B 6 8 5 20 14 2 9
+
+-- TV screen
+B 7 9 5 18 12 1 0
+
+-- power LED
+B 15 9 6 2 1 1 2

@@ -1,0 +1,50 @@
+V 32 16 24
+
+-- main shell body
+E 16 5 12 8 3 6 c
+
+-- shell upper dome highlight
+E 16 7 12 6 2 5 2
+
+-- shell scute pattern
+B 15 8 10 3 1 2 6
+B 15 8 13 3 1 2 6
+B 13 8 11 2 1 3 6
+B 18 8 11 2 1 3 6
+B 15 9 12 3 1 3 6
+
+-- neck
+C 16 5 7 2 3 2
+
+-- head
+S 16 5 4 3 2
+
+-- left eye
+S 14 7 3 1 0
+
+-- right eye
+S 18 7 3 1 0
+
+-- mouth line
+B 14 4 3 4 1 1 c
+
+-- front left flipper
+E 6 4 9 5 1 3 2
+
+-- front right flipper
+E 26 4 9 5 1 3 2
+
+-- front left flipper tip
+E 3 3 8 2 1 2 c
+
+-- front right flipper tip
+E 29 3 8 2 1 2 c
+
+-- rear left flipper
+E 9 4 18 3 1 4 2
+
+-- rear right flipper
+E 23 4 18 3 1 4 2
+
+-- tail
+B 15 4 19 2 2 3 c

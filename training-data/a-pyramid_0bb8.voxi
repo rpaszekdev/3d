@@ -1,0 +1,19 @@
+V 32 32 32
+
+-- pyramid base
+B 4 0 4 24 2 24 d
+
+-- step 2
+B 6 2 6 20 2 20 d
+
+-- step 3
+B 8 4 8 16 2 16 d
+
+-- step 4
+B 10 6 10 12 2 12 a
+
+-- step 5
+B 12 8 12 8 2 8 a
+
+-- capstone
+B 14 10 14 4 2 4 6

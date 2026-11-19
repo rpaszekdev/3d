@@ -1,0 +1,32 @@
+V 24 20 36
+
+-- rear wheel tire
+E 12 4 29 4 4 2 0
+-- rear wheel rim
+E 12 4 29 2 2 2 8
+-- front wheel tire
+E 12 4 6 4 4 2 0
+-- front wheel rim
+E 12 4 6 2 2 2 8
+-- front fork
+B 11 4 5 2 9 2 9
+-- frame backbone
+B 11 8 7 2 2 20 9
+-- engine block
+B 10 3 13 4 5 7 1
+-- fuel tank
+B 10 10 13 4 3 6 3
+-- seat
+B 10 11 19 4 2 9 d
+-- rear fender
+B 10 8 25 4 1 6 3
+-- front fender
+B 10 8 5 4 1 4 3
+-- handlebars
+B 8 13 5 8 1 2 9
+-- headlight
+S 12 9 4 2 6
+-- exhaust pipe
+B 14 2 8 1 1 18 6
+-- footpeg bar
+B 8 3 18 8 1 1 9

@@ -1,0 +1,51 @@
+V 32 16 32
+
+-- bridge deck
+B 4 8 14 24 2 4 9
+
+-- left arch
+C 8 4 15 3 8 9
+C 8 4 15 2 8 8
+
+-- right arch
+C 24 4 15 3 8 9
+C 24 4 15 2 8 8
+
+-- left pillar
+B 5 0 13 6 8 6 9
+
+-- right pillar
+B 21 0 13 6 8 6 9
+
+-- arch opening left
+B 6 2 12 4 6 8 0
+
+-- arch opening right
+B 22 2 12 4 6 8 0
+
+-- bridge sides left wall
+B 4 10 14 24 3 2 9
+
+-- bridge sides right wall
+B 4 10 18 24 3 2 9
+
+-- parapet crenels left
+B 4 13 14 3 2 2 8
+B 10 13 14 3 2 2 8
+B 16 13 14 3 2 2 8
+B 22 13 14 3 2 2 8
+
+-- parapet crenels right
+B 4 13 18 3 2 2 8
+B 10 13 18 3 2 2 8
+B 16 13 18 3 2 2 8
+B 22 13 18 3 2 2 8
+
+-- foundation left
+B 3 0 12 8 2 8 8
+
+-- foundation right
+B 19 0 12 8 2 8 8
+
+-- road surface
+B 5 10 14 22 1 4 d

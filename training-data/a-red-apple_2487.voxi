@@ -1,0 +1,16 @@
+V 24 24 24
+
+-- apple body
+E 12 8 12 7 7 7 1
+
+-- apple highlight (shine)
+S 10 11 10 2 8
+
+-- top dimple
+S 12 15 12 2 e
+
+-- stem
+C 12 16 12 1 4 a
+
+-- leaf
+E 15 19 12 3 1 2 2

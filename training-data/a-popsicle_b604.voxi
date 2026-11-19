@@ -1,0 +1,16 @@
+V 16 32 16
+
+-- wooden stick
+B 7 0 7 2 8 2 a
+
+-- popsicle body (pink)
+B 5 8 6 6 12 4 b
+
+-- rounded top cap
+S 8 20 8 3 b
+
+-- shine highlight (white stripe)
+B 7 11 6 1 6 4 8
+
+-- bite mark shadow (darker edge)
+B 5 8 6 1 12 4 e

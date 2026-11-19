@@ -1,0 +1,64 @@
+`★ Insight ─────────────────────────────────────`
+**Penguin improvement strategy:** Three key upgrades — (1) use layered ellipsoids to carve a sharper white belly contrast against the black body, (2) reshape wings into proper tapered flippers with two offset boxes each, (3) refine the beak into a more prominent wedge using stacked boxes that narrow toward the tip. Voxel anatomy reads best when each zone is exaggerated slightly beyond realism.
+`─────────────────────────────────────────────────`
+
+V 32 32 32
+-- Feet (orange, wide flat pads)
+B 7 0 11 7 2 8 7
+B 18 0 11 7 2 8 7
+-- Toenail detail (tan)
+B 7 0 11 2 1 8 d
+B 18 0 11 2 1 8 d
+-- Legs (black stumps)
+B 10 2 14 5 5 4 0
+B 17 2 14 5 5 4 0
+-- Lower body connector (black)
+B 9 6 13 14 4 6 0
+-- Main body (black ellipsoid)
+E 16 17 15 9 11 8 0
+-- Secondary body fill for roundness
+B 9 10 13 14 14 6 0
+-- Belly patch (white, large and prominent)
+E 16 16 13 6 10 5 8
+-- Lower belly extension
+B 12 7 12 8 8 3 8
+-- Left wing / flipper
+B 5 9 13 4 13 5 0
+B 6 11 12 3 10 4 0
+B 6 20 12 3 3 4 0
+-- Right wing / flipper
+B 23 9 13 4 13 5 0
+B 23 11 12 3 10 4 0
+B 23 20 12 3 3 4 0
+-- Neck (black, wide)
+B 12 23 13 8 4 6 0
+-- Head base fill
+B 11 25 12 10 6 6 0
+-- Head sphere (black)
+S 16 29 15 6 0
+-- Face white patch (oval)
+E 16 28 12 4 5 3 8
+-- Left eye white
+P 12 30 12 8
+P 13 30 12 8
+P 12 31 12 8
+P 13 31 12 8
+-- Left pupil (black)
+P 12 30 11 0
+P 13 30 11 0
+-- Right eye white
+P 19 30 12 8
+P 20 30 12 8
+P 19 31 12 8
+P 20 31 12 8
+-- Right pupil (black)
+P 19 30 11 0
+P 20 30 11 0
+-- Beak upper jaw (orange, prominent)
+B 13 27 9 6 3 6 7
+-- Beak lower jaw (slightly smaller, tan)
+B 14 24 9 5 3 5 d
+-- Beak tip accent
+B 15 25 8 2 2 2 7
+-- Crown / top of head
+B 12 33 13 8 1 5 0

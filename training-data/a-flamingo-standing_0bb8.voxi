@@ -1,0 +1,44 @@
+V 24 32 24
+
+-- toes
+B 8 0 11 3 1 2 7
+B 13 0 11 3 1 2 7
+
+-- legs (long thin)
+C 10 1 12 1 10 b
+C 14 1 12 1 10 b
+
+-- knee joint
+S 10 11 12 1 b
+S 14 11 12 1 b
+
+-- upper legs
+C 10 12 12 1 3 b
+C 13 12 12 1 3 b
+
+-- body (plump oval)
+E 12 14 12 5 4 4 b
+
+-- lower neck
+C 12 18 12 1 3 b
+
+-- mid neck curving forward
+C 11 21 11 1 3 b
+
+-- upper neck
+C 10 24 10 1 2 b
+
+-- head
+S 10 27 10 2 b
+
+-- eye
+B 9 28 9 1 1 1 0
+
+-- upper beak
+B 6 26 8 5 1 1 7
+
+-- lower beak (bent down)
+B 6 25 8 4 1 1 0
+
+-- wing hint
+B 14 14 12 2 3 1 5

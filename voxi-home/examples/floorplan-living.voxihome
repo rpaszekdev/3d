@@ -1,0 +1,26 @@
+-- Living Room from floor plan — 10'0" × 12'0" (3.05m × 3.66m)
+-- Door SW corner, fireplace north wall, TV east wall, bookshelf south wall
+
+ROOM 3.05 3.66 2.7
+
+-- Door: south wall, near west corner
+DOOR south @0.45 w:0.9
+
+-- Windows: north wall, flanking fireplace
+WINDOW north @0.6 w:0.7 h:1.2
+WINDOW north @2.45 w:0.7 h:1.2
+
+-- Sofa: west side, facing east (2-seat fits better in 10' room)
+SOFA 2seat @0.1 1.2 facing:east
+
+-- Coffee table: center of room, in front of sofa
+TABLE coffee @1.2 1.6
+
+-- TV: against east wall, facing west
+TV 43 @2.9 1.7 facing:west
+
+-- Bookshelf: south wall, right of door
+STORAGE bookshelf @1.5 0.05 facing:north
+
+-- Floor lamp: NE corner
+LAMP floor @2.7 3.3

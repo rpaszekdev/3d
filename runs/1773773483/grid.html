@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SSL Run #1773773483 — Grid View</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0f1117; color: #e0e0e8; padding: 32px; line-height: 1.5;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h1 span { color: #6c8cff; }
+  .meta { color: #8888a0; font-size: 13px; margin-bottom: 20px; }
+  .stats {
+    display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 28px;
+    padding: 16px 20px; background: #1a1d27; border-radius: 10px; border: 1px solid #2d3244;
+  }
+  .stat .value { font-size: 28px; font-weight: 700; color: #6c8cff; }
+  .stat .label { font-size: 11px; color: #8888a0; text-transform: uppercase; letter-spacing: 0.5px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: #1a1d27; border: 1px solid #2d3244; border-radius: 10px;
+    overflow: hidden; transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: #6c8cff; transform: translateY(-2px); }
+  .card img {
+    width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #13151f;
+  }
+  .card-body { padding: 10px 12px 12px; }
+  .card-title {
+    font-size: 13px; font-weight: 600; margin-bottom: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-scores { display: flex; gap: 6px; font-size: 11px; color: #8888a0; align-items: center; }
+  .pill {
+    background: #232733; border-radius: 6px; padding: 2px 7px;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .pill b { color: #ccc; font-size: 12px; }
+  .total {
+    margin-left: auto; font-size: 18px; font-weight: 700; line-height: 1;
+  }
+  .total.high { color: #4ade80; }
+  .total.mid  { color: #facc15; }
+  .total.low  { color: #f87171; }
+  .rank {
+    position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.65);
+    border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; color: #6c8cff;
+  }
+  .card-img-wrap { position: relative; }
+</style>
+</head>
+<body>
+
+<h1>SSL Pipeline <span>#1773773483</span></h1>
+<p class="meta">20 prompts &middot; sorted by total score</p>
+
+<div class="stats">
+  <div class="stat"><div class="value">19.6</div><div class="label">Avg Score</div></div>
+  <div class="stat"><div class="value">24</div><div class="label">Best</div></div>
+  <div class="stat"><div class="value">12</div><div class="label">Worst</div></div>
+  <div class="stat"><div class="value">20</div><div class="label">Prompts</div></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const items = [
+  { id: 4,  prompt: "a chess piece",            r: 9, a: 8, c: 7, total: 24 },
+  { id: 6,  prompt: "a tree",                   r: 9, a: 8, c: 7, total: 24 },
+  { id: 8,  prompt: "a lamp",                   r: 9, a: 8, c: 7, total: 24 },
+  { id: 1,  prompt: "a snowman",                r: 9, a: 7, c: 7, total: 23 },
+  { id: 3,  prompt: "a house with chimney",     r: 9, a: 8, c: 6, total: 23 },
+  { id: 7,  prompt: "a table with objects on it",r: 9, a: 8, c: 6, total: 23 },
+  { id: 2,  prompt: "a rocket ship",            r: 9, a: 7, c: 6, total: 22 },
+  { id: 10, prompt: "an abstract sculpture",    r: 7, a: 7, c: 8, total: 22 },
+  { id: 15, prompt: "a lighthouse",             r: 8, a: 7, c: 7, total: 22 },
+  { id: 9,  prompt: "a castle",                 r: 7, a: 7, c: 6, total: 20 },
+  { id: 17, prompt: "a birthday cake",          r: 7, a: 7, c: 6, total: 20 },
+  { id: 14, prompt: "a mushroom",               r: 7, a: 7, c: 5, total: 19 },
+  { id: 5,  prompt: "a robot",                  r: 6, a: 7, c: 5, total: 18 },
+  { id: 13, prompt: "a guitar",                 r: 7, a: 6, c: 5, total: 18 },
+  { id: 18, prompt: "a windmill",               r: 7, a: 6, c: 5, total: 18 },
+  { id: 20, prompt: "a throne",                 r: 6, a: 6, c: 5, total: 17 },
+  { id: 19, prompt: "a bridge",                 r: 6, a: 5, c: 5, total: 16 },
+  { id: 11, prompt: "a car",                    r: 4, a: 5, c: 4, total: 13 },
+  { id: 16, prompt: "a telescope",              r: 4, a: 5, c: 4, total: 13 },
+  { id: 12, prompt: "a boat",                   r: 3, a: 5, c: 4, total: 12 },
+];
+
+const grid = document.getElementById('grid');
+items.forEach((it, i) => {
+  const tier = it.total >= 22 ? 'high' : it.total >= 17 ? 'mid' : 'low';
+  grid.innerHTML += `
+    <div class="card">
+      <div class="card-img-wrap">
+        <img src="${it.id}.png" alt="${it.prompt}" loading="lazy">
+        <div class="rank">#${i + 1}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${it.prompt}</div>
+        <div class="card-scores">
+          <span class="pill">R <b>${it.r}</b></span>
+          <span class="pill">A <b>${it.a}</b></span>
+          <span class="pill">C <b>${it.c}</b></span>
+          <span class="total ${tier}">${it.total}</span>
+        </div>
+      </div>
+    </div>`;
+});
+</script>
+</body>
+</html>

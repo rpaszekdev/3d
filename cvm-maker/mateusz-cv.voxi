@@ -1,0 +1,115 @@
+CANVAS 595 842 #ffffff
+
+-- ── Name ─────────────────────────────────────────
+TEXT 40 40 "MATEUSZ" 42 1 #1a3a5c bold
+TEXT 40 90 "DROZD-TIETIANIEC" 26 1 #1a3a5c bold
+
+TEXT 42 128 "Aspiring Cognitive Scientist  ·  AI-Native Builder" 9 1 #4a9ad4 bold
+
+-- ── Contact (compact) ────────────────────────────
+TEXT 40 150 "+48 690 887 648  ·  m.drozdtietianiec@gmail.com  ·  github.com/3drozd  ·  Gdańsk, Poland" 8 1 #6a8a9e
+
+-- ── Hero ─────────────────────────────────────────
+TEXT 40 180 "I manage systems —" 18 1 #1a3a5c bold
+TEXT 40 204 "human or artificial." 18 1 #4a9ad4 bold
+DIVIDER 40 230 555 230 1 #4a9ad4
+TEXT 40 246 "Ran 9 rooms on a tropical island in Panama. Came home, taught myself to ship production apps" 9 1 #3a4a5a italic
+TEXT 40 260 "by orchestrating multi-agent AI workflows. Applying to CSAI to understand the mind behind both." 9 1 #3a4a5a italic
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN — Projects / Experience / Education
+-- ═══════════════════════════════════════════════════
+
+RECT 40 290 340 2 1 #4a9ad4
+TEXT 40 298 "PROJECTS" 8 1 #4a9ad4 bold
+
+-- JDT Relaks
+TEXT 40 316 "JDT Relaks — Event Platform" 11 1 #1a3a5c bold
+TEXT 340 316 "2025" 8 1 #8aaabe
+TEXT 40 334 "Full-stack booking platform for a live music venue — checkout flow," 8.5 1 #3a4a5a
+TEXT 40 348 "Stripe payments, a playable 3D instrument, and an admin dashboard." 8.5 1 #3a4a5a
+TEXT 40 362 "Running in production." 8.5 1 #3a4a5a
+
+DIVIDER 40 380 380 380 1 #d8e4ee
+
+-- AI Document Analyzer
+TEXT 40 392 "AI Document Analyzer" 11 1 #1a3a5c bold
+TEXT 340 392 "2025" 8 1 #8aaabe
+TEXT 40 410 "REST API that reads any PDF — including scanned documents via OCR —" 8.5 1 #3a4a5a
+TEXT 40 424 "and generates summaries, key points, and full analyses with Llama 3.1." 8.5 1 #3a4a5a
+
+DIVIDER 40 442 380 442 1 #d8e4ee
+
+-- Performance Guard
+TEXT 40 454 "Performance Guard — Desktop Monitor" 11 1 #1a3a5c bold
+TEXT 340 454 "2025" 8 1 #8aaabe
+TEXT 40 472 "Native Windows app that tracks CPU, RAM, and GPU usage per" 8.5 1 #3a4a5a
+TEXT 40 486 "application, separating active from idle time. Local-first, cloud-synced." 8.5 1 #3a4a5a
+
+DIVIDER 40 504 380 504 1 #d8e4ee
+
+-- Self Made Festival
+TEXT 40 516 "Self Made Festival — Ticketing Platform" 11 1 #1a3a5c bold
+TEXT 295 516 "In Progress" 8 1 #8aaabe
+TEXT 40 534 "Festival landing page and 3-step ticketing flow built around a custom" 8.5 1 #3a4a5a
+TEXT 40 548 "Kinetic Brutalism design system — bold typography, high contrast." 8.5 1 #3a4a5a
+
+-- ── Experience ───────────────────────────────────
+RECT 40 570 340 2 1 #4a9ad4
+TEXT 40 578 "EXPERIENCE" 8 1 #4a9ad4 bold
+
+TEXT 40 596 "Property Manager" 11 1 #1a3a5c bold
+TEXT 290 596 "2023 — 2024" 8 1 #8aaabe
+TEXT 40 612 "Bocas del Toro, Panama" 8.5 1 #5a7a8e
+TEXT 40 628 "Independently ran two rental properties (9 rooms) on a tropical" 8.5 1 #3a4a5a
+TEXT 40 642 "island — dynamic pricing, Booking.com optimization, guest relations," 8.5 1 #3a4a5a
+TEXT 40 656 "and staff coordination in a Spanish-speaking market." 8.5 1 #3a4a5a
+
+-- ── Education ────────────────────────────────────
+RECT 40 678 340 2 1 #4a9ad4
+TEXT 40 686 "EDUCATION" 8 1 #4a9ad4 bold
+
+TEXT 40 704 "Matura — High School Diploma" 11 1 #1a3a5c bold
+TEXT 290 704 "2023 — 2024" 8 1 #8aaabe
+TEXT 40 720 "Cosinus Plus Liceum, Gdańsk" 8.5 1 #5a7a8e
+TEXT 40 736 "Extended subjects: Social Studies, Geography" 8.5 1 #3a4a5a
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN — Skills / Links / Languages / Interests
+-- ═══════════════════════════════════════════════════
+
+RECT 400 290 155 2 1 #4a9ad4
+TEXT 400 298 "SKILLS" 8 1 #4a9ad4 bold
+
+TEXT 400 316 "Agentic Engineering" 8.5 1 #1a3a5c bold
+TEXT 400 330 "Orchestrating multi-agent" 8 1 #3a4a5a
+TEXT 400 344 "AI workflows daily" 8 1 #3a4a5a
+TEXT 400 358 "(Claude, Gemini, Groq)" 8 1 #3a4a5a
+
+TEXT 400 380 "LLM API Integration" 8.5 1 #1a3a5c bold
+TEXT 400 394 "Full-Stack Web Apps" 8.5 1 #3a4a5a
+TEXT 400 408 "Desktop (Tauri + Rust)" 8.5 1 #3a4a5a
+TEXT 400 422 "3D / WebGL (Three.js)" 8.5 1 #3a4a5a
+TEXT 400 436 "OCR & Document AI" 8.5 1 #3a4a5a
+
+-- Links
+RECT 400 462 155 2 1 #4a9ad4
+TEXT 400 470 "LINKS" 8 1 #4a9ad4 bold
+TEXT 400 490 "github.com/3drozd" 9 1 #1a3a5c
+
+-- Languages
+RECT 400 514 155 2 1 #4a9ad4
+TEXT 400 522 "LANGUAGES" 8 1 #4a9ad4 bold
+TEXT 400 542 "Polish" 9 1 #3a4a5a
+TEXT 470 542 "native" 7.5 1 #8aaabe
+TEXT 400 558 "English" 9 1 #3a4a5a
+TEXT 470 558 "B2 / TOEFL" 7.5 1 #8aaabe
+TEXT 400 574 "Spanish" 9 1 #3a4a5a
+TEXT 470 574 "communicative" 7.5 1 #8aaabe
+
+-- Interests
+RECT 400 600 155 2 1 #4a9ad4
+TEXT 400 608 "INTERESTS" 8 1 #4a9ad4 bold
+TEXT 400 628 "Mind × Machine" 8.5 1 #3a4a5a
+TEXT 400 644 "AI-augmented creativity" 8.5 1 #3a4a5a
+TEXT 400 660 "Human-AI collaboration" 8.5 1 #3a4a5a

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOD Round-Trip — Can Claude Edit 3D Scenes?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0d11;
+    --surface: #12151c;
+    --surface2: #191d28;
+    --surface3: #1f2430;
+    --border: #262c3a;
+    --border-light: #323a4e;
+    --text: #d8dce8;
+    --text-dim: #6b7394;
+    --text-muted: #454d66;
+    --accent: #5b8def;
+    --accent-glow: rgba(91,141,239,0.15);
+    --green: #3ecf71;
+    --green-dim: rgba(62,207,113,0.12);
+    --red: #ef5b5b;
+    --red-dim: rgba(239,91,91,0.12);
+    --orange: #e89b3e;
+    --orange-dim: rgba(232,155,62,0.12);
+    --purple: #a57bde;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Instrument Sans', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* ── Scrollbar ────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Hero ──────────────────────────────────── */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 60px 24px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 30% 40%, rgba(91,141,239,0.06), transparent),
+      radial-gradient(ellipse 500px 350px at 70% 60%, rgba(165,123,222,0.05), transparent);
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 6px 16px; border-radius: 20px; font-size: 12px;
+    color: var(--text-dim); font-family: var(--mono); font-weight: 500;
+    margin-bottom: 32px; letter-spacing: 0.5px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s ease infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .hero h1 {
+    font-family: var(--serif); font-size: clamp(36px, 5vw, 60px);
+    font-weight: 400; line-height: 1.15; margin-bottom: 20px;
+    max-width: 700px; letter-spacing: -0.5px;
+  }
+  .hero h1 .em { color: var(--accent); }
+  .hero .subtitle {
+    font-size: 17px; color: var(--text-dim); max-width: 560px;
+    line-height: 1.7; margin-bottom: 40px;
+  }
+  .hero .scroll-hint {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--text-muted); font-size: 12px; font-family: var(--mono);
+    animation: bob 2.5s ease-in-out infinite;
+  }
+  .hero .scroll-hint svg { width: 20px; height: 20px; stroke: var(--text-muted); }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+  /* ── Pipeline flow ────────────────────────── */
+  .pipeline-steps {
+    display: flex; justify-content: center; gap: 0; margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .step-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 18px; font-size: 13px; font-weight: 600;
+    border-radius: 6px; white-space: nowrap;
+  }
+  .step-pill .num {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-family: var(--mono); font-weight: 600;
+  }
+  .step-pill.s1 { color: var(--accent); } .step-pill.s1 .num { background: var(--accent-glow); color: var(--accent); }
+  .step-pill.s2 { color: var(--orange); } .step-pill.s2 .num { background: var(--orange-dim); color: var(--orange); }
+  .step-pill.s3 { color: var(--purple); } .step-pill.s3 .num { background: rgba(165,123,222,0.15); color: var(--purple); }
+  .step-pill.s4 { color: var(--green); } .step-pill.s4 .num { background: var(--green-dim); color: var(--green); }
+  .step-arrow { color: var(--text-muted); font-size: 16px; display: flex; align-items: center; padding: 0 4px; }
+
+  /* ── Sections ─────────────────────────────── */
+  section {
+    max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .section-label .line { width: 24px; height: 1px; }
+  .section-label.blue { color: var(--accent); } .section-label.blue .line { background: var(--accent); }
+  .section-label.orange { color: var(--orange); } .section-label.orange .line { background: var(--orange); }
+  .section-label.purple { color: var(--purple); } .section-label.purple .line { background: var(--purple); }
+  .section-label.green { color: var(--green); } .section-label.green .line { background: var(--green); }
+  .section-label.red { color: var(--red); } .section-label.red .line { background: var(--red); }
+  section h2 {
+    font-family: var(--serif); font-size: clamp(26px, 3.5vw, 38px);
+    font-weight: 400; line-height: 1.2; margin-bottom: 12px;
+  }
+  section .desc {
+    font-size: 15px; color: var(--text-dim); max-width: 600px; margin-bottom: 32px;
+    line-height: 1.7;
+  }
+
+  /* ── 3D Viewport ──────────────────────────── */
+  .viewport-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 16px;
+  }
+  .viewport-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; position: relative;
+  }
+  .viewport-card.full { grid-column: 1 / -1; }
+  .viewport-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .viewport-title {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .viewport-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .viewport-title .dot.red { background: var(--red); }
+  .viewport-title .dot.green { background: var(--green); }
+  .viewport-title .dot.orange { background: var(--orange); }
+  .viewport-title .dot.blue { background: var(--accent); }
+  .viewport-meta {
+    font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+  }
+  .viewport-canvas {
+    width: 100%; height: 420px; position: relative;
+    background: var(--bg);
+  }
+  .viewport-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+
+  /* ── Stats strip ──────────────────────────── */
+  .stats-strip {
+    display: flex; gap: 24px; padding: 10px 16px;
+    border-top: 1px solid var(--border); background: var(--surface2);
+  }
+  .stat { font-family: var(--mono); font-size: 11px; }
+  .stat .label { color: var(--text-muted); margin-right: 6px; }
+  .stat .value { color: var(--text-dim); font-weight: 500; }
+
+  /* ── Insight cards ────────────────────────── */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 24px; }
+  .insight-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .insight-card h4 {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .insight-card p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ── Code / prose blocks ──────────────────── */
+  .prose-block {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin-bottom: 16px;
+  }
+  .prose-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+  }
+  .prose-body {
+    padding: 18px; font-size: 14px; line-height: 1.8;
+    color: var(--text-dim); white-space: pre-wrap;
+    max-height: 400px; overflow-y: auto;
+    font-family: var(--sans);
+  }
+  .prose-body.mono {
+    font-family: var(--mono); font-size: 12px; line-height: 1.6;
+  }
+
+  /* ── Edit command cards ───────────────────── */
+  .edit-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+  .edit-card {
+    flex: 1; min-width: 280px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; position: relative;
+    overflow: hidden;
+  }
+  .edit-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .edit-card.move::before { background: linear-gradient(90deg, var(--accent), var(--purple)); }
+  .edit-card.rotate::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
+  .edit-card .action-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 4px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .edit-card.move .action-badge { background: var(--accent-glow); color: var(--accent); }
+  .edit-card.rotate .action-badge { background: var(--orange-dim); color: var(--orange); }
+  .edit-card .target { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .edit-card .detail { font-size: 13px; color: var(--text-dim); font-family: var(--mono); }
+
+  /* ── Comparison ───────────────────────────── */
+  .compare-controls {
+    display: flex; gap: 8px; margin-bottom: 16px;
+  }
+  .compare-btn {
+    padding: 8px 20px; border-radius: 6px; font-size: 12px;
+    font-family: var(--mono); font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text-dim); transition: all 0.2s;
+  }
+  .compare-btn:hover { border-color: var(--accent); color: var(--text); }
+  .compare-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── Separator ────────────────────────────── */
+  .sep {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    height: 1px; background: var(--border); opacity: 0.5;
+  }
+
+  /* ── Footer ───────────────────────────────── */
+  .footer {
+    text-align: center; padding: 60px 24px;
+    font-size: 13px; color: var(--text-muted);
+    font-family: var(--mono);
+  }
+
+  /* ── Model Gallery ──────────────────────── */
+  .gallery-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-top: 24px;
+  }
+  .gallery-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px; cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .gallery-item:hover { border-color: var(--accent); background: var(--surface2); transform: translateY(-2px); }
+  .gallery-item.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 4px 20px var(--accent-glow); }
+  .gallery-item .name {
+    font-family: var(--mono); font-size: 13px; font-weight: 600; margin-bottom: 4px;
+  }
+  .gallery-item .meta {
+    font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+    display: flex; gap: 10px;
+  }
+  .gallery-item .tag {
+    display: inline-block; padding: 2px 6px; border-radius: 3px;
+    font-size: 10px; font-family: var(--mono); font-weight: 600;
+    margin-top: 6px;
+  }
+  .gallery-item .tag.large { background: var(--red-dim); color: var(--red); }
+  .gallery-item .tag.medium { background: var(--orange-dim); color: var(--orange); }
+  .gallery-item .tag.small { background: var(--green-dim); color: var(--green); }
+
+  @media (max-width: 768px) {
+    .viewport-row { grid-template-columns: 1fr; }
+    .insight-grid { grid-template-columns: 1fr; }
+    .edit-cards { flex-direction: column; }
+    .pipeline-steps { gap: 4px; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> VOXI Spatial Reasoning</div>
+  <h1>Can Claude <span class="em">reason about</span> and <span class="em">edit</span> 3D scenes?</h1>
+  <p class="subtitle">
+    We compressed a 3D voxel scene 50:1, asked Claude to analyze spatial relationships
+    and propose edits, then applied those edits back to the full-resolution original.
+    Here's what happened.
+  </p>
+  <div class="pipeline-steps">
+    <div class="step-pill s1"><span class="num">1</span> High-Res Scene</div>
+    <div class="step-arrow">&rarr;</div>
+    <div class="step-pill s2"><span class="num">2</span> Compress 4:1</div>
+    <div class="step-arrow">&rarr;</div>
+    <div class="step-pill s3"><span class="num">3</span> Claude Reasons</div>
+    <div class="step-arrow">&rarr;</div>
+    <div class="step-pill s4"><span class="num">4</span> Apply to High-Res</div>
+  </div>
+  <div class="scroll-hint">
+    Scroll to explore
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</div>
+
+<!-- ═══ MODEL GALLERY ═══════════════════════════════════════════ -->
+<div class="sep"></div>
+<section id="sec-gallery">
+  <div class="section-label red"><span class="line"></span> Real Models</div>
+  <h2>Downloaded from the wild</h2>
+  <p class="desc">
+    These are real MagicaVoxel models from open-source repositories (ephtracy/voxel-model, mikelovesrobots/mmmm).
+    Click any model to load it in the 3D viewer below.
+  </p>
+  <div class="gallery-grid" id="gallery-grid">
+    <!-- Populated by JS -->
+  </div>
+  <div class="viewport-row" style="margin-top: 24px;">
+    <div class="viewport-card full">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot orange"></span> <span id="gallery-model-name">Select a model above</span></div>
+        <div class="viewport-meta" id="gallery-model-meta">&mdash;</div>
+      </div>
+      <div class="viewport-canvas" id="vp-gallery" style="height: 500px;"></div>
+      <div class="stats-strip">
+        <div class="stat"><span class="label">Grid</span><span class="value" id="stat-gallery-grid">&mdash;</span></div>
+        <div class="stat"><span class="label">Voxels</span><span class="value" id="stat-gallery-voxels">&mdash;</span></div>
+        <div class="stat"><span class="label">Source</span><span class="value" id="stat-gallery-source">&mdash;</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STEP 1: THE SCENE ════════════════════════════════════════ -->
+<div class="sep"></div>
+<section id="sec-scene">
+  <div class="section-label blue"><span class="line"></span> Step 1</div>
+  <h2>The original scene</h2>
+  <p class="desc">
+    Three objects placed in a 48&times;28&times;48 voxel grid: a terrain with castle (7,735 voxels),
+    a knight with sword (334 voxels), and a deer (356 voxels). Drag to orbit, scroll to zoom.
+  </p>
+  <div class="viewport-row">
+    <div class="viewport-card full">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot blue"></span> Original Scene &mdash; High Resolution</div>
+        <div class="viewport-meta" id="meta-original">loading...</div>
+      </div>
+      <div class="viewport-canvas" id="vp-original"></div>
+      <div class="stats-strip">
+        <div class="stat"><span class="label">Grid</span><span class="value" id="stat-orig-grid">...</span></div>
+        <div class="stat"><span class="label">Voxels</span><span class="value" id="stat-orig-voxels">...</span></div>
+        <div class="stat"><span class="label">Objects</span><span class="value">terrain, knight, deer</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h4><span class="dot" style="background:var(--text-dim);width:6px;height:6px;border-radius:50%;display:inline-block"></span> Terrain</h4>
+      <p>Gray/brown/green landscape with a castle on a hill. 7,735 voxels at position (8,0,8). The largest object in the scene.</p>
+    </div>
+    <div class="insight-card">
+      <h4><span class="dot" style="background:var(--green);width:6px;height:6px;border-radius:50%;display:inline-block"></span> Knight</h4>
+      <p>Armored figure with sword. 334 voxels at position (14,8,5). Standing in front of the castle entrance.</p>
+    </div>
+    <div class="insight-card">
+      <h4><span class="dot" style="background:var(--orange);width:6px;height:6px;border-radius:50%;display:inline-block"></span> Deer</h4>
+      <p>Brown deer. 356 voxels at position (35,8,35). Far back-right corner, behind the castle in the wilderness.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STEP 2: COMPRESSION ═══════════════════════════════════════ -->
+<div class="sep"></div>
+<section id="sec-compress">
+  <div class="section-label orange"><span class="line"></span> Step 2</div>
+  <h2>Compress for Claude</h2>
+  <p class="desc">
+    Downsampled 4:1 &mdash; each cell in the low-res grid represents a 4&times;4&times;4 block of 64 voxels.
+    From 48&times;28&times;48 down to 12&times;7&times;12. The shapes are still recognizable.
+  </p>
+  <div class="viewport-row">
+    <div class="viewport-card">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot blue"></span> High-Res</div>
+        <div class="viewport-meta">48&times;28&times;48</div>
+      </div>
+      <div class="viewport-canvas" id="vp-hires-compare"></div>
+      <div class="stats-strip">
+        <div class="stat"><span class="label">Voxels</span><span class="value" id="stat-hires-v">...</span></div>
+      </div>
+    </div>
+    <div class="viewport-card">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot orange"></span> Low-Res (4:1 compressed)</div>
+        <div class="viewport-meta">12&times;7&times;12</div>
+      </div>
+      <div class="viewport-canvas" id="vp-lowres"></div>
+      <div class="stats-strip">
+        <div class="stat"><span class="label">Voxels</span><span class="value" id="stat-lowres-v">...</span></div>
+        <div class="stat"><span class="label">Compression</span><span class="value" id="stat-ratio">...</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STEP 3: CLAUDE REASONS ════════════════════════════════════ -->
+<div class="sep"></div>
+<section id="sec-analysis">
+  <div class="section-label purple"><span class="line"></span> Step 3</div>
+  <h2>Claude analyzes the scene</h2>
+  <p class="desc">
+    We sent Claude the low-res text-view (6 depth-map projections) plus an object registry.
+    Claude identified all 3 objects and described their spatial relationships.
+  </p>
+  <div class="prose-block">
+    <div class="prose-header">
+      <span class="dot" style="background:var(--purple);width:6px;height:6px;border-radius:50%;display:inline-block"></span>
+      Claude's Scene Analysis
+    </div>
+    <div class="prose-body" id="analysis-content">Loading...</div>
+  </div>
+
+  <h2 style="margin-top: 48px;">Claude proposes edits</h2>
+  <p class="desc">
+    Goal: "Move the deer closer to graze near the castle moat. Rotate the knight to face the deer."
+    <br>Claude proposed these commands &mdash; note the coordinates are in high-res space:
+  </p>
+  <div class="edit-cards" id="edit-cards">
+    <!-- Filled by JS -->
+  </div>
+
+  <div class="prose-block" style="margin-top: 24px;">
+    <div class="prose-header">
+      <span class="dot" style="background:var(--purple);width:6px;height:6px;border-radius:50%;display:inline-block"></span>
+      Claude's Reasoning (raw)
+    </div>
+    <div class="prose-body mono" id="proposal-content">Loading...</div>
+  </div>
+</section>
+
+<!-- ═══ STEP 4: RESULT ════════════════════════════════════════════ -->
+<div class="sep"></div>
+<section id="sec-result">
+  <div class="section-label green"><span class="line"></span> Step 4</div>
+  <h2>Edits applied to high-res</h2>
+  <p class="desc">
+    The JSON commands were parsed and applied to the full-resolution scene.
+    Compare before and after &mdash; the deer moved to the front, the knight rotated.
+  </p>
+  <div class="compare-controls">
+    <button class="compare-btn active" id="btn-res-hi" onclick="setCompareRes('hires')">High-Res</button>
+    <button class="compare-btn" id="btn-res-lo" onclick="setCompareRes('lowres')">Low-Res</button>
+    <button class="compare-btn" onclick="syncFinalCameras()" style="margin-left: auto;">Sync Cameras</button>
+  </div>
+  <div class="viewport-row">
+    <div class="viewport-card">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot red"></span> Before</div>
+        <div class="viewport-meta" id="meta-before">...</div>
+      </div>
+      <div class="viewport-canvas" id="vp-before"></div>
+      <div class="stats-strip" id="stats-before"></div>
+    </div>
+    <div class="viewport-card">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot green"></span> After</div>
+        <div class="viewport-meta" id="meta-after">...</div>
+      </div>
+      <div class="viewport-canvas" id="vp-after"></div>
+      <div class="stats-strip" id="stats-after"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DRAGON FIRE DEMO ══════════════════════════════════════════ -->
+<div class="sep"></div>
+<section id="sec-dragon">
+  <div class="section-label red"><span class="line"></span> Dragon Demo</div>
+  <h2>Fire-breathing dragon</h2>
+  <p class="desc">
+    Claude analyzed a 40K-voxel scanned dragon (compressed 8:1 to just 85 voxels),
+    identified the mouth position and facing direction, then generated VOXI code
+    for a layered fire breath (red outer, orange middle, yellow core).
+  </p>
+  <div class="viewport-row">
+    <div class="viewport-card">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot blue"></span> Dragon (before)</div>
+        <div class="viewport-meta" id="meta-dragon-before">...</div>
+      </div>
+      <div class="viewport-canvas" id="vp-dragon-before"></div>
+      <div class="stats-strip">
+        <div class="stat"><span class="label">Voxels</span><span class="value" id="stat-dragon-before-v">...</span></div>
+      </div>
+    </div>
+    <div class="viewport-card">
+      <div class="viewport-header">
+        <div class="viewport-title"><span class="dot red"></span> Dragon + Fire (after)</div>
+        <div class="viewport-meta" id="meta-dragon-after">...</div>
+      </div>
+      <div class="viewport-canvas" id="vp-dragon-after"></div>
+      <div class="stats-strip">
+        <div class="stat"><span class="label">Voxels</span><span class="value" id="stat-dragon-after-v">...</span></div>
+        <div class="stat"><span class="label">Fire</span><span class="value" id="stat-fire-v">...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose-block" style="margin-top: 24px;">
+    <div class="prose-header">
+      <span class="dot" style="background:var(--red);width:6px;height:6px;border-radius:50%;display:inline-block"></span>
+      Claude's Dragon Analysis
+    </div>
+    <div class="prose-body" id="dragon-analysis-content">Loading...</div>
+  </div>
+
+  <div class="prose-block">
+    <div class="prose-header">
+      <span class="dot" style="background:var(--orange);width:6px;height:6px;border-radius:50%;display:inline-block"></span>
+      Fire Generation (VOXI code)
+    </div>
+    <div class="prose-body mono" id="dragon-fire-content">Loading...</div>
+  </div>
+</section>
+
+<div class="sep"></div>
+<div class="footer">
+  LOD Round-Trip Demo &middot; VOXI Spatial Reasoning DSL
+</div>
+
+<!-- ═══ THREE.JS ══════════════════════════════════════════════════ -->
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const COLORS = [0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+const CKEYS = '0123456789abcdef';
+
+// ── VOXI Parser ─────────────────────────────────────────────────────
+function parse(code) {
+  let W=64,H=64,D=64;
+  const vm = new Map();
+  const set = (x,y,z,c) => { const ix=Math.round(x),iy=Math.round(y),iz=Math.round(z); if(ix>=0&&ix<W&&iy>=0&&iy<H&&iz>=0&&iz<D) vm.set(`${ix},${iy},${iz}`,Math.min(Math.max(c||9,0),15)); };
+  const addBox = (px,py,pz,w,h,d,c) => { for(let x=px;x<px+w;x++) for(let y=py;y<py+h;y++) for(let z=pz;z<pz+d;z++) set(x,y,z,c); };
+  const addSphere = (cx,cy,cz,r,c) => { const r2=r*r; for(let x=cx-r;x<=cx+r;x++) for(let y=cy-r;y<=cy+r;y++) for(let z=cz-r;z<=cz+r;z++) if((x-cx)**2+(y-cy)**2+(z-cz)**2<=r2) set(x,y,z,c); };
+  const addCyl = (cx,cy,cz,r,h,c) => { const r2=r*r; for(let x=cx-r;x<=cx+r;x++) for(let z=cz-r;z<=cz+r;z++) if((x-cx)**2+(z-cz)**2<=r2) for(let y=cy;y<cy+h;y++) set(x,y,z,c); };
+  const addCone = (cx,cy,cz,r,h,c) => { for(let y=0;y<h;y++){const rr=r*(1-y/h),rr2=rr*rr;for(let x=cx-r;x<=cx+r;x++) for(let z=cz-r;z<=cz+r;z++) if((x-cx)**2+(z-cz)**2<=rr2) set(cx+(x-cx),cy+y,cz+(z-cz),c);} };
+  const addEllipsoid = (cx,cy,cz,rx,ry,rz,c) => { for(let x=cx-rx;x<=cx+rx;x++) for(let y=cy-ry;y<=cy+ry;y++) for(let z=cz-rz;z<=cz+rz;z++) if(((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2<=1) set(x,y,z,c); };
+  const addDome = (px,py,pz,w,h,d,c) => { const rx=w/2,ry=h,rz=d/2,cx=px+rx,cz=pz+rz; for(let x=px;x<px+w;x++) for(let y=py;y<py+h;y++) for(let z=pz;z<pz+d;z++) if(((x-cx+.5)/rx)**2+((y-py)/ry)**2+((z-cz+.5)/rz)**2<=1) set(x,y,z,c); };
+  const groups={};let currentGroup=null,currentGroupName=null,scale=1;
+  function scaled(cmd,n){if(scale===1)return n;const s=[...n];const sc=i=>Math.round(s[i]*scale);const scm=i=>Math.max(1,Math.round(s[i]*scale));switch(cmd){case'B':case'D':s[0]=sc(0);s[1]=sc(1);s[2]=sc(2);s[3]=scm(3);s[4]=scm(4);s[5]=scm(5);break;case'S':s[0]=sc(0);s[1]=sc(1);s[2]=sc(2);s[3]=scm(3);break;case'C':case'K':s[0]=sc(0);s[1]=sc(1);s[2]=sc(2);s[3]=scm(3);s[4]=scm(4);break;case'P':s[0]=sc(0);s[1]=sc(1);s[2]=sc(2);break;case'E':s[0]=sc(0);s[1]=sc(1);s[2]=sc(2);s[3]=scm(3);s[4]=scm(4);s[5]=scm(5);break;}return s;}
+  function execCmd(cmd,n){const sn=scaled(cmd,n);switch(cmd){case'B':addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]);break;case'S':addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]);break;case'C':addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]);break;case'K':addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]);break;case'P':set(sn[0],sn[1],sn[2],sn[3]);break;case'E':addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]);break;case'D':addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]);break;default:return false;}return true;}
+  function placeGroup(name,ox,oy,oz){const g=groups[name];if(!g)return;const sox=Math.round(ox*scale),soy=Math.round(oy*scale),soz=Math.round(oz*scale);for(const e of g){const sn=scaled(e.cmd,[...e.args]);sn[0]+=sox;sn[1]+=soy;sn[2]+=soz;switch(e.cmd){case'B':addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]);break;case'S':addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]);break;case'C':addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]);break;case'K':addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]);break;case'P':set(sn[0],sn[1],sn[2],sn[3]);break;case'E':addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]);break;case'D':addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]);break;}}}
+  for(const line of code.split('\n')){const t=line.trim();if(!t||t.startsWith('--')||t.startsWith('//'))continue;const p=t.split(/\s+/),cmd=p[0].toUpperCase();if(cmd==='G'){currentGroupName=p[1]||'g';currentGroup=[];continue;}if(cmd==='/G'){if(currentGroup&&currentGroupName)groups[currentGroupName]=currentGroup;currentGroup=null;currentGroupName=null;continue;}if(cmd==='@'){placeGroup(p[1],Number(p[2])||0,Number(p[3])||0,Number(p[4])||0);continue;}if(cmd==='V'){W=Number(p[1])||32;H=Number(p[2])||32;D=Number(p[3])||32;continue;}if(cmd==='R'){scale=Number(p[1])||1;continue;}const parseArg=(s,isC)=>{if(isC&&/^[a-f]$/i.test(s))return CKEYS.indexOf(s.toLowerCase());return Number(s);};const rawArgs=p.slice(1),n=rawArgs.map((s,i)=>parseArg(s,i===rawArgs.length-1));execCmd(cmd,n);if(currentGroup)currentGroup.push({cmd,args:n});}
+  const voxels=[];for(const[k,c]of vm){const[x,y,z]=k.split(',').map(Number);voxels.push({x,y,z,color:c});}return{gridW:W,gridH:H,gridD:D,voxels};
+}
+
+// ── Viewport factory ────────────────────────────────────────────────
+const viewports = [];
+
+function createViewport(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return null;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x0b0d11);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+  camera.position.set(70, 50, 70);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.target.set(24, 10, 24);
+  controls.update();
+
+  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  scene.add(new THREE.HemisphereLight(0xc8d8ff, 0x333355, 0.6));
+  const dl = new THREE.DirectionalLight(0xffffff, 1.6);
+  dl.position.set(40, 60, 30); dl.castShadow = true;
+  dl.shadow.mapSize.set(1024, 1024);
+  dl.shadow.camera.left=-50;dl.shadow.camera.right=50;dl.shadow.camera.top=50;dl.shadow.camera.bottom=-50;
+  scene.add(dl);
+  const fl = new THREE.DirectionalLight(0xffffff, 0.5);
+  fl.position.set(-30, 40, -20); scene.add(fl);
+  const bl = new THREE.DirectionalLight(0xffffff, 0.3);
+  bl.position.set(-10, 20, 50); scene.add(bl);
+
+  const grid = new THREE.GridHelper(128, 128, 0x1a1f2e, 0x14182200);
+  grid.position.set(64, 0, 64); scene.add(grid);
+
+  const gnd = new THREE.Mesh(new THREE.PlaneGeometry(128, 128), new THREE.ShadowMaterial({ opacity: 0.12 }));
+  gnd.rotation.x = -Math.PI / 2; gnd.position.set(24, 0, 24); gnd.receiveShadow = true; scene.add(gnd);
+
+  const boxGeo = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+  let voxelMesh = null;
+
+  function renderModel(parsed) {
+    if (voxelMesh) { scene.remove(voxelMesh); voxelMesh.material?.dispose(); }
+    if (!parsed || parsed.voxels.length === 0) return 0;
+
+    const mat = new THREE.MeshLambertMaterial();
+    const mesh = new THREE.InstancedMesh(boxGeo, mat, parsed.voxels.length);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    const mx = new THREE.Matrix4(), cl = new THREE.Color();
+    for (let i = 0; i < parsed.voxels.length; i++) {
+      const v = parsed.voxels[i];
+      mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+      mesh.setMatrixAt(i, mx);
+      cl.setHex(COLORS[v.color] || COLORS[9]);
+      mesh.setColorAt(i, cl);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.instanceColor.needsUpdate = true;
+    scene.add(mesh); voxelMesh = mesh;
+
+    controls.target.set(parsed.gridW / 2, parsed.gridH / 4, parsed.gridD / 2);
+    controls.update();
+    return parsed.voxels.length;
+  }
+
+  function resize() {
+    const w = container.clientWidth, h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+
+  const vp = { renderer, scene, camera, controls, renderModel, resize, container };
+  viewports.push(vp);
+  return vp;
+}
+
+// ── Create all viewports ────────────────────────────────────────────
+const vpGallery = createViewport('vp-gallery');
+const vpDragonBefore = createViewport('vp-dragon-before');
+const vpDragonAfter = createViewport('vp-dragon-after');
+const vpOriginal = createViewport('vp-original');
+const vpHiresCompare = createViewport('vp-hires-compare');
+const vpLowres = createViewport('vp-lowres');
+const vpBefore = createViewport('vp-before');
+const vpAfter = createViewport('vp-after');
+
+// Resize all
+function resizeAll() { for (const vp of viewports) vp.resize(); }
+window.addEventListener('resize', resizeAll);
+
+// Lazy resize on scroll (for viewports that enter view)
+const observer = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (e.isIntersecting) {
+      for (const vp of viewports) {
+        if (vp.container.closest('.viewport-card')?.contains(e.target) || vp.container === e.target) {
+          vp.resize();
+        }
+      }
+    }
+  }
+}, { threshold: 0.1 });
+document.querySelectorAll('.viewport-canvas').forEach(el => observer.observe(el));
+
+setTimeout(resizeAll, 100);
+setTimeout(resizeAll, 500);
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+  for (const vp of viewports) {
+    vp.controls.update();
+    // Only render if visible
+    const rect = vp.container.getBoundingClientRect();
+    if (rect.bottom > 0 && rect.top < window.innerHeight) {
+      vp.renderer.render(vp.scene, vp.camera);
+    }
+  }
+}
+animate();
+
+// ── Load data and populate ──────────────────────────────────────────
+const BASE = './output/lod-demo/';
+async function loadText(f) { try { const r = await fetch(BASE + f); return r.ok ? await r.text() : null; } catch { return null; } }
+
+let allData = {};
+let compareRes = 'hires';
+
+async function loadAll() {
+  const [hb, ha, lb, la, analysis, editsJson, proposal] = await Promise.all([
+    loadText('hires-before.voxi'), loadText('hires-after.voxi'),
+    loadText('lowres-before.voxi'), loadText('lowres-after.voxi'),
+    loadText('analysis.txt'), loadText('edits.json'), loadText('edit-proposal.txt'),
+  ]);
+  allData = { hb, ha, lb, la, analysis, editsJson, proposal };
+
+  // Step 1: Original scene
+  if (hb) {
+    const p = parse(hb);
+    vpOriginal.renderModel(p);
+    document.getElementById('meta-original').textContent = `${p.gridW}x${p.gridH}x${p.gridD}`;
+    document.getElementById('stat-orig-grid').textContent = `${p.gridW}x${p.gridH}x${p.gridD}`;
+    document.getElementById('stat-orig-voxels').textContent = p.voxels.length.toLocaleString();
+  }
+
+  // Step 2: Compression comparison
+  if (hb) {
+    const ph = parse(hb);
+    vpHiresCompare.renderModel(ph);
+    document.getElementById('stat-hires-v').textContent = ph.voxels.length.toLocaleString();
+
+    if (lb) {
+      const pl = parse(lb);
+      vpLowres.renderModel(pl);
+      document.getElementById('stat-lowres-v').textContent = pl.voxels.length.toLocaleString();
+      document.getElementById('stat-ratio').textContent = `${Math.round(ph.voxels.length / pl.voxels.length)}:1`;
+    }
+  }
+
+  // Step 3: Analysis + Edits
+  if (analysis) {
+    document.getElementById('analysis-content').textContent = analysis;
+  }
+  if (proposal) {
+    document.getElementById('proposal-content').textContent = proposal;
+  }
+  if (editsJson) {
+    try {
+      const edits = JSON.parse(editsJson);
+      const container = document.getElementById('edit-cards');
+      container.innerHTML = edits.map(e => {
+        const isMove = e.action === 'MOVE';
+        const cls = isMove ? 'move' : 'rotate';
+        const detail = isMove
+          ? `dx: ${e.dx}, dy: ${e.dy}, dz: ${e.dz}`
+          : `90° around Y axis`;
+        return `<div class="edit-card ${cls}">
+          <span class="action-badge">${e.action}</span>
+          <div class="target">${e.object}</div>
+          <div class="detail">${detail}</div>
+        </div>`;
+      }).join('');
+    } catch {}
+  }
+
+  // Step 4: Before/After comparison
+  renderComparison();
+
+  // Dragon fire demo
+  const DRAGON_BASE = './output/lod-dragon/';
+  const [dragonBefore, dragonAfter, dragonAnalysis, dragonEdits] = await Promise.all([
+    loadText('../output/lod-dragon/hires-before.voxi'),
+    loadText('../output/lod-dragon/hires-after.voxi'),
+    loadText('../output/lod-dragon/analysis.txt'),
+    loadText('../output/lod-dragon/edits.json'),
+  ].map(p => p.catch ? p : p));
+
+  // Use direct path for dragon files
+  async function loadDragon(f) { try { const r = await fetch('./output/lod-dragon/' + f); return r.ok ? await r.text() : null; } catch { return null; } }
+
+  const [dBefore, dAfter, dAnalysis, dEditsJson] = await Promise.all([
+    loadDragon('hires-before.voxi'),
+    loadDragon('hires-after.voxi'),
+    loadDragon('analysis.txt'),
+    loadDragon('edits.json'),
+  ]);
+
+  if (dBefore) {
+    const p = parse(dBefore);
+    vpDragonBefore.renderModel(p);
+    document.getElementById('meta-dragon-before').textContent = `${p.gridW}x${p.gridH}x${p.gridD}`;
+    document.getElementById('stat-dragon-before-v').textContent = p.voxels.length.toLocaleString();
+  }
+  if (dAfter) {
+    const p = parse(dAfter);
+    vpDragonAfter.renderModel(p);
+    document.getElementById('meta-dragon-after').textContent = `${p.gridW}x${p.gridH}x${p.gridD}`;
+    document.getElementById('stat-dragon-after-v').textContent = p.voxels.length.toLocaleString();
+    if (dBefore) {
+      const pb = parse(dBefore);
+      document.getElementById('stat-fire-v').textContent = (p.voxels.length - pb.voxels.length).toLocaleString() + ' added';
+    }
+  }
+  if (dAnalysis) document.getElementById('dragon-analysis-content').textContent = dAnalysis;
+  if (dEditsJson) {
+    try {
+      const edits = JSON.parse(dEditsJson);
+      const fire = edits.find(e => e.voxi);
+      if (fire) document.getElementById('dragon-fire-content').textContent =
+        `Origin: (${fire.origin.join(', ')})\nName: ${fire.name}\n\n${fire.voxi}`;
+    } catch {}
+  }
+
+  resizeAll();
+}
+
+function renderComparison() {
+  const beforeCode = compareRes === 'hires' ? allData.hb : allData.lb;
+  const afterCode = compareRes === 'hires' ? allData.ha : allData.la;
+  const label = compareRes === 'hires' ? 'High-Res' : 'Low-Res';
+
+  if (beforeCode) {
+    const p = parse(beforeCode);
+    vpBefore.renderModel(p);
+    document.getElementById('meta-before').textContent = `${p.gridW}x${p.gridH}x${p.gridD} ${label}`;
+    document.getElementById('stats-before').innerHTML =
+      `<div class="stat"><span class="label">Grid</span><span class="value">${p.gridW}x${p.gridH}x${p.gridD}</span></div>
+       <div class="stat"><span class="label">Voxels</span><span class="value">${p.voxels.length.toLocaleString()}</span></div>`;
+  }
+  if (afterCode) {
+    const p = parse(afterCode);
+    vpAfter.renderModel(p);
+    document.getElementById('meta-after').textContent = `${p.gridW}x${p.gridH}x${p.gridD} ${label}`;
+    document.getElementById('stats-after').innerHTML =
+      `<div class="stat"><span class="label">Grid</span><span class="value">${p.gridW}x${p.gridH}x${p.gridD}</span></div>
+       <div class="stat"><span class="label">Voxels</span><span class="value">${p.voxels.length.toLocaleString()}</span></div>`;
+  }
+}
+
+window.setCompareRes = function(res) {
+  compareRes = res;
+  document.getElementById('btn-res-hi').classList.toggle('active', res === 'hires');
+  document.getElementById('btn-res-lo').classList.toggle('active', res === 'lowres');
+  renderComparison();
+};
+
+window.syncFinalCameras = function() {
+  vpAfter.camera.position.copy(vpBefore.camera.position);
+  vpAfter.camera.quaternion.copy(vpBefore.camera.quaternion);
+  vpAfter.controls.target.copy(vpBefore.controls.target);
+  vpAfter.controls.update();
+};
+
+// ── Model Gallery ────────────────────────────────────────────────────
+const MODEL_CATALOG = [
+  { file: 'dragon.voxi',         name: 'Dragon',         source: 'ephtracy/voxel-model (scan)',  voxels: 40265, grid: '126x89x57' },
+  { file: 'monu5.voxi',          name: 'Monument 5',     source: 'ephtracy/voxel-model',         voxels: 93576, grid: '64x64x64' },
+  { file: 'teapot.voxi',         name: 'Utah Teapot',    source: 'ephtracy/voxel-model (scan)',  voxels: 28411, grid: '126x61x80' },
+  { file: 'alien-saucer.voxi',   name: 'Alien Saucer',   source: 'mikelovesrobots/mmmm',         voxels: 10492, grid: '32x12x32' },
+  { file: 'ambulance.voxi',      name: 'Ambulance',      source: 'mikelovesrobots/mmmm',         voxels: 5807,  grid: '17x17x34' },
+  { file: 'bear.voxi',           name: 'Bear',           source: 'mikelovesrobots/mmmm',         voxels: 590,   grid: '20x20x21' },
+  { file: 'fox.voxi',            name: 'Fox',            source: 'ephtracy/voxel-model',         voxels: 565,   grid: '20x20x21' },
+  { file: 'knight-ephtracy.voxi',name: 'Knight',         source: 'ephtracy/voxel-model',         voxels: 398,   grid: '20x20x21' },
+];
+
+function sizeTag(voxels) {
+  if (voxels > 20000) return '<span class="tag large">' + (voxels/1000).toFixed(0) + 'K voxels</span>';
+  if (voxels > 2000)  return '<span class="tag medium">' + (voxels/1000).toFixed(1) + 'K voxels</span>';
+  return '<span class="tag small">' + voxels + ' voxels</span>';
+}
+
+const galleryGrid = document.getElementById('gallery-grid');
+galleryGrid.innerHTML = MODEL_CATALOG.map((m, i) =>
+  `<div class="gallery-item" data-idx="${i}" onclick="loadGalleryModel(${i})">
+    <div class="name">${m.name}</div>
+    <div class="meta"><span>${m.grid}</span></div>
+    ${sizeTag(m.voxels)}
+  </div>`
+).join('');
+
+window.loadGalleryModel = async function(idx) {
+  const m = MODEL_CATALOG[idx];
+  document.querySelectorAll('.gallery-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.gallery-item[data-idx="${idx}"]`)?.classList.add('active');
+
+  document.getElementById('gallery-model-name').textContent = m.name;
+  document.getElementById('gallery-model-meta').textContent = 'Loading...';
+
+  try {
+    const resp = await fetch('/models/' + m.file);
+    const code = await resp.text();
+    const parsed = parse(code);
+    vpGallery.renderModel(parsed);
+    vpGallery.resize();
+
+    document.getElementById('gallery-model-meta').textContent = m.grid;
+    document.getElementById('stat-gallery-grid').textContent = m.grid;
+    document.getElementById('stat-gallery-voxels').textContent = parsed.voxels.length.toLocaleString();
+    document.getElementById('stat-gallery-source').textContent = m.source;
+  } catch(e) {
+    document.getElementById('gallery-model-meta').textContent = 'Error: ' + e.message;
+  }
+};
+
+// Auto-load first model
+window.loadGalleryModel(0);
+
+loadAll();
+</script>
+</body>
+</html>

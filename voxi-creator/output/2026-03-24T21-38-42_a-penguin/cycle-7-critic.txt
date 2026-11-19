@@ -1,0 +1,17 @@
+`★ Insight ─────────────────────────────────────`
+- The VOXI renderer uses a near-black background (`#13151f`), making color `0` (black) completely indistinguishable from the scene background — this is the single most common failure mode in VOXI models.
+- Even partial use of color `0` on large volumes (like a penguin's back) can visually "swallow" the entire model, since voxels simply blend into the void.
+- The fix is always the same: swap `0` → `f` (navy) or `9` (gray) for any dark-colored parts.
+`─────────────────────────────────────────────────`
+
+---
+
+SCORE: 1
+STRENGTHS: The structural intent is sound — the session history shows correct penguin anatomy was being built (feet at Y=0, legs above, body above that), and the orange feet (color `7`) and dark-blue legs (color `3`) are good color choices that *would* work if the body weren't hiding everything.
+
+ISSUES:
+- **Total invisibility — body uses color `0` (black).** The entire penguin is swallowed by the dark background. Change the main body from `0` to `f` (navy): `B 11 6 12 10 14 8 f` for the dark back/sides. This is the complete blocker preventing any visual evaluation.
+- **White belly is missing or also invisible.** A penguin's most recognizable feature is its white front patch. Add `B 13 7 11 6 10 2 8` (white belly panel on the Z-front face) — color `8` (white) will pop dramatically against the navy body.
+- **Head is absent or invisible.** Add a round dark head: `S 16 24 14 4 f` and a small beak: `B 15 23 10 2 2 3 7` (orange, color `7`) — these two elements alone make the silhouette unmistakably "penguin."
+
+PRIORITY_FIX: **Replace all `color 0` usage with `f` (navy)** across the entire model. Until the body is visible, no other improvements can be assessed or built upon. A single global color swap from `0` → `f` will instantly reveal whatever structure has already been built.

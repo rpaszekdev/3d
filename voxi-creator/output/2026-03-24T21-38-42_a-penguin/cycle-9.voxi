@@ -1,0 +1,59 @@
+V 32 32 32
+-- orange flat feet
+B 7 0 8 7 2 10 7
+B 18 0 8 7 2 10 7
+-- gray legs
+B 10 2 12 4 6 6 9
+B 18 2 12 4 6 6 9
+-- main body dark gray
+B 7 7 11 18 14 10 9
+-- body bottom curve
+B 8 5 11 16 3 10 9
+-- body top dome
+B 8 20 11 16 3 10 9
+B 9 22 11 14 2 10 9
+-- white belly front panel large
+B 11 8 10 10 14 3 8
+-- belly lower curve
+B 12 7 10 8 2 3 8
+-- belly upper taper
+B 12 21 10 8 2 3 8
+-- belly center highlight
+B 12 10 9 8 10 2 8
+-- left wing dark gray
+B 3 8 12 5 13 7 9
+-- left wing tip
+B 3 7 17 5 4 2 9
+-- right wing dark gray
+B 24 8 12 5 13 7 9
+-- right wing tip
+B 24 7 17 5 4 2 9
+-- tail wedge back
+B 8 4 21 16 8 5 9
+B 9 3 24 14 5 3 9
+-- neck
+B 11 21 11 10 5 9 9
+-- head dark gray sphere
+S 16 28 13 6 9
+-- white face patch front
+B 12 23 9 8 9 4 8
+-- upper beak yellow
+B 14 27 7 4 3 6 6
+-- lower beak orange
+B 14 24 7 4 3 6 7
+-- beak center crease
+B 15 26 7 2 1 5 7
+-- left eye white
+B 11 28 10 3 4 3 8
+-- left pupil gray
+B 12 29 10 2 2 1 9
+-- right eye white
+B 18 28 10 3 4 3 8
+-- right pupil gray
+B 19 29 10 2 2 1 9
+-- eye shine top glints
+P 12 30 10 8
+P 19 30 10 8
+-- head crown tuft
+B 14 33 12 4 2 4 9
+B 15 32 12 2 2 4 9

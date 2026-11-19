@@ -1,0 +1,40 @@
+V 32 32 32
+-- Feet (orange, splayed forward)
+B 10 0 10 5 2 6 7
+B 18 0 10 5 2 6 7
+-- Short legs
+B 12 2 13 3 3 3 7
+B 18 2 13 3 3 3 7
+-- Main body (navy ellipsoid)
+E 16 12 16 8 10 7 f
+-- White belly patch (front-facing)
+E 16 10 14 5 9 3 8
+-- Left flipper/wing
+B 6 6 13 4 10 5 f
+-- Right flipper/wing
+B 23 6 13 4 10 5 f
+-- Neck connector
+B 13 21 13 6 3 6 f
+-- Head (navy)
+S 16 25 15 5 f
+-- White face patch (oval front)
+E 16 25 12 4 4 2 8
+-- Beak upper (orange)
+B 14 24 9 4 2 4 7
+-- Beak lower (slightly offset)
+B 14 22 9 4 2 4 6
+-- Left eye white sclera
+P 13 27 13 8
+P 12 27 13 8
+-- Right eye white sclera
+P 19 27 13 8
+P 20 27 13 8
+-- Left pupil (navy so visible against white)
+P 13 27 12 f
+-- Right pupil
+P 19 27 12 f
+-- Eyebrow marks (yellow for expression)
+P 13 28 12 6
+P 19 28 12 6
+-- Tuxedo tail detail
+B 13 3 16 6 4 2 f

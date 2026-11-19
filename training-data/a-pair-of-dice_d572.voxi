@@ -1,0 +1,43 @@
+V 32 32 32
+
+-- table surface
+B 0 3 8 32 1 16 d
+
+-- die 1 body (white)
+B 5 4 11 8 8 8 8
+
+-- die 1 front face: 2
+S 7 10 11 1 0
+S 11 6 11 1 0
+
+-- die 1 top face: 6
+S 7 12 13 1 0
+S 11 12 13 1 0
+S 7 12 15 1 0
+S 11 12 15 1 0
+S 7 12 17 1 0
+S 11 12 17 1 0
+
+-- die 1 right face: 3
+S 13 10 13 1 0
+S 13 8 15 1 0
+S 13 6 17 1 0
+
+-- die 2 body (white)
+B 19 4 11 8 8 8 8
+
+-- die 2 front face: 5
+S 21 11 11 1 0
+S 25 11 11 1 0
+S 23 8 11 1 0
+S 21 5 11 1 0
+S 25 5 11 1 0
+
+-- die 2 top face: 1
+S 23 12 15 1 0
+
+-- die 2 right face: 4
+S 27 10 13 1 0
+S 27 6 13 1 0
+S 27 10 17 1 0
+S 27 6 17 1 0

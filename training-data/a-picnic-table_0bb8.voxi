@@ -1,0 +1,23 @@
+V 24 16 24
+
+-- tabletop
+B 2 10 9 20 2 6 d
+
+-- bench seats
+B 2 7 2 20 1 5 d
+B 2 7 17 20 1 5 d
+
+-- table legs
+B 3 0 9 2 10 2 a
+B 3 0 13 2 10 2 a
+B 19 0 9 2 10 2 a
+B 19 0 13 2 10 2 a
+
+-- bench legs
+B 3 0 3 2 7 2 a
+B 3 0 18 2 7 2 a
+B 19 0 3 2 7 2 a
+B 19 0 18 2 7 2 a
+
+-- horizontal cross brace
+B 2 5 8 20 1 8 a

@@ -1,0 +1,44 @@
+V 46 53 63
+-- Motor: left vs right hand button press
+-- Threshold: |t| >= 3.0
+-- Color = activation intensity: yellow(low) → orange → red → maroon → white(peak)
+-- 19 significant clusters
+
+-- cluster-1: L-amygdala (emotion, threat detection, salience), 674 vox, peak t=6.8
+E 22 8 30 12 5 8 e
+-- cluster-2: L-SPL (visuospatial, reaching), 622 vox, peak t=8.0
+E 17 44 31 5 5 8 e
+-- cluster-3: R-SPL (visuospatial, reaching), 416 vox, peak t=5.3
+E 35 40 29 5 6 8 1
+-- cluster-4: R-IFG (inhibition, prosody), 220 vox, peak t=5.3
+E 38 24 36 5 7 4 1
+-- cluster-5: R-NAcc (reward, motivation), 34 vox, peak t=4.5
+E 33 14 36 2 2 3 7
+-- cluster-6: R-cerebellum (motor coordination, timing), 25 vox, peak t=3.8
+E 36 27 18 2 3 3 6
+-- cluster-7: unknown (), 19 vox, peak t=4.2
+E 25 7 39 1 1 2 7
+-- cluster-8: unknown (), 16 vox, peak t=4.4
+S 25 38 54 2 7
+-- cluster-9: precuneus (self-awareness, episodic memory), 16 vox, peak t=4.1
+E 24 40 29 2 3 1 7
+-- cluster-10: L-cerebellum (motor coordination, timing), 15 vox, peak t=-3.7
+E 19 18 4 2 1 1 6
+-- cluster-11: unknown (), 13 vox, peak t=4.0
+E 30 15 51 2 1 1 7
+-- cluster-12: unknown (), 13 vox, peak t=3.6
+E 22 45 44 1 1 2 6
+-- cluster-13: unknown (), 13 vox, peak t=4.0
+E 25 47 29 2 1 2 6
+-- cluster-14: L-OFC (reward, decision-making), 12 vox, peak t=3.8
+E 20 16 45 2 1 1 6
+-- cluster-15: unknown (), 12 vox, peak t=3.5
+E 12 34 6 1 2 1 6
+-- cluster-16: L-OFC (reward, decision-making), 11 vox, peak t=3.6
+E 19 12 45 2 1 1 6
+-- cluster-17: R-cerebellum (motor coordination, timing), 11 vox, peak t=4.1
+S 36 19 21 1 7
+-- cluster-18: R-IPL (attention, spatial awareness), 10 vox, peak t=3.6
+E 31 28 36 2 1 1 6
+-- cluster-19: L-DLPFC (working memory, executive control), 10 vox, peak t=3.8
+E 16 42 44 1 2 2 6

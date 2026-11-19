@@ -1,0 +1,9 @@
+{
+  "name": "voxi-studio",
+  "version": "1.0.0",
+  "description": "CLI tool for managing UI sketch variations in Voxi DSL",
+  "bin": {
+    "voxi": "./voxi.js"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,42 @@
+V 24 24 24
+
+-- base
+B 8 0 8 8 2 8 9
+
+-- lower body/stem
+B 10 2 10 4 4 4 7
+
+-- upper body widening
+B 9 6 9 6 5 4 7
+
+-- neck
+B 10 11 10 4 3 4 8
+
+-- head (horse head shape - wider)
+B 8 13 9 8 5 5 d
+
+-- snout/nose protruding forward
+B 9 14 6 6 3 3 d
+
+-- nostril detail
+B 10 14 5 2 1 1 0
+B 14 14 5 2 1 1 0
+
+-- ear left
+B 9 18 10 2 3 2 d
+
+-- ear right
+B 13 18 10 2 3 2 d
+
+-- eye left
+S 10 16 9 1 0
+
+-- eye right
+S 14 16 9 1 0
+
+-- mane
+B 12 13 11 2 6 2 1
+
+-- chin detail
+B 10 13 7 4 2 2 8
+</s>

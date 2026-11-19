@@ -1,0 +1,52 @@
+V 32 32 32
+
+-- branch
+B 4 30 13 24 2 6 3
+
+-- left hand gripping branch
+S 11 29 16 2 a
+-- right hand gripping branch
+S 21 29 16 2 a
+
+-- left arm raised
+C 11 23 16 1 7 a
+-- right arm raised
+C 21 23 16 1 7 a
+
+-- head
+S 16 26 16 3 a
+
+-- muzzle
+E 16 25 14 2 2 2 d
+
+-- left eye
+S 15 27 14 1 0
+-- right eye
+S 17 27 14 1 0
+
+-- left ear
+S 13 27 15 2 a
+-- right ear
+S 19 27 15 2 a
+
+-- body
+E 16 19 16 4 6 3 a
+
+-- chest lighter patch
+E 16 19 14 3 4 1 d
+
+-- tail curling outward
+S 21 18 16 2 a
+S 23 16 16 2 a
+S 25 14 16 1 a
+S 24 12 16 1 a
+
+-- left leg dangling
+C 14 11 16 1 8 a
+-- right leg dangling
+C 18 11 16 1 8 a
+
+-- left foot
+S 14 6 16 2 a
+-- right foot
+S 18 6 16 2 a

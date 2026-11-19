@@ -1,0 +1,28 @@
+V 24 32 24
+
+-- pole
+C 12 7 12 1 15 9
+
+-- house body
+B 8 14 9 8 6 6 a
+
+-- entry hole
+S 12 17 9 1 0
+
+-- perch
+B 11 16 7 2 1 2 d
+
+-- roof layer 1 base
+B 7 20 8 10 2 8 1
+
+-- roof layer 2
+B 8 22 9 8 2 6 1
+
+-- roof layer 3
+B 9 24 10 6 2 4 1
+
+-- roof layer 4
+B 10 26 11 4 2 2 1
+
+-- roof peak
+B 11 28 12 2 1 1 e

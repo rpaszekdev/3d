@@ -1,0 +1,55 @@
+V 24 24 24
+
+-- body (orange)
+B 7 4 7 10 6 9 7
+
+-- white underbelly
+B 8 4 8 8 4 7 8
+
+-- neck
+B 10 9 8 4 3 4 7
+
+-- head (orange)
+B 9 11 6 6 6 6 7
+
+-- white face marking
+B 10 11 7 4 5 4 8
+
+-- snout (tan, forward)
+E 12 12 4 2 2 3 d
+
+-- nose (black)
+S 12 12 3 1 0
+
+-- left eye
+S 10 14 7 1 0
+
+-- right eye
+S 14 14 7 1 0
+
+-- left ear
+B 9 16 7 2 3 1 7
+B 10 16 8 1 2 1 b
+
+-- right ear
+B 13 16 7 2 3 1 7
+B 13 16 8 1 2 1 b
+
+-- front left leg
+B 8 0 8 2 4 2 1
+
+-- front right leg
+B 14 0 8 2 4 2 1
+
+-- back left leg
+B 8 0 14 2 4 2 1
+
+-- back right leg
+B 14 0 14 2 4 2 1
+
+-- tail (orange, swept up)
+E 5 6 17 3 4 2 7
+E 4 10 18 3 3 2 7
+
+-- tail tip (white)
+S 4 13 18 3 8

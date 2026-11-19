@@ -1,0 +1,221 @@
+-- ═══════════════════════════════════════════════════════════
+-- Developer CV — VOXI UI Layout
+-- Open in ui-sketch.html to render
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #f5f5f0
+
+-- ── Left Sidebar ─────────────────────────────────────────
+RECT 0 0 260 1120 0 #1e293b
+
+-- Profile photo placeholder
+ELLIPSE 130 90 52 52 1 #334155
+TEXT 112 88 "RP" 28 2 #94a3b8 bold
+
+-- Name & Title
+TEXT 30 165 "Robert Paszek" 22 1 #f1f5f9 bold
+TEXT 30 192 "Software Engineer" 13 1 #94a3b8
+LINE 30 212 230 212 1 #334155 1
+
+-- ── Contact ──────────────────────────────────────────────
+TEXT 30 238 "CONTACT" 10 1 #64748b bold
+TEXT 30 262 "robert@example.com" 11 1 #cbd5e1
+TEXT 30 282 "github.com/robertpaszek" 11 1 #cbd5e1
+TEXT 30 302 "linkedin.com/in/rpaszek" 11 1 #cbd5e1
+TEXT 30 322 "London, UK" 11 1 #cbd5e1
+LINE 30 346 230 346 1 #334155 1
+
+-- ── Skills ───────────────────────────────────────────────
+TEXT 30 372 "SKILLS" 10 1 #64748b bold
+
+TEXT 30 398 "Languages" 10 1 #94a3b8 bold
+RECT 30 414 60 20 1 #3b82f6 10
+TEXT 36 419 "Python" 9 2 #ffffff
+RECT 96 414 72 20 1 #3b82f6 10
+TEXT 102 419 "JavaScript" 9 2 #ffffff
+RECT 174 414 42 20 1 #3b82f6 10
+TEXT 180 419 "Go" 9 2 #ffffff
+RECT 30 440 36 20 1 #3b82f6 10
+TEXT 36 445 "SQL" 9 2 #ffffff
+RECT 72 440 64 20 1 #3b82f6 10
+TEXT 78 445 "TypeScript" 9 2 #ffffff
+RECT 142 440 48 20 1 #3b82f6 10
+TEXT 148 445 "Rust" 9 2 #ffffff
+
+TEXT 30 478 "Frameworks" 10 1 #94a3b8 bold
+RECT 30 494 52 20 1 #0ea5e9 10
+TEXT 36 499 "React" 9 2 #ffffff
+RECT 88 494 56 20 1 #0ea5e9 10
+TEXT 94 499 "Next.js" 9 2 #ffffff
+RECT 150 494 56 20 1 #0ea5e9 10
+TEXT 156 499 "FastAPI" 9 2 #ffffff
+RECT 30 520 48 20 1 #0ea5e9 10
+TEXT 36 525 "Flask" 9 2 #ffffff
+RECT 84 520 50 20 1 #0ea5e9 10
+TEXT 90 525 "Node" 9 2 #ffffff
+RECT 140 520 60 20 1 #0ea5e9 10
+TEXT 146 525 "Django" 9 2 #ffffff
+
+TEXT 30 558 "Tools & Infra" 10 1 #94a3b8 bold
+RECT 30 574 52 20 1 #8b5cf6 10
+TEXT 36 579 "Docker" 9 2 #ffffff
+RECT 88 574 68 20 1 #8b5cf6 10
+TEXT 94 579 "Kubernetes" 9 2 #ffffff
+RECT 162 574 46 20 1 #8b5cf6 10
+TEXT 168 579 "AWS" 9 2 #ffffff
+RECT 30 600 76 20 1 #8b5cf6 10
+TEXT 36 605 "PostgreSQL" 9 2 #ffffff
+RECT 112 600 48 20 1 #8b5cf6 10
+TEXT 118 605 "Redis" 9 2 #ffffff
+RECT 166 600 56 20 1 #8b5cf6 10
+TEXT 172 605 "Firebase" 9 2 #ffffff
+
+LINE 30 636 230 636 1 #334155 1
+
+-- ── Education ────────────────────────────────────────────
+TEXT 30 660 "EDUCATION" 10 1 #64748b bold
+
+TEXT 30 686 "MSc Computer Science" 11 1 #f1f5f9 bold
+TEXT 30 704 "University College London" 10 1 #cbd5e1
+TEXT 30 722 "2018 — 2020" 9 1 #64748b
+
+TEXT 30 752 "BSc Mathematics" 11 1 #f1f5f9 bold
+TEXT 30 770 "University of Warsaw" 10 1 #cbd5e1
+TEXT 30 788 "2014 — 2018" 9 1 #64748b
+
+LINE 30 812 230 812 1 #334155 1
+
+-- ── Interests ────────────────────────────────────────────
+TEXT 30 836 "INTERESTS" 10 1 #64748b bold
+TEXT 30 860 "Spatial computing" 10 1 #cbd5e1
+TEXT 30 878 "Computer graphics" 10 1 #cbd5e1
+TEXT 30 896 "Language design" 10 1 #cbd5e1
+TEXT 30 914 "Generative AI" 10 1 #cbd5e1
+TEXT 30 932 "Snowboarding" 10 1 #cbd5e1
+
+
+-- ═════════════════════════════════════════════════════════
+-- RIGHT COLUMN — Main Content
+-- ═════════════════════════════════════════════════════════
+
+-- ── Profile Summary ──────────────────────────────────────
+TEXT 290 42 "PROFILE" 11 1 #1e293b bold
+LINE 290 58 810 58 1 #d4d4d4 1
+TEXT 290 78 "Software engineer with a focus on spatial computing," 11 1 #334155
+TEXT 290 96 "domain-specific languages, and creative tooling. Building" 11 1 #334155
+TEXT 290 114 "the bridge between human spatial intuition and machine" 11 1 #334155
+TEXT 290 132 "understanding through compact, token-efficient DSLs." 11 1 #334155
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 290 172 "EXPERIENCE" 11 1 #1e293b bold
+LINE 290 188 810 188 1 #d4d4d4 1
+
+-- Job 1
+RECT 290 202 4 80 0 #3b82f6
+TEXT 306 206 "Senior Software Engineer" 13 1 #1e293b bold
+TEXT 306 226 "Spatial Labs — London" 11 1 #64748b
+TEXT 720 206 "2023 — Present" 9 1 #94a3b8
+TEXT 306 250 "• Designed VOXI DSL for 3D voxel scene description" 10 1 #475569
+TEXT 306 268 "• Built real-time renderer with depth/shading modes" 10 1 #475569
+TEXT 306 286 "• Reduced LLM scene-generation tokens by 85%" 10 1 #475569
+
+-- Job 2
+RECT 290 310 4 80 0 #3b82f6
+TEXT 306 314 "Full Stack Developer" 13 1 #1e293b bold
+TEXT 306 334 "TechFlow — Remote" 11 1 #64748b
+TEXT 720 314 "2021 — 2023" 9 1 #94a3b8
+TEXT 306 358 "• Built microservice architecture serving 2M req/day" 10 1 #475569
+TEXT 306 376 "• Migrated monolith to event-driven system (Kafka)" 10 1 #475569
+TEXT 306 394 "• Led frontend rebuild in Next.js, reduced bundle 60%" 10 1 #475569
+
+-- Job 3
+RECT 290 418 4 62 0 #3b82f6
+TEXT 306 422 "Junior Developer" 13 1 #1e293b bold
+TEXT 306 442 "DataPulse — Warsaw" 11 1 #64748b
+TEXT 720 422 "2020 — 2021" 9 1 #94a3b8
+TEXT 306 466 "• Built ETL pipelines processing 500GB daily" 10 1 #475569
+TEXT 306 484 "• Created internal dashboard with React + D3.js" 10 1 #475569
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 290 524 "PROJECTS" 11 1 #1e293b bold
+LINE 290 540 810 540 1 #d4d4d4 1
+
+-- Project 1
+RECT 290 554 250 130 0 #ffffff 8
+RECT 290 554 250 32 1 #1e293b 8
+TEXT 300 564 "VOXI — Spatial Reasoning DSL" 10 2 #f1f5f9 bold
+TEXT 300 598 "Voxel-based DSL for describing" 9 1 #475569
+TEXT 300 614 "3D scenes in ~100 tokens. Used" 9 1 #475569
+TEXT 300 630 "by LLMs for spatial reasoning" 9 1 #475569
+TEXT 300 646 "and scene generation." 9 1 #475569
+RECT 300 664 48 16 1 #dbeafe 8
+TEXT 306 667 "Python" 8 2 #3b82f6
+RECT 354 664 36 16 1 #dbeafe 8
+TEXT 360 667 "JS" 8 2 #3b82f6
+RECT 396 664 46 16 1 #dbeafe 8
+TEXT 402 667 "WebGL" 8 2 #3b82f6
+
+-- Project 2
+RECT 555 554 250 130 0 #ffffff 8
+RECT 555 554 250 32 1 #1e293b 8
+TEXT 565 564 "Brain Converter" 10 2 #f1f5f9 bold
+TEXT 565 598 "Translates natural language" 9 1 #475569
+TEXT 565 614 "descriptions into structured" 9 1 #475569
+TEXT 565 630 "3D voxel scenes. Combines" 9 1 #475569
+TEXT 565 646 "LLM reasoning + DSL output." 9 1 #475569
+RECT 565 664 56 16 1 #fef3c7 8
+TEXT 571 667 "FastAPI" 8 2 #d97706
+RECT 627 664 62 16 1 #fef3c7 8
+TEXT 633 667 "Claude AI" 8 2 #d97706
+RECT 695 664 48 16 1 #fef3c7 8
+TEXT 701 667 "React" 8 2 #d97706
+
+-- Project 3
+RECT 290 700 250 130 0 #ffffff 8
+RECT 290 700 250 32 1 #1e293b 8
+TEXT 300 710 "Video Depth Reasoning" 10 2 #f1f5f9 bold
+TEXT 300 744 "Extracts spatial structure" 9 1 #475569
+TEXT 300 760 "from video using monocular" 9 1 #475569
+TEXT 300 776 "depth estimation + temporal" 9 1 #475569
+TEXT 300 792 "reasoning with LLMs." 9 1 #475569
+RECT 300 810 56 16 1 #dcfce7 8
+TEXT 306 813 "PyTorch" 8 2 #16a34a
+RECT 362 810 70 16 1 #dcfce7 8
+TEXT 368 813 "DepthPro" 8 2 #16a34a
+RECT 438 810 50 16 1 #dcfce7 8
+TEXT 444 813 "FFmpeg" 8 2 #16a34a
+
+-- Project 4
+RECT 555 700 250 130 0 #ffffff 8
+RECT 555 700 250 32 1 #1e293b 8
+TEXT 565 710 "Sketch-Lang" 10 2 #f1f5f9 bold
+TEXT 565 744 "Minimal 2D vector drawing" 9 1 #475569
+TEXT 565 760 "language with vision matrix" 9 1 #475569
+TEXT 565 776 "output. Converts sketches" 9 1 #475569
+TEXT 565 792 "to ASCII for LLM input." 9 1 #475569
+RECT 565 810 68 16 1 #f3e8ff 8
+TEXT 571 813 "JavaScript" 8 2 #7c3aed
+RECT 639 810 56 16 1 #f3e8ff 8
+TEXT 645 813 "Canvas" 8 2 #7c3aed
+RECT 701 810 40 16 1 #f3e8ff 8
+TEXT 707 813 "DSL" 8 2 #7c3aed
+
+-- ── Certifications & Awards ──────────────────────────────
+TEXT 290 860 "CERTIFICATIONS" 11 1 #1e293b bold
+LINE 290 876 810 876 1 #d4d4d4 1
+
+RECT 294 890 10 10 1 #3b82f6
+TEXT 312 888 "AWS Solutions Architect Associate" 10 1 #334155
+TEXT 660 888 "2023" 9 1 #94a3b8
+
+RECT 294 912 10 10 1 #3b82f6
+TEXT 312 910 "Google Cloud Professional Data Engineer" 10 1 #334155
+TEXT 660 910 "2022" 9 1 #94a3b8
+
+RECT 294 934 10 10 1 #3b82f6
+TEXT 312 932 "Certified Kubernetes Administrator (CKA)" 10 1 #334155
+TEXT 660 932 "2022" 9 1 #94a3b8
+
+-- ── Footer ───────────────────────────────────────────────
+LINE 290 970 810 970 1 #e5e5e5 1
+TEXT 460 988 "Generated with VOXI DSL" 9 1 #c4c4c4

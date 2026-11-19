@@ -1,0 +1,91 @@
+P1
+# Ground shadow
+12 200 1 200 60 1 30 9
+# Left foot
+0 185 0 210 14 4 20 7
+# Right foot
+0 215 0 210 14 4 20 7
+# Left toes
+0 181 0 220 5 3 8 7 40 3 5 0 0
+# Right toes
+0 211 0 220 5 3 8 7 40 3 5 0 0
+# Left ankle
+2 185 4 210 5 6 5 0
+# Right ankle
+2 215 4 210 5 6 5 0
+# Lower body - white belly (egg shape)
+12 200 40 200 32 50 25 8
+# Lower body - black back
+12 200 40 188 30 48 20 0
+# Mid body - white chest
+12 200 75 202 30 45 22 8
+# Mid body - black back
+12 200 75 188 28 43 18 0
+# Upper body - white chest
+12 200 105 201 26 35 20 8
+# Upper body - black back
+12 200 105 190 25 33 17 0
+# Black side panel left
+12 183 70 196 10 55 18 0
+# Black side panel right
+12 217 70 196 10 55 18 0
+# Shoulder area left
+12 178 100 196 10 25 16 0
+# Shoulder area right
+12 222 100 196 10 25 16 0
+# Neck white front
+12 200 125 203 20 20 15 8
+# Neck black back
+12 200 125 192 18 18 13 0
+# Neck black sides left
+12 188 125 198 8 18 12 0
+# Neck black sides right
+12 212 125 198 8 18 12 0
+# Head black main
+1 200 145 198 22 22 20 0
+# Head black top
+12 200 150 196 18 12 16 0
+# White face patch
+12 200 142 206 14 10 6 8
+# White chin
+12 200 136 206 12 6 5 8
+# Left eye
+1 193 148 208 3 3 3 0
+# Right eye
+1 207 148 208 3 3 3 0
+# Beak upper
+3 200 143 215 6 4 10 7
+# Beak lower
+0 200 141 213 5 2 8 7
+# Left flipper upper
+0 170 105 198 6 30 12 0 0 0 -15
+# Left flipper lower
+0 166 80 198 5 28 10 0 0 0 -8
+# Left flipper tip
+12 163 68 198 4 8 8 0
+# Right flipper upper
+0 230 105 198 6 30 12 0 0 0 15
+# Right flipper lower
+0 234 80 198 5 28 10 0 0 0 8
+# Right flipper tip
+12 237 68 198 4 8 8 0
+# Tail feathers
+0 200 30 182 10 12 6 0 0 0 10
+# Tail tip
+3 200 25 178 8 6 8 0
+# Black cap detail
+12 200 155 196 16 8 14 0
+# White belly highlight center
+12 200 55 208 20 30 8 8
+# Lower belly roundness
+12 200 25 204 28 20 18 8
+# Black wing blend left
+12 176 90 194 8 40 14 0
+# Black wing blend right
+12 224 90 194 8 40 14 0
+# Chest white accent
+12 200 90 208 18 20 6 8
+# Foot webbing left
+0 183 1 222 10 2 6 7
+# Foot webbing right
+0 217 1 222 10 2 6 7

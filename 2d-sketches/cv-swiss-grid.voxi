@@ -1,0 +1,126 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 4: Swiss Grid — Typographic, grid-based, red accents
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #ffffff
+
+-- ── Grid lines (visible structure) ───────────────────────
+LINE 220 0 220 1120 0 #f0f0f0 1
+LINE 500 0 500 1120 0 #f0f0f0 1
+
+-- ── Header ───────────────────────────────────────────────
+RECT 0 0 840 8 1 #dc2626
+TEXT 60 50 "Robert" 42 1 #111111 bold
+TEXT 60 96 "Paszek" 42 1 #111111 bold
+RECT 60 116 40 6 1 #dc2626
+
+TEXT 500 60 "Software Engineer" 12 1 #111111
+TEXT 500 80 "robert@example.com" 10 1 #666666
+TEXT 500 98 "github.com/robertpaszek" 10 1 #666666
+TEXT 500 116 "London, UK" 10 1 #666666
+
+LINE 60 148 780 148 1 #111111 1
+
+-- ── Profile ──────────────────────────────────────────────
+TEXT 60 172 "Profile" 10 1 #dc2626 bold
+TEXT 220 172 "Software engineer focused on spatial computing, domain-specific" 10 1 #333333
+TEXT 220 190 "languages, and creative tooling. Building the bridge between" 10 1 #333333
+TEXT 220 208 "human spatial intuition and machine understanding." 10 1 #333333
+
+LINE 60 236 780 236 1 #e0e0e0 1
+
+-- ── Experience ───────────────────────────────────────────
+TEXT 60 260 "Experience" 10 1 #dc2626 bold
+
+TEXT 220 260 "Senior Software Engineer" 12 1 #111111 bold
+TEXT 500 260 "Spatial Labs" 10 1 #666666
+TEXT 700 260 "2023—" 9 1 #999999
+TEXT 220 282 "Designed VOXI DSL for 3D voxel scene description." 10 1 #333333
+TEXT 220 298 "Built real-time renderer with depth/shading modes." 10 1 #333333
+TEXT 220 314 "Reduced LLM scene-generation tokens by 85%." 10 1 #333333
+
+LINE 220 338 780 338 1 #e0e0e0 1
+
+TEXT 220 356 "Full Stack Developer" 12 1 #111111 bold
+TEXT 500 356 "TechFlow" 10 1 #666666
+TEXT 700 356 "2021—23" 9 1 #999999
+TEXT 220 378 "Built microservice architecture serving 2M req/day." 10 1 #333333
+TEXT 220 394 "Migrated monolith to event-driven system (Kafka)." 10 1 #333333
+TEXT 220 410 "Led frontend rebuild in Next.js, reduced bundle 60%." 10 1 #333333
+
+LINE 220 434 780 434 1 #e0e0e0 1
+
+TEXT 220 452 "Junior Developer" 12 1 #111111 bold
+TEXT 500 452 "DataPulse" 10 1 #666666
+TEXT 700 452 "2020—21" 9 1 #999999
+TEXT 220 474 "Built ETL pipelines processing 500GB daily." 10 1 #333333
+TEXT 220 490 "Created internal dashboard with React + D3.js." 10 1 #333333
+
+LINE 60 522 780 522 1 #e0e0e0 1
+
+-- ── Projects ─────────────────────────────────────────────
+TEXT 60 546 "Projects" 10 1 #dc2626 bold
+
+TEXT 220 546 "VOXI" 12 1 #111111 bold
+TEXT 500 546 "Python, JS, WebGL" 9 1 #999999
+TEXT 220 566 "Voxel-based DSL for 3D scenes in ~100 tokens." 10 1 #333333
+TEXT 220 582 "Used by LLMs for spatial reasoning and generation." 10 1 #333333
+
+LINE 220 606 780 606 1 #e0e0e0 1
+
+TEXT 220 624 "Brain Converter" 12 1 #111111 bold
+TEXT 500 624 "FastAPI, Claude AI" 9 1 #999999
+TEXT 220 644 "Natural language to structured 3D voxel scenes." 10 1 #333333
+TEXT 220 660 "Combines LLM reasoning with DSL output pipeline." 10 1 #333333
+
+LINE 220 684 780 684 1 #e0e0e0 1
+
+TEXT 220 702 "Video Depth Reasoning" 12 1 #111111 bold
+TEXT 500 702 "PyTorch, DepthPro" 9 1 #999999
+TEXT 220 722 "Extracts spatial structure from video using monocular" 10 1 #333333
+TEXT 220 738 "depth estimation and temporal LLM reasoning." 10 1 #333333
+
+LINE 220 762 780 762 1 #e0e0e0 1
+
+TEXT 220 780 "Sketch-Lang" 12 1 #111111 bold
+TEXT 500 780 "JavaScript, Canvas" 9 1 #999999
+TEXT 220 800 "Minimal 2D vector drawing language with vision matrix" 10 1 #333333
+TEXT 220 816 "output. Converts sketches to ASCII for LLM input." 10 1 #333333
+
+LINE 60 848 780 848 1 #e0e0e0 1
+
+-- ── Skills ───────────────────────────────────────────────
+TEXT 60 872 "Skills" 10 1 #dc2626 bold
+
+TEXT 220 872 "Languages" 9 1 #999999
+TEXT 320 872 "Python  JavaScript  TypeScript  Go  SQL  Rust" 10 1 #333333
+
+TEXT 220 896 "Frameworks" 9 1 #999999
+TEXT 320 896 "React  Next.js  FastAPI  Flask  Node  Django" 10 1 #333333
+
+TEXT 220 920 "Infrastructure" 9 1 #999999
+TEXT 320 920 "Docker  Kubernetes  AWS  PostgreSQL  Redis" 10 1 #333333
+
+LINE 60 950 780 950 1 #e0e0e0 1
+
+-- ── Education ────────────────────────────────────────────
+TEXT 60 974 "Education" 10 1 #dc2626 bold
+
+TEXT 220 974 "MSc Computer Science" 12 1 #111111 bold
+TEXT 500 974 "University College London" 10 1 #666666
+TEXT 700 974 "2018—20" 9 1 #999999
+
+TEXT 220 1002 "BSc Mathematics" 12 1 #111111 bold
+TEXT 500 1002 "University of Warsaw" 10 1 #666666
+TEXT 700 1002 "2014—18" 9 1 #999999
+
+LINE 60 1032 780 1032 1 #e0e0e0 1
+
+-- ── Certifications ───────────────────────────────────────
+TEXT 60 1056 "Certs" 10 1 #dc2626 bold
+TEXT 220 1056 "AWS Solutions Architect" 10 1 #333333
+TEXT 500 1056 "GCP Data Engineer" 10 1 #333333
+TEXT 220 1076 "Certified Kubernetes Administrator" 10 1 #333333
+
+-- ── Bottom rule ──────────────────────────────────────────
+RECT 0 1112 840 8 0 #dc2626

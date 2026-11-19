@@ -1,0 +1,238 @@
+-- Path A: 2.5D Relief — Depth Estimation + Front Surface Extrusion
+-- Shows how monocular depth turns a photo into a hollow relief
+-- FILM-TITLE: "Path A: 2.5D Relief"
+-- FILM: 0 5 "The Photograph" "A flat **2D image** of a room — table, chair, window, painting. Everything is **1 voxel deep**. This is what a camera captures: color, but no depth."
+-- FILM: 5 10 "Edge Detection" "**Canny/Sobel** filters trace the outlines of every object. White edges appear around the table, chair, window, and painting. This tells us **where** things are in 2D pixel space."
+-- FILM: 10 16 "Depth Estimation" "A **monocular depth model** (MiDAS/Depth Anything) assigns depth to each pixel. Objects separate in Z-space: **red = near** (table), **blue = far** (wall). Relative depth only — not metric."
+-- FILM: 16 21 "Front Extrusion" "Each object gets **extruded backward** from its front surface. The table thickens, the chair gains depth. But only the **front face** has real data — the back is guessed."
+-- FILM: 21 25 "The Result" "Looks great from the front! But rotate it and you see the truth: **it is hollow**. A relief sculpture, not a solid model. One viewpoint only. This is the fundamental limitation of 2.5D."
+V 96 56 56
+DUR 25
+L 1
+
+-- NOTE: 0 5 "Stage 1: The 2D Image (flat photograph)"
+-- NOTE: 5 10 "Stage 2: Edge Detection (finding object boundaries)"
+-- NOTE: 10 16 "Stage 3: Depth Estimation (assigning Z-depth per object)"
+-- NOTE: 16 21 "Stage 4: Front Surface Extrusion (thickening from front)"
+-- NOTE: 21 25 "Stage 5: 2.5D Relief — looks great from front, hollow behind"
+
+-- ============================================
+-- STAGE 1: THE 2D IMAGE (T=0-5)
+-- A flat room scene, 1 voxel deep at Z=28
+-- ============================================
+
+-- Back wall (flat, pale tan)
+B 48 28 28 80 44 clamp(5-T,0,1)*1+1 d
+
+-- Floor
+B 48 8 28 80 4 clamp(5-T,0,1)*1+1 9
+
+-- Window frame on wall
+B 68 36 28+clamp(5-T,0,1)*0.5 16 16 clamp(5-T,0,1)*1+1 a
+
+-- Window glass (cyan)
+B 68 36 28+clamp(5-T,0,1)*0.5 12 12 clamp(5-T,0,1)*1+1 4
+
+-- Window cross bars
+B 68 36 28+clamp(5-T,0,1)*0.3 2 12 clamp(5-T,0,1)*1+1 a
+B 68 36 28+clamp(5-T,0,1)*0.3 12 2 clamp(5-T,0,1)*1+1 a
+
+-- Table top (brown, flat)
+B 32 18 28 24 2 clamp(5-T,0,1)*1+1 a
+
+-- Table left leg
+B 22 12 28 2 10 clamp(5-T,0,1)*1+1 a
+
+-- Table right leg
+B 42 12 28 2 10 clamp(5-T,0,1)*1+1 a
+
+-- Chair seat
+B 56 18 28 10 2 clamp(5-T,0,1)*1+1 e
+
+-- Chair back
+B 56 28 28 10 16 clamp(5-T,0,1)*1+1 e
+
+-- Chair left leg
+B 52 12 28 2 10 clamp(5-T,0,1)*1+1 e
+
+-- Chair right leg
+B 60 12 28 2 10 clamp(5-T,0,1)*1+1 e
+
+-- Vase on table (small sphere)
+S 30 22 28 3 2
+
+-- Painting on wall
+B 20 38 28 12 8 clamp(5-T,0,1)*1+1 1
+B 20 38 28+clamp(5-T,0,1)*0.3 10 6 clamp(5-T,0,1)*1+1 6
+
+-- Rug on floor
+B 44 7 28 30 1 clamp(5-T,0,1)*1+1 e
+
+-- ============================================
+-- STAGE 2: EDGE DETECTION (T=5-10)
+-- White outlines trace object silhouettes
+-- ============================================
+
+-- Wall boundary edges (appear at T=5)
+B 48 50 28 82 clamp(T-5,0,1)*1.5 clamp(T-5,0,1)*1.5 8
+B 48 10 28 82 clamp(T-5.5,0,1)*1.5 clamp(T-5.5,0,1)*1.5 8
+B 8 28 28 clamp(T-5.2,0,1)*1.5 44 clamp(T-5.2,0,1)*1.5 8
+B 88 28 28 clamp(T-5.2,0,1)*1.5 44 clamp(T-5.2,0,1)*1.5 8
+
+-- Window edges
+B 68 36 28+0.8 18 clamp(T-6,0,1)*1.5 clamp(T-6,0,1)*1.5 8
+B 68 36 28+0.8 clamp(T-6.2,0,1)*1.5 18 clamp(T-6.2,0,1)*1.5 8
+B 68 28 28+0.8 18 clamp(T-6.2,0,1)*1.5 clamp(T-6.2,0,1)*1.5 8
+B 68 44 28+0.8 18 clamp(T-6.2,0,1)*1.5 clamp(T-6.2,0,1)*1.5 8
+
+-- Table edges
+B 32 19 28+0.8 26 clamp(T-6.5,0,1)*1.5 clamp(T-6.5,0,1)*1.5 8
+B 32 17 28+0.8 26 clamp(T-6.5,0,1)*1.5 clamp(T-6.5,0,1)*1.5 8
+B 20 18 28+0.8 clamp(T-6.7,0,1)*1.5 12 clamp(T-6.7,0,1)*1.5 8
+B 44 18 28+0.8 clamp(T-6.7,0,1)*1.5 12 clamp(T-6.7,0,1)*1.5 8
+
+-- Chair edges
+B 56 18 28+0.8 12 clamp(T-7,0,1)*1.5 clamp(T-7,0,1)*1.5 8
+B 56 36 28+0.8 12 clamp(T-7.2,0,1)*1.5 clamp(T-7.2,0,1)*1.5 8
+B 51 28 28+0.8 clamp(T-7.2,0,1)*1.5 22 clamp(T-7.2,0,1)*1.5 8
+B 61 28 28+0.8 clamp(T-7.2,0,1)*1.5 22 clamp(T-7.2,0,1)*1.5 8
+
+-- Painting edges
+B 20 38 28+0.8 14 clamp(T-7.5,0,1)*1.5 clamp(T-7.5,0,1)*1.5 8
+
+-- Vase edge highlight
+S 30 22 28+1 clamp(T-7.8,0,1)*4 8
+
+-- ============================================
+-- STAGE 3: DEPTH ESTIMATION (T=10-16)
+-- Objects separate in Z, color shifts to depth map
+-- ============================================
+
+-- Wall pushed BACK (far = blue)
+B 48 28 28+clamp(T-10,0,6)*3 80 44 2 3
+
+-- Floor at mid-far depth
+B 48 8 28+clamp(T-10.5,0,5)*2 80 4 2 3
+
+-- Window in wall (far depth)
+B 68 36 28+clamp(T-10,0,6)*3+0.5 16 16 2 3
+B 68 36 28+clamp(T-10,0,6)*3+1 12 12 2 4
+
+-- Table FORWARD (near = red)
+B 32 18 28-clamp(T-11,0,5)*2 24 2 2 1
+B 22 12 28-clamp(T-11.2,0,5)*1.5 2 10 2 7
+B 42 12 28-clamp(T-11.2,0,5)*1.5 2 10 2 7
+
+-- Chair MID depth (green/yellow)
+B 56 18 28-clamp(T-11.5,0,5)*1 10 2 2 6
+B 56 28 28-clamp(T-11.5,0,5)*0.5 10 16 2 2
+B 52 12 28-clamp(T-11.5,0,5)*1 2 10 2 6
+B 60 12 28-clamp(T-11.5,0,5)*1 2 10 2 6
+
+-- Vase (nearest = bright red)
+S 30 22 28-clamp(T-12,0,4)*3 3 1
+
+-- Painting mid-depth
+B 20 38 28+clamp(T-11,0,5)*1.5 12 8 2 5
+
+-- Rug on floor
+B 44 7 28+clamp(T-10.5,0,5)*1.5 30 1 2 7
+
+-- Depth gradient legend
+B 5 50 28 clamp(T-12,0,1)*6 clamp(T-12,0,1)*3 1 1
+B 5 46 28 clamp(T-12.3,0,1)*6 clamp(T-12.3,0,1)*3 1 6
+B 5 42 28 clamp(T-12.6,0,1)*6 clamp(T-12.6,0,1)*3 1 3
+
+-- ============================================
+-- STAGE 4: FRONT SURFACE EXTRUSION (T=16-21)
+-- Objects thicken from front surface backward
+-- ============================================
+
+-- Wall gets thick extrusion backward
+B 48 28 40 80 44 clamp(T-16,0,4)*5+2 d
+
+-- Floor thickens
+B 48 8 38 80 4 clamp(T-16.3,0,4)*3+2 9
+
+-- Window frame extrudes
+B 68 36 40 16 16 clamp(T-16.5,0,3)*3+2 a
+B 68 36 40 12 12 clamp(T-16.5,0,3)*2+2 4
+B 68 36 40 2 12 clamp(T-16.5,0,3)*2+2 a
+B 68 36 40 12 2 clamp(T-16.5,0,3)*2+2 a
+
+-- Table top extrudes
+B 32 18 24 24 2 clamp(T-17,0,3)*4+2 a
+B 22 12 26 2 10 clamp(T-17.2,0,3)*3+2 a
+B 42 12 26 2 10 clamp(T-17.2,0,3)*3+2 a
+
+-- Chair seat extrudes
+B 56 18 28 10 2 clamp(T-17.5,0,3)*3+2 e
+B 56 28 30 10 16 clamp(T-17.5,0,3)*2+2 e
+B 52 12 28 2 10 clamp(T-17.5,0,3)*3+2 e
+B 60 12 28 2 10 clamp(T-17.5,0,3)*3+2 e
+
+-- Vase extrudes
+S 30 22 22 3+clamp(T-18,0,2)*2 2
+
+-- Painting extrudes slightly
+B 20 38 34 12 8 clamp(T-17.8,0,3)*2+2 1
+B 20 38 34 10 6 clamp(T-17.8,0,3)*2+2 6
+
+-- Cross-section slice indicator (appears T=19-21)
+B 48 28 28+clamp(T-19,0,2)*14 clamp(T-19,0,1)*90 clamp(T-19,0,1)*50 1 8
+
+-- Rug extrudes thin
+B 44 7 36 30 1 clamp(T-16.5,0,3)*2+2 e
+
+-- ============================================
+-- STAGE 5: THE RESULT - 2.5D RELIEF (T=21-25)
+-- Final model with hollow-back indicators
+-- ============================================
+
+-- Final wall
+B 48 28 40 80 44 20 d
+
+-- Final floor
+B 48 8 36 80 4 12 9
+
+-- Final window
+B 68 36 40 16 16 10 a
+B 68 36 40 12 12 8 4
+B 68 36 40 2 12 8 a
+B 68 36 40 12 2 8 a
+
+-- Final table
+B 32 18 24 24 2 14 a
+B 22 12 26 2 10 10 a
+B 42 12 26 2 10 10 a
+
+-- Final chair
+B 56 18 28 10 2 10 e
+B 56 28 30 10 16 8 e
+B 52 12 28 2 10 10 e
+B 60 12 28 2 10 10 e
+
+-- Final vase
+S 30 22 22 5 2
+
+-- Final painting
+B 20 38 34 12 8 8 1
+B 20 38 34 10 6 8 6
+
+-- Final rug
+B 44 7 35 30 1 6 e
+
+-- Hollow back indicators (pulsing)
+B 48 28 52 80*clamp(T-22,0,1) 44*clamp(T-22,0,1) 1 0
+B 48 28 52 78*clamp(T-22.5,0,1) 42*clamp(T-22.5,0,1) bounce(T*2)*1 9
+
+-- Side view indicator arrows
+B 92 40 48 clamp(T-23,0,1)*3 1 1 8
+B 92 28 48 clamp(T-23,0,1)*3 1 1 8
+B 92 16 48 clamp(T-23,0,1)*3 1 1 8
+
+-- Pulsing front surface highlight
+B 48 28 18 80*clamp(T-23,0,1) 44*clamp(T-23,0,1) bounce(T*3)*0.5+0.5 8
+
+-- NOTE: 22 25 "Front looks great! But the back is hollow — only a relief, not full 3D"
+-- NOTE: 23 25 "This is the fundamental limitation of 2.5D: one viewpoint only"

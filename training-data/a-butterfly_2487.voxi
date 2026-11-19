@@ -1,0 +1,46 @@
+V 32 28 8
+
+-- abdomen
+E 16 7 4 2 7 2 0
+
+-- thorax
+S 16 15 4 3 0
+
+-- head
+S 16 20 4 2 0
+
+-- left antenna
+B 14 21 4 1 5 1 0
+S 13 26 4 1 0
+
+-- right antenna
+B 17 21 4 1 5 1 0
+S 18 26 4 1 0
+
+-- upper left wing
+E 7 16 4 8 6 1 5
+
+-- upper right wing
+E 25 16 4 8 6 1 5
+
+-- lower left wing
+E 9 8 4 6 5 1 4
+
+-- lower right wing
+E 23 8 4 6 5 1 4
+
+-- upper wing detail left
+S 7 17 4 2 6
+S 4 14 4 1 7
+
+-- upper wing detail right
+S 25 17 4 2 6
+S 28 14 4 1 7
+
+-- lower wing spots left
+S 10 8 4 2 1
+S 7 6 4 1 6
+
+-- lower wing spots right
+S 22 8 4 2 1
+S 25 6 4 1 6

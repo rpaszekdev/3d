@@ -1,0 +1,31 @@
+V 24 24 24
+
+-- seat cushion
+C 12 17 12 5 2 7
+
+-- seat base
+C 12 16 12 5 1 a
+
+-- front-left leg
+C 9 8 9 1 16 a
+
+-- front-right leg
+C 15 8 9 1 16 a
+
+-- back-left leg
+C 9 8 15 1 16 a
+
+-- back-right leg
+C 15 8 15 1 16 a
+
+-- front footrest
+B 9 8 9 7 1 1 a
+
+-- back footrest
+B 9 8 15 7 1 1 a
+
+-- left footrest
+B 9 8 10 1 1 6 a
+
+-- right footrest
+B 15 8 10 1 1 6 a

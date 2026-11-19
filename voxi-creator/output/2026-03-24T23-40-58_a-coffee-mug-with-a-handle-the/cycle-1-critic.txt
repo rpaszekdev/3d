@@ -1,0 +1,15 @@
+`★ Insight ─────────────────────────────────────`
+When evaluating voxel mugs, the **handle hole** is architecturally the hardest part — it requires a hollow loop, not just an attached block. Builders often achieve this by placing two vertical bars and two horizontal bars, leaving the interior gap empty. The **top opening** of the mug is equally critical and often missed, requiring the cylinder to be built as a hollow shell rather than a solid primitive.
+`─────────────────────────────────────────────────`
+
+SCORE: 5
+STRENGTHS: The handle clearly has a visible, well-formed hole through it — the primary requirement is satisfied and the loop shape is readable from the back, front, and isometric views. The mug body is a good cylindrical/rounded shape with white coloring, and the overall silhouette is immediately recognizable as a coffee mug.
+
+ISSUES:
+- **No hollow top / open rim**: The top view shows a completely filled solid disc — a real mug must have a dark hollow interior visible from above. Carve out the interior by removing the inner cylinder: replace the solid top cap with a ring, e.g., use a C (cylinder) for the outer wall shell and leave Y levels 1–18 hollow inside using only perimeter voxels, or add a dark-colored inner cylinder `C 16 2 16 5 18 9` to simulate the inner wall/cavity.
+- **Model is floating / base is disconnected**: From front, right, and left views the mug body is clearly elevated off the ground with a brown strip and a separate flat white slab hanging below it disconnected. The mug should sit directly on Y=0. Remove the errant slab and ensure `B` or `C` commands for the body start at Y=0.
+- **Mysterious gray rectangular patches on the mug body**: Two gray (color `9`) rectangular blocks are embedded on opposite sides of the white mug body mid-height — they look like broken voxel artifacts or misplaced handle attachment points. Remove them or change them to white (`8`) to match the body: e.g., `B 10 14 15 2 2 2 8` to patch each spot.
+- **Handle is too thin in depth (Z-axis)**: From the right and iso views the handle looks only 1 voxel deep, making it look like a flat sticker rather than a 3D grip. Thicken it to at least 2–3 voxels in Z: change the handle bars from depth 1 to depth 3, e.g., `B 22 12 14 2 2 3 8` for the top bar and `B 22 8 14 2 2 3 8` for the bottom bar.
+- **Brown base ring artifact**: A brown (`a`) band appears at the very bottom of the mug body — likely an unintended leftover box. Either remove it or make it a proper contrasting base ring intentionally: `B 11 0 11 10 1 10 a` for a clean base, otherwise remove entirely and set body to start at Y=0.
+
+PRIORITY_FIX: Add a hollow open top — remove the solid top cap and replace it with a dark interior so the mug reads as an open vessel from above. Use `B 13 19 13 6 1 6 9` (gray inner top layer) to simulate the dark coffee-filled cavity, making the mug instantly more readable from the isometric view.

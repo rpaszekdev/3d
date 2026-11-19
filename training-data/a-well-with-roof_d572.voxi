@@ -1,0 +1,40 @@
+V 24 24 24
+
+-- stone well body
+C 12 0 12 5 7 9
+
+-- water inside
+C 12 1 12 3 5 3
+
+-- left wooden support post
+B 6 7 10 2 8 4 a
+
+-- right wooden support post
+B 16 7 10 2 8 4 a
+
+-- horizontal crossbeam
+B 6 15 10 12 2 4 a
+
+-- rope hanging from beam
+B 12 12 11 1 3 1 9
+
+-- wooden bucket
+B 11 9 11 2 3 2 a
+
+-- roof base layer
+B 5 17 8 14 1 8 6
+
+-- roof layer 2
+B 6 18 9 12 1 6 6
+
+-- roof layer 3
+B 7 19 9 10 1 6 6
+
+-- roof layer 4
+B 8 20 10 8 1 4 6
+
+-- roof layer 5
+B 9 21 10 6 1 4 6
+
+-- roof peak
+B 10 22 11 4 1 2 6

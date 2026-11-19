@@ -1,0 +1,26 @@
+V 32 16 32
+
+-- hull main body
+B 13 0 4 6 3 24 a
+-- bow taper
+B 14 0 2 4 3 2 a
+B 15 0 0 2 3 2 a
+-- stern taper
+B 14 0 28 4 3 2 a
+B 15 0 30 2 3 2 a
+-- gunwale trim left
+B 13 3 4 1 1 24 7
+B 14 3 2 4 1 2 7
+B 14 3 28 4 1 2 7
+-- gunwale trim right
+B 18 3 4 1 1 24 7
+-- interior floor
+B 14 1 4 4 1 24 d
+-- bow seat
+B 13 2 8 6 1 2 d
+-- center thwart
+B 14 2 14 4 1 2 d
+-- stern seat
+B 13 2 20 6 1 2 d
+-- paddle resting inside
+B 15 2 6 1 1 16 7

@@ -1,0 +1,32 @@
+V 24 24 24
+
+-- pot body
+C 12 3 12 5 6 a
+
+-- pot rim
+C 12 6 12 6 1 7
+
+-- soil
+C 12 7 12 4 1 c
+
+-- stem
+C 12 13 12 1 12 2
+
+-- left leaf
+E 8 12 12 4 2 1 2
+
+-- right leaf
+E 16 14 12 4 2 1 2
+
+-- petals outer ring
+S 12 22 12 2 b
+S 12 16 12 2 b
+S 9 19 12 2 b
+S 15 19 12 2 b
+S 10 21 12 2 b
+S 14 21 12 2 b
+S 10 17 12 2 b
+S 14 17 12 2 b
+
+-- flower center
+S 12 19 12 3 6

@@ -1,0 +1,28 @@
+V 22 28 8
+
+-- candy cane stick, alternating red and white stripes
+B 10 0 3 2 2 2 8
+B 10 2 3 2 2 2 1
+B 10 4 3 2 2 2 8
+B 10 6 3 2 2 2 1
+B 10 8 3 2 2 2 8
+B 10 10 3 2 2 2 1
+B 10 12 3 2 2 2 8
+B 10 14 3 2 2 2 1
+B 10 16 3 2 2 2 8
+
+-- hook top of cane
+B 10 18 3 2 2 2 1
+B 10 20 3 2 2 2 8
+
+-- hook curving right
+B 12 20 3 2 2 2 1
+B 14 20 3 2 2 2 8
+B 16 20 3 2 2 2 1
+
+-- hook curving down
+B 16 18 3 2 2 2 8
+B 16 16 3 2 2 2 1
+
+-- tip of hook
+S 17 15 4 1 8

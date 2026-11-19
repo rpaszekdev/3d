@@ -1,0 +1,34 @@
+V 32 32 32
+-- boots
+B 13 0 14 3 2 4 a
+B 18 0 14 3 2 4 a
+-- legs
+B 13 2 14 3 6 4 d
+B 18 2 14 3 6 4 d
+-- torso
+B 12 8 13 10 8 5 3
+-- belt
+B 12 8 13 10 1 5 a
+-- left arm
+B 9 9 14 3 7 3 d
+-- right arm
+B 22 9 14 3 7 3 d
+-- head
+S 16 21 15 4 d
+-- beard
+B 14 17 12 6 3 3 7
+-- helmet base
+B 12 23 13 9 2 5 9
+-- helmet top
+B 14 25 14 6 1 4 9
+-- left horn
+B 9 22 14 3 4 3 8
+-- right horn
+B 22 22 14 3 4 3 8
+-- eyes
+B 14 22 11 2 1 1 0
+B 18 22 11 2 1 1 0
+-- axe handle
+C 7 2 15 1 12 a
+-- axe blade
+B 4 12 14 4 4 2 9

@@ -1,0 +1,37 @@
+V 24 36 24
+
+-- stone foundation
+B 3 0 3 18 3 18 9
+
+-- tower shaft
+B 9 3 9 6 16 6 9
+
+-- wooden platform floor
+B 7 19 7 10 2 10 a
+
+-- parapet walls
+B 7 21 7 10 4 2 9
+B 7 21 17 10 4 2 9
+B 7 21 9 2 4 8 9
+B 17 21 9 2 4 8 9
+
+-- roof overhang
+B 8 25 8 8 2 8 8
+
+-- peaked roof
+E 12 30 12 5 4 5 9
+
+-- door opening
+B 11 3 8 2 4 1 0
+
+-- lower window
+B 11 11 8 2 2 1 0
+
+-- upper window
+B 11 16 8 2 2 1 0
+
+-- flagpole
+C 12 25 7 1 8 8
+
+-- flag
+B 12 29 5 4 2 1 1

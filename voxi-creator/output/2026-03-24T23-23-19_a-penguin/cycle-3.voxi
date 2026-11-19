@@ -1,0 +1,75 @@
+V 32 32 32
+
+-- Feet (orange, wide clown shoes)
+B 9 0 13 6 2 8 7
+B 18 0 13 6 2 8 7
+
+-- Legs (navy)
+B 11 2 15 4 5 5 f
+B 18 2 15 4 5 5 f
+
+-- Main body (navy ellipsoid, pushed back so belly has room)
+E 16 13 19 7 10 6 f
+
+-- White belly (front face: Z=11-16, protrudes past body front at Z=13)
+B 11 4 11 10 18 6 8
+
+-- Tan egg-pouch (Emperor detail, lower belly)
+B 13 4 11 6 9 4 d
+
+-- Left wing (navy flat panel)
+B 6 6 15 3 14 9 f
+
+-- Right wing (navy flat panel)
+B 24 6 15 3 14 9 f
+
+-- Neck narrowing (navy)
+B 13 22 14 6 5 7 f
+
+-- Head sphere (center Z=18, front face at Z=13)
+S 16 28 18 5 f
+
+-- White face patch (front of head, low Z)
+B 11 23 12 10 8 5 8
+
+-- Upper beak (orange, boldly protruding)
+B 14 25 7 4 4 7 7
+
+-- Lower beak
+B 15 23 7 2 3 6 7
+
+-- Left eye white sclera
+B 12 27 12 3 2 2 8
+
+-- Right eye white sclera
+B 18 27 12 3 2 2 8
+
+-- Left pupil (dark)
+P 13 27 11 9
+P 13 28 11 9
+
+-- Right pupil (dark)
+P 19 27 11 9
+P 19 28 11 9
+
+-- Left pupil center
+P 13 27 10 0
+
+-- Right pupil center
+P 19 27 10 0
+
+-- Eyebrow ridges (gray)
+P 12 29 12 9
+P 13 29 12 9
+P 19 29 12 9
+P 20 29 12 9
+
+-- Crown feather tuft (yellow accent, Emperor)
+P 15 31 16 6
+P 16 31 16 6
+P 17 31 16 6
+P 15 32 16 6
+P 17 32 16 6
+
+-- Belly center highlight stripe
+B 15 8 11 2 11 3 8

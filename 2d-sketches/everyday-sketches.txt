@@ -1,0 +1,630 @@
+== SKETCH 01: Brain Anatomy ==
+CANVAS 800 600 #f8f4ef
+TEXT 300 20 "The Human Brain" 24 5 #333 bold
+TEXT 280 50 "Major Structures" 14 5 #888
+
+-- Brain outline (side view, left-facing)
+ELLIPSE 380 280 220 180 1 #e8d8c8
+ELLIPSE 360 260 200 160 2 #f0e0d0
+
+-- Frontal lobe
+ELLIPSE 240 240 100 120 3 #ffccbc
+TEXT 190 220 "Frontal" 14 4 #d84315 bold
+TEXT 200 240 "Lobe" 14 4 #d84315 bold
+TEXT 180 268 "Planning" 10 4 #888
+TEXT 180 282 "Decision-making" 10 4 #888
+
+-- Parietal lobe
+ELLIPSE 380 200 90 80 3 #c8e6c9
+TEXT 340 185 "Parietal" 14 4 #2e7d32 bold
+TEXT 348 205 "Lobe" 14 4 #2e7d32 bold
+TEXT 338 228 "Sensation" 10 4 #888
+
+-- Temporal lobe
+ELLIPSE 300 340 100 60 3 #bbdefb
+TEXT 258 325 "Temporal" 14 4 #1565c0 bold
+TEXT 270 345 "Lobe" 14 4 #1565c0 bold
+TEXT 252 368 "Memory, Hearing" 10 4 #888
+
+-- Occipital lobe
+ELLIPSE 520 260 70 90 3 #e1bee7
+TEXT 486 242 "Occipital" 13 4 #6a1b9a bold
+TEXT 498 262 "Lobe" 13 4 #6a1b9a bold
+TEXT 488 286 "Vision" 10 4 #888
+
+-- Cerebellum
+ELLIPSE 530 360 60 50 3 #fff9c4
+TEXT 500 348 "Cerebellum" 11 4 #f57f17 bold
+TEXT 502 366 "Balance" 10 4 #888
+
+-- Brain stem
+RECT 440 380 40 80 3 #d7ccc8 8
+TEXT 420 400 "Brain" 10 4 #5d4037 bold
+TEXT 422 414 "Stem" 10 4 #5d4037 bold
+
+-- Labels with lines
+LINE 190 260 160 310 4 #d84315 1
+LINE 340 228 310 260 4 #2e7d32 1
+LINE 488 286 480 310 4 #6a1b9a 1
+
+-- Legend
+RECT 30 450 200 130 2 #fff 8
+TEXT 45 465 "Legend:" 12 3 #333 bold
+RECT 45 488 12 12 3 #ffccbc 0
+TEXT 65 488 "Frontal" 11 3 #666
+RECT 45 508 12 12 3 #c8e6c9 0
+TEXT 65 508 "Parietal" 11 3 #666
+RECT 45 528 12 12 3 #bbdefb 0
+TEXT 65 528 "Temporal" 11 3 #666
+RECT 45 548 12 12 3 #e1bee7 0
+TEXT 65 548 "Occipital" 11 3 #666
+
+TEXT 250 570 "Biology 101 — Sarah M. — March 2026" 11 5 #bbb
+
+== SKETCH 02: Mountain Landscape ==
+CANVAS 1000 600 #87ceeb
+-- Sky gradient layers
+RECT 0 0 1000 200 0 #6bb3d9
+RECT 0 200 1000 100 0 #87ceeb
+
+-- Sun
+ELLIPSE 780 100 40 40 1 #fff59d
+ELLIPSE 780 100 50 50 0 #fff9c4
+
+-- Far mountains (pale blue)
+ELLIPSE 200 360 300 140 1 #90a4ae
+ELLIPSE 600 340 350 160 1 #78909c
+ELLIPSE 900 370 250 130 1 #90a4ae
+
+-- Snow caps
+ELLIPSE 200 310 60 30 2 #ffffff
+ELLIPSE 580 300 70 30 2 #ffffff
+ELLIPSE 650 310 50 25 2 #ffffff
+
+-- Mid mountains (dark green)
+ELLIPSE 100 420 250 120 2 #4a6741
+ELLIPSE 450 400 300 140 2 #3e5a35
+ELLIPSE 800 430 280 110 2 #4a6741
+
+-- Pine tree silhouettes (foreground)
+RECT 80 370 6 60 3 #2d4a22
+ELLIPSE 83 360 16 30 3 #2d4a22
+RECT 150 380 5 50 3 #33522a
+ELLIPSE 152 372 14 26 3 #33522a
+RECT 220 385 5 45 3 #2d4a22
+ELLIPSE 222 378 12 22 3 #2d4a22
+RECT 680 375 6 55 3 #2d4a22
+ELLIPSE 683 366 16 28 3 #2d4a22
+RECT 750 390 5 40 3 #33522a
+ELLIPSE 752 384 12 22 3 #33522a
+RECT 850 380 6 50 3 #2d4a22
+ELLIPSE 853 372 14 26 3 #2d4a22
+
+-- Lake
+ELLIPSE 500 500 350 60 2 #5c9dc4
+ELLIPSE 500 500 340 50 3 #6bb3d9
+
+-- Foreground grass
+RECT 0 480 1000 120 3 #5a8a4a
+RECT 0 520 1000 80 3 #4a7a3a
+
+-- Path
+ELLIPSE 500 560 40 60 4 #c8b89a
+ELLIPSE 500 520 30 40 4 #c8b89a
+
+TEXT 20 570 "Mountain Lake — Watercolor Study" 12 5 #2d4a22
+
+== SKETCH 03: Solar System ==
+CANVAS 1200 500 #0a0a1a
+TEXT 500 15 "The Solar System" 24 5 #fff bold
+TEXT 460 45 "Not to scale — for reference" 12 5 #556
+
+-- Sun (partial, left edge)
+ELLIPSE 40 250 80 80 1 #fdd835
+ELLIPSE 40 250 70 70 2 #ffee58
+
+-- Orbits (ellipses)
+ELLIPSE 40 250 140 100 0 #1a1a3a
+ELLIPSE 40 250 200 130 0 #1a1a3a
+ELLIPSE 40 250 280 160 0 #1a1a3a
+ELLIPSE 40 250 380 180 0 #1a1a3a
+ELLIPSE 40 250 520 200 0 #1a1a3a
+ELLIPSE 40 250 680 210 0 #1a1a3a
+ELLIPSE 40 250 860 215 0 #1a1a3a
+ELLIPSE 40 250 1060 220 0 #1a1a3a
+
+-- Planets
+ELLIPSE 170 210 4 4 3 #9e9e9e
+TEXT 160 190 "Mercury" 9 4 #888
+
+ELLIPSE 230 310 7 7 3 #ffcc80
+TEXT 218 330 "Venus" 9 4 #888
+
+ELLIPSE 320 180 8 8 3 #4fc3f7
+TEXT 310 160 "Earth" 9 4 #4fc3f7
+ELLIPSE 328 178 3 3 3 #bdbdbd
+
+ELLIPSE 410 300 6 6 3 #e57373
+TEXT 398 318 "Mars" 9 4 #888
+
+ELLIPSE 550 190 22 22 3 #ffb74d
+ELLIPSE 550 190 18 18 3 #ffa726
+TEXT 535 160 "Jupiter" 10 4 #ffb74d
+
+ELLIPSE 720 280 18 18 3 #e0c088
+ELLIPSE 720 280 28 8 2 #c8a870
+TEXT 706 308 "Saturn" 10 4 #e0c088
+
+ELLIPSE 900 220 12 12 3 #80cbc4
+TEXT 888 200 "Uranus" 9 4 #888
+
+ELLIPSE 1090 260 11 11 3 #5c6bc0
+TEXT 1076 240 "Neptune" 9 4 #888
+
+-- Scale note
+TEXT 400 470 "Distances: Mercury 0.4 AU · Earth 1 AU · Neptune 30 AU" 10 5 #444
+
+== SKETCH 04: Cell Biology ==
+CANVAS 800 700 #fff
+TEXT 250 20 "Animal Cell Diagram" 24 5 #333 bold
+TEXT 300 50 "Biology — Chapter 4" 13 5 #888
+
+-- Cell membrane (outer boundary)
+ELLIPSE 400 370 280 240 1 #e8f5e9
+ELLIPSE 400 370 270 230 2 #c8e6c9
+
+-- Nucleus
+ELLIPSE 350 350 80 70 3 #bbdefb
+ELLIPSE 350 350 70 60 3 #90caf9
+TEXT 315 340 "Nucleus" 13 4 #1565c0 bold
+TEXT 305 360 "Contains DNA" 10 4 #1565c0
+
+-- Nucleolus
+ELLIPSE 360 340 20 18 4 #64b5f6
+TEXT 345 370 "Nucleolus" 8 4 #1565c0
+
+-- Mitochondria (bean shapes)
+ELLIPSE 530 300 30 14 3 #fff3e0
+ELLIPSE 530 300 25 10 3 #ffe0b2
+TEXT 510 322 "Mitochondria" 9 4 #e65100
+TEXT 508 336 "Energy production" 8 4 #888
+
+ELLIPSE 250 430 25 12 3 #fff3e0
+ELLIPSE 250 430 20 8 3 #ffe0b2
+
+-- Endoplasmic Reticulum (wavy lines)
+LINE 420 300 460 280 3 #ce93d8 1
+LINE 460 280 440 260 3 #ce93d8 1
+LINE 440 260 480 240 3 #ce93d8 1
+LINE 420 310 460 290 3 #ce93d8 1
+TEXT 465 248 "ER" 10 4 #7b1fa2
+
+-- Golgi apparatus
+ELLIPSE 300 260 40 10 3 #fff9c4
+ELLIPSE 300 272 35 8 3 #fff59d
+ELLIPSE 300 282 30 6 3 #ffee58
+TEXT 268 300 "Golgi Body" 9 4 #f57f17
+TEXT 255 314 "Packaging proteins" 8 4 #888
+
+-- Ribosomes (dots)
+ELLIPSE 480 380 3 3 3 #ef9a9a
+ELLIPSE 500 390 3 3 3 #ef9a9a
+ELLIPSE 460 400 3 3 3 #ef9a9a
+ELLIPSE 490 410 3 3 3 #ef9a9a
+ELLIPSE 470 420 3 3 3 #ef9a9a
+TEXT 500 404 "Ribosomes" 9 4 #c62828
+TEXT 498 418 "Make proteins" 8 4 #888
+
+-- Lysosomes
+ELLIPSE 530 430 15 15 3 #e1bee7
+TEXT 514 452 "Lysosome" 9 4 #6a1b9a
+TEXT 510 466 "Waste disposal" 8 4 #888
+
+-- Vacuole
+ELLIPSE 260 350 35 30 3 #e0f7fa
+TEXT 236 380 "Vacuole" 9 4 #00838f
+TEXT 230 394 "Storage" 8 4 #888
+
+-- Cell membrane label
+LINE 650 370 680 370 4 #333 1
+TEXT 685 365 "Cell Membrane" 10 4 #333 bold
+TEXT 685 380 "Controls what" 8 4 #888
+TEXT 685 394 "enters/exits" 8 4 #888
+
+TEXT 240 660 "Drawn by: Alex P. — Period 3 — Mrs. Johnson" 11 5 #bbb
+
+== SKETCH 05: Music Theory — Circle of Fifths ==
+CANVAS 700 700 #1a1a2e
+TEXT 220 20 "Circle of Fifths" 28 5 #fff bold
+TEXT 250 55 "Music Theory Reference" 13 5 #888
+
+-- Outer ring (major keys)
+ELLIPSE 350 370 250 250 1 #1e2744
+ELLIPSE 350 370 240 240 2 #232f52
+
+-- Inner ring (minor keys)
+ELLIPSE 350 370 160 160 2 #1a2040
+ELLIPSE 350 370 150 150 3 #1e2848
+
+-- Major keys (outer circle, 12 positions)
+TEXT 338 105 "C" 22 4 #fdd835 bold
+TEXT 460 120 "G" 20 4 #fff
+TEXT 555 185 "D" 20 4 #fff
+TEXT 590 280 "A" 20 4 #fff
+TEXT 565 390 "E" 20 4 #fff
+TEXT 480 480 "B" 20 4 #fff
+TEXT 340 510 "F#" 18 4 #888
+TEXT 210 480 "Db" 18 4 #888
+TEXT 120 390 "Ab" 18 4 #888
+TEXT 90 280 "Eb" 18 4 #fff
+TEXT 120 185 "Bb" 18 4 #fff
+TEXT 218 120 "F" 20 4 #fff
+
+-- Minor keys (inner circle)
+TEXT 338 200 "Am" 14 4 #6c8cff
+TEXT 420 210 "Em" 12 4 #6c8cff
+TEXT 465 260 "Bm" 12 4 #6c8cff
+TEXT 475 340 "F#m" 11 4 #6c8cff
+TEXT 445 400 "C#m" 11 4 #6c8cff
+TEXT 380 440 "G#m" 11 4 #6c8cff
+TEXT 310 440 "Ebm" 11 4 #556
+TEXT 240 400 "Bbm" 11 4 #556
+TEXT 210 340 "Fm" 12 4 #6c8cff
+TEXT 210 260 "Cm" 12 4 #6c8cff
+TEXT 240 210 "Gm" 12 4 #6c8cff
+TEXT 300 200 "Dm" 12 4 #6c8cff
+
+-- Sharps/Flats labels
+TEXT 500 80 "← Sharps" 12 5 #4caf50
+TEXT 140 80 "Flats →" 12 5 #e53935
+
+-- Legend
+TEXT 180 620 "Major keys = outer" 11 5 #fff
+TEXT 180 640 "Minor keys = inner" 11 5 #6c8cff
+TEXT 400 620 "Each step clockwise" 11 5 #888
+TEXT 400 640 "= up a perfect 5th" 11 5 #888
+
+== SKETCH 06: Room Floor Plan ==
+CANVAS 800 600 #fff
+TEXT 260 15 "Apartment Layout" 22 5 #333 bold
+TEXT 300 42 "Scale: 1 unit = 1 foot" 11 5 #888
+
+-- Outer walls
+RECT 50 80 700 460 1 #eee
+RECT 50 80 700 460 2 #333
+
+-- Living room
+RECT 50 80 380 280 2 #f5f5f5
+TEXT 180 90 "Living Room" 14 3 #333 bold
+TEXT 190 110 "16' × 12'" 11 3 #888
+-- Couch
+RECT 80 280 160 40 3 #bbdefb 4
+TEXT 120 290 "Sofa" 10 4 #666
+-- TV
+RECT 80 110 6 60 3 #333 2
+TEXT 92 130 "TV" 10 4 #666
+-- Coffee table
+RECT 150 200 80 40 3 #d7ccc8 4
+-- Window
+RECT 200 80 120 6 4 #64b5f6 0
+
+-- Kitchen
+RECT 430 80 320 200 2 #fff3e0
+TEXT 540 90 "Kitchen" 14 3 #333 bold
+TEXT 550 110 "13' × 8'" 11 3 #888
+-- Counter
+RECT 440 140 300 12 3 #bcaaa4 2
+-- Sink
+RECT 540 140 40 12 4 #90caf9 2
+-- Stove
+RECT 640 140 40 12 4 #ef9a9a 2
+TEXT 544 160 "Sink" 9 4 #666
+TEXT 642 160 "Stove" 9 4 #666
+-- Table
+RECT 500 200 80 50 3 #d7ccc8 4
+TEXT 512 218 "Table" 10 4 #666
+
+-- Bedroom
+RECT 430 280 320 260 2 #e8eaf6
+TEXT 540 290 "Bedroom" 14 3 #333 bold
+TEXT 548 310 "13' × 11'" 11 3 #888
+-- Bed
+RECT 530 370 140 120 3 #c5cae9 6
+TEXT 572 420 "Bed" 12 4 #666
+-- Dresser
+RECT 700 370 40 80 3 #bcaaa4 4
+TEXT 704 404 "Dr" 9 4 #666
+-- Window
+RECT 600 534 100 6 4 #64b5f6 0
+
+-- Bathroom
+RECT 50 360 200 180 2 #e0f7fa
+TEXT 100 370 "Bathroom" 14 3 #333 bold
+TEXT 112 390 "8' × 7'" 11 3 #888
+-- Toilet
+RECT 80 460 30 40 3 #e0e0e0 6
+TEXT 82 474 "WC" 8 4 #888
+-- Shower
+RECT 160 430 70 70 3 #b2ebf2 4
+TEXT 170 460 "Shower" 9 4 #666
+
+-- Hallway
+RECT 250 360 180 120 2 #fafafa
+TEXT 290 410 "Hallway" 12 3 #888
+
+-- Doors (gaps in walls)
+RECT 310 356 50 8 4 #fff 0
+RECT 426 160 8 50 4 #fff 0
+RECT 426 380 8 60 4 #fff 0
+RECT 246 420 8 40 4 #fff 0
+
+-- Compass
+TEXT 720 520 "N" 14 5 #333 bold
+TEXT 730 540 "↑" 16 5 #333
+
+TEXT 200 560 "Apt 4B — 850 sq ft — Drawn: March 2026" 11 5 #bbb
+
+== SKETCH 07: Chemistry — Water Molecule ==
+CANVAS 700 500 #fff
+TEXT 200 20 "Water Molecule (H₂O)" 24 5 #333 bold
+TEXT 220 50 "Molecular Geometry" 14 5 #888
+
+-- Oxygen atom (center)
+ELLIPSE 350 260 60 60 2 #ef9a9a
+ELLIPSE 350 260 50 50 3 #e57373
+TEXT 336 250 "O" 28 4 #fff bold
+TEXT 318 280 "8 protons" 9 4 #fff
+
+-- Hydrogen atom (left)
+ELLIPSE 200 360 35 35 2 #bbdefb
+ELLIPSE 200 360 28 28 3 #90caf9
+TEXT 192 352 "H" 22 4 #fff bold
+
+-- Hydrogen atom (right)
+ELLIPSE 500 360 35 35 2 #bbdefb
+ELLIPSE 500 360 28 28 3 #90caf9
+TEXT 492 352 "H" 22 4 #fff bold
+
+-- Bonds
+LINE 290 300 230 340 3 #666 3
+LINE 410 300 470 340 3 #666 3
+
+-- Bond angle
+LINE 280 310 350 310 4 #ff9800 1
+LINE 350 310 420 310 4 #ff9800 1
+TEXT 330 295 "104.5°" 12 4 #ff9800 bold
+
+-- Electron pairs (lone pairs on oxygen)
+ELLIPSE 330 195 8 8 3 #e0e0e0
+ELLIPSE 370 195 8 8 3 #e0e0e0
+TEXT 310 175 "Lone pairs" 10 4 #888
+
+-- Properties box
+RECT 50 420 250 60 2 #f5f5f5 8
+TEXT 65 432 "Bond length: 0.96 Å" 11 3 #333
+TEXT 65 450 "Molecular mass: 18.015 g/mol" 11 3 #333
+TEXT 65 468 "Shape: Bent / Angular" 11 3 #333
+
+RECT 400 420 250 60 2 #e3f2fd 8
+TEXT 415 432 "Polarity: Polar molecule" 11 3 #1565c0
+TEXT 415 450 "Boiling point: 100°C" 11 3 #1565c0
+TEXT 415 468 "Freezing point: 0°C" 11 3 #1565c0
+
+== SKETCH 08: Guitar Chord Chart ==
+CANVAS 800 600 #f8f4ef
+TEXT 240 20 "Essential Guitar Chords" 24 5 #333 bold
+TEXT 290 50 "Beginner Reference Sheet" 13 5 #888
+
+-- Chord: C Major
+TEXT 80 90 "C Major" 14 4 #333 bold
+RECT 60 115 120 120 2 #fff 4
+-- Frets (horizontal)
+LINE 60 115 180 115 3 #333 2
+LINE 60 145 180 145 3 #999 1
+LINE 60 175 180 175 3 #999 1
+LINE 60 205 180 205 3 #999 1
+LINE 60 235 180 235 3 #999 1
+-- Strings (vertical)
+LINE 60 115 60 235 3 #888 1
+LINE 84 115 84 235 3 #888 1
+LINE 108 115 108 235 3 #888 1
+LINE 132 115 132 235 3 #888 1
+LINE 156 115 156 235 3 #888 1
+LINE 180 115 180 235 3 #888 1
+-- Finger dots
+ELLIPSE 84 160 6 6 4 #333
+ELLIPSE 132 145 6 6 4 #333
+ELLIPSE 60 175 6 6 4 #333
+
+-- Chord: G Major
+TEXT 280 90 "G Major" 14 4 #333 bold
+RECT 260 115 120 120 2 #fff 4
+LINE 260 115 380 115 3 #333 2
+LINE 260 145 380 145 3 #999 1
+LINE 260 175 380 175 3 #999 1
+LINE 260 205 380 205 3 #999 1
+LINE 260 235 380 235 3 #999 1
+LINE 260 115 260 235 3 #888 1
+LINE 284 115 284 235 3 #888 1
+LINE 308 115 308 235 3 #888 1
+LINE 332 115 332 235 3 #888 1
+LINE 356 115 356 235 3 #888 1
+LINE 380 115 380 235 3 #888 1
+ELLIPSE 284 175 6 6 4 #333
+ELLIPSE 260 145 6 6 4 #333
+ELLIPSE 380 175 6 6 4 #333
+
+-- Chord: D Major
+TEXT 480 90 "D Major" 14 4 #333 bold
+RECT 460 115 120 120 2 #fff 4
+LINE 460 115 580 115 3 #333 2
+LINE 460 145 580 145 3 #999 1
+LINE 460 175 580 175 3 #999 1
+LINE 460 205 580 205 3 #999 1
+LINE 460 235 580 235 3 #999 1
+LINE 460 115 460 235 3 #888 1
+LINE 484 115 484 235 3 #888 1
+LINE 508 115 508 235 3 #888 1
+LINE 532 115 532 235 3 #888 1
+LINE 556 115 556 235 3 #888 1
+LINE 580 115 580 235 3 #888 1
+ELLIPSE 508 145 6 6 4 #333
+ELLIPSE 556 175 6 6 4 #333
+ELLIPSE 532 160 6 6 4 #333
+
+-- Chord: Am
+TEXT 80 310 "A Minor" 14 4 #333 bold
+RECT 60 335 120 120 2 #fff 4
+LINE 60 335 180 335 3 #333 2
+LINE 60 365 180 365 3 #999 1
+LINE 60 395 180 395 3 #999 1
+LINE 60 425 180 425 3 #999 1
+LINE 60 455 180 455 3 #999 1
+LINE 60 335 60 455 3 #888 1
+LINE 84 335 84 455 3 #888 1
+LINE 108 335 108 455 3 #888 1
+LINE 132 335 132 455 3 #888 1
+LINE 156 335 156 455 3 #888 1
+LINE 180 335 180 455 3 #888 1
+ELLIPSE 84 365 6 6 4 #333
+ELLIPSE 132 365 6 6 4 #333
+ELLIPSE 108 350 6 6 4 #333
+
+-- Chord: Em
+TEXT 280 310 "E Minor" 14 4 #333 bold
+RECT 260 335 120 120 2 #fff 4
+LINE 260 335 380 335 3 #333 2
+LINE 260 365 380 365 3 #999 1
+LINE 260 395 380 395 3 #999 1
+LINE 260 425 380 425 3 #999 1
+LINE 260 455 380 455 3 #999 1
+LINE 260 335 260 455 3 #888 1
+LINE 284 335 284 455 3 #888 1
+LINE 308 335 308 455 3 #888 1
+LINE 332 335 332 455 3 #888 1
+LINE 356 335 356 455 3 #888 1
+LINE 380 335 380 455 3 #888 1
+ELLIPSE 284 365 6 6 4 #333
+ELLIPSE 308 365 6 6 4 #333
+
+-- Tips
+RECT 460 310 290 150 2 #fff9c4 8
+TEXT 475 325 "Tips:" 13 3 #333 bold
+TEXT 475 348 "• Press strings firmly" 12 3 #555
+TEXT 475 368 "• Keep fingers arched" 12 3 #555
+TEXT 475 388 "• Strum slowly at first" 12 3 #555
+TEXT 475 408 "• Check each string rings" 12 3 #555
+TEXT 475 428 "• Practice transitions!" 12 3 #555
+
+TEXT 220 560 "Practice Sheet — Week 3 — Guitar I" 12 5 #bbb
+
+== SKETCH 09: History Timeline ==
+CANVAS 1200 500 #fafaf5
+TEXT 340 15 "The Space Race (1957–1969)" 24 5 #333 bold
+TEXT 420 45 "Key Milestones" 13 5 #888
+
+-- Timeline bar
+RECT 60 240 1080 4 1 #333
+
+-- Tick marks and dates
+LINE 100 230 100 254 2 #333 2
+TEXT 72 264 "1957" 11 3 #333
+LINE 280 230 280 254 2 #333 2
+TEXT 252 264 "1958" 11 3 #333
+LINE 460 230 460 254 2 #333 2
+TEXT 432 264 "1961" 11 3 #333
+LINE 640 230 640 254 2 #333 2
+TEXT 612 264 "1963" 11 3 #333
+LINE 820 230 820 254 2 #333 2
+TEXT 792 264 "1965" 11 3 #333
+LINE 1000 230 1000 254 2 #333 2
+TEXT 972 264 "1969" 11 3 #333
+
+-- Events (alternating above/below)
+LINE 100 230 100 150 3 #e53935 1
+RECT 40 100 140 50 3 #ffebee 8
+TEXT 52 110 "Sputnik 1" 12 4 #e53935 bold
+TEXT 52 128 "First satellite" 10 4 #888
+
+LINE 280 254 280 310 3 #1e88e5 1
+RECT 210 310 140 50 3 #e3f2fd 8
+TEXT 222 320 "NASA Founded" 12 4 #1e88e5 bold
+TEXT 222 338 "US space agency" 10 4 #888
+
+LINE 460 230 460 130 3 #e53935 1
+RECT 390 80 140 50 3 #ffebee 8
+TEXT 402 90 "Gagarin" 12 4 #e53935 bold
+TEXT 402 108 "First human" 10 4 #888
+
+LINE 540 254 540 330 3 #1e88e5 1
+RECT 470 330 150 50 3 #e3f2fd 8
+TEXT 482 340 "Glenn Orbits" 12 4 #1e88e5 bold
+TEXT 482 358 "US astronaut" 10 4 #888
+
+LINE 820 230 820 140 3 #1e88e5 1
+RECT 750 90 140 50 3 #e3f2fd 8
+TEXT 762 100 "Gemini EVA" 12 4 #1e88e5 bold
+TEXT 762 118 "First spacewalk" 10 4 #888
+
+LINE 1000 254 1000 320 3 #1e88e5 1
+RECT 930 320 160 60 3 #e3f2fd 8
+TEXT 942 330 "Apollo 11" 14 4 #1e88e5 bold
+TEXT 942 350 "Moon Landing!" 12 4 #1e88e5
+TEXT 942 368 "July 20, 1969" 10 4 #888
+
+-- Legend
+RECT 30 430 120 40 2 #ffebee 6
+TEXT 42 442 "USSR" 12 3 #e53935
+RECT 170 430 120 40 2 #e3f2fd 6
+TEXT 182 442 "USA" 12 3 #1e88e5
+
+TEXT 400 470 "World History — Period 5 — Mr. Rodriguez" 11 5 #bbb
+
+== SKETCH 10: Workout Plan ==
+CANVAS 500 800 #111
+TEXT 140 30 "Push Day" 28 4 #fff bold
+TEXT 170 65 "Week 4 — Monday" 14 4 #888
+LINE 40 90 460 90 3 #222 1
+
+RECT 30 110 440 90 2 #1a1d27 12
+TEXT 50 125 "1. Bench Press" 16 3 #fff bold
+TEXT 50 148 "4 × 8 reps" 14 3 #4caf50
+TEXT 50 170 "135 lbs → 145 lbs" 12 3 #888
+RECT 380 130 60 28 3 #2d3244 8
+TEXT 392 138 "Done" 11 4 #4caf50
+
+RECT 30 215 440 90 2 #1a1d27 12
+TEXT 50 230 "2. Overhead Press" 16 3 #fff bold
+TEXT 50 253 "3 × 10 reps" 14 3 #4caf50
+TEXT 50 275 "85 lbs" 12 3 #888
+RECT 380 235 60 28 3 #2d3244 8
+TEXT 392 243 "Done" 11 4 #4caf50
+
+RECT 30 320 440 90 2 #1a1d27 12
+TEXT 50 335 "3. Incline Dumbbell" 16 3 #fff bold
+TEXT 50 358 "3 × 12 reps" 14 3 #ff9800
+TEXT 50 380 "40 lbs each" 12 3 #888
+RECT 380 340 60 28 3 #2d3244 8
+TEXT 398 348 "..." 11 4 #ff9800
+
+RECT 30 425 440 90 2 #1a1d27 12
+TEXT 50 440 "4. Lateral Raises" 16 3 #fff bold
+TEXT 50 463 "3 × 15 reps" 14 3 #888
+TEXT 50 485 "15 lbs each" 12 3 #888
+RECT 380 445 60 28 3 #2d3244 8
+TEXT 400 453 "—" 11 4 #666
+
+RECT 30 530 440 90 2 #1a1d27 12
+TEXT 50 545 "5. Tricep Pushdown" 16 3 #fff bold
+TEXT 50 568 "3 × 12 reps" 14 3 #888
+TEXT 50 590 "40 lbs" 12 3 #888
+RECT 380 550 60 28 3 #2d3244 8
+TEXT 400 558 "—" 11 4 #666
+
+LINE 40 640 460 640 3 #222 1
+TEXT 50 660 "Progress" 14 4 #fff bold
+RECT 50 690 150 16 2 #2d3244 8
+RECT 50 690 90 16 3 #4caf50 8
+TEXT 210 690 "2/5 complete" 12 4 #888
+
+TEXT 120 760 "Personal Training Log" 12 5 #444

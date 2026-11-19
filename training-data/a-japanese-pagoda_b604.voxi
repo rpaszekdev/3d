@@ -1,0 +1,37 @@
+V 32 48 32
+
+-- stone base platform
+B 4 0 4 24 2 24 9
+
+-- tier 1 walls (vermillion red)
+B 8 2 8 16 6 16 e
+-- tier 1 roof eave and cap
+B 4 8 4 24 1 24 9
+B 6 9 6 20 2 20 0
+
+-- tier 2 walls
+B 9 11 9 14 6 14 e
+-- tier 2 roof eave and cap
+B 5 17 5 22 1 22 9
+B 7 18 7 18 2 18 0
+
+-- tier 3 walls
+B 10 20 10 12 5 12 e
+-- tier 3 roof eave and cap
+B 6 25 6 20 1 20 9
+B 8 26 8 16 2 16 0
+
+-- tier 4 walls
+B 11 28 11 10 4 10 e
+-- tier 4 roof eave and cap
+B 7 32 7 18 1 18 9
+B 9 33 9 14 2 14 0
+
+-- tier 5 walls
+B 12 35 12 8 4 8 e
+-- tier 5 roof eave and cap
+B 8 39 8 16 1 16 9
+B 10 40 10 12 2 12 0
+
+-- gold finial spire
+C 16 42 16 1 7 6

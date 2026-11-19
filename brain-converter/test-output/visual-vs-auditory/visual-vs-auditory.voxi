@@ -1,0 +1,36 @@
+V 46 53 63
+-- Visual processing vs auditory processing
+-- Threshold: |t| >= 3.0
+-- 11 significant clusters
+
+-- REGION FUNCTIONS:
+--   L-cerebellum: motor coordination, timing
+--   L-SPL: visuospatial, reaching
+--   L-amygdala: emotion, threat detection, salience
+--   R-fusiform: face perception (FFA)
+--   ACC: conflict monitoring, error detection
+--   SMA: motor planning, sequencing
+--   R-premotor: motor preparation
+
+-- cluster-1: L-cerebellum, 1021 vox, peak t=11.4, MNI (-30,-78,-6)
+E 16 15 11 9 7 8 4
+-- cluster-2: L-cerebellum, 967 vox, peak t=9.7, MNI (-27,-78,57)
+E 17 36 11 11 7 7 4
+-- cluster-3: L-SPL, 652 vox, peak t=-12.1, MNI (-27,-15,84)
+E 17 45 32 5 5 8 5
+-- cluster-4: L-amygdala, 529 vox, peak t=-9.6, MNI (-21,-15,-27)
+E 19 8 32 5 6 8 9
+-- cluster-5: unknown, 96 vox, peak t=7.3, MNI (21,-51,57)
+S 33 36 20 3 8
+-- cluster-6: R-fusiform, 64 vox, peak t=5.9, MNI (27,-51,-12)
+E 35 13 20 4 2 2 2
+-- cluster-7: ACC, 54 vox, peak t=5.7, MNI (12,0,-24)
+E 30 9 37 3 2 2 3
+-- cluster-8: SMA, 43 vox, peak t=5.5, MNI (0,9,75)
+S 26 42 40 2 3
+-- cluster-9: SMA, 32 vox, peak t=5.1, MNI (18,0,81)
+E 32 44 37 3 1 2 3
+-- cluster-10: R-premotor, 31 vox, peak t=5.2, MNI (24,0,57)
+E 34 36 37 3 2 2 3
+-- cluster-11: ACC, 13 vox, peak t=4.2, MNI (0,15,-12)
+E 26 13 42 1 2 2 3

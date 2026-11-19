@@ -1,0 +1,27 @@
+V 24 24 24
+
+-- holder base
+C 12 0 12 6 2 a
+
+-- holder stem
+C 12 2 12 2 3 a
+
+-- holder cup
+C 12 5 12 4 2 a
+
+-- candle body
+C 12 7 12 3 10 8
+
+-- candle top drips
+B 10 15 10 5 1 5 8
+B 9 14 10 1 2 1 f
+B 14 14 10 1 2 1 f
+
+-- flame outer
+E 12 18 12 2 3 2 6
+
+-- flame inner
+E 12 18 12 1 2 1 5
+
+-- flame tip
+S 12 21 12 1 1

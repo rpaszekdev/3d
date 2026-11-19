@@ -1,0 +1,59 @@
+V 32 32 32
+
+-- body
+E 16 9 16 6 4 4 a
+
+-- neck
+B 14 12 12 4 6 3 d
+
+-- head
+E 16 18 11 3 3 3 d
+
+-- snout
+E 16 17 8 2 2 2 d
+
+-- nose
+S 16 17 6 1 1
+
+-- left eye
+S 14 19 9 1 0
+
+-- right eye
+S 18 19 9 1 0
+
+-- front left leg
+C 13 3 13 1 6 a
+
+-- front right leg
+C 19 3 13 1 6 a
+
+-- back left leg
+C 13 3 19 1 6 a
+
+-- back right leg
+C 19 3 19 1 6 a
+
+-- hooves
+S 13 0 13 1 0
+S 19 0 13 1 0
+S 13 0 19 1 0
+S 19 0 19 1 0
+
+-- tail
+B 15 9 20 2 3 2 8
+
+-- left antler stem
+B 12 21 10 2 5 2 a
+
+-- left antler branches
+B 7 25 10 6 2 2 a
+B 7 27 10 2 4 2 a
+B 12 27 10 2 3 2 a
+
+-- right antler stem
+B 18 21 10 2 5 2 a
+
+-- right antler branches
+B 19 25 10 6 2 2 a
+B 19 27 10 2 4 2 a
+B 24 27 10 2 3 2 a

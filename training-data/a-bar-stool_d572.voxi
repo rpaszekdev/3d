@@ -1,0 +1,25 @@
+V 22 34 22
+
+-- seat cushion
+C 11 30 11 5 2 5
+
+-- seat frame ring
+C 11 28 11 6 1 9
+
+-- center pole
+C 11 6 11 1 22 9
+
+-- footrest ring
+C 11 15 11 4 1 9
+
+-- base foot north-west
+B 3 0 3 4 5 4 9
+
+-- base foot north-east
+B 15 0 3 4 5 4 9
+
+-- base foot south-west
+B 3 0 15 4 5 4 9
+
+-- base foot south-east
+B 15 0 15 4 5 4 9

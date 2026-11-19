@@ -1,0 +1,50 @@
+V 46 53 63
+-- Language: auditory vs visual calculation
+-- Threshold: |t| >= 2.5
+-- Color = activation intensity: yellow(low) → orange → red → maroon → white(peak)
+-- 22 significant clusters
+
+-- cluster-1: L-cerebellum (motor coordination, timing), 1314 vox, peak t=-11.4
+E 16 15 12 10 7 9 8
+-- cluster-2: L-cerebellum (motor coordination, timing), 1289 vox, peak t=-9.7
+E 17 36 12 12 7 9 8
+-- cluster-3: L-SPL (visuospatial, reaching), 757 vox, peak t=12.1
+E 17 45 32 5 5 9 8
+-- cluster-4: L-amygdala (emotion, threat detection, salience), 642 vox, peak t=9.6
+E 19 8 31 5 6 8 8
+-- cluster-5: unknown (), 139 vox, peak t=-7.3
+E 33 36 20 4 4 3 e
+-- cluster-6: R-fusiform (face perception (FFA)), 84 vox, peak t=-5.9
+E 35 13 20 4 2 2 1
+-- cluster-7: ACC (conflict monitoring, error detection), 83 vox, peak t=-5.7
+E 31 9 37 4 2 3 1
+-- cluster-8: SMA (motor planning, sequencing), 61 vox, peak t=-5.5
+E 26 42 41 2 3 2 1
+-- cluster-9: R-premotor (motor preparation), 58 vox, peak t=-5.2
+E 34 36 37 3 2 2 1
+-- cluster-10: SMA (motor planning, sequencing), 43 vox, peak t=-5.1
+E 32 44 38 3 2 2 1
+-- cluster-11: R-cerebellum (motor coordination, timing), 26 vox, peak t=-3.5
+E 34 24 14 1 2 2 6
+-- cluster-12: ACC (conflict monitoring, error detection), 23 vox, peak t=-4.2
+E 26 12 42 1 2 3 7
+-- cluster-13: unknown (), 17 vox, peak t=-3.2
+E 18 38 57 2 2 1 6
+-- cluster-14: unknown (), 15 vox, peak t=-4.3
+S 23 45 23 1 7
+-- cluster-15: R-thalamus (sensory relay, attention gating), 14 vox, peak t=-4.1
+E 32 18 34 1 1 2 7
+-- cluster-16: unknown (), 12 vox, peak t=-4.7
+S 23 5 24 1 7
+-- cluster-17: R-cerebellum (motor coordination, timing), 12 vox, peak t=3.4
+E 28 22 20 1 2 1 6
+-- cluster-18: R-cerebellum (motor coordination, timing), 12 vox, peak t=-3.1
+E 28 27 10 2 2 1 6
+-- cluster-19: SMA (motor planning, sequencing), 11 vox, peak t=3.6
+E 22 38 34 2 1 1 6
+-- cluster-20: unknown (), 11 vox, peak t=-3.9
+S 22 43 49 1 6
+-- cluster-21: L-DLPFC (working memory, executive control), 10 vox, peak t=3.1
+E 17 42 44 1 2 1 6
+-- cluster-22: unknown (), 10 vox, peak t=-3.3
+S 26 47 33 1 6

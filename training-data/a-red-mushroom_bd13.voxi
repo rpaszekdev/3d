@@ -1,0 +1,19 @@
+V 16 16 16
+
+-- stem
+C 8 0 8 2 5 8
+
+-- cap underside
+E 8 5 8 5 1 5 8
+
+-- cap main
+E 8 6 8 5 3 5 1
+
+-- cap top highlight
+E 8 8 8 3 1 3 7
+
+-- white spots on cap
+S 6 8 6 1 8
+S 10 7 7 1 8
+S 8 8 10 1 8
+S 5 7 9 1 8

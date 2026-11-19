@@ -1,0 +1,268 @@
+{
+  "source": "/Users/robertpaszek/Desktop/Tilburg University/Deep Learning/Lecture Presentations/1 Multilayer Perceptrons.pptx",
+  "slide_count": 34,
+  "slides": [
+    {
+      "index": 1,
+      "title": "Multilayer Perceptrons",
+      "body": "Dr. Juan Sebastián OlierIntroduction to Deep Learning\nDepartment of Cognitive Sciences and Artificial Intelligence\nTilburg University",
+      "notes": "",
+      "images": [
+        "slide1_img1.png"
+      ]
+    },
+    {
+      "index": 2,
+      "title": "The Perceptron",
+      "body": "𝝨\n\nInputs\n\nOutput\n\nw1\n\nw2\n\nw3\n\nf\n\nx2\n\nx3\n\nx1\n\nw0\n\nExpected Output\n\no\n\ny\n\nError\n\nUse error measure to update the parameters",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 3,
+      "title": "Limitations of the Perceptron",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 4,
+      "title": "Limitations of Perceptrons",
+      "body": "The perceptron can only separate the space linearly:",
+      "notes": "",
+      "images": [
+        "slide4_img1.png",
+        "slide4_img2.gif"
+      ]
+    },
+    {
+      "index": 5,
+      "title": "Limitations of Perceptrons",
+      "body": "Separate the AND function\n\nAND \n\nx1\n\nx2\n\n(1,0)",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 6,
+      "title": "Limitations of Perceptrons",
+      "body": "AND \n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 7,
+      "title": "Limitations of Perceptrons",
+      "body": "How does the XOR look like in the x1- x2 plane?\n\nXOR \n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 8,
+      "title": "Limitations of Perceptrons",
+      "body": "What line can separate the two classes here for the XOR function?\n\nXOR \n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 9,
+      "title": "Limitations of Perceptrons",
+      "body": "No single straight line can separate the point properly.\n\nXOR \n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 10,
+      "title": "Limitations of Perceptrons",
+      "body": "Two perceptrons can separate the points: Any input that lays between the two lines belong to one class, and the rest of the points to a second class.\n\nx2\n\nx1\n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 11,
+      "title": "Limitations of Perceptrons",
+      "body": "x2\n\nx1\n\nx1\n\nx2\n\nXOR\n\nCombining the output of two perceptrons with a third one might solve the problem.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 12,
+      "title": "Limitations of Perceptrons",
+      "body": "x2\n\nx1\n\np1\n\np2\n\nXOR\n\nNote that one option (in this case (1,0)) is not possible for the XOR.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 13,
+      "title": "Limitations of Perceptrons",
+      "body": "x2\n\nx1\n\nXOR\n\nThis solves the problem, but the update rule of the perceptron does not apply to this configuration.\n\np1\n\np2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 14,
+      "title": "Limitations of Perceptrons",
+      "body": "Is this the only possible solution?\n\np1\n\np2\n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 15,
+      "title": "Limitations of Perceptrons",
+      "body": "Is this the only possible solution?\n\np1\n\np2\n\nx1\n\nx2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 16,
+      "title": "Stacking perceptrons",
+      "body": "A layer of multiple perceptrons with the same inputs.\n\n𝝨\n\nw2,1\n\nw2,2\n\nw2,3\n\nf\n\nx2\n\nx3\n\nx1\n\nb2\n\n𝝨\n\nw1,1\n\nw1,2\n\nw1,3\n\nb1\n\nf\n\no1\n\no2",
+      "notes": "",
+      "images": [
+        "slide16_img1.gif"
+      ]
+    },
+    {
+      "index": 17,
+      "title": "Using Matrix Multiplication",
+      "body": "*\t\t\t\t  =\n\nx3\n\nx2\n\nw2,1\n\nw2,2\n\nw2,3\n\nw1,1\n\nw1,2\n\nw1,3\n\nx1\n\ny2 = w2,1x1 + w2,2x2 + w2,3x3\n\ny1 = w1,1x1 + w1,2x2 + w1,3x3\n\ny = Wx\n\nMatrix Multiplication",
+      "notes": "",
+      "images": [
+        "slide17_img1.gif"
+      ]
+    },
+    {
+      "index": 18,
+      "title": "Using Linear Algebra",
+      "body": "Expanded version:\t\n\nUsing Matrix and Vector operations:",
+      "notes": "",
+      "images": [
+        "slide18_img1.gif",
+        "slide18_img2.gif"
+      ]
+    },
+    {
+      "index": 19,
+      "title": "Linear transformations",
+      "body": "x1\n\nx2",
+      "notes": "",
+      "images": [
+        "slide19_img1.png",
+        "slide19_img2.gif"
+      ]
+    },
+    {
+      "index": 20,
+      "title": "Linear transformations",
+      "body": "x1\n\nx2\n\nx1\n\nx2\n\n(-1,1)\n\n(0,0)\n\n(1,-1)",
+      "notes": "",
+      "images": [
+        "slide20_img1.png"
+      ]
+    },
+    {
+      "index": 21,
+      "title": "Linear transformations",
+      "body": "x1\n\nx2\n\nx1\n\nx2\n\n(-1,1)\n\n(0,0)\n\n(1,-1)",
+      "notes": "",
+      "images": [
+        "slide21_img1.gif"
+      ]
+    },
+    {
+      "index": 22,
+      "title": "Linear transformations",
+      "body": "x1\n\nx2\n\nx1\n\nx2\n\n(0,1)\n\n(0,0)\n\n(1,0)",
+      "notes": "",
+      "images": [
+        "slide22_img1.gif"
+      ]
+    },
+    {
+      "index": 23,
+      "title": "Linear transformations",
+      "body": "p1\n\np2",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 24,
+      "title": "The Multilayer Perceptron",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 25,
+      "title": "Multilayer Perceptron",
+      "body": "Form by more than one layer. These layers are called: Dense or Fully Connected layers\n\nx2\n\nx1\n\nx3\n\nInput Layer\n\nHidden Layer\n\nOutput Layer\n\nInputs",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 26,
+      "title": "Multilayer Perceptron",
+      "body": "For a MLP with n layers, the output of each layer (al) is defined as:\nThe output of the network (o) is the output of the last layer.\n\nx2\n\nx1\n\nx3\n\nInput Layer\n\nHidden Layer\n\nOutput Layer\n\nInputs",
+      "notes": "",
+      "images": [
+        "slide26_img1.gif",
+        "slide26_img2.gif"
+      ]
+    },
+    {
+      "index": 27,
+      "title": "Loss Function",
+      "body": "x2\n\nx1\n\nx3\n\nInputs\n\ny2\n\ny1\n\nL\n\nLoss functionAlso called Error or Cost. Calculates the “cost”, or distance between the network’s output and a expected one.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 28,
+      "title": "Example Applications of the MLP",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 29,
+      "title": "Applications of the MLP",
+      "body": "Classification:\n\nMLP\n\n0\n0\n1\n0\n0\n\nInput",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 30,
+      "title": "Applications of the MLP",
+      "body": "Compression:\n\nMLP\n\nInput (reconstruction)\n\nInput\n\nInput (reconstruction)\n\nInput\n\nM units\n\nN unitsN<M\n\nM units",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 31,
+      "title": "Applications of the MLP",
+      "body": "Time series prediction:\n\nMLP\n\nx(t+1)\n\nx(t-2)\n\nx(t-1)\n\nx(t)",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 32,
+      "title": "Applications of the MLP",
+      "body": "Multiple targets:\n\nMLP\n\n0\n0\n1\n0\n\nInput\n\nx\ny\n\nWhat?(Classification) \n\nWhere?(Regression)",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 33,
+      "title": "Applications of the MLP",
+      "body": "Multiple targets:\n\nMLP\n\n1\n0\n\n3\n2\n\nWhat: Diamond \n\nMLP\n\n0\n1\n\n1015\n\nWhere: (3, 2) \n\nWhat: Cross\n\nWhere: (10, 15)",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 34,
+      "title": "",
+      "body": "",
+      "notes": "",
+      "images": []
+    }
+  ]
+}

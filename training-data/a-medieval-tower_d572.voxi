@@ -1,0 +1,40 @@
+V 32 48 32
+
+-- stone foundation
+B 9 0 9 14 3 14 a
+
+-- main tower body
+C 16 18 16 5 30 9
+
+-- roof platform
+B 9 33 9 14 2 14 7
+
+-- battlements front
+B 10 35 10 2 4 2 9
+B 14 35 10 2 4 2 9
+B 19 35 10 2 4 2 9
+
+-- battlements back
+B 10 35 20 2 4 2 9
+B 14 35 20 2 4 2 9
+B 19 35 20 2 4 2 9
+
+-- battlements sides
+B 10 35 14 2 4 2 9
+B 19 35 14 2 4 2 9
+B 10 35 17 2 4 2 9
+B 19 35 17 2 4 2 9
+
+-- entrance arch
+B 14 3 9 4 6 3 0
+
+-- arrow slits
+B 15 11 9 2 4 1 0
+B 15 19 9 2 4 1 0
+B 15 27 9 2 4 1 0
+
+-- flagpole
+B 15 35 15 1 9 1 d
+
+-- flag
+B 16 41 15 5 3 1 1

@@ -1,0 +1,46 @@
+V 32 32 32
+
+-- brass outer case
+C 16 0 16 13 4 a
+
+-- white compass dial
+C 16 3 16 11 2 8
+
+-- glass cover
+C 16 5 16 10 1 4
+
+-- north needle (red)
+B 14 4 8 4 1 8 1
+
+-- south needle (gray)
+B 14 4 16 4 1 8 9
+
+-- center pivot
+S 16 6 16 2 7
+
+-- north cardinal marker (red)
+S 16 6 8 1 1
+
+-- south cardinal marker (black)
+S 16 6 24 1 0
+
+-- east cardinal marker (blue)
+S 24 6 16 1 3
+
+-- west cardinal marker (blue)
+S 8 6 16 1 3
+
+-- NE intercardinal tick
+S 22 5 10 1 d
+
+-- NW intercardinal tick
+S 10 5 10 1 d
+
+-- SE intercardinal tick
+S 22 5 22 1 d
+
+-- SW intercardinal tick
+S 10 5 22 1 d
+
+-- lanyard attachment ring
+S 16 5 4 2 a

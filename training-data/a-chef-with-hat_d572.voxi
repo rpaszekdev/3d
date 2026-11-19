@@ -1,0 +1,42 @@
+V 24 36 16
+
+-- shoes
+B 9 0 6 3 2 3 0
+B 14 0 6 3 2 3 0
+
+-- pants
+B 9 2 6 3 7 3 0
+B 14 2 6 3 7 3 0
+
+-- chef coat body
+B 8 9 5 8 8 5 8
+
+-- coat buttons
+B 11 11 4 1 5 1 9
+
+-- left arm
+B 6 9 6 2 7 3 8
+-- right arm
+B 16 9 6 2 7 3 8
+
+-- neckerchief
+B 10 17 5 4 2 2 1
+
+-- neck
+B 11 17 6 2 2 2 d
+
+-- head
+S 12 20 7 3 d
+
+-- eyes
+B 11 21 4 1 1 1 3
+B 13 21 4 1 1 1 3
+
+-- mustache
+B 10 19 4 4 1 1 0
+
+-- hat brim
+C 12 23 7 5 1 8
+
+-- chef hat
+C 12 24 7 3 7 8

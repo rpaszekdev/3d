@@ -1,0 +1,19 @@
+V 20 20 20
+
+-- apple body
+S 10 8 10 6 1
+
+-- apple top indent
+S 10 13 10 2 1
+
+-- apple bottom
+S 10 3 10 3 1
+
+-- highlight
+S 8 10 8 2 8
+
+-- stem
+C 10 14 10 1 3 a
+
+-- leaf
+B 11 15 10 3 1 2 2

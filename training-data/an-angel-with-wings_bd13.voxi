@@ -1,0 +1,55 @@
+V 32 48 32
+
+-- feet (skin)
+B 12 0 13 4 2 4 d
+B 17 0 13 4 2 4 d
+
+-- robe / gown (white)
+B 10 2 13 12 4 6 8
+B 11 6 13 10 8 6 8
+B 12 14 13 8 6 6 8
+
+-- left arm (skin)
+B 7 15 14 5 6 4 d
+
+-- right arm (skin)
+B 20 15 14 5 6 4 d
+
+-- left hand
+S 9 14 16 2 d
+
+-- right hand
+S 23 14 16 2 d
+
+-- neck (skin)
+B 14 20 14 4 3 4 d
+
+-- head (skin)
+S 16 25 15 4 d
+
+-- hair (yellow)
+S 16 27 15 3 6
+B 13 24 14 7 3 3 6
+
+-- left eye
+S 14 25 12 1 0
+
+-- right eye
+S 18 25 12 1 0
+
+-- halo (gold/yellow, thin ring)
+C 16 30 15 5 1 6
+
+-- left wing upper blade (white)
+B 1 16 15 11 12 2 8
+-- left wing lower sweep
+B 3 10 15 8 8 2 8
+-- left wing tip
+B 0 18 15 3 7 2 4
+
+-- right wing upper blade (white)
+B 20 16 15 11 12 2 8
+-- right wing lower sweep
+B 21 10 15 8 8 2 8
+-- right wing tip
+B 29 18 15 3 7 2 4

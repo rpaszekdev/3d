@@ -1,0 +1,17 @@
+V 32 32 32
+-- SMOOTH FLOW: Cross-section of Poiseuille pipe flow
+-- Velocity magnitude shown as color layers
+-- Blue=slow (boundary), Cyan=medium, Yellow=fast (center)
+
+-- Outer slow layer (blue) — boundary layer
+S 16 16 16 14 3
+
+-- Medium speed layer (cyan)
+S 16 16 16 10 4
+
+-- Fast core (yellow) — peak velocity
+S 16 16 16 5 6
+
+-- This represents a smooth, well-behaved velocity field
+-- Gradient is continuous: 3→4→6 from outside to center
+-- No discontinuities = smooth solution EXISTS here

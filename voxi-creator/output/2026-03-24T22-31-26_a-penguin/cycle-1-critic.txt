@@ -1,0 +1,13 @@
+`★ Insight ─────────────────────────────────────`
+All 6 screenshots are completely black — this is the classic **color 0 invisibility trap** in VOXI. The renderer's dark background (`#13151f`) is nearly indistinguishable from black (`color 0`). When a penguin's body is modeled using black (which seems thematically appropriate!), the entire model vanishes against the dark background. This is a very common pitfall in dark-themed voxel renderers where artists pick "natural" colors that collide with the scene background.
+`─────────────────────────────────────────────────`
+
+SCORE: 1
+STRENGTHS: The model was likely structurally attempted — a penguin is a great choice with a naturally black body, which shows thematic thinking. The geometry probably exists in the file even if invisible.
+
+ISSUES:
+- **Critical — Black body is invisible:** The penguin body was almost certainly built with `color 0` (black), which is completely swallowed by the dark `#13151f` renderer background. Replace the body/head with `f` (navy) instead: e.g. `B 12 0 12 8 18 8 f` for the torso and `S 16 22 16 5 f` for the head. Navy reads as "dark" to the eye but renders visibly.
+- **No contrast elements visible either:** Even the white belly, orange beak, and yellow feet — which should contrast sharply — are not appearing. This suggests either the model is positioned off-grid (outside the 0–32 range), has zero volume, or uses wrong coordinate axes. Double-check all Y values start at `0` (ground) and X/Z are centered around `16` in a 32×32×32 grid.
+- **Possible missing structure altogether:** The complete uniformity of all 6 views (identical pure black) suggests the model may not have rendered at all — not just color issues. Verify the VOXI file has a `V` grid declaration and that all `B`/`S` coordinates are within bounds. Example skeleton: `V 32 32 32` → `B 12 0 12 8 18 8 f` (body) → `S 16 20 16 5 f` (head).
+
+PRIORITY_FIX: Replace **all black (`0`) colors with navy (`f`)** throughout the entire model. This single change will make the penguin visible in all views and allow proper evaluation of its shape and proportions. A penguin in navy looks just as dark and natural, but will actually render against the scene background.

@@ -1,0 +1,31 @@
+V 64 40 64
+-- Haxby 2001: face vs house (pseudo t-statistic)
+-- Threshold: |t| >= 0.8
+-- 10 significant clusters
+
+-- REGION FUNCTIONS:
+--   R-amygdala: emotion, threat detection, salience
+--   R-fusiform: face perception (FFA)
+--   R-hippocampus: memory encoding, spatial navigation
+--   R-cerebellum: motor coordination, timing
+
+-- cluster-1: R-amygdala, 27 vox, peak t=-3.0, MNI (23,-36,-24)
+E 26 25 22 1 2 4 9
+-- cluster-2: unknown, 26 vox, peak t=-2.8, MNI (51,-62,-81)
+E 34 10 15 3 2 2 8
+-- cluster-3: R-fusiform, 19 vox, peak t=-2.5, MNI (44,-47,-36)
+E 32 22 19 3 3 1 2
+-- cluster-4: R-hippocampus, 18 vox, peak t=-1.8, MNI (37,-36,-58)
+E 30 16 22 1 2 2 2
+-- cluster-5: unknown, 16 vox, peak t=-1.8, MNI (23,-36,-73)
+E 26 12 22 1 2 2 8
+-- cluster-6: R-hippocampus, 10 vox, peak t=-1.2, MNI (33,-24,-36)
+E 29 22 25 1 1 2 2
+-- cluster-7: R-cerebellum, 9 vox, peak t=-2.3, MNI (54,-69,-21)
+E 35 26 13 2 1 1 4
+-- cluster-8: R-cerebellum, 9 vox, peak t=-1.1, MNI (47,-62,-17)
+S 33 27 15 1 4
+-- cluster-9: unknown, 6 vox, peak t=-1.8, MNI (44,-43,-58)
+S 32 16 20 1 8
+-- cluster-10: unknown, 5 vox, peak t=-1.8, MNI (54,-51,-73)
+S 35 12 18 1 8

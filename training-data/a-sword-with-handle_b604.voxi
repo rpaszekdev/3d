@@ -1,0 +1,19 @@
+V 16 32 8
+
+-- pommel
+S 8 2 4 2 a
+
+-- grip
+C 8 7 4 1 6 a
+
+-- crossguard
+B 2 10 3 12 1 2 9
+
+-- blade lower
+B 7 11 3 2 12 2 8
+
+-- blade upper
+B 7 23 3 2 5 2 7
+
+-- blade tip
+B 7 28 3 2 2 2 9

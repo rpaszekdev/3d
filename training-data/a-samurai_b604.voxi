@@ -1,0 +1,59 @@
+V 32 32 32
+
+-- legs
+B 13 0 13 3 6 3 0
+B 17 0 13 3 6 3 0
+
+-- hakama skirt
+B 12 5 12 8 5 4 e
+
+-- torso armor do
+B 13 10 12 6 5 4 3
+
+-- chest plate detail
+B 14 11 11 4 3 1 6
+
+-- left shoulder sode
+B 10 12 12 3 3 4 3
+-- right shoulder sode
+B 19 12 12 3 3 4 3
+
+-- left arm
+C 12 8 14 1 5 d
+-- right arm
+C 20 8 14 1 5 d
+
+-- left gauntlet
+B 11 7 13 2 2 2 3
+-- right gauntlet
+B 19 7 13 2 2 2 3
+
+-- neck
+B 15 15 13 2 2 2 d
+
+-- head face
+S 16 17 14 3 d
+
+-- mempo face mask
+B 14 14 12 4 3 2 9
+
+-- kabuto helmet base
+B 13 19 12 6 3 5 0
+
+-- kabuto shikoro neck guard
+B 12 18 12 8 1 5 0
+
+-- kabuto crown top
+B 14 22 12 4 2 4 0
+
+-- kuwagata crest
+B 15 24 13 2 3 1 6
+
+-- katana blade
+B 22 6 14 1 11 1 9
+
+-- tsuba guard
+B 21 16 13 3 1 2 6
+
+-- tsuka handle
+B 22 6 14 1 4 1 a

@@ -1,0 +1,36 @@
+V 32 32 32
+
+-- wooden serving board
+B 3 0 3 26 1 26 d
+
+-- sushi piece 1 - salmon maki
+-- nori outer wrap
+C 10 1 16 5 8 c
+-- rice layer
+C 10 1 16 4 8 8
+-- salmon filling
+C 10 1 16 2 8 7
+
+-- sushi piece 2 - avocado maki
+-- nori outer wrap
+C 22 1 16 5 8 c
+-- rice layer
+C 22 1 16 4 8 8
+-- avocado filling
+C 22 1 16 2 8 2
+
+-- sesame seeds on piece 1
+S 9 9 15 1 8
+S 11 9 17 1 8
+
+-- sesame seeds on piece 2
+S 21 9 15 1 8
+S 23 9 17 1 8
+
+-- soy sauce dish
+C 16 1 7 3 2 3
+-- soy sauce surface
+C 16 2 7 2 1 0
+
+-- pickled ginger slices
+B 13 1 25 6 1 3 b

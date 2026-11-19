@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050505;
+  --surface: rgba(255,255,255,0.03);
+  --surface-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.08);
+  --text: #e0e0e0;
+  --text-dim: #666;
+  --text-bright: #fff;
+  --accent: #fff;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+}
+
+html, body {
+  height: 100%; overflow: hidden;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Background floating models ────────────────────── */
+.bg-models {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+}
+.bg-model {
+  position: absolute;
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: transform 0.15s ease-out;
+}
+.bg-model canvas {
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.06));
+}
+.bg-model.visible {
+  animation: floatIn 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.7); filter: blur(4px); }
+  to { opacity: var(--target-opacity, 0.2); transform: translateY(0) scale(1); filter: blur(0px); }
+}
+
+/* Each model gets its own unique float via JS-applied inline animation */
+
+/* ── Center glow ───────────────────────────────────── */
+.center-glow {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: glowPulse 8s ease-in-out infinite alternate;
+}
+@keyframes glowPulse {
+  from { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* ── Vignette ──────────────────────────────────────── */
+.vignette {
+  position: fixed; inset: 0; z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ── Grain overlay ─────────────────────────────────── */
+.grain {
+  position: fixed; inset: 0; z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+/* ── Layout ────────────────────────────────────────── */
+.app {
+  position: relative; z-index: 2;
+  height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+/* ── Nav ───────────────────────────────────────────── */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-bright);
+}
+.nav-links {
+  display: flex; gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-dim); text-decoration: none;
+  font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--text-bright); }
+
+/* ── Hero ──────────────────────────────────────────── */
+.hero {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 0 40px;
+  position: relative;
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.5vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  text-align: center;
+  color: var(--text-bright);
+  margin-bottom: 20px;
+  max-width: 900px;
+  text-shadow: 0 0 80px rgba(255,255,255,0.08);
+}
+.hero-headline span.accent-word {
+  background: linear-gradient(135deg, #fff 0%, #999 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 15px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 48px;
+  letter-spacing: 0.04em;
+  max-width: 480px;
+  line-height: 1.7;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+/* ── Input bar ─────────────────────────────────────── */
+.input-bar {
+  display: flex; align-items: center;
+  width: 100%; max-width: 580px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 60px;
+  padding: 8px 8px 8px 32px;
+  transition: border-color 0.4s, box-shadow 0.4s, background 0.4s;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  position: relative;
+}
+.input-bar::before {
+  content: '';
+  position: absolute; inset: -1px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 50%, rgba(255,255,255,0.05));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.input-bar:focus-within {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 16px 60px rgba(0,0,0,0.5), 0 0 100px rgba(255,255,255,0.02);
+}
+.input-bar:focus-within::before { opacity: 1; }
+.input-bar input {
+  flex: 1; border: none; outline: none;
+  background: transparent;
+  color: var(--text-bright);
+  font-family: var(--font-body);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+.input-bar input::placeholder { color: var(--text-dim); }
+
+.btn-generate {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none; cursor: pointer;
+  background: var(--text-bright);
+  color: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, opacity 0.2s;
+  flex-shrink: 0;
+}
+.btn-generate:hover { transform: scale(1.05); }
+.btn-generate:active { transform: scale(0.95); }
+.btn-generate:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+.btn-generate svg { width: 18px; height: 18px; }
+
+/* ── Generating state ──────────────────────────────── */
+.input-bar.generating {
+  border-color: rgba(255,255,255,0.15);
+}
+.input-bar.generating .btn-generate {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── Status text ───────────────────────────────────── */
+.status {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  height: 16px;
+  transition: opacity 0.3s;
+}
+.status.error { color: #e53935; }
+
+/* ── Result view ───────────────────────────────────── */
+.result-view {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+  flex-direction: column;
+}
+.result-view.active { display: flex; }
+
+.result-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.result-nav .back-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: none; border: 1px solid var(--border); border-radius: 40px;
+  color: var(--text); font-family: var(--font-body); font-size: 13px;
+  padding: 8px 20px; cursor: pointer;
+  transition: border-color 0.3s, color 0.3s;
+  letter-spacing: 0.03em;
+}
+.result-nav .back-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text-bright); }
+
+.result-actions {
+  display: flex; gap: 10px;
+}
+.result-actions button {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 40px;
+  color: var(--text); font-family: var(--font-body); font-size: 13px;
+  padding: 8px 20px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s, color 0.3s;
+  letter-spacing: 0.03em;
+}
+.result-actions button:hover {
+  border-color: rgba(255,255,255,0.3);
+  background: var(--surface-hover);
+  color: var(--text-bright);
+}
+.result-actions .btn-primary {
+  background: var(--text-bright); color: var(--bg); border-color: transparent;
+}
+.result-actions .btn-primary:hover { opacity: 0.9; background: #fff; }
+
+.result-canvas {
+  flex: 1; position: relative;
+  background: #080808;
+}
+.result-info {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 24px;
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  padding: 10px 24px; border-radius: 40px;
+  border: 1px solid var(--border);
+}
+
+/* ── Prompt display in result ──────────────────────── */
+.result-prompt {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+/* ── Footer ────────────────────────────────────────── */
+.footer {
+  padding: 16px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* ── Loading shimmer on canvas ─────────────────────── */
+.result-canvas .loading-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(5,5,5,0.8);
+  z-index: 10;
+}
+.loading-overlay .spinner {
+  width: 40px; height: 40px;
+  border: 2px solid var(--border);
+  border-top-color: var(--text-bright);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Smooth transitions ────────────────────────────── */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Cycling placeholder ───────────────────────────── */
+.input-bar input.typing-placeholder::placeholder {
+  transition: opacity 0.3s;
+}
+.input-bar input.placeholder-fade::placeholder {
+  opacity: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="center-glow"></div>
+<div class="bg-models" id="bgModels"></div>
+<div class="vignette"></div>
+<div class="grain"></div>
+
+<!-- Main App -->
+<div class="app">
+  <nav class="nav">
+    <div class="nav-logo">3D Creator</div>
+    <ul class="nav-links">
+      <li><a href="#" id="nav-api-key">API Key</a></li>
+    </ul>
+  </nav>
+
+  <main class="hero">
+    <h1 class="hero-headline fade-in">Create <span class="accent-word">3D</span><br>from words</h1>
+    <p class="hero-sub fade-in" style="animation-delay:0.1s">
+      Describe anything &mdash; get an editable 3D model in seconds
+    </p>
+    <div class="input-bar fade-in" style="animation-delay:0.2s" id="inputBar">
+      <input type="text" id="promptInput" placeholder="a medieval sword, a penguin, a japanese pagoda..." autocomplete="off" />
+      <button class="btn-generate" id="btnGenerate" title="Generate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </div>
+    <div class="status" id="status"></div>
+  </main>
+
+  <footer class="footer">
+    <span>Powered by VOXI DSL</span>
+    <span>Text to 3D</span>
+  </footer>
+</div>
+
+<!-- Result View -->
+<div class="result-view" id="resultView">
+  <div class="result-nav">
+    <button class="back-btn" id="btnBack">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back
+    </button>
+    <span class="result-prompt" id="resultPrompt"></span>
+    <div class="result-actions">
+      <button id="btnRegenerate">Regenerate</button>
+      <button id="btnExportObj" class="btn-primary">Export OBJ</button>
+    </div>
+  </div>
+  <div class="result-canvas" id="resultCanvas">
+    <div class="loading-overlay" id="loadingOverlay" style="display:none">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div class="result-info">
+    <span id="infoVoxels">—</span>
+    <span id="infoGrid">—</span>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── VOXI DSL Reference (for the prompt) ─────────────────────
+const VOXI_REF = `VOXI DSL reference:
+V W H D          — Grid size
+B X Y Z W H D C  — Box at position, size, color
+S X Y Z R C      — Sphere at center, radius, color
+C X Y Z R H C    — Cylinder at center, radius, height, color
+K X Y Z R H C    — Cone at center, radius, height, color
+P X Y Z C        — Single voxel point
+E X Y Z RX RY RZ C — Ellipsoid at center, radii, color
+D X Y Z W H D C  — Dome at position, size, color
+G name / /G      — Named group
+@ name X Y Z     — Place group copy at offset
+-- comment
+
+Colors: 0=black 1=red 2=green 3=blue 4=cyan 5=magenta 6=yellow 7=orange 8=white 9=gray a=brown b=pink c=dark-green d=tan e=maroon f=navy
+
+Y axis is UP. Origin (0,0,0) = bottom-left-front corner.`;
+
+// ── VOXI Parser ─────────────────────────────────────────────
+const CKEYS = '0123456789abcdef';
+
+function parseVoxi(code) {
+  let W = 64, H = 64, D = 64;
+  const vm = new Map();
+  const set = (x, y, z, c) => {
+    const ix = Math.round(x), iy = Math.round(y), iz = Math.round(z);
+    if (ix >= 0 && ix < W && iy >= 0 && iy < H && iz >= 0 && iz < D)
+      vm.set(`${ix},${iy},${iz}`, Math.min(Math.max(c || 9, 0), 15));
+  };
+  const addBox = (px,py,pz,w,h,d,c) => { for(let x=px;x<px+w;x++) for(let y=py;y<py+h;y++) for(let z=pz;z<pz+d;z++) set(x,y,z,c); };
+  const addSphere = (cx,cy,cz,r,c) => { const r2=r*r; for(let x=cx-r;x<=cx+r;x++) for(let y=cy-r;y<=cy+r;y++) for(let z=cz-r;z<=cz+r;z++) if((x-cx)**2+(y-cy)**2+(z-cz)**2<=r2) set(x,y,z,c); };
+  const addCyl = (cx,cy,cz,r,h,c) => { const r2=r*r; for(let x=cx-r;x<=cx+r;x++) for(let z=cz-r;z<=cz+r;z++) if((x-cx)**2+(z-cz)**2<=r2) for(let y=cy;y<cy+h;y++) set(x,y,z,c); };
+  const addCone = (cx,cy,cz,r,h,c) => { for(let y=0;y<h;y++){const rr=r*(1-y/h),rr2=rr*rr; for(let x=cx-r;x<=cx+r;x++) for(let z=cz-r;z<=cz+r;z++) if((x-cx)**2+(z-cz)**2<=rr2) set(x,cy+y,z,c);} };
+  const addEllipsoid = (cx,cy,cz,rx,ry,rz,c) => { for(let x=cx-rx;x<=cx+rx;x++) for(let y=cy-ry;y<=cy+ry;y++) for(let z=cz-rz;z<=cz+rz;z++) if(((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2<=1) set(x,y,z,c); };
+  const addDome = (px,py,pz,w,h,d,c) => { const rx=w/2,ry=h,rz=d/2,cx=px+rx,cz=pz+rz; for(let x=px;x<px+w;x++) for(let y=py;y<py+h;y++) for(let z=pz;z<pz+d;z++) if(((x-cx+.5)/rx)**2+((y-py)/ry)**2+((z-cz+.5)/rz)**2<=1) set(x,y,z,c); };
+
+  const groups = {};
+  let currentGroup = null, currentGroupName = null, scale = 1;
+
+  function scaled(cmd, n) {
+    if (scale === 1) return n;
+    const s = [...n];
+    switch(cmd) {
+      case 'B': case 'D': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale));s[4]=Math.max(1,Math.round(s[4]*scale));s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+      case 'S': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale)); break;
+      case 'C': case 'K': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale));s[4]=Math.max(1,Math.round(s[4]*scale)); break;
+      case 'P': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale); break;
+      case 'E': s[0]=Math.round(s[0]*scale);s[1]=Math.round(s[1]*scale);s[2]=Math.round(s[2]*scale);s[3]=Math.max(1,Math.round(s[3]*scale));s[4]=Math.max(1,Math.round(s[4]*scale));s[5]=Math.max(1,Math.round(s[5]*scale)); break;
+    }
+    return s;
+  }
+
+  function execCmd(cmd, n) {
+    const sn = scaled(cmd, n);
+    switch(cmd) {
+      case 'B': addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'S': addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]); break;
+      case 'C': addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'K': addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+      case 'P': set(sn[0],sn[1],sn[2],sn[3]); break;
+      case 'E': addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      case 'D': addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      default: return false;
+    }
+    return true;
+  }
+
+  function placeGroup(name, ox, oy, oz) {
+    const g = groups[name]; if (!g) return;
+    const sox=Math.round(ox*scale),soy=Math.round(oy*scale),soz=Math.round(oz*scale);
+    for (const entry of g) {
+      const sn = scaled(entry.cmd, entry.args);
+      sn[0]+=sox; sn[1]+=soy; sn[2]+=soz;
+      switch(entry.cmd) {
+        case 'B': addBox(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+        case 'S': addSphere(sn[0],sn[1],sn[2],sn[3],sn[4]); break;
+        case 'C': addCyl(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+        case 'K': addCone(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5]); break;
+        case 'P': set(sn[0],sn[1],sn[2],sn[3]); break;
+        case 'E': addEllipsoid(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+        case 'D': addDome(sn[0],sn[1],sn[2],sn[3],sn[4],sn[5],sn[6]); break;
+      }
+    }
+  }
+
+  const lines = code.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || line.startsWith('--') || line.startsWith('//')) continue;
+    const p = line.split(/\s+/);
+    const cmd = p[0].toUpperCase();
+    try {
+      if (cmd === 'G') { currentGroupName = p[1] || `g${i}`; currentGroup = []; continue; }
+      if (cmd === '/G') { if (currentGroup && currentGroupName) groups[currentGroupName] = currentGroup; currentGroup = null; currentGroupName = null; continue; }
+      if (cmd === '@') { placeGroup(p[1], Number(p[2])||0, Number(p[3])||0, Number(p[4])||0); continue; }
+      if (cmd === 'V') { W=Number(p[1])||32; H=Number(p[2])||32; D=Number(p[3])||32; continue; }
+      if (cmd === 'R') { scale = Number(p[1]) || 1; continue; }
+      const rawArgs = p.slice(1);
+      const n = rawArgs.map((s, idx) => (idx === rawArgs.length - 1 && /^[a-f]$/i.test(s)) ? CKEYS.indexOf(s.toLowerCase()) : Number(s));
+      const ok = execCmd(cmd, n);
+      if (currentGroup) currentGroup.push({ cmd, args: n });
+    } catch(e) {}
+  }
+  const voxels = [];
+  for (const [k, c] of vm) { const [x, y, z] = k.split(',').map(Number); voxels.push({ x, y, z, color: c }); }
+  return { gridW: W, gridH: H, gridD: D, voxels };
+}
+
+// ── Background model VOXI data ──────────────────────────────
+const BG_MODELS = [
+  // Sword
+  `V 16 40 16\nS 8 2 8 2 d\nC 8 7 8 1 8 a\nB 2 11 7 12 1 2 9\nB 7 12 7 2 20 2 8\nB 6 12 7 1 20 1 7\nB 9 12 7 1 20 1 7\nB 7 32 7 2 4 2 9\nB 7 36 7 1 3 1 7`,
+  // Penguin
+  `V 24 24 24\nB 9 0 10 2 1 3 7\nB 13 0 10 2 1 3 7\nC 10 1 11 1 3 0\nC 14 1 11 1 3 0\nE 12 8 11 4 6 3 0\nE 12 8 10 3 5 2 8\nB 7 6 10 2 7 3 0\nB 15 6 10 2 7 3 0\nS 12 15 11 3 0\nS 10 16 9 1 8\nS 14 16 9 1 8\nB 11 14 8 2 1 2 7`,
+  // Castle
+  `V 48 48 48\nB 8 0 8 32 1 32 c\nB 14 0 14 20 12 20 9\nC 14 9 14 4 18 9\nC 34 9 14 4 18 9\nC 14 9 34 4 18 9\nC 34 9 34 4 18 9\nS 14 19 14 3 1\nS 34 19 14 3 1\nS 14 19 34 3 1\nS 34 19 34 3 1\nB 14 12 14 20 2 2 9\nB 14 12 32 20 2 2 9\nB 14 12 14 2 2 20 9\nB 32 12 14 2 2 20 9`,
+  // Rocket
+  `V 32 48 32\nB 4 0 4 24 2 24 9\nC 16 5 16 2 4 9\nC 16 19 16 3 22 8\nC 16 12 16 3 3 1\nE 16 32 16 3 5 3 8\nS 16 37 16 3 1\nB 12 7 12 2 9 2 1\nB 18 7 12 2 9 2 1\nB 12 7 20 2 9 2 1\nB 18 7 20 2 9 2 1\nE 16 2 16 3 6 3 7\nE 16 1 16 2 5 2 6`,
+  // Cat
+  `V 24 24 24\nE 12 4 12 5 4 4 7\nE 12 10 12 3 5 3 7\nC 12 15 12 2 2 7\nS 12 18 12 4 7\nB 9 21 10 2 3 2 7\nB 13 21 10 2 3 2 7\nS 10 18 9 1 2\nS 14 18 9 1 2\nS 12 16 9 1 b\nB 9 0 9 3 2 3 7\nB 12 0 9 3 2 3 7\nB 17 1 12 2 5 2 7\nB 19 5 12 2 3 2 7`,
+  // Lighthouse
+  `V 32 48 32\nB 5 0 5 22 3 22 9\nC 16 3 16 5 4 8\nC 16 7 16 4 7 8\nB 12 13 12 8 3 8 1\nC 16 16 16 4 6 8\nB 12 21 12 8 3 8 1\nC 16 24 16 4 5 8\nC 16 29 16 6 2 9\nB 12 31 12 8 5 8 4\nS 16 33 16 2 6\nB 12 36 12 8 1 8 e\nB 13 37 13 6 1 6 e\nB 14 38 14 4 1 4 e`,
+  // Robot
+  `V 24 32 24\nB 8 0 10 4 2 4 7\nB 13 0 10 4 2 4 7\nB 9 2 11 3 5 3 9\nB 13 2 11 3 5 3 9\nB 7 7 10 11 8 4 9\nB 9 9 10 7 5 1 3\nB 4 8 10 3 7 4 9\nB 18 8 10 3 7 4 9\nB 8 15 10 9 6 4 9\nS 10 18 10 1 4\nS 14 18 10 1 4\nB 10 15 10 5 1 1 1\nB 11 21 11 3 3 3 6\nS 12 25 12 2 1`,
+  // Hot air balloon
+  `V 32 48 32\nE 16 32 16 11 15 11 6\nB 15 17 5 2 30 2 1\nB 15 17 25 2 30 2 2\nB 5 17 15 2 30 2 3\nB 25 17 15 2 30 2 5\nS 16 47 16 4 7\nB 12 9 12 1 10 1 9\nB 20 9 12 1 10 1 9\nB 12 9 20 1 10 1 9\nB 20 9 20 1 10 1 9\nB 11 1 11 10 8 10 a\nB 12 2 12 8 5 8 7`,
+  // Samurai
+  `V 32 32 32\nB 13 0 12 3 2 4 0\nB 18 0 12 3 2 4 0\nB 13 2 13 3 6 3 9\nB 18 2 13 3 6 3 9\nB 12 7 13 8 2 4 e\nB 12 9 13 8 7 4 e\nB 13 11 12 6 5 2 3\nB 10 14 13 3 3 4 e\nB 21 14 13 3 3 4 e\nS 16 19 14 3 d\nB 13 19 12 6 3 4 e\nB 14 22 13 4 2 4 e\nB 15 24 14 2 3 2 1\nB 22 11 14 1 11 1 8`,
+  // Treasure chest
+  `V 24 24 24\nB 6 0 7 12 7 10 a\nB 6 2 7 12 1 10 e\nB 6 5 7 12 1 10 e\nB 6 0 7 2 7 10 9\nB 16 0 7 2 7 10 9\nB 11 2 6 2 4 2 6\nB 6 7 16 12 7 1 a\nB 6 7 16 2 7 1 9\nB 16 7 16 2 7 1 9\nS 12 5 12 3 6\nB 9 4 10 2 1 2 6\nB 14 4 11 2 1 2 6`,
+  // Christmas tree
+  `V 24 28 24\nC 12 0 12 2 3 a\nB 3 3 3 18 4 18 2\nB 5 6 5 14 4 14 2\nB 7 9 7 10 4 10 c\nB 8 12 8 8 4 8 2\nB 9 15 9 6 4 6 c\nB 10 18 10 4 3 4 2\nS 12 22 12 2 6\nS 6 4 12 1 1\nS 18 4 12 1 1\nS 9 8 9 1 3\nS 15 8 15 1 3`,
+  // Windmill
+  `V 24 32 24\nB 4 0 4 16 1 16 c\nB 8 1 8 8 18 8 9\nB 10 1 8 4 5 1 a\nB 10 10 8 4 3 1 8\nB 7 19 7 10 2 10 d\nB 8 21 8 8 2 8 d\nS 12 20 7 2 7\nB 11 10 7 2 20 1 8\nB 3 19 7 18 2 1 8`,
+  // Crown
+  `V 24 20 24\nC 12 2 12 8 3 6\nB 11 4 4 2 6 2 6\nB 12 10 5 1 4 1 7\nB 18 4 9 2 6 2 6\nB 7 4 17 2 6 2 6\nB 5 4 9 2 6 2 6\nS 12 2 5 1 1\nS 19 2 10 1 3\nS 16 2 18 1 2\nS 8 2 18 1 5`,
+  // Spaceship
+  `V 32 32 32\nB 12 5 4 8 5 22 8\nB 13 5 2 6 4 2 6\nS 16 11 9 3 4\nB 14 10 7 4 2 4 4\nB 3 4 12 9 2 10 3\nB 20 4 12 9 2 10 3\nB 15 10 14 2 6 10 5\nC 13 7 24 2 5 9\nC 19 7 24 2 5 9\nS 13 7 29 2 6\nS 19 7 29 2 6`,
+  // Anchor
+  `V 24 32 4\nS 12 30 2 2 6\nC 12 4 2 1 22 9\nB 3 23 1 18 2 2 9\nS 12 4 2 2 9\nB 5 3 1 5 2 2 9\nB 14 3 1 5 2 2 9\nB 3 1 1 3 6 2 9\nB 18 1 1 3 6 2 9`,
+];
+
+// ── Render a VOXI model to a small Three.js canvas (white, monochrome) ──
+function renderThumbnail(voxiCode, size = 140) {
+  const parsed = parseVoxi(voxiCode);
+  if (parsed.voxels.length === 0) return null;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(size, size);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 500);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dl = new THREE.DirectionalLight(0xffffff, 1.2);
+  dl.position.set(40, 60, 30); scene.add(dl);
+  const fl = new THREE.DirectionalLight(0xffffff, 0.4);
+  fl.position.set(-30, 40, -20); scene.add(fl);
+
+  const boxGeo = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+  const mat = new THREE.MeshLambertMaterial({ color: 0xdddddd });
+  const mesh = new THREE.InstancedMesh(boxGeo, mat, parsed.voxels.length);
+  const mx = new THREE.Matrix4();
+
+  for (let i = 0; i < parsed.voxels.length; i++) {
+    const v = parsed.voxels[i];
+    mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+    mesh.setMatrixAt(i, mx);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  scene.add(mesh);
+
+  const s = Math.max(parsed.gridW, parsed.gridH, parsed.gridD);
+  camera.position.set(s * 1.4, s * 1.0, s * 1.4);
+  camera.lookAt(parsed.gridW / 2, parsed.gridH / 3, parsed.gridD / 2);
+
+  renderer.render(scene, camera);
+
+  // Cleanup
+  boxGeo.dispose(); mat.dispose(); mesh.dispose();
+  renderer.dispose();
+
+  return canvas;
+}
+
+// ── Place background models with parallax ───────────────────
+const bgElements = [];
+let mouseX = 0.5, mouseY = 0.5;
+
+function populateBackground() {
+  const container = document.getElementById('bgModels');
+
+  // Positions: spread across full page, avoiding center CTA zone
+  const positions = [
+    // Top row
+    { x: 0.03, y: 0.03, depth: 0.7, size: 120 },
+    { x: 0.20, y: 0.06, depth: 0.4, size: 100 },
+    { x: 0.55, y: 0.02, depth: 0.6, size: 110 },
+    { x: 0.80, y: 0.04, depth: 0.5, size: 115 },
+    // Upper sides
+    { x: 0.01, y: 0.25, depth: 0.8, size: 130 },
+    { x: 0.88, y: 0.20, depth: 0.9, size: 125 },
+    // Mid sides (avoid center)
+    { x: 0.02, y: 0.48, depth: 0.5, size: 140 },
+    { x: 0.90, y: 0.42, depth: 0.6, size: 120 },
+    // Lower sides
+    { x: 0.05, y: 0.68, depth: 0.7, size: 115 },
+    { x: 0.85, y: 0.65, depth: 0.4, size: 130 },
+    // Bottom row
+    { x: 0.15, y: 0.82, depth: 0.3, size: 105 },
+    { x: 0.42, y: 0.85, depth: 0.8, size: 110 },
+    { x: 0.65, y: 0.80, depth: 0.5, size: 120 },
+    { x: 0.88, y: 0.78, depth: 0.6, size: 100 },
+    // Extra fills
+    { x: 0.18, y: 0.40, depth: 0.3, size: 90 },
+  ];
+
+  BG_MODELS.forEach((code, i) => {
+    const pos = positions[i % positions.length];
+    const canvas = renderThumbnail(code, pos.size);
+    if (!canvas) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'bg-model';
+    wrapper.style.left = `${pos.x * 100}%`;
+    wrapper.style.top = `${pos.y * 100}%`;
+    // Closer models = brighter, farther = dimmer
+    const opacity = 0.12 + pos.depth * 0.16;
+    wrapper.style.setProperty('--target-opacity', opacity.toFixed(2));
+    wrapper.appendChild(canvas);
+    container.appendChild(wrapper);
+
+    // Unique float parameters per model
+    const floatSpeed = 15 + Math.random() * 20; // seconds
+    const floatRange = 10 + Math.random() * 15; // pixels
+    const floatPhase = Math.random() * Math.PI * 2;
+    const rotRange = 1.5 + Math.random() * 2;
+
+    bgElements.push({ el: wrapper, depth: pos.depth, floatSpeed, floatRange, floatPhase, rotRange, baseX: 0, baseY: 0 });
+
+    // Stagger the entrance
+    setTimeout(() => wrapper.classList.add('visible'), 400 + i * 200);
+  });
+
+  // Mouse parallax
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX / window.innerWidth;
+    mouseY = e.clientY / window.innerHeight;
+  });
+
+  // Animate float + parallax
+  function animateBg(time) {
+    const t = time * 0.001;
+    for (const item of bgElements) {
+      // Organic floating
+      const floatY = Math.sin(t / item.floatSpeed * Math.PI * 2 + item.floatPhase) * item.floatRange;
+      const floatX = Math.cos(t / item.floatSpeed * Math.PI * 2 * 0.7 + item.floatPhase) * item.floatRange * 0.4;
+      const rot = Math.sin(t / item.floatSpeed * Math.PI * 2 * 0.5 + item.floatPhase) * item.rotRange;
+
+      // Parallax based on mouse position + depth
+      const px = (mouseX - 0.5) * item.depth * -40;
+      const py = (mouseY - 0.5) * item.depth * -30;
+
+      item.el.style.transform = `translate(${floatX + px}px, ${floatY + py}px) rotate(${rot}deg)`;
+    }
+    requestAnimationFrame(animateBg);
+  }
+  requestAnimationFrame(animateBg);
+}
+
+// ── Result Three.js renderer ────────────────────────────────
+const COLORS = [0x111111,0xe53935,0x43a047,0x1e88e5,0x00bcd4,0xab47bc,0xfdd835,0xff9800,0xeeeeee,0x9e9e9e,0x8d6e4a,0xff9eb5,0x2e7d32,0xd4b896,0x8b1a1a,0x1a3a6b];
+
+let resultRenderer, resultScene, resultCamera, resultControls, resultMesh, lastParsed;
+
+function initResultRenderer() {
+  const pane = document.getElementById('resultCanvas');
+  resultRenderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  resultRenderer.setPixelRatio(window.devicePixelRatio);
+  resultRenderer.setClearColor(0x080808);
+  resultRenderer.shadowMap.enabled = true;
+  pane.appendChild(resultRenderer.domElement);
+
+  resultScene = new THREE.Scene();
+  resultCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+  resultControls = new OrbitControls(resultCamera, resultRenderer.domElement);
+  resultControls.enableDamping = true;
+  resultControls.dampingFactor = 0.08;
+
+  resultScene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  resultScene.add(new THREE.HemisphereLight(0xffffff, 0x333344, 0.6));
+  const dl = new THREE.DirectionalLight(0xffffff, 1.4);
+  dl.position.set(40, 60, 30); dl.castShadow = true;
+  dl.shadow.mapSize.set(1024, 1024);
+  resultScene.add(dl);
+  const fl = new THREE.DirectionalLight(0xffffff, 0.5);
+  fl.position.set(-30, 40, -20); resultScene.add(fl);
+  const bl = new THREE.DirectionalLight(0xffffff, 0.3);
+  bl.position.set(-10, 20, 50); resultScene.add(bl);
+
+  // Ground shadow plane
+  const gnd = new THREE.Mesh(
+    new THREE.PlaneGeometry(200, 200),
+    new THREE.ShadowMaterial({ opacity: 0.1 })
+  );
+  gnd.rotation.x = -Math.PI / 2;
+  gnd.receiveShadow = true;
+  resultScene.add(gnd);
+
+  function resizeResult() {
+    const { clientWidth: w, clientHeight: h } = pane;
+    resultRenderer.setSize(w, h);
+    resultCamera.aspect = w / h;
+    resultCamera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resizeResult);
+  resizeResult();
+
+  function animateResult() {
+    requestAnimationFrame(animateResult);
+    resultControls.update();
+    resultRenderer.render(resultScene, resultCamera);
+  }
+  animateResult();
+}
+
+function renderResult(parsed) {
+  lastParsed = parsed;
+  if (resultMesh) { resultScene.remove(resultMesh); resultMesh.dispose(); resultMesh = null; }
+  if (parsed.voxels.length === 0) return;
+
+  const boxGeo = new THREE.BoxGeometry(0.96, 0.96, 0.96);
+  const mat = new THREE.MeshLambertMaterial();
+  const mesh = new THREE.InstancedMesh(boxGeo, mat, parsed.voxels.length);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  const mx = new THREE.Matrix4(), cl = new THREE.Color();
+
+  for (let i = 0; i < parsed.voxels.length; i++) {
+    const v = parsed.voxels[i];
+    mx.setPosition(v.x + 0.5, v.y + 0.5, v.z + 0.5);
+    mesh.setMatrixAt(i, mx);
+    cl.setHex(COLORS[v.color] || COLORS[9]);
+    mesh.setColorAt(i, cl);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.instanceColor.needsUpdate = true;
+  resultScene.add(mesh);
+  resultMesh = mesh;
+
+  // Position camera
+  const s = Math.max(parsed.gridW, parsed.gridH, parsed.gridD);
+  resultCamera.position.set(s * 1.5, s * 1.0, s * 1.5);
+  resultControls.target.set(parsed.gridW / 2, parsed.gridH / 4, parsed.gridD / 2);
+  resultControls.update();
+
+  document.getElementById('infoVoxels').textContent = `${parsed.voxels.length} voxels`;
+  document.getElementById('infoGrid').textContent = `${parsed.gridW} × ${parsed.gridH} × ${parsed.gridD}`;
+}
+
+// ── OBJ Export ──────────────────────────────────────────────
+function exportOBJ(parsed) {
+  if (!parsed || parsed.voxels.length === 0) return;
+  let vIdx = 1;
+  let obj = '# VOXI 3D Creator Export\n';
+  const clr = (c) => {
+    const hex = COLORS[c] || COLORS[9];
+    return `${((hex>>16)&0xff)/255} ${((hex>>8)&0xff)/255} ${(hex&0xff)/255}`;
+  };
+
+  // Write MTL references
+  let mtl = '# VOXI Materials\n';
+  for (let c = 0; c < 16; c++) {
+    mtl += `newmtl color_${c}\nKd ${clr(c)}\n\n`;
+  }
+
+  // Group voxels by color
+  const byColor = {};
+  for (const v of parsed.voxels) {
+    (byColor[v.color] = byColor[v.color] || []).push(v);
+  }
+
+  obj += 'mtllib model.mtl\n';
+  for (const [color, voxels] of Object.entries(byColor)) {
+    obj += `usemtl color_${color}\n`;
+    for (const v of voxels) {
+      const x = v.x, y = v.y, z = v.z;
+      // 8 vertices of a unit cube
+      obj += `v ${x} ${y} ${z}\nv ${x+1} ${y} ${z}\nv ${x+1} ${y+1} ${z}\nv ${x} ${y+1} ${z}\n`;
+      obj += `v ${x} ${y} ${z+1}\nv ${x+1} ${y} ${z+1}\nv ${x+1} ${y+1} ${z+1}\nv ${x} ${y+1} ${z+1}\n`;
+      // 6 faces
+      const i = vIdx;
+      obj += `f ${i} ${i+3} ${i+2} ${i+1}\nf ${i+4} ${i+5} ${i+6} ${i+7}\n`;
+      obj += `f ${i} ${i+1} ${i+5} ${i+4}\nf ${i+2} ${i+3} ${i+7} ${i+6}\n`;
+      obj += `f ${i} ${i+4} ${i+7} ${i+3}\nf ${i+1} ${i+2} ${i+6} ${i+5}\n`;
+      vIdx += 8;
+    }
+  }
+
+  // Download OBJ
+  const blob = new Blob([obj], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'model.obj';
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  // Download MTL
+  const mtlBlob = new Blob([mtl], { type: 'text/plain' });
+  const a2 = document.createElement('a');
+  a2.href = URL.createObjectURL(mtlBlob);
+  a2.download = 'model.mtl';
+  a2.click();
+  URL.revokeObjectURL(a2.href);
+}
+
+// ── Qwen API ────────────────────────────────────────────────
+let API_KEY = localStorage.getItem('qwen_api_key') || '';
+
+async function generateVoxi(prompt) {
+  if (!API_KEY) {
+    API_KEY = window.prompt('Enter your Qwen API key:') || '';
+    if (!API_KEY) throw new Error('API key required');
+    localStorage.setItem('qwen_api_key', API_KEY);
+  }
+
+  const systemPrompt = `You are a 3D voxel model generator. You output ONLY valid VOXI DSL code — no explanation, no markdown, no wrapping.
+
+${VOXI_REF}
+
+Rules:
+- Output raw VOXI code only. No \`\`\` fences, no text before or after.
+- Use a 32x32x32 grid unless the object needs more space.
+- Use -- comments to label each part.
+- Use multiple colors for visual detail.
+- Y axis is UP.`;
+
+  const userPrompt = `Make a 3D voxel model of: ${prompt}`;
+
+  const res = await fetch('https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'qwen3.6-plus',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+      enable_thinking: true,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API error ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+  let code = data.choices[0].message.content.trim();
+
+  // Strip <think>...</think> reasoning block
+  code = code.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+  // Strip markdown fences if the model wraps them anyway
+  code = code.replace(/^```(?:voxi)?\n?/i, '').replace(/\n?```$/i, '').trim();
+
+  return code;
+}
+
+// ── UI Logic ────────────────────────────────────────────────
+const inputBar = document.getElementById('inputBar');
+const promptInput = document.getElementById('promptInput');
+const btnGenerate = document.getElementById('btnGenerate');
+const statusEl = document.getElementById('status');
+const resultView = document.getElementById('resultView');
+const loadingOverlay = document.getElementById('loadingOverlay');
+let currentPrompt = '';
+
+async function handleGenerate() {
+  const prompt = promptInput.value.trim();
+  if (!prompt) return;
+  currentPrompt = prompt;
+
+  // Show generating state
+  inputBar.classList.add('generating');
+  btnGenerate.disabled = true;
+  statusEl.textContent = 'GENERATING...';
+  statusEl.className = 'status';
+
+  try {
+    const code = await generateVoxi(prompt);
+    const parsed = parseVoxi(code);
+
+    if (parsed.voxels.length === 0) {
+      statusEl.textContent = 'GENERATION FAILED — NO VOXELS PRODUCED';
+      statusEl.className = 'status error';
+      return;
+    }
+
+    // Show result view
+    resultView.classList.add('active');
+    document.getElementById('resultPrompt').textContent = `"${prompt}"`;
+
+    if (!resultRenderer) initResultRenderer();
+    renderResult(parsed);
+
+    statusEl.textContent = '';
+  } catch (err) {
+    statusEl.textContent = err.message.toUpperCase();
+    statusEl.className = 'status error';
+  } finally {
+    inputBar.classList.remove('generating');
+    btnGenerate.disabled = false;
+  }
+}
+
+btnGenerate.addEventListener('click', handleGenerate);
+promptInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleGenerate();
+});
+
+document.getElementById('btnBack').addEventListener('click', () => {
+  resultView.classList.remove('active');
+});
+
+document.getElementById('btnRegenerate').addEventListener('click', async () => {
+  if (!currentPrompt) return;
+  loadingOverlay.style.display = 'flex';
+  try {
+    const code = await generateVoxi(currentPrompt);
+    const parsed = parseVoxi(code);
+    renderResult(parsed);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    loadingOverlay.style.display = 'none';
+  }
+});
+
+document.getElementById('btnExportObj').addEventListener('click', () => {
+  if (lastParsed) exportOBJ(lastParsed);
+});
+
+document.getElementById('nav-api-key').addEventListener('click', (e) => {
+  e.preventDefault();
+  const key = window.prompt('Enter your Qwen API key:', API_KEY);
+  if (key !== null) {
+    API_KEY = key;
+    localStorage.setItem('qwen_api_key', key);
+  }
+});
+
+// ── Cycling placeholder ─────────────────────────────────────
+const placeholders = [
+  'a medieval sword with ornate handle...',
+  'a penguin standing on ice...',
+  'a japanese pagoda in a garden...',
+  'a rocket on a launch pad...',
+  'a cozy log cabin in the woods...',
+  'a pirate ship with sails...',
+  'a robot with glowing eyes...',
+  'a treasure chest overflowing with gold...',
+];
+let phIdx = 0;
+function cyclePlaceholder() {
+  if (document.activeElement === promptInput && promptInput.value) return;
+  promptInput.classList.add('placeholder-fade');
+  setTimeout(() => {
+    phIdx = (phIdx + 1) % placeholders.length;
+    promptInput.placeholder = placeholders[phIdx];
+    promptInput.classList.remove('placeholder-fade');
+  }, 300);
+}
+setInterval(cyclePlaceholder, 3500);
+
+// ── Init ────────────────────────────────────────────────────
+populateBackground();
+promptInput.focus();
+
+</script>
+</body>
+</html>

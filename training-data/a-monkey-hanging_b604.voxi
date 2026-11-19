@@ -1,0 +1,53 @@
+V 24 32 24
+
+-- hanging bar
+B 2 29 11 20 1 2 c
+
+-- left hand
+S 6 28 12 1 a
+-- right hand
+S 18 28 12 1 a
+
+-- left arm
+C 7 24 12 1 6 a
+-- right arm
+C 17 24 12 1 6 a
+
+-- head
+S 12 20 12 3 a
+
+-- muzzle
+E 12 19 10 2 2 2 d
+
+-- left eye
+S 11 21 10 1 0
+-- right eye
+S 13 21 10 1 0
+
+-- left ear
+S 9 22 12 1 a
+-- right ear
+S 15 22 12 1 a
+
+-- torso
+E 12 13 12 3 5 3 a
+
+-- belly
+E 12 13 11 2 3 2 d
+
+-- left leg
+C 10 7 12 1 5 a
+-- right leg
+C 14 7 12 1 5 a
+
+-- left foot
+S 10 4 12 1 a
+-- right foot
+S 14 4 12 1 a
+
+-- tail base
+B 15 10 12 1 3 1 a
+-- tail curve
+B 16 13 13 1 3 1 a
+-- tail tip
+B 17 16 14 1 2 1 a

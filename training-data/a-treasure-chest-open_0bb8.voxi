@@ -1,0 +1,43 @@
+V 24 24 24
+
+-- chest body (brown wood)
+B 6 0 7 12 7 10 a
+
+-- wood plank lines (maroon)
+B 6 2 7 12 1 10 e
+B 6 5 7 12 1 10 e
+
+-- metal corner reinforcements (gray)
+B 6 0 7 2 7 10 9
+B 16 0 7 2 7 10 9
+
+-- front decorative panel (tan)
+B 8 1 6 8 5 1 d
+
+-- gold lock clasp
+B 11 2 6 2 4 2 6
+
+-- hinges at back top
+C 8 7 17 1 3 9
+C 16 7 17 1 3 9
+
+-- open lid (standing vertical at back)
+B 6 7 16 12 7 1 a
+
+-- lid metal corner bands
+B 6 7 16 2 7 1 9
+B 16 7 16 2 7 1 9
+B 6 13 16 12 1 1 9
+
+-- gold coin pile inside
+S 12 5 12 3 6
+
+-- scattered gold bars
+B 9 4 10 2 1 2 6
+B 14 4 11 2 1 2 6
+B 11 4 14 3 1 2 6
+
+-- gems inside
+S 10 7 11 1 3
+S 15 7 13 1 1
+S 12 8 10 1 5

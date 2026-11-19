@@ -1,0 +1,37 @@
+V 24 32 24
+
+-- tripod left leg
+B 8 0 10 2 14 2 9
+
+-- tripod right leg
+B 14 0 10 2 14 2 9
+
+-- tripod back leg
+B 11 0 15 2 14 2 9
+
+-- tripod head mount
+B 9 13 9 6 3 6 a
+
+-- camera body
+B 9 16 9 6 5 5 7
+
+-- viewfinder hump
+B 10 21 9 4 2 3 9
+
+-- camera grip right
+B 14 16 10 2 5 3 a
+
+-- lens barrel
+B 10 17 6 4 3 3 9
+
+-- lens front glass outer
+S 12 18 6 2 9
+
+-- lens front glass inner
+S 12 18 5 1 3
+
+-- strap lug left
+B 9 20 11 1 1 1 9
+
+-- strap lug right
+B 14 20 11 1 1 1 9

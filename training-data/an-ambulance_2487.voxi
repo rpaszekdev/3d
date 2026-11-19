@@ -1,0 +1,58 @@
+V 48 24 36
+
+-- main body (white)
+B 7 4 4 34 12 28 8
+
+-- cab section lower
+B 7 4 4 34 8 10 8
+
+-- windshield (cyan)
+B 8 8 4 32 5 3 4
+
+-- front bumper (gray)
+B 9 4 4 30 3 3 9
+
+-- rear door panel (gray)
+B 8 4 32 32 12 1 9
+
+-- red stripe along sides
+B 7 10 5 1 4 26 1
+B 40 10 5 1 4 26 1
+
+-- red cross vertical bar
+B 21 7 5 4 10 1 1
+
+-- red cross horizontal bar
+B 16 11 5 14 3 1 1
+
+-- emergency lights bar base (white)
+B 12 16 8 24 2 12 8
+
+-- red lights (front)
+B 13 16 9 8 3 4 1
+
+-- blue lights (rear)
+B 27 16 9 8 3 4 3
+
+-- headlights (yellow)
+B 10 7 4 5 3 1 6
+B 33 7 4 5 3 1 6
+
+-- rear amber lights
+B 10 7 32 5 3 1 7
+B 33 7 32 5 3 1 7
+
+-- front left wheel
+B 6 1 6 4 4 6 0
+
+-- front right wheel
+B 38 1 6 4 4 6 0
+
+-- rear left wheel
+B 6 1 22 4 4 6 0
+
+-- rear right wheel
+B 38 1 22 4 4 6 0
+
+-- ground shadow (dark)
+B 7 0 5 34 1 26 9

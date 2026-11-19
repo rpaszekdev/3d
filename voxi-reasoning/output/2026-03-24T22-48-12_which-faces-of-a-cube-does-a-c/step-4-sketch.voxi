@@ -1,0 +1,24 @@
+V 16 12 16
+
+-- Gray floor
+B 0 0 0 16 1 16 9
+
+-- Cube body (gray) X:6-10, Y:1-5, Z:6-10
+B 6 1 6 4 4 4 9
+
+-- Camera (yellow)
+P 0 8 0 6
+
+-- Ray APPROACH from camera to cube entry corner (cyan)
+P 2 7 2 4
+P 4 6 4 4
+
+-- ENTRY CORNER at (6,5,6) — all 3 visible faces meet here (yellow)
+P 6 5 6 6
+
+-- Ray INTERIOR path through cube (orange)
+P 6 4 6 7
+P 7 4 7 7
+
+-- EXIT/TARGET at (8,4,8) t=1.0 (magenta)
+P 8 4 8 5

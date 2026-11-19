@@ -1,0 +1,48 @@
+V 32 48 32
+
+-- boots
+B 13 0 13 3 2 4 0
+B 18 0 13 3 2 4 0
+
+-- suneate (shin guards)
+B 13 2 14 3 5 2 e
+B 18 2 14 3 5 2 e
+
+-- hakama (wide pants, navy)
+B 12 7 13 8 5 4 f
+
+-- do (chest armor, maroon)
+B 13 12 14 6 7 3 e
+
+-- tassets (hip armor)
+B 11 11 14 2 3 2 e
+B 21 11 14 2 3 2 e
+
+-- kote (arm armor, red)
+B 11 12 14 2 6 2 1
+B 21 12 14 2 6 2 1
+
+-- sode (shoulder pauldrons)
+B 10 17 14 4 3 2 e
+B 20 17 14 4 3 2 e
+
+-- menpo (face mask)
+B 13 19 14 6 3 3 9
+
+-- head
+S 16 22 15 3 d
+
+-- kabuto (helmet, black)
+B 12 23 13 8 5 5 0
+
+-- maedate (crest, gold)
+B 15 28 14 2 5 1 6
+
+-- katana blade
+B 22 5 15 1 14 1 9
+
+-- tsuba (guard, gold)
+B 21 19 15 3 1 1 6
+
+-- hilt
+B 22 20 15 1 4 1 a

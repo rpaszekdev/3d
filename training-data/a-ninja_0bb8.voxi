@@ -1,0 +1,35 @@
+V 24 24 24
+
+-- left leg
+B 8 0 10 4 6 4 0
+-- right leg
+B 13 0 10 4 6 4 0
+
+-- torso
+B 7 6 10 10 7 4 0
+
+-- belt
+B 7 6 10 10 1 4 9
+
+-- left arm
+B 4 6 10 3 6 4 0
+-- right arm
+B 17 6 10 3 6 4 0
+
+-- hands
+B 4 5 10 3 2 4 8
+B 17 5 10 3 2 4 8
+
+-- head mask
+S 12 15 12 3 0
+
+-- red headband
+B 9 16 9 6 1 7 1
+
+-- eye slit
+B 10 15 9 5 1 1 9
+
+-- sword on back
+B 15 8 9 1 9 1 9
+-- sword handle
+B 14 16 9 3 1 1 6

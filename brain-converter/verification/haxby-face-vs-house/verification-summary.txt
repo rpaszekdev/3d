@@ -1,0 +1,26 @@
+Verification: Haxby Face vs House
+NIfTI: /Users/robertpaszek/Desktop/Research/spatial-reasoning-dsl/brain-converter/test-output/haxby-face-vs-house-tmap.nii.gz
+Shape: (40, 64, 64), Threshold: 0.8
+Clusters found: 6
+
+Cluster Details:
+--------------------------------------------------------------------------------
+  # Region                    MNI (x,y,z)            Size   Peak t
+--------------------------------------------------------------------------------
+  1 unknown                   (23,-36,-24)             27     -3.0
+  2 unknown                   (51,-62,-81)             26     -2.8
+  3 unknown                   (44,-47,-36)             19     -2.5
+  4 unknown                   (37,-36,-58)             18     -1.8
+  5 unknown                   (23,-36,-73)             16     -1.8
+  6 unknown                   (33,-24,-36)             10     -1.2
+
+Files generated:
+  1-ground-truth-ortho.png   — Standard nilearn stat map (reference)
+  2-glass-brain.png          — 3D glass brain projection
+  3-axial-slices.png         — Axial slice montage
+  4-cluster-verification.png — Each VOXI cluster at its MNI peak
+  5-atlas-overlay.png        — Clusters with atlas labels
+
+To verify: Compare cluster locations in plot 4 against the VOXI output.
+Each row shows the activation at the exact MNI coordinate the converter reported.
+If the crosshair sits on a bright activation blob, the conversion is correct.

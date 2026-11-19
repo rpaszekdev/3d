@@ -1,0 +1,45 @@
+V 24 24 24
+
+-- ground
+B 2 0 2 20 1 20 a
+
+-- stone well walls
+B 8 1 8 8 5 1 9
+B 8 1 15 8 5 1 9
+B 8 2 8 1 4 7 9
+B 15 2 8 1 4 7 9
+
+-- well cap stones (top rim)
+B 8 6 8 8 1 1 9
+B 8 6 15 8 1 1 9
+B 8 6 9 1 1 6 9
+B 15 6 9 1 1 6 9
+
+-- water inside
+B 9 1 9 6 2 6 3
+
+-- wooden support posts
+B 8 7 8 1 7 1 6
+B 15 7 8 1 7 1 6
+B 8 7 15 1 7 1 6
+B 15 7 15 1 7 1 6
+
+-- crossbeam
+B 8 13 11 8 1 2 6
+
+-- rope and bucket
+C 12 9 12 1 4 a
+B 11 5 11 2 1 2 d
+
+-- roof base layer
+B 6 14 6 12 1 12 1
+
+-- roof middle layer
+B 8 15 8 8 1 8 1
+
+-- roof upper layer
+B 9 16 9 6 1 6 1
+
+-- roof peak
+B 10 17 10 4 1 4 1
+B 11 18 11 2 1 2 1

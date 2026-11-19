@@ -1,0 +1,34 @@
+V 32 32 32
+
+-- stone tower
+C 16 10 16 4 20 d
+
+-- tower door
+B 14 0 12 4 6 2 6
+
+-- tower window
+B 14 12 12 3 3 1 4
+
+-- wooden cap
+B 10 20 12 12 6 8 7
+
+-- cap roof peak
+B 12 26 13 8 3 6 7
+
+-- blade hub
+S 16 23 11 2 8
+
+-- blade up
+B 15 24 10 2 8 1 3
+
+-- blade down
+B 15 15 10 2 8 1 3
+
+-- blade left
+B 7 21 10 8 2 1 3
+
+-- blade right
+B 17 21 10 8 2 1 3
+
+-- ground
+B 0 0 0 32 1 32 c

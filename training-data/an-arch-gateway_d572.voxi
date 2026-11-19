@@ -1,0 +1,31 @@
+V 24 24 6
+
+-- Left pillar
+B 2 0 1 4 16 4 d
+
+-- Right pillar
+B 18 0 1 4 16 4 d
+
+-- Arch left side
+B 3 16 1 4 3 4 9
+
+-- Arch right side
+B 17 16 1 4 3 4 9
+
+-- Arch left curve
+B 6 18 1 3 3 4 9
+
+-- Arch right curve
+B 15 18 1 3 3 4 9
+
+-- Arch crown
+B 8 20 1 8 3 4 9
+
+-- Keystone
+B 11 22 1 2 2 4 6
+
+-- Left plinth
+B 1 0 0 6 3 6 8
+
+-- Right plinth
+B 17 0 0 6 3 6 8

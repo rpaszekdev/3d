@@ -1,0 +1,39 @@
+V 32 32 32
+
+-- upper left wing (orange)
+E 9 13 16 7 4 1 7
+-- upper right wing (orange)
+E 23 13 16 7 4 1 7
+-- lower left wing (orange)
+E 11 8 16 5 3 1 7
+-- lower right wing (orange)
+E 21 8 16 5 3 1 7
+-- upper left wing border (black)
+B 3 10 15 4 6 1 0
+-- upper right wing border (black)
+B 25 10 15 4 6 1 0
+-- lower left wing border (black)
+B 6 5 15 3 5 1 0
+-- lower right wing border (black)
+B 23 5 15 3 5 1 0
+-- white spots upper left
+S 7 15 15 1 8
+S 5 12 15 1 8
+-- white spots upper right
+S 25 15 15 1 8
+S 27 12 15 1 8
+-- wing dividing vein (black)
+B 15 7 16 2 9 1 0
+-- abdomen (striped black/orange)
+E 16 6 16 1 5 1 0
+E 16 8 16 1 2 1 7
+-- thorax
+S 16 12 16 2 a
+-- head
+S 16 15 16 2 a
+-- left antenna
+B 14 16 16 1 3 1 0
+B 17 16 16 1 3 1 0
+-- antenna tips
+S 13 19 16 1 0
+S 18 19 16 1 0

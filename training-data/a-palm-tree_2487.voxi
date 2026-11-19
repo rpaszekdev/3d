@@ -1,0 +1,29 @@
+V 24 24 24
+
+-- trunk
+C 12 0 12 2 14 a
+
+-- trunk lean (slight taper boxes)
+B 11 14 11 3 2 3 a
+B 11 16 10 3 2 3 a
+
+-- frond base
+S 12 18 10 3 c
+
+-- fronds spreading out
+B 12 18 8 1 1 6 c
+B 6 18 12 6 1 1 c
+B 18 18 12 6 1 1 c
+B 12 18 18 1 1 6 c
+B 8 19 8 1 1 5 c
+B 16 19 8 5 1 1 c
+B 8 19 16 1 1 5 c
+B 16 19 16 5 1 1 c
+
+-- coconuts
+S 11 17 10 1 7
+S 13 17 10 1 7
+S 12 17 9 1 7
+
+-- ground shadow / base
+B 10 0 10 4 1 4 6

@@ -1,0 +1,45 @@
+V 32 32 32
+
+-- base
+B 8 0 12 16 2 8 a
+
+-- back panel
+B 8 2 19 16 21 1 9
+
+-- left side panel
+B 8 2 12 1 21 8 7
+
+-- right side panel
+B 23 2 12 1 21 8 7
+
+-- top panel
+B 8 22 12 16 1 8 7
+
+-- interior shelf (mid height)
+B 9 11 13 14 1 6 9
+
+-- hanging rod (upper interior)
+B 9 17 13 14 1 1 8
+
+-- left open door (swung open to the left)
+B 6 2 4 2 20 8 d
+
+-- left door mirror panel
+B 6 8 5 2 8 6 3
+
+-- left door handle
+S 8 12 5 1 8
+
+-- right open door (swung open to the right)
+B 24 2 4 2 20 8 d
+
+-- right door mirror panel
+B 24 8 5 2 8 6 3
+
+-- right door handle
+S 24 12 5 1 8
+
+-- hanging clothes suggestion
+B 10 13 14 3 4 4 1
+B 14 13 14 2 5 4 5
+B 17 13 14 3 3 4 2

@@ -1,0 +1,22 @@
+V 24 22 6
+
+-- foundation
+B 0 0 1 24 2 4 9
+
+-- left pillar
+B 2 2 1 4 12 4 d
+
+-- right pillar
+B 18 2 1 4 12 4 d
+
+-- arch haunches
+B 2 14 1 5 3 4 d
+B 17 14 1 5 3 4 d
+
+-- arch crown and keystone
+B 2 17 1 7 3 4 d
+B 9 17 1 6 3 4 7
+B 15 17 1 7 3 4 d
+
+-- top entablature
+B 0 20 1 24 2 4 9

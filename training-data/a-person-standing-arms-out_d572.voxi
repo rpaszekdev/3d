@@ -1,0 +1,25 @@
+V 24 32 24
+-- head
+S 12 22 12 3 d
+-- hair
+B 9 24 11 7 2 3 a
+-- neck
+C 12 18 12 1 2 8
+-- torso
+B 8 10 10 8 8 4 3
+-- left arm
+B 1 12 11 7 3 3 d
+-- right arm
+B 16 12 11 7 3 3 d
+-- left hand
+S 1 13 12 2 d
+-- right hand
+S 22 13 12 2 d
+-- left leg
+B 9 2 10 3 8 4 9
+-- right leg
+B 13 2 10 3 8 4 9
+-- left foot
+B 8 0 9 4 2 5 a
+-- right foot
+B 13 0 9 4 2 5 a

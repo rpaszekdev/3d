@@ -1,0 +1,33 @@
+V 32 32 32
+
+-- left leg
+B 12 0 14 3 8 4 0
+-- right leg
+B 17 0 14 3 8 4 0
+-- torso
+B 11 8 13 10 9 6 0
+-- belt sash
+B 11 8 13 10 2 6 f
+-- left arm
+B 8 8 13 3 8 4 0
+-- right arm
+B 21 8 13 3 8 4 0
+-- left hand
+S 9 8 15 2 0
+-- right hand
+S 23 8 15 2 0
+-- head masked
+S 16 21 16 4 0
+-- eye slit
+B 14 21 13 4 1 1 8
+-- headband wrap
+B 13 23 13 6 1 7 8
+-- katana blade
+B 22 11 12 1 11 1 9
+-- katana guard
+B 21 11 12 3 1 1 a
+-- katana handle
+B 22 11 11 1 4 1 a
+-- ninja tabi boots
+B 12 0 13 3 2 5 0
+B 17 0 13 3 2 5 0

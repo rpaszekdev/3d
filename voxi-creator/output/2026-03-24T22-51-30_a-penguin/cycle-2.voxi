@@ -1,0 +1,51 @@
+V 32 32 32
+-- Penguin, facing -Z (south), centered X=16 Z=16
+
+-- Orange feet
+B 11 0 13 5 2 8 7
+B 17 0 13 5 2 8 7
+
+-- Short legs (navy)
+B 13 2 15 3 3 3 f
+B 17 2 15 3 3 3 f
+
+-- Main body ellipsoid (navy black)
+E 16 12 16 7 10 6 f
+
+-- White belly patch (pushed forward in Z)
+E 16 11 14 4 8 2 8
+
+-- Left flipper
+E 8 12 16 3 9 3 f
+
+-- Right flipper
+E 24 12 16 3 9 3 f
+
+-- Neck connecting body to head
+B 13 21 14 6 3 5 f
+
+-- Head sphere (navy)
+S 16 26 16 5 f
+
+-- White face patch
+B 13 24 12 6 5 2 8
+
+-- Left eye white patch
+B 13 26 12 2 2 1 8
+-- Left pupil
+P 14 27 11 0
+
+-- Right eye white patch
+B 18 26 12 2 2 1 8
+-- Right pupil
+P 19 27 11 0
+
+-- Orange beak (triangle-ish)
+B 15 24 11 2 2 3 7
+B 15 23 12 2 1 2 7
+
+-- Yellow chin accent
+B 14 22 12 4 2 2 6
+
+-- Tail stub (navy, back)
+B 14 4 19 4 5 3 f

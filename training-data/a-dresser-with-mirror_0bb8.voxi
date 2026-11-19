@@ -1,0 +1,40 @@
+V 24 32 16
+
+-- legs
+B 4 0 4 2 2 2 e
+B 18 0 4 2 2 2 e
+B 4 0 10 2 2 2 e
+B 18 0 10 2 2 2 e
+
+-- dresser body
+B 4 2 4 16 12 8 a
+
+-- dresser top
+B 4 14 4 16 1 8 d
+
+-- bottom drawer
+B 5 3 3 14 3 1 d
+
+-- middle drawer
+B 5 7 3 14 3 1 d
+
+-- top drawer
+B 5 11 3 14 3 1 d
+
+-- drawer handles
+B 11 4 3 2 1 1 7
+B 11 8 3 2 1 1 7
+B 11 12 3 2 1 1 7
+
+-- mirror frame outer
+B 6 15 5 12 14 1 e
+
+-- mirror frame inner border top
+B 7 27 5 10 1 1 a
+
+-- mirror glass
+B 7 16 5 10 11 1 3
+
+-- mirror side supports
+B 4 14 5 2 15 1 a
+B 18 14 5 2 15 1 a

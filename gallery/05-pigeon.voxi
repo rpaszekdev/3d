@@ -1,0 +1,49 @@
+V 36 28 20
+-- Pigeon v3 — final
+
+-- Body (gray, plump, horizontal)
+E 16 10 10 9 5 6 9
+
+-- Chest (puffed, lighter)
+E 12 11 7 5 4 4 8
+
+-- Head (small, forward-up)
+S 8 17 10 3 9
+
+-- Neck (iridescent green-purple)
+E 10 14 10 3 3 3 2
+E 10 14 9 3 3 3 5
+
+-- Eye (orange)
+P 6 18 8 7
+P 5 18 8 7
+
+-- Beak (short, dark gray + black tip)
+B 4 17 9 2 1 2 9
+B 3 17 9 2 1 2 0
+
+-- Tail feathers (longer, fanned)
+B 25 8 8 8 2 4 9
+B 27 9 9 6 1 2 9
+B 26 7 9 7 2 2 9
+B 28 10 10 5 1 1 9
+
+-- Left wing (folded along body side, on top)
+B 12 14 14 10 2 2 9
+B 14 13 15 9 3 1 9
+B 18 12 14 6 2 2 9
+
+-- Right wing (folded along body side)
+B 12 14 4 10 2 2 9
+B 14 13 3 9 3 1 9
+B 18 12 4 6 2 2 9
+
+-- Legs (thin, reddish)
+B 12 1 9 1 6 1 1
+B 16 1 10 1 6 1 1
+
+-- Feet (reddish, toes)
+B 11 0 8 3 1 3 1
+B 15 0 9 3 1 3 1
+B 12 0 11 1 1 1 1
+B 16 0 12 1 1 1 1

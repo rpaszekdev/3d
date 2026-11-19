@@ -1,0 +1,42 @@
+V 32 32 32
+
+-- ceiling mount
+B 12 29 12 8 2 8 9
+
+-- hanging stem
+B 15 21 15 2 8 2 9
+
+-- central crown body (gold)
+S 16 21 16 4 6
+S 16 18 16 3 6
+
+-- east arm
+B 17 19 15 7 1 2 7
+-- west arm
+B 8 19 15 7 1 2 7
+-- south arm
+B 15 19 17 2 1 7 7
+-- north arm
+B 15 19 8 2 1 7 7
+
+-- arm-tip sockets (gray)
+S 24 20 16 1 9
+S 7 20 16 1 9
+S 16 20 24 1 9
+S 16 20 7 1 9
+
+-- candles (white)
+B 24 21 16 1 4 1 8
+B 7 21 16 1 4 1 8
+B 16 21 24 1 4 1 8
+B 16 21 7 1 4 1 8
+
+-- flames (yellow)
+S 24 26 16 1 6
+S 7 26 16 1 6
+S 16 26 24 1 6
+S 16 26 7 1 6
+
+-- bottom crystal drop (blue)
+S 16 14 16 2 3
+B 15 11 15 2 3 2 3

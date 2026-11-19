@@ -1,0 +1,286 @@
+{
+  "source": "/Users/robertpaszek/Desktop/Tilburg University/Deep Learning/Lecture Presentations/5Regularization.pptx",
+  "slide_count": 35,
+  "slides": [
+    {
+      "index": 1,
+      "title": "Regularization",
+      "body": "Dr. Juan Sebastián Olier\nIntroduction to Deep Learning\nDepartment of Cognitive Sciences and Artificial Intelligence\nTilburg University",
+      "notes": "",
+      "images": [
+        "slide1_img1.png"
+      ]
+    },
+    {
+      "index": 2,
+      "title": "Bias-Variance tradeoff",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide2_img1.png"
+      ]
+    },
+    {
+      "index": 3,
+      "title": "Measuring Bias and Variance",
+      "body": "Train\nValidation/Development\nTest",
+      "notes": "",
+      "images": [
+        "slide3_img1.png"
+      ]
+    },
+    {
+      "index": 4,
+      "title": "Bias-Variance over training epochs",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide4_img1.png"
+      ]
+    },
+    {
+      "index": 5,
+      "title": "Regularization",
+      "body": "Regularization often works by trading an increase in bias for a reduction of variance. \nAn effective regularizer reduces variance while not increasing bias.\n\nHigher variance, lower bias \nBad generalization\n\nLower variance, higher bias \nGood generalization\n\nRegularize",
+      "notes": "Regularization = adding penalties against complexity.",
+      "images": []
+    },
+    {
+      "index": 6,
+      "title": "L1 and L2 Regularization",
+      "body": "",
+      "notes": "The key difference between these techniques is that L1 shrinks the less important feature’s coefficients to zero thus, removing some feature altogether. So, this works well for feature selection in case we have a huge number of features.\n\nL2 regularization out-of-the-box\nYes, pytorch optimizers have a parameter called weight_decay which corresponds to the L2 regularization factor:\nsgd = torch.optim.SGD(model.parameters(), weight_decay=weight_decay)\n\nL1 regularization implementation\nThere is no analogous argument for L1, however this is straightforward to implement manually:\nloss = loss_fn(outputs, labels)\nl1_lambda = 0.001\nl1_norm = sum(torch.linalg.norm(p, 1) for p in model.parameters())\n\nloss = loss + l1_lambda * l1_norm\n\nThe equivalent manual implementation of L2 would be:\nl2_norm = sum(torch.linalg.norm(p, 2) for p in model.parameters())",
+      "images": [
+        "slide6_img1.png"
+      ]
+    },
+    {
+      "index": 7,
+      "title": "Early Stopping",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 8,
+      "title": "Early stopping",
+      "body": "Keeping track of training and validation error to get the best performing model.\nThe best model is to be defined in terms of the performance metrics.",
+      "notes": "",
+      "images": [
+        "slide8_img1.png"
+      ]
+    },
+    {
+      "index": 9,
+      "title": "Data Augmentation",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 10,
+      "title": "Data Augmentation",
+      "body": "A technique to artificially increasing the training set by creating modified copies of existing data.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 11,
+      "title": "Data Augmentation",
+      "body": "Example for object recognition\ntranslation\ncrop\nscaling\nrotation\nflipping\nadding noiseQuestion: Are all of these always appropriate?",
+      "notes": "",
+      "images": [
+        "slide11_img1.png"
+      ]
+    },
+    {
+      "index": 12,
+      "title": "Adversarial Training",
+      "body": "Avoid excessive linearity.",
+      "notes": "",
+      "images": [
+        "slide12_img1.png"
+      ]
+    },
+    {
+      "index": 13,
+      "title": "Dropout",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 14,
+      "title": "Dropout",
+      "body": "Randomly remove units for each training iteration.\n\nIdea: train an ensemble of all subnetworks that can be constructed by removing non-output units from an underlying base network.",
+      "notes": "",
+      "images": [
+        "slide14_img1.png"
+      ]
+    },
+    {
+      "index": 15,
+      "title": "Dropout",
+      "body": "Dropout encourages modular representations which work well in the absence of some parts of the network.\nOne advantage of dropout is that it is very computationally cheap.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 16,
+      "title": "Dropout",
+      "body": "How can Dropout be implemented?",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 17,
+      "title": "Dropout",
+      "body": "During Training, in a given layer:\nSample a binary variable from a Bernoulli distribution with probability phidden \nMultiply unit activation with the sampled variable",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 18,
+      "title": "Dropout",
+      "body": "During testing, either:\nScale expected total input to a given unit similar to the expected total input to that unit at train time (when some units were missing).\nDo inverse-scaling during training, and no scaling for testing.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 19,
+      "title": "Model’s Capacity",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 20,
+      "title": "Model’s Capacity",
+      "body": "Capacity refers to the range of types of functions that the model can approximate. \nHigher capacity implies the model can fit a wide variety of functions\nSome hyperparameters can increase or decrease the model’s capacity.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 21,
+      "title": "Model’s Capacity",
+      "body": "The number of parameters determines the capacity:\nNodes (neurons per layer)\nLayers",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 22,
+      "title": "Model’s Capacity",
+      "body": "The bias-variance trade-off is reflected in the validation (generalization) error.",
+      "notes": "",
+      "images": [
+        "slide22_img1.png"
+      ]
+    },
+    {
+      "index": 23,
+      "title": "Double Descent",
+      "body": "Neural networks are overparameterized and overfit the data, yet they generalize well.\n\nBelkin, Mikhail, et al. Reconciling modern machine learning practice and the bias-variance trade-off.",
+      "notes": "",
+      "images": [
+        "slide23_img1.png"
+      ]
+    },
+    {
+      "index": 24,
+      "title": "Batch Normalization",
+      "body": "",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 25,
+      "title": "Batch Normalization",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide25_img1.png"
+      ]
+    },
+    {
+      "index": 26,
+      "title": "The Covariate Shift Problem",
+      "body": "Problem: the distribution of a layer's inputs changes during training.\nConsequences: \nMore difficult for the model to learn effectively\nNeurons become sensitive to the specific characteristics of the training data.\nReduced learning speed",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 27,
+      "title": "Batch Normalization Goals",
+      "body": "Normalize Activations: Batch normalization normalizes the inputs within each mini-batch during training.\nMitigate Covariate Shift: By reducing the internal covariate shift, batch normalization helps maintain a stable distribution of inputs to layers.",
+      "notes": "Compute Batch Statistics: During training, for each mini-batch of data fed into the network, batch normalization computes the mean and standard deviation of the activations along each feature dimension.\nNormalize: Then, it normalizes the activations using these batch statistics, subtracting the mean and dividing by the standard deviation.\nScale and Shift: Batch normalization introduces two learnable parameters per feature dimension: a scaling parameter (gamma) and a shifting parameter (beta). After normalization, the activations are scaled by gamma and shifted by beta.",
+      "images": []
+    },
+    {
+      "index": 28,
+      "title": "Recap: Activation of a neuron",
+      "body": "𝝨\n\nInputs\n\nOutput\n\nw1\n\nw2\n\nw3\n\nf\n\nx2\n\nx3\n\nx1\n\nw0\n\nBias term",
+      "notes": "output of a layer is the summed input of you weights multiplied by your inputs + the bias",
+      "images": [
+        "slide28_img1.gif"
+      ]
+    },
+    {
+      "index": 29,
+      "title": "Batch Normalization",
+      "body": "Mean:\n\nStandard Deviation:\n\nNormalize:",
+      "notes": "As we did in one the exercise sessions with the input, we are now also going to standardize the activations  \n\nYou do this for all activations per layer => and then you normalize the specific activation given the mean and standard deviation computed over the layer",
+      "images": [
+        "slide29_img1.png",
+        "slide29_img2.png"
+      ]
+    },
+    {
+      "index": 30,
+      "title": "Batch Normalization",
+      "body": "Scale and shift:",
+      "notes": "In practice, restricting the activations of each layer to be strictly 0 mean and unit variance can limit the expressive power of the network. Therefore, in practice, batch normalization allows the network to learn parameters and that can convert the mean and variance to any value that the network desires (these parameters here are gamma and beta)",
+      "images": [
+        "slide30_img1.png"
+      ]
+    },
+    {
+      "index": 31,
+      "title": "Batch Normalization",
+      "body": "During training, the mean and variance are calculated from training batches.\nDuring inference, the learned mean and variance are used. \nThis behavior can be changed in PyTorch.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 32,
+      "title": "Batch Normalization",
+      "body": "Parameters increase:\nTwo learnable parameters:\n Beta and gamma.\nTwo non-learnable parameters: \nMean Moving Average and Variance Moving Average to be used during inference.",
+      "notes": "",
+      "images": []
+    },
+    {
+      "index": 33,
+      "title": "Batch Normalization",
+      "body": "Challenge?\nbehaviour of ML/DL algorithms can change when the input distribution changes\nIn DL: specifically concerned with the change in the distribution of the inputs to the inner nodes within a network (output or activations of one layer, is the input for the next etc. => the input distribution changes with each step)\nSolution?\nBatch normalization (batchnorm) proposes a technique to help coordinate the update for multiple layers in the model\nHow?\nstandardizing the activations of each input variable (per minibatch) by calculating the mean and standard deviation of each input variable to a layer (per mini-batch)",
+      "notes": "Challenge:\nIn DL: change in the distribution of the inputs to the inner nodes within a network => a NN changes the weights of each layer over the course of training (backprop), this means that the activations of each layer change as well! The activations of the previous layer are the input for the next one, each layer in the NN is faced with a situation where the input distribution changes with each step.\nThe basic idea behind batch normalization is to limit covariate shift by normalizing the activations of each layer (transforming the inputs to be mean 0 and unit variance). This, supposedly, allows each layer to learn on a more stable distribution of inputs, and would thus accelerate the training of the network.",
+      "images": []
+    },
+    {
+      "index": 34,
+      "title": "Batch Normalization",
+      "body": "",
+      "notes": "",
+      "images": [
+        "slide34_img1.png"
+      ]
+    },
+    {
+      "index": 35,
+      "title": "Other forms of Normalization",
+      "body": "",
+      "notes": "1. Batch Normalization (BN): Calculates mean and variance across the Batch and Spatial dimensions for each channel independently. Best for: Standard CNNs and large-scale computer vision tasks. Pros: Accelerates training; provides slight regularization. Cons: Highly dependent on batch size; fails when the batch size is small (e.g., ) because the statistics become noisy. \u000b2. Layer Normalization (LN): Calculates mean and variance across the Channel and Spatial dimensions for each individual image in the batch. Best for: RNNs, Transformers (NLP), and Reinforcement Learning. Pros: Independent of batch size; works well with sequential data where sequence lengths vary. Cons: Generally performs worse than BN in standard vision tasks. \u000b3. Instance Normalization (IN): Calculates mean and variance across the Spatial dimensions only, for each channel and each image independently. Best for: Style Transfer, GANs, and Image Generation. Pros: Removes instance-specific \"style\" or contrast, focusing on the content of the image. Cons: Discards global information that might be useful for classification. \u000b4. Group Normalization (GN): A middle ground between LN and IN. It divides channels into groups and normalizes within those groups. Best for: Object Detection, Segmentation, and high-resolution tasks where small batch sizes are forced by memory limits. Pros: Performance is stable regardless of batch size; often outperforms BN when batch sizes are very small. Cons: Requires choosing a hyperparameter (number of groups).",
+      "images": [
+        "slide35_img1.png"
+      ]
+    }
+  ]
+}

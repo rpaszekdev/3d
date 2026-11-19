@@ -1,0 +1,43 @@
+V 24 32 24
+
+-- legs
+B 9 0 10 3 9 4 0
+B 12 0 10 3 9 4 0
+
+-- tabi boots
+B 9 0 10 3 2 4 0
+B 12 0 10 3 2 4 f
+
+-- torso
+B 8 9 10 8 9 4 0
+
+-- belt sash
+B 8 9 10 8 2 4 f
+B 11 9 9 2 4 1 f
+
+-- left arm raised
+B 5 11 10 3 7 4 0
+-- right arm extended
+B 16 13 10 3 5 4 0
+
+-- fists
+S 6 18 12 2 0
+S 18 15 12 2 0
+
+-- head
+S 12 22 12 4 0
+
+-- eye slit
+B 10 22 9 4 1 3 8
+
+-- headband
+B 9 24 9 6 1 3 3
+
+-- katana blade on back
+B 7 11 8 1 14 1 9
+
+-- katana handle
+B 7 10 8 1 3 1 a
+
+-- katana guard
+B 6 11 8 3 1 1 0

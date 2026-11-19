@@ -1,0 +1,24 @@
+V 28 24 28
+
+-- bottom bun
+E 14 3 14 9 3 9 d
+
+-- beef patty
+C 14 7 14 8 2 a
+
+-- lettuce
+E 14 10 14 10 1 10 2
+
+-- tomato slice
+C 14 12 14 8 1 1
+
+-- cheese slice
+B 5 13 5 18 1 18 6
+
+-- top bun
+E 14 18 14 9 5 9 d
+
+-- sesame seeds
+B 11 23 11 2 1 2 8
+B 15 23 13 2 1 2 8
+B 13 23 16 2 1 2 8

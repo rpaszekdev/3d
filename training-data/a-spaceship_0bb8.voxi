@@ -1,0 +1,55 @@
+V 32 32 32
+
+-- main hull
+B 12 5 4 8 5 22 8
+
+-- nose cone
+B 13 5 2 6 4 2 6
+
+-- cockpit dome
+S 16 11 9 3 4
+
+-- cockpit window
+B 14 10 7 4 2 4 4
+
+-- left wing
+B 3 4 12 9 2 10 3
+
+-- right wing
+B 20 4 12 9 2 10 3
+
+-- wing accent stripes left
+B 4 5 14 2 1 6 4
+
+-- wing accent stripes right
+B 26 5 14 2 1 6 4
+
+-- top dorsal fin
+B 15 10 14 2 6 10 5
+
+-- bottom ventral fin
+B 15 2 18 2 3 7 9
+
+-- left engine pod
+C 13 7 24 2 5 9
+
+-- right engine pod
+C 19 7 24 2 5 9
+
+-- left engine glow
+S 13 7 29 2 6
+
+-- right engine glow
+S 19 7 29 2 6
+
+-- thruster ring left
+B 11 5 25 4 4 2 7
+
+-- thruster ring right
+B 17 5 25 4 4 2 7
+
+-- hull detail stripe
+B 12 9 6 8 1 16 4
+
+-- sensor array front
+B 15 8 3 2 2 2 4

@@ -1,0 +1,40 @@
+V 32 36 32
+
+-- body (white)
+E 16 10 16 6 8 5 8
+
+-- belly patch (white front)
+E 16 9 13 4 6 2 8
+
+-- black shoulders
+E 11 13 15 2 5 3 0
+E 21 13 15 2 5 3 0
+
+-- front legs (black, sitting upright)
+C 11 5 15 2 8 0
+C 21 5 15 2 8 0
+
+-- hind legs (black, folded sitting)
+E 12 4 19 4 4 5 0
+E 20 4 19 4 4 5 0
+
+-- head (white)
+S 16 21 16 5 8
+
+-- ears (black)
+S 12 25 15 2 0
+S 20 25 15 2 0
+
+-- eye patches (black)
+E 13 21 13 2 2 1 0
+E 19 21 13 2 2 1 0
+
+-- eyes (white highlights)
+S 13 21 12 1 8
+S 19 21 12 1 8
+
+-- nose (black)
+S 16 19 12 1 0
+
+-- muzzle (white)
+E 16 18 13 2 2 2 8

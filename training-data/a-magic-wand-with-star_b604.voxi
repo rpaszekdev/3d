@@ -1,0 +1,26 @@
+V 24 26 24
+
+-- handle (dark brown)
+C 12 2 12 1 4 e
+-- grip wraps
+B 11 1 11 2 1 2 1
+B 11 3 11 2 1 2 1
+-- shaft (tan/ivory)
+C 12 11 12 1 14 d
+-- shaft tip accent
+S 12 19 12 1 6
+-- star center (yellow)
+S 12 21 12 2 6
+-- star top arm
+B 11 22 11 2 4 2 6
+-- star bottom arm
+B 11 16 11 2 3 2 6
+-- star left arm
+B 7 19 11 4 2 2 6
+-- star right arm
+B 13 19 11 4 2 2 6
+-- star corner sparkles
+S 9 23 12 1 5
+S 15 23 12 1 5
+S 9 17 12 1 5
+S 15 17 12 1 5

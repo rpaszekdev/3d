@@ -1,0 +1,44 @@
+V 24 32 24
+
+-- desert sand floor
+B 0 0 0 24 2 24 d
+
+-- sand dunes
+B 0 2 4 10 3 16 d
+B 15 2 6 9 2 12 d
+B 6 2 16 12 1 8 d
+
+-- cactus main trunk
+C 12 2 12 2 16 2
+
+-- left arm horizontal
+B 6 11 11 6 2 2 2
+
+-- left arm vertical
+B 6 11 11 2 7 2 2
+
+-- right arm horizontal
+B 12 14 11 6 2 2 2
+
+-- right arm vertical
+B 16 14 11 2 5 2 2
+
+-- cactus top rounded cap
+S 12 18 12 2 2
+
+-- left arm top cap
+S 7 18 12 2 2
+
+-- right arm top cap
+S 17 19 12 2 2
+
+-- spine details dark green
+B 10 5 10 1 1 1 c
+B 13 9 10 1 1 1 c
+B 10 13 10 1 1 1 c
+B 14 16 10 1 1 1 c
+
+-- small desert rocks
+B 2 2 2 2 1 2 9
+B 19 2 18 3 1 2 9
+B 4 2 19 2 1 1 9

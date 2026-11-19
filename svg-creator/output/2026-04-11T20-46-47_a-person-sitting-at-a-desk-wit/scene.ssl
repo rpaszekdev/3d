@@ -1,0 +1,72 @@
+# Person sitting at a desk with a computer monitor
+scene 800x520 style:line-art stroke:#2c2c2c stroke-width:2 bg:#f8f8f8
+
+# --- Desk ---
+group "desk" at:470,365
+  rect -255,-10 510,20 rx:3              # desktop surface
+  line -235,10 -235,155                  # left leg
+  line 235,10 235,155                    # right leg
+  line -235,165 235,165                  # floor crossbar
+end
+
+# --- Monitor ---
+group "monitor" at:585,235
+  rect -82,-68 164,136 rx:5             # screen bezel
+  rect -5,68 10,47                       # stand neck
+  rect -30,115 60,10 rx:2               # stand base
+end
+
+# --- Screen UI content ---
+group "screen-ui" at:585,235
+  line -62,-50 62,-50                    # top bar line
+  line -62,-33 38,-33                    # content line 1
+  line -62,-18 52,-18                    # content line 2
+  line -62,-4 22,-4                      # content line 3
+  rect -62,12 85,22 rx:2                 # content block
+  rect -62,40 45,14 rx:2                 # smaller block
+end
+
+# --- Keyboard ---
+group "keyboard" at:415,357
+  rect -72,-8 144,16 rx:3               # keyboard body
+  line -52,-1 52,-1                      # key row hint
+  line -52,5 52,5                        # key row hint 2
+end
+
+# --- Chair ---
+group "chair" at:235,362
+  rect -50,-6 105,18 rx:2               # seat
+  line -50,-6 -50,-115                  # back post
+  line -50,-115 12,-115                 # back top rail
+  line -50,-65 12,-65                   # back mid rail
+  line -50,-6 -68,82                    # rear-left leg
+  line 55,-6 72,82                      # rear-right leg
+  line -30,12 -45,82                    # front-left leg
+  line 75,12 72,82                      # front-right leg
+end
+
+# --- Person (sitting, leaning slightly forward) ---
+group "person" at:272,250
+  circle 0,0 20                          # head
+  line 0,20 0,30                         # neck
+  line 0,30 0,112                        # torso
+  path "M 0,48 Q 55,35 105,60"          # right arm toward keyboard
+  path "M 0,48 Q -22,55 -38,72"         # left arm resting
+  line -5,112 -18,155                    # left upper leg (sitting)
+  line -18,155 -16,215                   # left lower leg
+  line -16,215 -30,220                   # left foot
+  line 12,112 58,118                     # right upper leg (horizontal)
+  line 58,118 55,178                     # right lower leg
+  line 55,178 70,182                     # right foot
+end
+
+# --- Subtle screen flicker and entrance animations ---
+animate screen-ui opacity 0.25->1.0 duration:1.8s loop ease:ease-in-out
+animate monitor opacity 0.88->1.0 duration:3.2s loop ease:ease-in-out
+
+entrance desk slide-up duration:0.6s
+entrance chair fade-in duration:0.5s delay:0.15s
+entrance person fade-in duration:0.7s delay:0.35s
+entrance monitor slide-up duration:0.55s delay:0.25s
+entrance keyboard fade-in duration:0.4s delay:0.55s
+entrance screen-ui fade-in duration:0.5s delay:0.8s

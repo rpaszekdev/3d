@@ -1,0 +1,44 @@
+V 32 48 32
+
+-- wide lobby base
+B 9 0 9 14 4 14 9
+
+-- lower tower
+B 11 4 11 10 16 10 8
+
+-- mid tower setback
+B 12 20 12 8 12 8 7
+
+-- upper tower
+B 13 32 13 6 6 6 3
+
+-- spire
+C 16 38 16 1 8 3
+
+-- lobby entrance glass
+B 13 1 9 6 3 1 4
+
+-- lower windows front
+B 12 6 11 2 2 1 6
+B 15 6 11 2 2 1 6
+B 18 6 11 2 2 1 6
+B 12 10 11 2 2 1 6
+B 15 10 11 2 2 1 6
+B 18 10 11 2 2 1 6
+B 12 14 11 2 2 1 6
+B 15 14 11 2 2 1 6
+B 18 14 11 2 2 1 6
+
+-- mid windows front
+B 13 22 12 2 2 1 4
+B 16 22 12 2 2 1 4
+B 13 26 12 2 2 1 4
+B 16 26 12 2 2 1 4
+B 13 30 12 2 2 1 4
+
+-- upper windows front
+B 14 34 13 2 2 1 4
+B 14 37 13 2 2 1 4
+
+-- beacon light
+S 16 46 16 1 6

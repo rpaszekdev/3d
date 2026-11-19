@@ -1,0 +1,34 @@
+V 32 40 32
+
+-- trunk
+B 14 0 14 4 12 4 a
+
+-- main branches
+B 8 10 14 6 2 3 a
+B 18 10 14 6 2 3 a
+B 14 10 8 3 2 6 a
+B 14 10 18 3 2 6 a
+
+-- inner canopy base
+S 16 18 16 9 c
+
+-- main canopy mass
+S 16 22 16 8 2
+
+-- outer foliage clusters
+S 9 18 16 5 2
+S 23 18 16 5 2
+S 16 18 9 5 2
+S 16 18 23 5 2
+
+-- upper canopy top
+S 16 27 16 5 c
+
+-- diagonal clusters for fullness
+S 11 20 11 4 2
+S 21 20 21 4 2
+S 11 20 21 4 2
+S 21 20 11 4 2
+
+-- top accent
+S 16 31 16 3 2

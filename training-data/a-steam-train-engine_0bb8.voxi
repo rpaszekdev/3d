@@ -1,0 +1,44 @@
+V 40 24 20
+
+-- pilot wheel (front)
+S 6 3 10 3 0
+-- large driving wheels
+S 13 4 10 4 0
+S 20 4 10 4 0
+S 27 4 10 4 0
+
+-- frame and running board
+B 4 5 8 26 1 4 9
+
+-- boiler (red)
+B 4 6 8 24 6 4 1
+
+-- boiler front cap
+B 3 6 8 2 6 4 9
+
+-- smokestack
+C 7 12 10 2 5 0
+
+-- smoke dome
+S 11 13 10 2 9
+
+-- steam dome
+S 19 13 10 2 9
+
+-- cab body (brown)
+B 28 6 8 8 11 4 a
+
+-- cab roof (black)
+B 28 17 8 8 2 4 0
+
+-- cab window left
+B 29 12 8 3 4 1 6
+
+-- cab window right
+B 33 12 8 3 4 1 6
+
+-- cowcatcher (gray wedge)
+B 1 2 8 4 4 4 9
+
+-- headlight
+S 3 10 10 1 6

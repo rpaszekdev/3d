@@ -1,0 +1,30 @@
+[
+  {
+    "step": 1,
+    "hasSketch": true,
+    "sketchLines": 36,
+    "hasScreenshots": true,
+    "responseLength": 4671
+  },
+  {
+    "step": 2,
+    "hasSketch": true,
+    "sketchLines": 55,
+    "hasScreenshots": false,
+    "responseLength": 2957
+  },
+  {
+    "step": 3,
+    "hasSketch": true,
+    "sketchLines": 47,
+    "hasScreenshots": true,
+    "responseLength": 1399
+  },
+  {
+    "step": 4,
+    "hasSketch": true,
+    "sketchLines": 24,
+    "hasScreenshots": false,
+    "responseLength": 1908
+  }
+]

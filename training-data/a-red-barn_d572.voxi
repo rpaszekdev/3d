@@ -1,0 +1,39 @@
+V 32 32 32
+
+-- foundation
+B 4 0 7 24 1 18 9
+
+-- main barn walls (red)
+B 4 1 7 24 12 18 1
+
+-- front gable (red, triangular approximation)
+B 5 13 7 22 3 18 1
+B 7 16 7 18 3 18 1
+B 9 19 7 14 2 18 1
+
+-- roof (dark red/maroon)
+B 3 13 6 26 3 20 e
+B 5 16 7 22 3 18 e
+B 7 19 8 18 3 16 e
+B 9 22 9 14 2 14 e
+
+-- front door (brown)
+B 13 1 6 6 8 1 a
+
+-- loft door opening
+B 13 10 6 6 3 1 6
+
+-- left window
+B 5 5 6 4 4 1 8
+
+-- right window
+B 23 5 6 4 4 1 8
+
+-- rear window
+B 14 5 24 4 4 1 8
+
+-- weathervane pole
+C 16 24 16 1 5 9
+
+-- weathervane
+B 13 28 16 6 1 1 7

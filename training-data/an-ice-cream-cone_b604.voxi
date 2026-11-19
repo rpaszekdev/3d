@@ -1,0 +1,23 @@
+V 24 32 24
+
+-- wafer cone (tan)
+B 11 0 11 2 2 2 d
+B 10 2 10 4 3 4 d
+B 9 5 9 6 3 6 d
+B 8 8 8 8 3 8 d
+B 7 11 7 10 2 10 d
+
+-- cone cross-hatch detail (brown)
+B 8 9 12 8 1 1 a
+B 12 9 8 1 1 8 a
+
+-- first scoop vanilla (white)
+S 12 17 12 5 8
+
+-- second scoop strawberry (pink)
+S 12 25 12 4 b
+
+-- cherry on top (red)
+S 12 30 12 1 1
+-- cherry stem (green)
+B 12 30 12 1 2 1 2

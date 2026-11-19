@@ -1,0 +1,59 @@
+V 32 32 32
+
+-- feet / flippers on ground
+B 11 0 13 4 2 5 7
+B 19 0 13 4 2 5 7
+
+-- lower legs
+B 12 2 14 4 4 4 f
+B 19 2 14 4 4 4 f
+
+-- main body (navy, large ellipsoid)
+E 16 13 15 7 10 6 f
+
+-- white belly patch
+E 16 12 12 4 8 3 8
+
+-- left wing
+B 7 6 13 4 13 5 f
+B 7 6 13 3 13 3 f
+
+-- right wing
+B 22 6 13 4 13 5 f
+B 22 6 13 3 13 3 f
+
+-- neck
+B 13 21 13 6 3 5 f
+
+-- head (navy sphere)
+S 16 26 15 5 f
+
+-- white face patch
+E 16 25 12 3 4 3 8
+
+-- left eye white
+P 13 27 11 8
+P 14 27 11 8
+
+-- right eye white
+P 18 27 11 8
+P 19 27 11 8
+
+-- left pupil
+P 13 27 10 9
+P 14 27 10 9
+
+-- right pupil
+P 18 27 10 9
+P 19 27 10 9
+
+-- beak upper
+B 14 25 9 4 2 5 7
+-- beak lower
+B 14 23 9 4 1 4 6
+
+-- belly highlight spots
+P 16 8 10 8
+P 16 10 10 8
+P 15 12 10 8
+P 17 12 10 8

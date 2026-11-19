@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Research Proposal — LLMs Mind's Eye</title>
+<style>
+  @page { size: A4; margin: 2.54cm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 2;
+    max-width: 21cm;
+    margin: 0 auto;
+    padding: 2.54cm;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Title page */
+  .title-page {
+    text-align: center;
+    page-break-after: always;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .title-page h1 { font-size: 18pt; font-weight: bold; margin-bottom: 24pt; line-height: 1.4; }
+  .title-page p { line-height: 2; }
+
+  h2 { font-size: 12pt; font-weight: bold; margin-top: 24pt; text-align: center; }
+  h3 { font-size: 12pt; font-weight: bold; font-style: italic; margin-top: 18pt; }
+
+  p { text-indent: 0.5in; margin: 0 0 0 0; }
+  p.no-indent { text-indent: 0; }
+  p.hanging { text-indent: -0.5in; padding-left: 0.5in; }
+
+  .figure {
+    margin: 18pt 0;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+  .figure img { max-width: 100%; }
+  .figure-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .figure-row img { height: 140px; object-fit: cover; border: 1px solid #ccc; }
+  .pair-row { display: grid; grid-template-columns: 180px 1fr; gap: 4pt; margin: 3pt 0; align-items: start; }
+  .pair-row img { width: 180px; height: 120px; object-fit: cover; border: 1px solid #999; }
+  .pair-row pre { font-size: 3.8pt; line-height: 1.1; text-align: left; margin: 0; padding: 3pt; background: #f5f5f5; border: 1px solid #ccc; overflow: hidden; max-height: 120px; }
+  .view-label { font-size: 7pt; font-weight: bold; color: #333; margin: 0; text-indent: 0; }
+
+  /* Appendix styles */
+  .appendix h2 { font-size: 11pt; text-align: left; margin: 12pt 0 4pt; border-bottom: 1px solid #999; padding-bottom: 2pt; }
+  .appendix .subtitle { font-size: 10pt; text-align: center; color: #555; margin-bottom: 18pt; text-indent: 0; }
+  .appendix .legend { font-size: 9pt; text-align: center; margin: 6pt 0 12pt; padding: 4pt; background: #f5f5f5; border: 1px solid #ddd; text-indent: 0; }
+  .view-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12pt;
+    margin: 8pt 0;
+    page-break-inside: avoid;
+    align-items: stretch;
+  }
+  .view-pair img { width: 100%; height: 100%; object-fit: cover; border: 1px solid #999; display: block; }
+  .view-pair pre { font-family: 'Courier New', Courier, monospace; font-size: 6.5pt; line-height: 1.2; margin: 0; padding: 6pt; background: #fafafa; border: 1px solid #ddd; white-space: pre; overflow-x: visible; }
+  .figure-caption {
+    font-size: 10pt;
+    font-style: italic;
+    margin-top: 6pt;
+    text-indent: 0;
+    line-height: 1.5;
+  }
+  .figure-label {
+    font-size: 10pt;
+    font-weight: bold;
+    font-style: italic;
+    text-indent: 0;
+  }
+
+  table { border-collapse: collapse; margin: 12pt auto; font-size: 11pt; }
+  th, td { padding: 4pt 12pt; text-align: left; border-bottom: 1px solid #000; }
+  th { border-top: 2px solid #000; border-bottom: 1px solid #000; }
+  tbody tr:last-child td { border-bottom: 2px solid #000; }
+
+  pre {
+    font-family: 'Courier New', monospace;
+    font-size: 8.5pt;
+    line-height: 1.3;
+    background: #f5f5f5;
+    padding: 8pt;
+    border: 1px solid #ddd;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 8pt 0;
+  }
+
+  .references p { text-indent: -0.5in; padding-left: 0.5in; margin-bottom: 6pt; }
+
+  @media print {
+    body { padding: 0; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ TITLE PAGE ═══ -->
+<div class="title-page">
+  <p>&nbsp;</p>
+  <h1>LLMs Mind's Eye: Text-Based Depth Representations as Spatial Reasoning Scaffolds</h1>
+  <p>Robert Paszek</p>
+  <p>Tilburg University<br>Department of Cognitive Science and Artificial Intelligence</p>
+  <p>Research Workshop</p>
+  <p>Bruno Nicenboim</p>
+  <p>April 12, 2025</p>
+</div>
+
+<!-- ═══ PAGE 1: MOTIVATION + RQ ═══ -->
+<h2>Research Motivation</h2>
+
+<p>Large language models (LLMs) have achieved remarkable performance across many reasoning tasks, yet they consistently fail at spatial reasoning. On the ARC-AGI-2 benchmark, frontier models including Claude Opus and GPT-4o score between 2% and 5%, while humans achieve over 80% (Chollet, 2025). Mental rotation tasks reduce multimodal LLMs to random chance (Srivastava et al., 2025), and perspective-taking accuracy for GPT-4o is only 27.5% compared to human intuitive performance (Yang et al., 2025). This gap persists despite massive increases in model scale, multimodal training, and chain-of-thought prompting.</p>
+
+<p>From a societal perspective, spatial reasoning failures have real consequences: autonomous vehicle misclassifications have caused serious accidents, warehouse robots fail on 35% of manipulation tasks, and no Level 4/5 autonomous surgery has been deployed due to spatial reasoning limitations in soft tissue (Yang et al., 2025). Scientifically, this failure is puzzling because LLMs excel at other forms of reasoning — mathematical proofs, code generation, logical deduction — but collapse when reasoning requires understanding 3D structure.</p>
+
+<p>Current approaches to improving LLM spatial reasoning focus on adding vision modules: SpatialVLA embeds depth as features in vision-language models, and DepthVLA adds depth streams to multimodal architectures. However, these approaches increase model complexity and remain tied to visual input. An alternative, under-explored hypothesis is that LLMs may already possess sufficient reasoning capability, but lack an appropriate <em>representation format</em> for spatial information. Larkin and Simon (1987) demonstrated formally that diagrams can make previously intractable problems trivially solvable — not by adding new information, but by making spatial relationships computationally accessible.</p>
+
+<h2>Research Question</h2>
+
+<p class="no-indent" style="text-align:center; font-style:italic; margin: 12pt 0;">To what extent do text-based depth representations, generated from a voxel domain-specific language, improve large language model performance on spatial reasoning tasks where current models score below 50%?</p>
+
+<h2>Background</h2>
+
+<p>The theoretical foundation for this work comes from Larkin and Simon (1987), who proved that the computational difference between sentential and diagrammatic representations is not informational but structural: diagrams group spatially related information together, enabling perceptual operations that are computationally expensive in text. This principle suggests that converting spatial problems into structured, spatially-organized text could provide similar benefits for LLMs.</p>
+
+<p>Recent work has begun exploring spatial intermediates for LLM reasoning. The Visualization-of-Thought (VoT) framework demonstrated that generating spatial intermediates (ASCII-like grids) during reasoning improved LLM performance on navigation and tiling tasks (Wei et al., 2024). The Whiteboard-of-Thought (WoT) paradigm showed that a draw-render-perceive loop — where models generate visual code, render it, and interpret the output — improved spatial accuracy over pure text reasoning (Xu et al., 2024). VoxPoser used LLMs to generate Python code that filled 3D voxel grids with affordance values for robot planning, achieving zero-shot generalization (Huang et al., 2023).</p>
+
+<p>However, no existing system implements a complete closed loop where an LLM writes 3D spatial code, receives text-based depth feedback from a raycasting camera system, verifies its reasoning against the rendered output, and iteratively revises — all without any vision model. The Mind's Eye system, which this proposal aims to evaluate, implements precisely this architecture using VOXI, a voxel description language, paired with a text-based raycaster that produces ASCII depth maps (digits 0-9 representing distance from camera). Figure 1 shows the system architecture and Figure 2 shows the 6-angle feedback mechanism.</p>
+
+<p class="no-indent" style="text-indent:0; font-style:italic; font-size:10pt;">See Appendix (page 5) for full-resolution depth maps paired with 3D renders showing the Mind's Eye feedback mechanism across all five orthographic views.</p>
+<div class="figure" style="display:none;">
+
+  <div class="pair-row">
+    <img src="proposal-assets/sixview-front.png" alt="Front 3D">
+<pre>FRONT (→X, ↑Y) 32x32               . = empty, 0 = near, 9 = far
+ 0 . . . . . . . . . . . . 5 5 4 4 4 4 4 5 5 . . . . . . . . . . .   head crown
+ 3 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 5 . . . . . . . . . .   face = 2 (near)
+ 6 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . . 4 4 4 4 4 4 6 . . . . . . . . . . . .   beak = 6 (far)
+12 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 5 . . 4 4 4 . . . . .   wings = 4
+15 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+18 . . . . . . 4 4 4 6 5 3 3 3 3 3 3 3 3 3 3 4 5 6 4 4 4 . . . . .   body = 3
+21 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+24 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 5 . . 4 4 4 . . . . .
+27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . .
+30 . . . . . . . . . 4 4 4 4 4 4 . . . 4 4 4 4 4 4 . . . . . . . .   feet = 4</pre>
+  </div>
+
+  <div class="pair-row">
+    <img src="proposal-assets/sixview-right.png" alt="Right 3D">
+<pre>RIGHT (→Z, ↑Y) 32x32               . = empty, 0 = near, 9 = far
+ 0 . . . . . . . . . . . . . . 4 4 3 3 3 3 3 4 4 . . . . . . . . .   head
+ 3 . . . . . . . 4 4 4 4 3 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . .
+ 6 . . . . . . . 4 4 4 4 4 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . .
+ 9 . . . . . . . . . . . . . . 4 4 4 4 4 3 4 4 . . . . . . . . . .   beak
+12 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . .   belly = 1 (near!)
+15 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+18 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 4 . . . . . .
+21 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+24 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . .
+27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . . .   back = 3-4
+30 . . . . . . . . . . . . . 2 2 2 2 2 2 2 2 . . . . . . . . . . .   feet = 2</pre>
+  </div>
+
+  <div class="pair-row">
+    <img src="proposal-assets/sixview-back.png" alt="Back 3D">
+<pre>BACK (→X, ↑Y) 32x32                . = empty, 0 = near, 9 = far
+ 0 . . . . . . . . . . . 4 3 3 3 3 3 3 3 4 . . . . . . . . . . . .   head rear
+ 3 . . . . . . . . . . 4 3 3 3 3 2 3 3 3 3 4 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . 3 3 3 3 3 3 3 . . . . . . . . . . . . .   neck
+12 . . . . . 2 2 2 . . 3 3 2 2 2 2 2 2 2 3 3 . . 2 2 2 . . . . . .   wings = 2 (near!)
+15 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+18 . . . . . 2 2 2 3 3 2 2 2 2 2 2 2 2 2 2 2 3 3 2 2 2 . . . . . .   back = 2 (near)
+21 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+24 . . . . . 2 2 2 . . 3 3 2 2 2 2 2 2 2 3 3 . . 2 2 2 . . . . . .
+27 . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+30 . . . . . . . . 3 3 3 3 3 3 . . . 3 3 3 3 3 3 . . . . . . . . .   feet = 3</pre>
+  </div>
+
+  <div class="pair-row">
+    <img src="proposal-assets/sixview-left.png" alt="Left 3D">
+<pre>LEFT (→Z, ↑Y) 32x32     (mirrored from RIGHT — same depth, opposite direction)
+ 0 . . . . . . . . 4 4 3 3 3 3 3 4 4 . . . . . . . . . . . . . . .   head
+ 3 . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 . . . . . . . . . .
+ 9 . . . . . . . . . 4 4 3 4 4 4 4 4 . . . . . . . . . . . . . . .   beak (reversed)
+12 . . . . . . . 1 1 1 1 1 1 1 1 3 3 3 3 . . . . . . . . . . . . .   belly = 1
+15 . . . . . . 3 1 1 1 1 1 1 1 1 3 3 3 3 . . . . . . . . . . . . .
+18 . . . . . 4 3 1 1 1 1 1 1 1 1 3 3 3 3 . . . . . . . . . . . . .
+21 . . . . . . 3 1 1 1 1 1 1 1 1 3 3 3 3 . . . . . . . . . . . . .
+27 . . . . . . . . . . 4 4 3 3 3 3 3 3 3 . . . . . . . . . . . . .   back
+30 . . . . . . . . . . 2 2 2 2 2 2 2 2 . . . . . . . . . . . . . .   feet</pre>
+  </div>
+
+  <div class="pair-row">
+    <img src="proposal-assets/sixview-top.png" alt="Top 3D">
+<pre>TOP (→X, ↑Z) 32x32                 . = empty, 0 = near, 9 = far
+ 6 . . . . . . . . . . . . . . . . 5 . . . . . . . . . . . . . . .   beak tip = 5
+ 8 . . . . . . 3 3 3 . . 5 4 3 3 3 1 3 3 3 4 5 . . 3 3 3 . . . . .   wings = 3
+ 9 . . . . . . 3 3 3 . 5 4 3 1 0 0 0 0 0 1 3 4 5 . 3 3 3 . . . . .
+10 . . . . . . 3 3 3 . 4 3 1 0 0 0 0 0 0 0 1 3 4 . 3 3 3 . . . . .
+11 . . . . . . 3 3 3 9 4 3 0 0 0 0 0 0 0 0 0 3 4 9 3 3 3 . . . . .   head top = 0
+13 . . . . . . 3 3 3 9 4 1 0 0 0 0 0 0 0 0 0 1 4 9 3 3 3 . . . . .
+15 . . . . . . 3 3 3 9 5 0 0 0 0 0 0 0 0 0 0 4 5 9 3 3 3 . . . . .
+17 . . . . . . . . . 9 9 0 0 0 0 0 0 0 0 0 0 9 9 9 . . . . . . . .   body top = 0
+19 . . . . . . . . . . . 0 0 0 0 0 0 0 0 0 0 . . . . . . . . . . .
+21 . . . . . . . . . . . . . 1 1 1 1 1 . 1 . . . . . . . . . . . .   legs = 1
+23 . . . . . . . . . . . . . . 1 1 1 1 . . . . . . . . . . . . . .   feet = 1</pre>
+  </div>
+
+</div><!-- end hidden old figure 1 -->
+
+<div class="figure" style="page-break-inside:avoid;">
+  <p class="no-indent" style="text-indent:0;font-size:8pt;text-align:center;margin-bottom:4pt;"><strong>3D Render</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Text Depth Map (what the LLM reads — no vision model)</strong></p>
+
+  <div style="display:grid;grid-template-columns:120px 1fr;gap:3pt;margin:2pt 0;align-items:stretch;">
+    <img src="proposal-assets/penguin-render-front.jpg" style="width:120px;height:100%;object-fit:cover;border:1px solid #999;">
+    <pre style="font-family:'Courier New',monospace;font-size:4.5pt;line-height:1.15;margin:0;padding:3pt;background:#fafafa;border:1px solid #ddd;overflow:hidden;">FRONT (→X, ↑Y) 32x32   .=empty 0=near 9=far
+ 0 . . . . . . . . . . . . 5 5 4 4 4 4 4 5 5 . . . . . . . . . . .
+ 3 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 5 . . . . . . . . . .
+ 6 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . . 4 4 4 4 4 4 6 . . . . . . . . . . . .
+12 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 5 . . 4 4 4 . . . . .
+15 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+18 . . . . . . 4 4 4 6 5 3 3 3 3 3 3 3 3 3 3 4 5 6 4 4 4 . . . . .
+21 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . .
+31 . . . . . . . . . 4 4 4 4 4 4 . . . 4 4 4 4 4 4 . . . . . . . .</pre>
+  </div>
+
+  <div style="display:grid;grid-template-columns:120px 1fr;gap:3pt;margin:2pt 0;align-items:stretch;">
+    <img src="proposal-assets/penguin-render-right.jpg" style="width:120px;height:100%;object-fit:cover;border:1px solid #999;">
+    <pre style="font-family:'Courier New',monospace;font-size:4.5pt;line-height:1.15;margin:0;padding:3pt;background:#fafafa;border:1px solid #ddd;overflow:hidden;">RIGHT (→Z, ↑Y) 32x32   .=empty 0=near 9=far
+ 0 . . . . . . . . . . . . . . 4 4 3 3 3 3 3 4 4 . . . . . . . . .
+ 3 . . . . . . . 4 4 4 4 3 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . .
+ 6 . . . . . . . 4 4 4 4 4 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . .
+ 9 . . . . . . . . . . . . . . 4 4 4 4 4 3 4 4 . . . . . . . . . .
+12 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . .
+15 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+18 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 4 . . . . . .
+21 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . . .
+31 . . . . . . . . . . . . . 2 2 2 2 2 2 2 2 . . . . . . . . . . .</pre>
+  </div>
+
+  <div style="display:grid;grid-template-columns:120px 1fr;gap:3pt;margin:2pt 0;align-items:stretch;">
+    <img src="proposal-assets/penguin-render-back.jpg" style="width:120px;height:100%;object-fit:cover;border:1px solid #999;">
+    <pre style="font-family:'Courier New',monospace;font-size:4.5pt;line-height:1.15;margin:0;padding:3pt;background:#fafafa;border:1px solid #ddd;overflow:hidden;">BACK (→X, ↑Y) 32x32    .=empty 0=near 9=far
+ 0 . . . . . . . . . . . 4 3 3 3 3 3 3 3 4 . . . . . . . . . . . .
+ 3 . . . . . . . . . . 4 3 3 3 3 2 3 3 3 3 4 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . 3 3 3 3 3 3 3 . . . . . . . . . . . . .
+12 . . . . . 2 2 2 . . 3 3 2 2 2 2 2 2 2 3 3 . . 2 2 2 . . . . . .
+15 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+18 . . . . . 2 2 2 3 3 2 2 2 2 2 2 2 2 2 2 2 3 3 2 2 2 . . . . . .
+21 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+27 . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+31 . . . . . . . . 3 3 3 3 3 3 . . . 3 3 3 3 3 3 . . . . . . . . .</pre>
+  </div>
+
+  <div style="display:grid;grid-template-columns:120px 1fr;gap:3pt;margin:2pt 0;align-items:stretch;">
+    <img src="proposal-assets/penguin-render-left.jpg" style="width:120px;height:100%;object-fit:cover;border:1px solid #999;">
+    <pre style="font-family:'Courier New',monospace;font-size:4.5pt;line-height:1.15;margin:0;padding:3pt;background:#fafafa;border:1px solid #ddd;overflow:hidden;">LEFT (→Z, ↑Y) 32x32    .=empty 0=near 9=far
+ 0 . . . . . . . . . 5 4 4 4 3 4 4 4 5 . . . . . . . . . . . . . .
+ 3 . . . . . . . . 5 4 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 9 . . . . . . . . . . 4 4 4 4 4 4 4 4 . . . . . . . . . . . . . .
+12 . . . . . . . . 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+15 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+18 . . . . . . 5 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+21 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+27 . . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+31 . . . . . . . . . . . 3 3 3 3 3 3 3 3 . . . . . . . . . . . . .</pre>
+  </div>
+
+  <div style="display:grid;grid-template-columns:120px 1fr;gap:3pt;margin:2pt 0;align-items:stretch;">
+    <img src="proposal-assets/penguin-render-top.jpg" style="width:120px;height:100%;object-fit:cover;border:1px solid #999;">
+    <pre style="font-family:'Courier New',monospace;font-size:4.5pt;line-height:1.15;margin:0;padding:3pt;background:#fafafa;border:1px solid #ddd;overflow:hidden;">TOP (→X, ↑Z) 32x32     .=empty 0=near 9=far
+ 6 . . . . . . . . . . . . . . . . 5 . . . . . . . . . . . . . . .
+ 8 . . . . . . 3 3 3 . . 5 4 3 3 3 1 3 3 3 4 5 . . 3 3 3 . . . . .
+ 9 . . . . . . 3 3 3 . 5 4 3 1 0 0 0 0 0 1 3 4 5 . 3 3 3 . . . . .
+11 . . . . . . 3 3 3 9 4 3 0 0 0 0 0 0 0 0 0 3 4 9 3 3 3 . . . . .
+13 . . . . . . 3 3 3 9 4 1 0 0 0 0 0 0 0 0 0 1 4 9 3 3 3 . . . . .
+17 . . . . . . . . . 9 9 0 0 0 0 0 0 0 0 0 0 9 9 9 . . . . . . . .
+19 . . . . . . . . . . . 0 0 0 0 0 0 0 0 0 0 . . . . . . . . . . .
+21 . . . . . . . . . . . . . 1 1 1 1 1 . 1 . . . . . . . . . . . .
+24 . . . . . . . . . . . . . . 1 1 1 1 . . . . . . . . . . . . . .</pre>
+  </div>
+
+  <p class="figure-label">Figure 1</p>
+  <p class="figure-caption">The Mind's Eye feedback mechanism applied to a voxel penguin (32x32x32). Left: 3D WebGL renders from five orthographic cameras. Right: the corresponding text-based depth maps the LLM reads. Each digit (0-9) encodes ray-traced distance. The LLM receives only text — no vision model is involved. Full-resolution maps in the Appendix.</p>
+</div>
+
+
+<!-- ═══ PAGE 3: METHODS ═══ -->
+<h2>Methods</h2>
+
+<h3>Experimental Design</h3>
+
+<p>This study employs a 2×2 factorial design with two independent variables: (a) <em>representation type</em> (natural language only vs. natural language augmented with text-based depth matrices) and (b) <em>model capability level</em> (high-capability model: Claude Sonnet vs. lower-capability model: Claude Haiku). The dependent variable is task accuracy (percentage of correctly answered spatial reasoning questions).</p>
+
+<h3>Datasets</h3>
+
+<p>Three existing benchmarks will be used. First, the SpartQA dataset (Mirzaee et al., 2021), consisting of multi-hop spatial reasoning questions derived from natural language scene descriptions (e.g., "What is the relation of block A to block C?" requiring transitive inference through block B). Twenty tasks of varying difficulty will be sampled. Second, the CATER video benchmark (Girdhar & Ramanan, 2020), providing real-world video scenes requiring 3D spatial understanding; five tasks involving object counting, motion tracking, and occlusion detection will be used, with depth matrices extracted at 20×20 resolution using Depth Anything V2. Third, thirty automatically generated VOXI scenes (16×16×16 grids, seed=42) with five question types: collision detection, relative position, motion direction, object count, and closer-to-camera judgments.</p>
+
+<h3>Feature Extraction</h3>
+
+<p>For the depth-matrix condition, the Mind's Eye system converts spatial information into structured text through orthographic raycasting. For each scene, six depth maps (front, back, left, right, top, bottom) are generated as character grids where each cell contains a digit 0-9 representing normalized depth. For CATER video, monocular depth estimation (Depth Anything V2) produces per-frame 20×20 depth matrices quantized to the same 0-9 range. The control condition receives only the original natural language descriptions or VOXI source code without depth rendering.</p>
+
+<h3>Procedure</h3>
+
+<p>Each model-condition combination will be tested on all tasks. For each task, the LLM receives the spatial problem description and (in the depth condition) the corresponding depth matrices. The model produces an answer, which is compared against the ground truth. No iterative refinement is permitted during benchmarking — each answer must be given in a single pass to ensure controlled comparison.</p>
+
+<h3>Statistical Analysis</h3>
+
+<p>A two-way analysis of variance (ANOVA) will test the main effects of representation type and model capability, as well as their interaction. Given preliminary results suggesting that the tool helps high-capability models but may hurt lower-capability ones, the interaction effect is of particular theoretical interest. Post-hoc comparisons using Tukey's HSD will identify significant pairwise differences. Additionally, accuracy will be broken down by task type (collision, position, motion, count, occlusion) to identify which spatial reasoning subtasks benefit most from depth representations. Effect sizes (Cohen's d) will be reported for all significant comparisons.</p>
+
+<div class="page-break"></div>
+
+<h2 style="text-align:center;">References</h2>
+<div class="references">
+  <p>Chollet, F. (2025). ARC-AGI-2: A new benchmark for abstract reasoning. <em>ARC Prize Foundation</em>. https://arcprize.org</p>
+  <p>Girdhar, R., & Ramanan, D. (2020). CATER: A diagnostic dataset for compositional actions and temporal reasoning. <em>International Conference on Learning Representations</em>.</p>
+  <p>Huang, W., Wang, C., Zhang, R., Li, Y., Wu, J., & Fei-Fei, L. (2023). VoxPoser: Composable 3D value maps for robotic manipulation with language models. <em>Conference on Robot Learning</em>.</p>
+  <p>Larkin, J. H., & Simon, H. A. (1987). Why a diagram is (sometimes) worth ten thousand words. <em>Cognitive Science, 11</em>(1), 65–100. https://doi.org/10.1111/j.1551-6708.1987.tb00863.x</p>
+  <p>Mirzaee, R., Faghihi, H. R., Ning, Q., & Kordjamshidi, P. (2021). SpartQA: A textual question answering benchmark for spatial reasoning. <em>Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics</em>.</p>
+  <p>Srivastava, S., et al. (2025). Mind the gap: Evaluating spatial reasoning in large language models. <em>arXiv preprint</em>.</p>
+  <p>Wei, J., et al. (2024). Visualization-of-thought elicits spatial reasoning in large language models. <em>arXiv preprint arXiv:2404.03622</em>.</p>
+  <p>Xu, Y., et al. (2024). Whiteboard-of-thought: Thinking step-by-step across modalities. <em>arXiv preprint arXiv:2406.14562</em>.</p>
+  <p>Yang, J., et al. (2025). Thinking in space: How multimodal large language models see, remember, and recall spaces. <em>Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</em>.</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ═══ APPENDIX ═══ -->
+<div class="appendix">
+<h2 style="text-align:center; font-size:14pt; border:none;">Appendix: Full-Resolution Mind's Eye Depth Maps</h2>
+<p class="subtitle">Voxel Penguin Model (32&times;32&times;32) — 5 Orthographic Views<br>
+Left: 3D WebGL render (for human reference). Right: text-based depth map (what the LLM reads).<br>
+<strong>No vision model is used. The LLM receives only the text.</strong></p>
+
+<div class="legend">
+  <strong>Depth encoding:</strong> &nbsp;
+  <code>.</code> = empty (ray missed) &nbsp;&nbsp;
+  <code>0</code> = closest to camera &nbsp;&nbsp;
+  <code>1-8</code> = progressively deeper &nbsp;&nbsp;
+  <code>9</code> = farthest from camera
+</div>
+
+<h2>FRONT View</h2>
+<div class="view-pair">
+  <img src="proposal-assets/penguin-render-front.jpg" alt="FRONT 3D render">
+  <pre>FRONT (→X, ↑Y) [x:0-32 y:0-32]
+                       1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ 0 . . . . . . . . . . . . 5 5 4 4 4 4 4 5 5 . . . . . . . . . . .
+ 1 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+ 2 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+ 3 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 5 . . . . . . . . . .
+ 4 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 . . . . . . . . . . .
+ 5 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 . . . . . . . . . . .
+ 6 . . . . . . . . . . . 3 3 3 2 2 2 2 3 3 3 . . . . . . . . . . .
+ 7 . . . . . . . . . . . 3 3 3 3 2 2 3 3 3 3 . . . . . . . . . . .
+ 8 . . . . . . . . . . . 3 3 3 3 2 2 3 3 3 3 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . . 4 4 4 4 4 4 6 . . . . . . . . . . . .
+10 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+11 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+12 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 5 . . 4 4 4 . . . . .
+13 . . . . . . 4 4 4 . 6 3 3 3 3 3 3 3 3 3 3 5 6 . 4 4 4 . . . . .
+14 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+15 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+16 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 4 5 . 4 4 4 . . . . .
+17 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 4 5 . 4 4 4 . . . . .
+18 . . . . . . 4 4 4 6 5 3 3 3 3 3 3 3 3 3 3 4 5 6 4 4 4 . . . . .
+19 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 4 5 . 4 4 4 . . . . .
+20 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 4 5 . 4 4 4 . . . . .
+21 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+22 . . . . . . 4 4 4 . 5 3 3 3 3 3 3 3 3 3 3 5 5 . 4 4 4 . . . . .
+23 . . . . . . 4 4 4 . 6 3 3 3 3 3 3 3 3 3 3 5 6 . 4 4 4 . . . . .
+24 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 5 . . 4 4 4 . . . . .
+25 . . . . . . 4 4 4 . . 3 3 3 3 3 3 3 3 3 3 4 . . 4 4 4 . . . . .
+26 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . .
+27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . .
+28 . . . . . . . . . . . 4 4 4 4 . 6 . 4 4 4 4 . . . . . . . . . .
+29 . . . . . . . . . . . 4 4 4 4 . . . 4 4 4 4 . . . . . . . . . .
+30 . . . . . . . . . 4 4 4 4 4 4 . . . 4 4 4 4 4 4 . . . . . . . .
+31 . . . . . . . . . 4 4 4 4 4 4 . . . 4 4 4 4 4 4 . . . . . . . .</pre>
+</div>
+
+<h2>RIGHT View</h2>
+<div class="view-pair">
+  <img src="proposal-assets/penguin-render-right.jpg" alt="RIGHT 3D render">
+  <pre>RIGHT (→Z, ↑Y) [z:0-32 y:0-32]
+                       1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ 0 . . . . . . . . . . . . . . 4 4 3 3 3 3 3 4 4 . . . . . . . . .
+ 1 . . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . .
+ 2 . . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . .
+ 3 . . . . . . . 4 4 4 4 3 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . .
+ 4 . . . . . . . 4 4 4 3 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . .
+ 5 . . . . . . . 4 4 4 4 4 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . .
+ 6 . . . . . . . 4 4 4 4 4 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . .
+ 7 . . . . . . . 4 4 4 4 4 3 3 3 3 3 4 3 4 4 4 . . . . . . . . . .
+ 8 . . . . . . . 4 4 4 4 4 3 3 3 3 3 4 4 4 4 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . . . 4 4 4 4 4 3 4 4 . . . . . . . . . .
+10 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . .
+11 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . .
+12 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . .
+13 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 4 . . . . . . .
+14 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 4 . . . . . . .
+15 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+16 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+17 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+18 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 4 . . . . . .
+19 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+20 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+21 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 3 . . . . . . .
+22 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 4 . . . . . . .
+23 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 4 . . . . . . .
+24 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . .
+25 . . . . . . . . . . . 3 3 3 3 1 1 1 1 1 1 1 1 1 . . . . . . . .
+26 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 4 . . . . . . . . .
+27 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 4 . . . . . . . . . .
+28 . . . . . . . . . . . . . . . 3 3 3 3 3 . . . . . . . . . . . .
+29 . . . . . . . . . . . . . . . 3 3 3 3 3 . . . . . . . . . . . .
+30 . . . . . . . . . . . . . 2 2 2 2 2 2 2 2 . . . . . . . . . . .
+31 . . . . . . . . . . . . . 2 2 2 2 2 2 2 2 . . . . . . . . . . .</pre>
+</div>
+
+<h2>BACK View</h2>
+<div class="view-pair">
+  <img src="proposal-assets/penguin-render-back.jpg" alt="BACK 3D render">
+  <pre>BACK (→X, ↑Y) [x:0-32 y:0-32]
+                       1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ 0 . . . . . . . . . . . 4 3 3 3 3 3 3 3 4 . . . . . . . . . . . .
+ 1 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . . .
+ 2 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . . .
+ 3 . . . . . . . . . . 4 3 3 3 3 2 3 3 3 3 4 . . . . . . . . . . .
+ 4 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . . .
+ 5 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . . .
+ 6 . . . . . . . . . . . 4 3 3 3 3 3 3 3 4 4 . . . . . . . . . . .
+ 7 . . . . . . . . . . . 4 4 3 3 3 3 3 3 4 4 . . . . . . . . . . .
+ 8 . . . . . . . . . . . 4 4 3 3 3 3 3 3 4 4 . . . . . . . . . . .
+ 9 . . . . . . . . . . . . 3 3 3 3 3 3 3 . . . . . . . . . . . . .
+10 . . . . . . . . . . . 3 3 3 3 3 3 3 3 3 4 . . . . . . . . . . .
+11 . . . . . . . . . . . 3 3 3 2 2 2 3 3 3 4 . . . . . . . . . . .
+12 . . . . . 2 2 2 . . 3 3 2 2 2 2 2 2 2 3 3 . . 2 2 2 . . . . . .
+13 . . . . . 2 2 2 . 3 3 3 2 2 2 2 2 2 2 3 3 3 . 2 2 2 . . . . . .
+14 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+15 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+16 . . . . . 2 2 2 . 3 2 2 2 2 2 2 2 2 2 2 2 3 . 2 2 2 . . . . . .
+17 . . . . . 2 2 2 . 3 2 2 2 2 2 2 2 2 2 2 2 3 . 2 2 2 . . . . . .
+18 . . . . . 2 2 2 3 3 2 2 2 2 2 2 2 2 2 2 2 3 3 2 2 2 . . . . . .
+19 . . . . . 2 2 2 . 3 2 2 2 2 2 2 2 2 2 2 2 3 . 2 2 2 . . . . . .
+20 . . . . . 2 2 2 . 3 2 2 2 2 2 2 2 2 2 2 2 3 . 2 2 2 . . . . . .
+21 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+22 . . . . . 2 2 2 . 3 3 2 2 2 2 2 2 2 2 2 3 3 . 2 2 2 . . . . . .
+23 . . . . . 2 2 2 . 3 3 3 2 2 2 2 2 2 2 3 3 3 . 2 2 2 . . . . . .
+24 . . . . . 2 2 2 . . 3 3 2 2 2 2 2 2 2 3 3 . . 2 2 2 . . . . . .
+25 . . . . . 2 2 2 . . 3 3 3 3 2 2 2 3 3 3 3 . . 2 2 2 . . . . . .
+26 . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+27 . . . . . . . . . . 3 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+28 . . . . . . . . . . 3 3 3 3 . 3 . 3 3 3 3 . . . . . . . . . . .
+29 . . . . . . . . . . 3 3 3 3 . . . 3 3 3 3 . . . . . . . . . . .
+30 . . . . . . . . 3 3 3 3 3 3 . . . 3 3 3 3 3 3 . . . . . . . . .
+31 . . . . . . . . 3 3 3 3 3 3 . . . 3 3 3 3 3 3 . . . . . . . . .</pre>
+</div>
+
+<h2>LEFT View</h2>
+<div class="view-pair">
+  <img src="proposal-assets/penguin-render-left.jpg" alt="LEFT 3D render">
+  <pre>LEFT (→Z, ↑Y) [z:0-32 y:0-32]
+                       1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ 0 . . . . . . . . . 5 4 4 4 3 4 4 4 5 . . . . . . . . . . . . . .
+ 1 . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 . . . . . . . . . . . .
+ 2 . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 . . . . . . . . . . . .
+ 3 . . . . . . . . 5 4 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 4 . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 5 . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 6 . . . . . . . . . 5 4 4 4 3 4 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 7 . . . . . . . . . . 5 4 4 4 4 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 8 . . . . . . . . . . . 4 4 4 4 3 3 3 3 3 4 4 4 4 4 . . . . . . .
+ 9 . . . . . . . . . . 4 4 4 4 4 4 4 4 . . . . . . . . . . . . . .
+10 . . . . . . . . . 4 4 3 3 3 4 3 3 3 3 3 3 . . . . . . . . . . .
+11 . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+12 . . . . . . . . 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+13 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+14 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+15 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+16 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+17 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+18 . . . . . . 5 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+19 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+20 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+21 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+22 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+23 . . . . . . . 4 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+24 . . . . . . . . 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+25 . . . . . . . . 2 2 2 2 2 2 2 2 2 3 3 3 3 . . . . . . . . . . .
+26 . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+27 . . . . . . . . . . 4 4 3 3 3 3 3 3 3 3 3 . . . . . . . . . . .
+28 . . . . . . . . . . . . 3 3 3 3 3 . . . . . . . . . . . . . . .
+29 . . . . . . . . . . . . 3 3 3 3 3 . . . . . . . . . . . . . . .
+30 . . . . . . . . . . . 3 3 3 3 3 3 3 3 . . . . . . . . . . . . .
+31 . . . . . . . . . . . 3 3 3 3 3 3 3 3 . . . . . . . . . . . . .</pre>
+</div>
+
+<h2>TOP View</h2>
+<div class="view-pair">
+  <img src="proposal-assets/penguin-render-top.jpg" alt="TOP 3D render">
+  <pre>TOP (→X, ↑Z) [x:0-32 z:0-32]
+                       1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ 0 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+ 6 . . . . . . . . . . . . . . . . 5 . . . . . . . . . . . . . . .
+ 7 . . . . . . . . . . . . . 4 4 4 4 4 4 4 . . . . . . . . . . . .
+ 8 . . . . . . 3 3 3 . . 5 4 3 3 3 1 3 3 3 4 5 . . 3 3 3 . . . . .
+ 9 . . . . . . 3 3 3 . 5 4 3 1 0 0 0 0 0 1 3 4 5 . 3 3 3 . . . . .
+10 . . . . . . 3 3 3 . 4 3 1 0 0 0 0 0 0 0 1 3 4 . 3 3 3 . . . . .
+11 . . . . . . 3 3 3 9 4 3 0 0 0 0 0 0 0 0 0 3 4 9 3 3 3 . . . . .
+12 . . . . . . 3 3 3 5 4 3 0 0 0 0 0 0 0 0 0 3 4 5 3 3 3 . . . . .
+13 . . . . . . 3 3 3 9 4 1 0 0 0 0 0 0 0 0 0 1 4 9 3 3 3 . . . . .
+14 . . . . . . 3 3 3 9 4 3 0 0 0 0 0 0 0 0 0 3 4 9 3 3 3 . . . . .
+15 . . . . . . 3 3 3 9 5 0 0 0 0 0 0 0 0 0 0 4 5 9 3 3 3 . . . . .
+16 . . . . . . 3 3 3 9 9 0 0 0 0 0 0 0 0 0 0 5 9 9 3 3 3 . . . . .
+17 . . . . . . . . . 9 9 0 0 0 0 0 0 0 0 0 0 9 9 9 . . . . . . . .
+18 . . . . . . . . . 9 9 0 0 0 0 0 0 0 0 0 0 9 9 9 . . . . . . . .
+19 . . . . . . . . . . . 0 0 0 0 0 0 0 0 0 0 . . . . . . . . . . .
+20 . . . . . . . . . . . 3 3 1 1 1 1 1 3 1 3 . . . . . . . . . . .
+21 . . . . . . . . . . . . . 1 1 1 1 1 . 1 . . . . . . . . . . . .
+22 . . . . . . . . . . . . . . 1 1 1 1 . . . . . . . . . . . . . .
+23 . . . . . . . . . . . . . . 1 1 1 1 . . . . . . . . . . . . . .
+24 . . . . . . . . . . . . . . 1 1 1 1 . . . . . . . . . . . . . .
+25 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+26 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+27 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+28 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+29 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+30 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+31 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</pre>
+</div>
+
+</div><!-- end appendix -->
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+## Render Verification
+
+### What each view shows
+
+**front-iso.jpg**: Clear overall picture. Gray floor, red+green marker cross on the cube, yellow camera floating at (0,8,0), cyan ray stepping from (2,7,2) → (4,6,4) → (6,5,6). The gray cube body is **completely invisible** — buried under its own face markers from every cardinal angle.
+
+**front.jpg** (looking -Z → +Z): The green front-face slab (Z=5) faces the camera correctly. Red left/right stubs visible. Two cyan dots and the yellow camera dot in the upper right — all correct.
+
+**right.jpg** (looking +X → -X): Red right-face marker (X=10) visible. The green front-face slab (Z=5) is now a side-facing profile. Camera and 2 cyan dots float to the far right — correct positions.
+
+**back.jpg** (looking +Z → -Z): Red back-face marker (Z=10) visible on the far side of the cube. Green dominates the near face — the front-face marker is showing its reverse. Yellow + 2 cyan to the left, now appearing far from cube. Correct.
+
+**left.jpg** (top-down bird's-eye): Green top cap, red X-cross from right+back markers. **The bottom-face red dot (P 7 0 7) is invisible** — buried under the gray floor. This is the main bug (see below). Normal arrows are not distinctly visible from this angle.
+
+**top.jpg** (from above, slight iso): Yellow camera directly above, cyan trail descending diagonally to cube. The ray path reads very clearly here — best view for understanding the ray-cast. Green cap visible, red visible at base.
+
+---
+
+### Does it match expectations?
+
+**Mostly yes, with one hard error:**
+
+| Element | Expected | Actual |
+|---|---|---|
+| Gray floor | Present | ✅ |
+| Green markers: left X=5, top Y=5, front Z=5 | Visible | ✅ |
+| Red markers: right X=10, back Z=10 | Visible | ✅ |
+| Bottom red dot P 7 0 7 | Marks hidden bottom face | ❌ **Buried in floor** |
+| Camera yellow at (0,8,0) | Visible floating | ✅ |
+| Cyan ray (2,7,2)→(4,6,4)→(6,5,6) | 3 stepping dots | ✅ |
+| Normal arrows (point voxels) | Directional hints | ⚠️ Hard to read |
+| Gray cube body | Peek of gray | ❌ Completely hidden |
+
+---
+
+### Spatial errors
+
+**Error 1 — Bottom dot buried (critical):** `P 7 0 7 1` sits at Y=0, which is inside the floor (`B 0 0 0 16 1 16` fills Y=0..1). The dot is below the visible surface. Fix: move to `P 7 -1 7 1` (or lift the floor to start at Y=1 and place the dot at Y=0).
+
+**Error 2 — Gray cube body invisible:** All 6 faces are covered by 1-voxel-thick slabs, so no gray ever shows through from any cardinal direction. Not a logic error, but it means you can't visually confirm "there's a cube here." Consider using `P` points inside the cube for a center dot, or leave 1 face uncapped.
+
+**Error 3 — Normal arrows indistinct:** The arrow pairs (e.g. `P 4 3 8` and `P 3 3 8` for the left normal) are individual point voxels at Y=3. From most views they merge with the face markers visually. The `-Z` front-normal arrows at Z=3,4 are particularly lost because the front face marker dominates.
+
+---
+
+### What to sketch next
+
+The face visibility is confirmed. The next reasoning step is: **which visible face does the ray actually hit first?**
+
+Sketch: draw a line of cyan/white voxels from (6,5,6) (the first cube intersection) continuing into the cube interior, stopping at the first gray voxel it hits. Mark that impact point with a bright yellow `P`. This verifies the ray-traversal order: front face (Z=5 green) is the first surface hit, not the left face or top face even though all three are "visible" (face normals pointing toward camera).

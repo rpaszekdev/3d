@@ -1,0 +1,32 @@
+V 32 32 32
+
+-- base platform
+B 8 0 12 16 2 8 6
+B 9 2 13 14 1 6 7
+
+-- pedestal block
+B 11 3 13 10 2 6 6
+
+-- stem
+B 14 5 14 4 6 4 6
+
+-- cup lower section
+B 11 11 13 10 3 6 6
+
+-- cup main body
+B 9 14 12 14 5 8 6
+
+-- cup rim
+B 8 19 12 16 1 8 7
+
+-- left handle
+B 8 15 13 2 3 2 7
+
+-- right handle
+B 22 15 13 2 3 2 7
+
+-- cup interior hollow
+B 10 11 12 12 8 1 0
+
+-- engraving accent
+B 13 15 11 6 2 1 7

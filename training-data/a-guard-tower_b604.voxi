@@ -1,0 +1,48 @@
+V 24 32 24
+
+-- concrete base
+B 8 0 8 8 2 8 9
+
+-- wooden support pillars (four corners)
+B 9 2 9 2 14 2 a
+B 13 2 9 2 14 2 a
+B 9 2 13 2 14 2 a
+B 13 2 13 2 14 2 a
+
+-- cross braces mid-height
+B 9 8 9 6 2 1 a
+B 9 8 13 6 2 1 a
+B 9 8 9 1 2 6 a
+B 13 8 9 1 2 6 a
+
+-- platform floor
+B 6 16 6 12 1 12 9
+
+-- guard room walls
+B 7 17 7 10 4 10 d
+
+-- windows front and back
+B 9 18 7 2 2 1 0
+B 9 18 16 2 2 1 0
+
+-- windows left and right
+B 7 18 9 1 2 4 0
+B 16 18 9 1 2 4 0
+
+-- roof overhang
+B 5 21 5 14 1 14 a
+
+-- peaked roof
+B 7 22 7 10 3 10 a
+
+-- searchlight turret
+C 12 25 12 2 3 9
+
+-- searchlight beam head
+S 12 28 12 2 7
+
+-- flag pole
+B 12 25 5 1 6 1 9
+
+-- flag
+B 12 28 5 4 2 1 1

@@ -1,0 +1,258 @@
+-- HOW AI 3D GENERATION WORKS (TripoSR Pipeline)
+-- NOTE: 0 4.5 "Stage 1: INPUT IMAGE — A single 2D photo is all the AI needs. No depth maps, no multiple views."
+-- NOTE: 5 9.5 "Stage 2: VISION TRANSFORMER (DINOv2) — Splits image into patches, extracts rich feature vectors encoding shape and structure."
+-- NOTE: 10 15.5 "Stage 3: TRIPLANE DECODER — Features decoded into 3 orthogonal planes (XY, XZ, YZ). Any 3D point can be queried by sampling all three."
+-- NOTE: 16 20.5 "Stage 4: NeRF SAMPLING — A small MLP queries points along camera rays, sampling features from triplanes to predict density + color."
+-- NOTE: 21 26.5 "Stage 5: MESH OUTPUT — Marching Cubes converts the density field into a triangle mesh. Done in under 0.5 seconds."
+V 96 56 56
+DUR 27
+L 1
+
+-- ============================================
+-- STAGE 1: INPUT IMAGE (T=0-5)
+-- ============================================
+
+-- Photo frame border
+B -38 0 0 clamp(T*2,0,1)*18 clamp(T*2,0,1)*22 clamp(T*2,0,1)*2 9
+-- Photo background (white)
+B -38 0 0 clamp(T*2,0,1)*16 clamp(T*2,0,1)*20 1 8
+
+-- Cat face on photo
+S -38 3 -1 clamp(T*2,0,1)*6 7
+-- Ears
+K -43 10 -1 clamp(T*2-0.2,0,1)*2 clamp(T*2-0.2,0,1)*5 7
+K -33 10 -1 clamp(T*2-0.2,0,1)*2 clamp(T*2-0.2,0,1)*5 7
+-- Inner ears
+K -43 10 -1 clamp(T*2-0.3,0,1)*1 clamp(T*2-0.3,0,1)*3 1
+K -33 10 -1 clamp(T*2-0.3,0,1)*1 clamp(T*2-0.3,0,1)*3 1
+-- Eyes
+S -41 5 -2 clamp(T*2-0.3,0,1)*2 2
+S -35 5 -2 clamp(T*2-0.3,0,1)*2 2
+-- Pupils
+S -41 5 -3 clamp(T*2-0.4,0,1)*1 0
+S -35 5 -3 clamp(T*2-0.4,0,1)*1 0
+-- Nose
+K -38 2 -2 clamp(T*2-0.4,0,1)*1 clamp(T*2-0.4,0,1)*1 1
+-- Mouth whisker dots
+P -40 1 -2 clamp(T*2-0.5,0,1)*0 0
+P -36 1 -2 clamp(T*2-0.5,0,1)*0 0
+-- Body hint
+E -38 -5 -1 clamp(T*2-0.3,0,1)*5 clamp(T*2-0.3,0,1)*3 clamp(T*2-0.3,0,1)*1 7
+
+-- Arrow 1: Image → Encoder (yellow arrow)
+B -27+clamp(T-4,0,1)*2 0 0 clamp(T-4,0,1)*6 clamp(T-4,0,1)*2 clamp(T-4,0,1)*2 6
+K -22 0 0 clamp(T-4.3,0,1)*2 clamp(T-4.3,0,1)*4 6
+
+-- ============================================
+-- STAGE 2: VISION TRANSFORMER (T=5-10)
+-- ============================================
+
+-- Patch grid (3x4 = 12 patches breaking out of image)
+-- Row 1 (top)
+B -18 8 0 clamp(T-5,0,1)*3 clamp(T-5,0,1)*3 1 7
+B -14 8 0 clamp(T-5.1,0,1)*3 clamp(T-5.1,0,1)*3 1 7
+B -10 8 0 clamp(T-5.2,0,1)*3 clamp(T-5.2,0,1)*3 1 5
+-- Row 2
+B -18 4 0 clamp(T-5.15,0,1)*3 clamp(T-5.15,0,1)*3 1 5
+B -14 4 0 clamp(T-5.25,0,1)*3 clamp(T-5.25,0,1)*3 1 7
+B -10 4 0 clamp(T-5.35,0,1)*3 clamp(T-5.35,0,1)*3 1 7
+-- Row 3
+B -18 0 0 clamp(T-5.3,0,1)*3 clamp(T-5.3,0,1)*3 1 4
+B -14 0 0 clamp(T-5.4,0,1)*3 clamp(T-5.4,0,1)*3 1 4
+B -10 0 0 clamp(T-5.5,0,1)*3 clamp(T-5.5,0,1)*3 1 5
+-- Row 4 (bottom)
+B -18 -4 0 clamp(T-5.45,0,1)*3 clamp(T-5.45,0,1)*3 1 4
+B -14 -4 0 clamp(T-5.55,0,1)*3 clamp(T-5.55,0,1)*3 1 4
+B -10 -4 0 clamp(T-5.65,0,1)*3 clamp(T-5.65,0,1)*3 1 7
+
+-- Attention connections (white pulsing dots between patches)
+S -16 6+sin(T*5)*1.5 0 clamp(T-7,0,1)*1 8
+S -12 4+cos(T*4)*1.5 0 clamp(T-7.1,0,1)*1 8
+S -14 2+sin(T*6)*1.5 0 clamp(T-7.2,0,1)*1 8
+S -16 0+cos(T*5)*1.5 0 clamp(T-7.3,0,1)*1 8
+S -12 -2+sin(T*4)*1.5 0 clamp(T-7.4,0,1)*1 8
+S -14 8+cos(T*3)*1.5 0 clamp(T-7.5,0,1)*1 8
+
+-- Transformer block (appears around patches)
+B -14 2 0 clamp(T-8,0,1)*14 clamp(T-8,0,1)*18 clamp(T-8,0,1)*4 3
+-- QKV feature tokens flowing inside (different colors = Q,K,V)
+S -17+sin(T*6)*3 sin(T*4)*5 sin(T*3)*1 clamp(T-8.5,0,1)*1 6
+S -14+cos(T*5)*3 cos(T*3)*5 cos(T*4)*1 clamp(T-8.5,0,1)*1 1
+S -11+sin(T*7)*3 sin(T*5)*5 sin(T*2)*1 clamp(T-8.5,0,1)*1 4
+-- Extra flowing features
+S -16+cos(T*4)*2 cos(T*6)*4 0 clamp(T-9,0,1)*1 5
+S -12+sin(T*3)*2 sin(T*7)*4 0 clamp(T-9.1,0,1)*1 2
+
+-- Arrow 2: Encoder → Triplane
+B -1+clamp(T-9.5,0,1)*2 0 0 clamp(T-9.5,0,1)*6 clamp(T-9.5,0,1)*2 clamp(T-9.5,0,1)*2 6
+K 4 0 0 clamp(T-9.8,0,1)*2 clamp(T-9.8,0,1)*4 6
+
+-- ============================================
+-- STAGE 3: TRIPLANE (T=10-16)
+-- ============================================
+
+-- XY Plane (vertical, facing Z) — BLUE
+B 14 0 0 1 clamp(T-10,0,1)*22 clamp(T-10.3,0,1)*22 3
+
+-- XZ Plane (horizontal, floor) — GREEN
+B 14 0 0 clamp(T-11,0,1)*22 1 clamp(T-11.3,0,1)*22 2
+
+-- YZ Plane (vertical, facing X) — RED
+B 14 0 0 clamp(T-12,0,1)*22 clamp(T-12.3,0,1)*22 1 1
+
+-- Feature activations on XY plane (colored dots = learned features)
+S 14 sin(T*2)*7 cos(T*3)*7 clamp(T-13,0,1)*1 4
+S 14 cos(T*2.5)*5 sin(T*2)*5 clamp(T-13.1,0,1)*1 6
+S 14 sin(T*1.5)*8 cos(T*1.8)*8 clamp(T-13.2,0,1)*1 5
+S 14 cos(T*3.5)*3 sin(T*4)*6 clamp(T-13.3,0,1)*1 7
+
+-- Feature activations on XZ plane
+S 14+sin(T*2)*7 0 cos(T*2.5)*7 clamp(T-13.4,0,1)*1 4
+S 14+cos(T*1.8)*5 0 sin(T*3)*5 clamp(T-13.5,0,1)*1 6
+S 14+sin(T*3)*4 0 cos(T*2)*8 clamp(T-13.6,0,1)*1 5
+
+-- Feature activations on YZ plane
+S 14 sin(T*2.2)*6 0 clamp(T-13.3,0,1)*1 5
+S 14 cos(T*3)*4 0 clamp(T-13.5,0,1)*1 4
+S 14 sin(T*1.7)*8 0 clamp(T-13.7,0,1)*1 7
+
+-- Intersection glow (where all 3 planes meet — this is where 3D info lives)
+S 14 0 0 clamp(T-14,0,1)*2+bounce(T*3) 6
+-- Query point demonstration (point moves through space, samples all 3 planes)
+S 14+sin(T*1.5)*8 cos(T*2)*8 sin(T*1.8)*8 clamp(T-14.5,0,1)*1 8
+
+-- Arrow 3: Triplane → NeRF
+B 27+clamp(T-15,0,1)*2 0 0 clamp(T-15,0,1)*6 clamp(T-15,0,1)*2 clamp(T-15,0,1)*2 6
+K 32 0 0 clamp(T-15.3,0,1)*2 clamp(T-15.3,0,1)*4 6
+
+-- ============================================
+-- STAGE 4: NeRF SAMPLING (T=16-21)
+-- ============================================
+
+-- Camera body
+B 34 8 -10 clamp(T-16,0,1)*4 clamp(T-16,0,1)*4 clamp(T-16,0,1)*5 9
+-- Camera lens
+C 34 8 -7 clamp(T-16.2,0,1)*2 clamp(T-16.2,0,1)*1 0
+-- Camera flash
+B 36 11 -10 clamp(T-16.3,0,1)*1 clamp(T-16.3,0,1)*2 clamp(T-16.3,0,1)*1 8
+
+-- Rays shooting from camera (yellow dots marching along rays)
+-- Ray 1 (upper-left)
+S 34+saw(T*1.2)*10 8-saw(T*1.2)*4 -7+saw(T*1.2)*9 clamp(T-17,0,1)*1 6
+S 34+saw(T*1.2+0.33)*10 8-saw(T*1.2+0.33)*4 -7+saw(T*1.2+0.33)*9 clamp(T-17,0,1)*1 6
+S 34+saw(T*1.2+0.66)*10 8-saw(T*1.2+0.66)*4 -7+saw(T*1.2+0.66)*9 clamp(T-17,0,1)*1 6
+-- Ray 2 (middle)
+S 34+saw(T*1.0)*10 5-saw(T*1.0)*2 -7+saw(T*1.0)*9 clamp(T-17.3,0,1)*1 6
+S 34+saw(T*1.0+0.33)*10 5-saw(T*1.0+0.33)*2 -7+saw(T*1.0+0.33)*9 clamp(T-17.3,0,1)*1 6
+S 34+saw(T*1.0+0.66)*10 5-saw(T*1.0+0.66)*2 -7+saw(T*1.0+0.66)*9 clamp(T-17.3,0,1)*1 6
+-- Ray 3 (lower)
+S 34+saw(T*0.9)*10 2-saw(T*0.9)*1 -7+saw(T*0.9)*9 clamp(T-17.5,0,1)*1 6
+S 34+saw(T*0.9+0.33)*10 2-saw(T*0.9+0.33)*1 -7+saw(T*0.9+0.33)*9 clamp(T-17.5,0,1)*1 6
+-- Ray 4 (upper-right)
+S 34+saw(T*1.1)*10 9-saw(T*1.1)*5 -7+saw(T*1.1)*9 clamp(T-17.2,0,1)*1 6
+S 34+saw(T*1.1+0.5)*10 9-saw(T*1.1+0.5)*5 -7+saw(T*1.1+0.5)*9 clamp(T-17.2,0,1)*1 6
+
+-- Point cloud accumulating (density samples becoming visible — orange dots)
+-- Head region
+S 40 7 0 clamp(T-18,0,1)*1 7
+S 41 6 1 clamp(T-18.05,0,1)*1 7
+S 39 6 -1 clamp(T-18.1,0,1)*1 7
+S 40 8 0 clamp(T-18.15,0,1)*1 7
+S 41 5 0 clamp(T-18.2,0,1)*1 7
+S 39 7 1 clamp(T-18.25,0,1)*1 7
+S 40 5 -1 clamp(T-18.3,0,1)*1 7
+S 42 7 0 clamp(T-18.35,0,1)*1 7
+-- Ear hints
+S 38 9 0 clamp(T-18.4,0,1)*1 7
+S 42 9 0 clamp(T-18.45,0,1)*1 7
+S 38 10 0 clamp(T-18.5,0,1)*1 7
+S 42 10 0 clamp(T-18.55,0,1)*1 7
+-- Body region
+S 40 3 0 clamp(T-18.6,0,1)*1 7
+S 39 2 1 clamp(T-18.65,0,1)*1 7
+S 41 2 -1 clamp(T-18.7,0,1)*1 7
+S 40 1 0 clamp(T-18.75,0,1)*1 7
+S 38 2 0 clamp(T-18.8,0,1)*1 7
+S 42 3 0 clamp(T-18.85,0,1)*1 7
+S 40 0 1 clamp(T-18.9,0,1)*1 7
+S 39 1 -1 clamp(T-18.95,0,1)*1 7
+-- Legs region
+S 38 -2 -1 clamp(T-19,0,1)*1 7
+S 42 -2 -1 clamp(T-19.05,0,1)*1 7
+S 38 -2 1 clamp(T-19.1,0,1)*1 7
+S 42 -2 1 clamp(T-19.15,0,1)*1 7
+S 38 -4 -1 clamp(T-19.2,0,1)*1 7
+S 42 -4 -1 clamp(T-19.25,0,1)*1 7
+-- Tail
+S 36 1 0 clamp(T-19.3,0,1)*1 7
+S 35 2 0 clamp(T-19.35,0,1)*1 7
+S 34 3 0 clamp(T-19.4,0,1)*1 7
+
+-- Arrow 4: NeRF → Mesh
+B 44 2 0 clamp(T-20,0,1)*4 clamp(T-20,0,1)*2 clamp(T-20,0,1)*2 6
+K 47 2 0 clamp(T-20.3,0,1)*2 clamp(T-20.3,0,1)*4 6
+
+-- ============================================
+-- STAGE 5: MESH OUTPUT (T=21-27)
+-- ============================================
+
+-- Ground shadow
+E 40 -10 0 clamp(T-21,0,1)*6 1 clamp(T-21,0,1)*4 0
+
+-- Cat body (ellipsoid)
+E 40 -3 0 clamp(T-21,0,1)*6 clamp(T-21,0,1)*4 clamp(T-21,0,1)*4 7
+-- Head
+S 40 clamp(T-21.3,0,1)*5+2 0 clamp(T-21.3,0,1)*5 7
+-- Ears (triangular)
+K 37 clamp(T-21.6,0,1)*5+7 0 clamp(T-21.6,0,1)*2 clamp(T-21.6,0,1)*4 7
+K 43 clamp(T-21.6,0,1)*5+7 0 clamp(T-21.6,0,1)*2 clamp(T-21.6,0,1)*4 7
+-- Inner ears
+K 37 clamp(T-21.8,0,1)*5+7 0 clamp(T-21.8,0,1)*1 clamp(T-21.8,0,1)*2 1
+K 43 clamp(T-21.8,0,1)*5+7 0 clamp(T-21.8,0,1)*1 clamp(T-21.8,0,1)*2 1
+-- Eyes (green)
+S 38 clamp(T-22,0,1)*5+4 -2 clamp(T-22,0,1)*1 2
+S 42 clamp(T-22,0,1)*5+4 -2 clamp(T-22,0,1)*1 2
+-- Pupils
+S 38 clamp(T-22.2,0,1)*5+4 -3 clamp(T-22.2,0,1)*1 0
+S 42 clamp(T-22.2,0,1)*5+4 -3 clamp(T-22.2,0,1)*1 0
+-- Nose (pink)
+S 40 clamp(T-22.4,0,1)*5+2 -3 clamp(T-22.4,0,1)*1 1
+-- Tail (curved upward)
+C 35 -2 0 clamp(T-22.6,0,1)*1 clamp(T-22.6,0,1)*5 7
+S 35 3 0 clamp(T-22.8,0,1)*1 7
+-- Front legs
+C 37 -8 -2 clamp(T-23,0,1)*1 clamp(T-23,0,1)*5 7
+C 43 -8 -2 clamp(T-23,0,1)*1 clamp(T-23,0,1)*5 7
+-- Back legs
+C 37 -8 2 clamp(T-23.2,0,1)*1 clamp(T-23.2,0,1)*5 7
+C 43 -8 2 clamp(T-23.2,0,1)*1 clamp(T-23.2,0,1)*5 7
+-- Paws (white tips)
+S 37 -9 -2 clamp(T-23.4,0,1)*1 8
+S 43 -9 -2 clamp(T-23.4,0,1)*1 8
+S 37 -9 2 clamp(T-23.5,0,1)*1 8
+S 43 -9 2 clamp(T-23.5,0,1)*1 8
+-- Whiskers (dots extending from face)
+P 36 3 -3 clamp(T-23.6,0,1)*8
+P 35 2 -3 clamp(T-23.6,0,1)*8
+P 44 3 -3 clamp(T-23.6,0,1)*8
+P 45 2 -3 clamp(T-23.6,0,1)*8
+
+-- Victory sparkles orbiting the model
+S 40+sin(T*4)*10 sin(T*3)*10 cos(T*4)*10 clamp(T-24,0,1)*1 6
+S 40+cos(T*3)*10 cos(T*4)*10 sin(T*3)*10 clamp(T-24.2,0,1)*1 4
+S 40+sin(T*5)*10 sin(T*2)*10 cos(T*5)*10 clamp(T-24.4,0,1)*1 5
+S 40+cos(T*2)*10 sin(T*6)*10 cos(T*2)*10 clamp(T-24.6,0,1)*1 1
+S 40+sin(T*3)*12 cos(T*5)*6 sin(T*4)*12 clamp(T-24.8,0,1)*1 2
+
+-- ============================================
+-- STAGE MARKERS (floor)
+-- ============================================
+B -38 -26 0 10 1 10 5
+B -14 -26 0 10 1 10 3
+B 14 -26 0 10 1 10 2
+B 40 -26 0 10 1 10 7
+
+-- Connecting floor lines (gray path between markers)
+B -26 -26 0 14 1 2 9
+B 0 -26 0 18 1 2 9
+B 27 -26 0 16 1 2 9

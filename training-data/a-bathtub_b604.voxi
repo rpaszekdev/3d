@@ -1,0 +1,28 @@
+V 24 16 20
+
+-- tub bottom
+B 2 0 2 20 2 16 8
+
+-- tub walls
+B 2 2 2 2 6 16 8
+B 20 2 2 2 6 16 8
+B 2 2 2 20 6 2 8
+B 2 2 16 20 6 2 8
+
+-- water inside
+B 4 2 4 16 4 12 3
+
+-- drain
+B 11 1 9 2 1 2 0
+
+-- faucet pipe
+B 11 8 16 2 4 1 9
+
+-- faucet spout
+B 10 12 16 4 1 2 9
+
+-- hot knob
+S 10 13 17 1 1
+
+-- cold knob
+S 14 13 17 1 4

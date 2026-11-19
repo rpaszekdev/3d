@@ -1,0 +1,32 @@
+V 24 16 24
+
+-- saucer disc body
+E 12 7 12 9 2 9 9
+
+-- metallic rim band
+C 12 7 12 9 1 9
+
+-- top dome
+S 12 10 12 4 3
+
+-- cockpit window
+S 12 12 10 2 4
+
+-- undercarriage glow
+C 12 6 12 4 1 4
+
+-- rim lights
+S 20 7 12 1 6
+S 4 7 12 1 6
+S 12 7 20 1 6
+S 12 7 4 1 6
+S 18 7 18 1 6
+S 6 7 6 1 6
+S 18 7 6 1 6
+S 6 7 18 1 6
+
+-- tractor beam
+C 12 1 12 3 4 4
+
+-- antenna
+B 11 13 11 2 3 2 9

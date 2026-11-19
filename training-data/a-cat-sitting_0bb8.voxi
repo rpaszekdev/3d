@@ -1,0 +1,42 @@
+V 24 24 24
+
+-- haunches / lower body
+E 12 4 12 5 4 4 7
+
+-- upper torso
+E 12 10 12 3 5 3 7
+
+-- neck
+C 12 15 12 2 2 7
+
+-- head
+S 12 18 12 4 7
+
+-- left ear
+B 9 21 10 2 3 2 7
+-- right ear
+B 13 21 10 2 3 2 7
+-- left inner ear
+B 10 21 10 1 2 1 b
+-- right inner ear
+B 14 21 10 1 2 1 b
+
+-- left eye
+S 10 18 9 1 2
+-- right eye
+S 14 18 9 1 2
+
+-- nose
+S 12 16 9 1 b
+
+-- left front paw
+B 9 0 9 3 2 3 7
+-- right front paw
+B 12 0 9 3 2 3 7
+
+-- tail base
+B 17 1 12 2 5 2 7
+-- tail curve
+B 19 5 12 2 3 2 7
+-- tail tip
+B 18 8 12 2 2 2 8

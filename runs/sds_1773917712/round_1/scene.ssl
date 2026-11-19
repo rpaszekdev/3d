@@ -1,0 +1,96 @@
+P1
+# Penguin - Body
+# Main body - black outer torso (egg-shaped using stacked elements)
+12 200 70 200 38 55 30 0
+# White belly front overlay
+12 200 72 185 30 45 20 8
+# Lower body black - wider hip area
+12 200 28 200 40 30 32 0
+# Lower belly white
+12 200 30 185 32 24 22 8
+# Upper chest white
+12 200 95 186 26 20 18 8
+# Black back upper
+12 200 90 215 30 25 22 0
+# Tail nub
+3 200 18 225 8 12 8 0
+# === Head ===
+# Main head sphere - black
+1 200 130 200 30 28 28 0
+# Face front - dark gray/black
+1 200 132 185 20 18 16 0
+# White face patches (cheek areas)
+1 188 128 188 10 12 8 8
+1 212 128 188 10 12 8 8
+# Crown black
+1 200 142 200 24 12 24 0
+# Chin white patch
+1 200 120 184 14 8 10 8
+# === Neck ===
+2 200 110 200 28 16 28 0
+# Neck white front
+2 200 110 186 20 14 16 8
+# === Eyes ===
+1 191 134 183 4 4 4 0
+1 209 134 183 4 4 4 0
+# Eye highlights
+1 191 135 181 2 2 2 8
+1 209 135 181 2 2 2 8
+# === Beak ===
+# Upper beak - orange
+3 200 128 172 6 4 10 7
+# Lower beak - darker orange
+3 200 125 174 5 3 8 7
+# Beak tip dark
+1 200 127 168 3 2 3 0
+# === Flippers - Left ===
+# Left flipper - black, angled down and slightly out
+0 162 75 200 8 50 18 0 0 0 -8
+0 158 52 200 8 14 16 0 0 0 -5
+# Left flipper tip
+0 156 42 202 7 10 14 0 0 0 -3
+# === Flippers - Right ===
+# Right flipper - black, angled down and slightly out
+0 238 75 200 8 50 18 0 0 0 8
+0 242 52 200 8 14 16 0 0 0 5
+# Right flipper tip
+0 244 42 202 7 10 14 0 0 0 3
+# === Feet ===
+# Left foot - orange, flat and wide
+0 188 4 190 16 5 22 7
+# Left foot toes
+0 184 3 178 5 4 8 7
+0 190 3 178 5 4 8 7
+0 196 3 178 5 4 8 7
+# Left foot claws
+3 184 3 172 2 2 4 0
+3 190 3 172 2 2 4 0
+3 196 3 172 2 2 4 0
+# Right foot - orange
+0 212 4 190 16 5 22 7
+# Right foot toes
+0 206 3 178 5 4 8 7
+0 212 3 178 5 4 8 7
+0 218 3 178 5 4 8 7
+# Right foot claws
+3 206 3 172 2 2 4 0
+3 212 3 172 2 2 4 0
+3 218 3 172 2 2 4 0
+# Left leg - black short stub
+2 188 14 196 12 12 12 0
+# Right leg - black short stub
+2 212 14 196 12 12 12 0
+# === Body detail - black side patches ===
+0 168 65 200 6 40 24 0
+0 232 65 200 6 40 24 0
+# Back spine detail
+0 200 80 222 12 50 6 0
+# Lower back
+0 200 35 218 20 20 10 0
+# Shoulder area black
+0 172 95 204 10 20 20 0
+0 228 95 204 10 20 20 0
+# Upper white chest detail
+12 200 100 184 22 16 14 8
+# Belly bottom curve white
+12 200 18 188 28 14 18 8

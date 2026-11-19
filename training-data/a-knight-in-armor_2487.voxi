@@ -1,0 +1,73 @@
+V 32 48 32
+
+-- boots
+B 12 0 14 4 3 4 9
+B 18 0 14 4 3 4 9
+
+-- greaves
+B 13 3 15 3 7 3 9
+B 18 3 15 3 7 3 9
+
+-- cuisses
+B 12 10 14 4 7 4 9
+B 18 10 14 4 7 4 9
+
+-- tasset hips
+B 11 16 13 10 4 5 9
+
+-- cape
+B 11 14 18 10 16 2 1
+
+-- breastplate
+B 11 20 13 10 10 5 9
+
+-- chest cross
+B 14 22 12 4 6 1 8
+
+-- left pauldron
+S 10 29 15 3 9
+
+-- right pauldron
+S 22 29 15 3 9
+
+-- left upper arm
+C 10 22 15 2 7 9
+
+-- right upper arm
+C 22 22 15 2 7 9
+
+-- left vambrace
+C 10 15 15 2 7 9
+
+-- right vambrace
+C 22 15 15 2 7 9
+
+-- left gauntlet
+B 8 11 13 4 4 4 9
+
+-- right gauntlet
+B 20 11 13 4 4 4 9
+
+-- gorget
+C 16 30 15 2 3 9
+
+-- helmet
+S 16 34 15 5 9
+
+-- visor slit
+B 13 33 11 6 2 2 0
+
+-- sword blade
+B 23 15 15 1 13 1 8
+
+-- crossguard
+B 20 15 15 5 1 1 7
+
+-- sword grip
+B 22 11 15 2 4 2 7
+
+-- shield
+B 5 16 12 2 10 7 3
+
+-- shield boss
+S 6 21 14 2 7

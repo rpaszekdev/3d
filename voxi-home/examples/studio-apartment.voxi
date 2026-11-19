@@ -1,0 +1,34 @@
+V 70 27 50
+-- VOXI-Home compiled scene (7m × 5m, scale: 1 voxel = 10cm)
+
+-- Floor
+B 0 0 0 70 1 50 8
+
+-- Walls
+B 0 1 0 70 17 1 9
+B 0 1 49 70 17 1 9
+B 0 1 0 1 17 50 9
+B 69 1 0 1 17 50 9
+
+-- Door openings
+B 0 1 21 1 17 9 0 -- west door
+
+-- Windows
+B 25 9 0 20 16 1 4 -- south window
+B 69 9 19 1 14 12 4 -- east window
+
+-- Furniture
+B 3 1 3 19 8 10 5 -- 2-Seat Sofa (sofa 2seat)
+B 5 1 20 9 5 5 d -- Coffee Table (table coffee)
+B 1 1 38 10 6 1 0 -- 43" TV (tv 43)
+B 56 1 30 20 5 9 a -- Single Bed (bed single)
+B 51 1 25 5 6 4 a -- Nightstand (nightstand standard)
+B 30 1 8 12 7 8 a -- Dining Table (4 person) (table dining-4)
+B 27 1 2 5 8 5 7 -- Dining Chair (chair dining)
+B 38 1 2 5 8 5 7 -- Dining Chair (chair dining)
+B 27 1 16 5 8 5 7 -- Dining Chair (chair dining)
+B 38 1 16 5 8 5 7 -- Dining Chair (chair dining)
+B 3 1 40 12 8 6 d -- Desk (desk standard)
+B 5 1 32 6 11 6 9 -- Office Chair (chair office)
+B 3 1 3 20 1 15 e -- Medium Rug (rug medium)
+B 50 1 45 3 16 3 6 -- Floor Lamp (lamp floor)

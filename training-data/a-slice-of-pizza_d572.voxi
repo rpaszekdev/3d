@@ -1,0 +1,28 @@
+V 24 12 24
+
+-- crust (brown, raised back edge)
+B 4 0 20 16 4 2 a
+
+-- dough base (tan), triangular wedge
+B 4 0 16 16 2 4 d
+B 7 0 12 10 2 4 d
+B 9 0 8 6 2 4 d
+B 10 0 4 4 2 4 d
+B 11 0 2 2 2 2 d
+
+-- cheese (yellow)
+B 4 2 16 16 1 4 6
+B 7 2 12 10 1 4 6
+B 9 2 8 6 1 4 6
+B 10 2 4 4 1 4 6
+
+-- pepperoni (red)
+S 9 3 18 1 1
+S 16 3 17 1 1
+S 10 3 15 1 1
+S 7 3 13 1 1
+S 14 3 11 1 1
+
+-- basil herbs (green)
+S 12 3 16 1 2
+S 8 3 14 1 2

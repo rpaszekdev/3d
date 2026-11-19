@@ -1,0 +1,127 @@
+-- ═══════════════════════════════════════════════════════════
+-- CV Variation 8: Timeline — Vertical timeline, centered layout
+-- ═══════════════════════════════════════════════════════════
+
+CANVAS 840 1120 #ffffff
+
+-- ── Header (centered) ────────────────────────────────────
+TEXT 260 40 "ROBERT PASZEK" 28 1 #222222 bold
+TEXT 290 74 "Software Engineer" 14 1 #aaaaaa
+LINE 340 94 500 94 1 #222222 2
+
+TEXT 210 118 "robert@example.com" 9 1 #888888
+TEXT 390 118 "github.com/robertpaszek" 9 1 #888888
+TEXT 610 118 "London, UK" 9 1 #888888
+
+-- ── Profile (centered) ──────────────────────────────────
+RECT 100 150 640 50 0 #f8f8f8 8
+TEXT 120 162 "Software engineer focused on spatial computing, DSL design, and creative" 10 1 #555555
+TEXT 120 180 "tooling. Building the bridge between human intuition and machine understanding." 10 1 #555555
+
+-- ── Timeline spine ───────────────────────────────────────
+LINE 420 220 420 920 0 #e0e0e0 2
+
+-- ── Experience label ─────────────────────────────────────
+RECT 370 222 100 24 1 #222222 12
+TEXT 384 228 "Experience" 10 2 #ffffff bold
+
+-- ── Timeline: Job 1 (left) ───────────────────────────────
+ELLIPSE 420 280 6 6 2 #3b82f6
+LINE 426 280 450 280 1 #3b82f6 2
+RECT 450 256 340 90 1 #f0f7ff 8
+RECT 450 256 340 28 2 #3b82f6 8
+TEXT 464 264 "Senior Software Engineer" 11 3 #ffffff bold
+TEXT 464 296 "Spatial Labs — London" 9 2 #888888
+TEXT 464 316 "VOXI DSL, real-time renderer," 9 2 #555555
+TEXT 464 332 "85% LLM token reduction." 9 2 #555555
+TEXT 710 264 "2023—" 8 3 #dbeafe
+
+-- ── Timeline: Job 2 (right) ──────────────────────────────
+ELLIPSE 420 380 6 6 2 #3b82f6
+LINE 414 380 390 380 1 #3b82f6 2
+RECT 50 356 340 90 1 #f0f7ff 8
+RECT 50 356 340 28 2 #3b82f6 8
+TEXT 64 364 "Full Stack Developer" 11 3 #ffffff bold
+TEXT 64 396 "TechFlow — Remote" 9 2 #888888
+TEXT 64 416 "Microservices, 2M req/day." 9 2 #555555
+TEXT 64 432 "Next.js rebuild, -60% bundle." 9 2 #555555
+TEXT 300 364 "2021—23" 8 3 #dbeafe
+
+-- ── Timeline: Job 3 (left) ───────────────────────────────
+ELLIPSE 420 480 6 6 2 #3b82f6
+LINE 426 480 450 480 1 #3b82f6 2
+RECT 450 456 340 74 1 #f0f7ff 8
+RECT 450 456 340 28 2 #3b82f6 8
+TEXT 464 464 "Junior Developer" 11 3 #ffffff bold
+TEXT 464 496 "DataPulse — Warsaw" 9 2 #888888
+TEXT 464 516 "ETL 500GB/day, React + D3." 9 2 #555555
+TEXT 710 464 "2020—21" 8 3 #dbeafe
+
+-- ── Projects label ───────────────────────────────────────
+RECT 378 558 84 24 1 #222222 12
+TEXT 398 564 "Projects" 10 2 #ffffff bold
+
+-- ── Timeline: Project 1 (right) ──────────────────────────
+ELLIPSE 420 610 6 6 2 #10b981
+LINE 414 610 390 610 1 #10b981 2
+RECT 50 590 340 76 1 #f0fdf4 8
+TEXT 64 600 "VOXI" 11 2 #111111 bold
+TEXT 110 600 "— Spatial Reasoning DSL" 9 2 #888888
+TEXT 64 622 "3D scenes in ~100 tokens." 9 1 #555555
+TEXT 64 638 "Used by LLMs for reasoning." 9 1 #555555
+RECT 64 652 48 12 1 #d1fae5 6
+TEXT 70 654 "Python" 7 2 #059669
+RECT 118 652 28 12 1 #d1fae5 6
+TEXT 124 654 "JS" 7 2 #059669
+
+-- ── Timeline: Project 2 (left) ───────────────────────────
+ELLIPSE 420 700 6 6 2 #10b981
+LINE 426 700 450 700 1 #10b981 2
+RECT 450 680 340 76 1 #f0fdf4 8
+TEXT 464 690 "Brain Converter" 11 2 #111111 bold
+TEXT 464 712 "NL to 3D voxel scenes." 9 1 #555555
+TEXT 464 728 "LLM + DSL output pipeline." 9 1 #555555
+RECT 464 742 56 12 1 #d1fae5 6
+TEXT 470 744 "FastAPI" 7 2 #059669
+RECT 526 742 52 12 1 #d1fae5 6
+TEXT 532 744 "Claude" 7 2 #059669
+
+-- ── Timeline: Project 3 (right) ──────────────────────────
+ELLIPSE 420 790 6 6 2 #10b981
+LINE 414 790 390 790 1 #10b981 2
+RECT 50 770 340 76 1 #f0fdf4 8
+TEXT 64 780 "Video Depth" 11 2 #111111 bold
+TEXT 64 802 "Spatial structure from video." 9 1 #555555
+TEXT 64 818 "Depth estimation + LLM." 9 1 #555555
+RECT 64 832 56 12 1 #d1fae5 6
+TEXT 70 834 "PyTorch" 7 2 #059669
+
+-- ── Timeline: Project 4 (left) ───────────────────────────
+ELLIPSE 420 880 6 6 2 #10b981
+LINE 426 880 450 880 1 #10b981 2
+RECT 450 860 340 76 1 #f0fdf4 8
+TEXT 464 870 "Sketch-Lang" 11 2 #111111 bold
+TEXT 464 892 "2D vector DSL with vision" 9 1 #555555
+TEXT 464 908 "matrix for LLM input." 9 1 #555555
+RECT 464 922 68 12 1 #d1fae5 6
+TEXT 470 924 "JavaScript" 7 2 #059669
+
+-- ── End cap ──────────────────────────────────────────────
+ELLIPSE 420 920 4 4 2 #cccccc
+
+-- ── Bottom: Skills + Education ───────────────────────────
+LINE 60 960 780 960 1 #e0e0e0 1
+
+TEXT 60 982 "SKILLS" 9 1 #222222 bold
+TEXT 120 982 "Python  JS  TS  Go  SQL  Rust  React  Next.js  FastAPI  Docker  K8s  AWS  PostgreSQL" 9 1 #888888
+
+LINE 60 1006 780 1006 1 #e0e0e0 1
+
+TEXT 60 1028 "EDUCATION" 9 1 #222222 bold
+TEXT 168 1028 "MSc Computer Science, UCL (2018-2020)" 9 1 #555555
+TEXT 168 1048 "BSc Mathematics, Univ. of Warsaw (2014-2018)" 9 1 #555555
+
+LINE 60 1072 780 1072 1 #e0e0e0 1
+
+TEXT 60 1094 "CERTS" 9 1 #222222 bold
+TEXT 168 1094 "AWS Solutions Architect  ·  GCP Data Engineer  ·  CKA Kubernetes" 9 1 #555555

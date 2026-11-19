@@ -1,0 +1,37 @@
+V 32 24 14
+
+-- legs
+B 5 0 3 3 5 3 a
+B 24 0 3 3 5 3 a
+
+-- main cabinet body
+B 4 5 2 24 17 8 a
+
+-- top lid (black)
+B 4 21 2 24 2 9 0
+
+-- lower front panel
+B 4 5 1 24 3 1 0
+
+-- white keys
+B 5 8 1 22 4 1 8
+
+-- fallboard above keys
+B 5 12 1 22 4 1 0
+
+-- music desk
+B 8 18 1 16 2 1 d
+
+-- black keys group 1
+B 7 9 0 2 3 1 0
+B 10 9 0 2 3 1 0
+
+-- black keys group 2
+B 14 9 0 2 3 1 0
+B 17 9 0 2 3 1 0
+B 20 9 0 2 3 1 0
+
+-- pedals
+B 13 5 1 2 2 1 6
+B 16 5 1 2 2 1 6
+B 19 5 1 2 2 1 6

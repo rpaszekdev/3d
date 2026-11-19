@@ -1,0 +1,43 @@
+## Verification Report
+
+### Per-View Observations
+
+**front-iso**: Yellow camera (0,8,0) appears elevated near top-center. Cyan dots descend diagonally toward cube. Cube shows green top + left side, red front face. The ray has visible diagonal motion but looks compressed — projection artifact since this iso angle collapses X and Z into similar directions.
+
+**front** (looking +Z): Camera top-left, ray descends right → diagonal path clearly visible. Cube shows green top + left sliver, red front face. The t=0.25 dot at (2,7,2) is farthest left, t=0.75 at (6,5,6) just above cube corner. ✅ Correct.
+
+**right** (looking -X, seeing X=9 face): Red face on the cube body, green on top. ✅ Correct — right face should be hidden (red).
+
+**back** (looking -Z, seeing Z=9 face): **Cube appears mostly green.** Only thin red slivers at edges. Camera (yellow) visible off-floor to the right. The back face Z=9 should be predominantly red (hidden), but the green top-face layer at Y=4 (spanning Z:6–9) and green left-face layer at X=6 (spanning Z:6–9) overwrite those cells. Only the interior cells X:7–9, Y:1–3 at Z=9 remain red — but they're barely visible.
+
+**left** (looking +X, seeing X=6 face): Camera (yellow) clearly at X=0, floating at height ~8. Cyan dots extend diagonally from camera to cube. Cube face is **green**. ✅ Correct — left face should be visible (green).
+
+**top** (looking down): Camera at top (X≈0, Z≈0 corner). Cyan dots trace diagonal line toward cube in XZ plane: (2,2) → (4,4) → (6,6). Small **purple/magenta point visible on cube top surface near (8,4,8)**. Green top face. ✅ Matches expectation perfectly.
+
+---
+
+### Spatial Errors Found
+
+| Issue | Severity | Description |
+|-------|----------|-------------|
+| Back face appears green | **Medium** | The green top-face (`B 6 4 6 4 1 4 2`) and left-face (`B 6 1 6 1 4 4 2`) layers share cells with the Z=9 back face, overwriting it green. The hidden back face is only visible as a small interior patch. |
+| Hidden faces in close-up are undersized | **Low** | The close-up's red faces are partial (right: `1×3×3` not `1×4×4`; bottom: `2×1×2`; back: `2×3×1`). They intentionally peek out from behind green faces, but from pure back/bottom views they look almost absent. |
+| Ray t=1 endpoint slightly ambiguous | **Low** | Purple point at (8,4,8) sits exactly on the Y=4 top surface — correctly on the face, but it visually merges with the green top face in most angles. Only clearly visible in top view. |
+
+---
+
+### What Matches the Reasoner's Expectations
+
+- ✅ Camera yellow at (0,8,0) — correctly elevated, correctly off in the -X/-Z corner
+- ✅ 3 visible faces (left/top/front) are all green
+- ✅ Right face is red from right-view
+- ✅ Ray path from camera to (8,4,8) is spatially correct (confirmed in top view diagonal)
+- ✅ Ray grazes the top-front-left corner at t≈0.75 near (6,5,6), then hits top surface at t=1.0
+
+---
+
+### What to Sketch Next
+
+**Step 3 should verify occlusion** — draw a ray that misses the cube to contrast. Place a second ray from the same camera toward a point like `(14,0,14)` (past the cube). Show it passes through empty space. This confirms that the cube-hitting ray at (8,4,8) actually intersects the geometry (top face Y=4 at valid X:6–9, Z:6–9 coordinates), while a miss ray does not.
+
+Alternatively, **add a normal vector visualization**: draw small 1-voxel arrows sticking out perpendicular from each face (outward direction), colored green for visible normals and red for hidden ones. This would make the dot-product visibility condition geometrically obvious.

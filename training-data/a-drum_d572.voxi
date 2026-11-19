@@ -1,0 +1,24 @@
+V 24 24 24
+
+-- wooden shell (tan)
+C 12 4 12 6 8 d
+
+-- bottom drumhead (white membrane)
+C 12 0 12 6 1 8
+
+-- top drumhead (white membrane)
+C 12 8 12 6 1 8
+
+-- bottom metal rim (gray)
+C 12 0 12 7 1 9
+
+-- top metal rim (gray)
+C 12 8 12 7 1 9
+
+-- tension lugs front and back
+B 11 2 18 2 4 1 9
+B 11 2 5 2 4 1 9
+
+-- tension lugs left and right
+B 18 2 11 1 4 2 9
+B 4 2 11 1 4 2 9

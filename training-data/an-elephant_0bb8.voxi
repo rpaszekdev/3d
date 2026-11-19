@@ -1,0 +1,47 @@
+V 32 32 32
+
+-- body
+E 16 12 17 9 6 11 9
+
+-- head
+S 16 18 6 5 9
+
+-- left ear
+E 9 18 8 2 6 3 9
+
+-- right ear
+E 23 18 8 2 6 3 9
+
+-- trunk upper
+B 15 13 2 2 4 2 9
+
+-- trunk lower (curled tip)
+B 15 10 1 2 3 3 9
+B 14 8 2 3 2 3 9
+
+-- left tusk
+B 12 13 2 2 1 4 d
+
+-- right tusk
+B 18 13 2 2 1 4 d
+
+-- front left leg
+C 11 4 10 2 8 9
+
+-- front right leg
+C 21 4 10 2 8 9
+
+-- back left leg
+C 11 4 23 2 8 9
+
+-- back right leg
+C 21 4 23 2 8 9
+
+-- left eye
+S 13 20 3 1 0
+
+-- right eye
+S 19 20 3 1 0
+
+-- tail
+B 16 14 28 1 5 1 9

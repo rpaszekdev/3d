@@ -1,0 +1,47 @@
+## Spatial Layout Analysis
+
+### Overview
+The scene is a 48×28×48 grid containing three objects: a terrain/castle landscape, an armored knight, and a deer. The objects occupy distinct spatial zones with clear separation.
+
+---
+
+### Terrain (Castle Landscape)
+The terrain is the dominant mass, spanning the center of the grid (X[8..39], Z[8..39]) from ground level up to Y=27 — nearly the full height of the scene. At 7,735 voxels, it dwarfs the other objects.
+
+In the **top view**, the interior cells with depth values `3` (around low-res cols 5–6, rows 7–8) mark the **tallest castle structures** — those depth-3 values mean surfaces are closest to the top camera, i.e., the highest elevation points. These sit roughly in the center-back of the terrain footprint, consistent with a castle on a hill.
+
+The surrounding terrain slopes away: depth values `6–9` indicate progressively lower or more distant surfaces, forming the hillside around the castle.
+
+---
+
+### Knight
+- Positioned **in front of and partially overlapping** the terrain's Z-front face: X[14..33], Z[5..25]
+- Base at Y=8, reaching up to Y=27 — stands at the same elevation as the terrain top
+- In the **front view**, the `6` (yellow) and `2` (green) values in the middle rows are the knight's sword and armor catching the view
+- The knight is **west-to-center horizontally** and **forward (low Z)** relative to the terrain — essentially standing before the castle entrance
+
+---
+
+### Deer
+- Positioned **behind and to the right** of the terrain: X[35..60], Z[35..43]
+- Base at Y=8, top at Y=34 — slightly **taller** than the terrain's top (Y=27), which is notable given its `26×27×9` bounds
+- In the **top view**, barely visible at the far upper-right edge (the `2` at row 2, col 11 is a lone deer voxel peeking past the grid edge)
+- The deer's Z[35..43] places it behind the castle (terrain Z ends at 39), partially occluded from the front
+
+---
+
+### Spatial Relationships
+
+```
+         Z-BACK (Z=48)
+              [DEER] — back-right, behind terrain
+         [TERRAIN/CASTLE] — central elevated mass
+              [KNIGHT] — front-center, facing castle
+         Z-FRONT (Z=0)
+```
+
+- **Knight → Terrain**: ~3 units of separation in Z (Z=25 vs Z=8 terrain front), knight is directly facing the castle
+- **Deer → Terrain**: The deer's X[35..60] extends beyond the terrain's X[8..39] boundary — it stands **to the right and behind** the castle, partially in open space past the terrain edge
+- **Knight → Deer**: Maximum separation diagonally — knight is front-left (low Z, mid X), deer is back-right (high Z, high X); roughly 30+ units apart
+
+The composition reads as a classic scene: a knight approaching a hilltop castle, with a deer in the wilderness behind and to the side.

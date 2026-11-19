@@ -1,0 +1,40 @@
+V 32 32 32
+
+-- drum body (cylinder, brown wood)
+C 16 8 16 10 14 a
+
+-- drum top membrane (ellipsoid, tan/skin)
+E 16 15 16 10 1 10 d
+
+-- drum bottom rim (cylinder, dark ring)
+C 16 1 16 10 2 e
+
+-- drum top rim (cylinder, dark ring)
+C 16 14 16 10 2 e
+
+-- tension rod left-front
+C 8 8 14 1 12 0
+
+-- tension rod right-front
+C 24 8 14 1 12 0
+
+-- tension rod left-back
+C 8 8 18 1 12 0
+
+-- tension rod right-back
+C 24 8 18 1 12 0
+
+-- drum lug left
+B 6 10 15 2 3 2 9
+
+-- drum lug right
+B 24 10 15 2 3 2 9
+
+-- drum lug front-left
+B 10 10 12 2 3 2 9
+
+-- drum lug front-right
+B 20 10 12 2 3 2 9
+
+-- floor (shadow base)
+B 8 0 8 16 1 16 9

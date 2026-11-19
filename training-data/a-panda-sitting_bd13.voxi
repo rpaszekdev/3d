@@ -1,0 +1,49 @@
+V 24 24 24
+
+-- body
+E 12 7 12 5 5 4 8
+
+-- belly patch
+E 12 7 10 3 4 2 8
+
+-- head
+S 12 14 12 4 8
+
+-- left ear
+S 9 18 12 2 0
+
+-- right ear
+S 15 18 12 2 0
+
+-- left eye patch
+E 10 15 9 2 2 1 0
+
+-- right eye patch
+E 14 15 9 2 2 1 0
+
+-- left eye shine
+S 10 15 8 1 8
+
+-- right eye shine
+S 14 15 8 1 8
+
+-- nose
+S 12 13 8 1 0
+
+-- left arm
+E 7 7 12 2 4 2 0
+
+-- right arm
+E 17 7 12 2 4 2 0
+
+-- left leg
+E 9 2 13 3 2 3 0
+
+-- right leg
+E 15 2 13 3 2 3 0
+
+-- left paw
+S 9 1 14 2 0
+
+-- right paw
+S 15 1 14 2 0

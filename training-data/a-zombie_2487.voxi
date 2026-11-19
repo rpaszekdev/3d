@@ -1,0 +1,51 @@
+V 32 32 32
+
+-- body
+B 12 8 14 8 10 4 2
+
+-- head
+S 16 20 14 4 2
+
+-- rotting skin patches on head
+B 13 20 12 2 2 2 c
+B 17 21 13 2 2 2 9
+
+-- left arm (outstretched forward)
+C 10 16 10 2 8 2
+B 8 16 6 4 2 4 2
+
+-- right arm (outstretched forward)
+C 22 16 10 2 8 2
+B 20 16 6 4 2 4 2
+
+-- left hand (reaching)
+S 8 16 4 2 c
+
+-- right hand (reaching)
+S 24 16 4 2 c
+
+-- legs
+C 13 2 14 2 8 4 2
+C 19 2 14 2 8 4 2
+
+-- feet
+B 11 0 12 4 2 4 9
+B 17 0 12 4 2 4 9
+
+-- torn shirt details
+B 13 10 13 3 3 3 9
+B 18 12 13 2 2 3 0
+
+-- glowing zombie eyes
+S 15 21 11 1 6
+S 17 21 11 1 6
+
+-- exposed ribs
+B 13 9 13 1 6 2 9
+B 15 9 13 1 6 2 9
+B 17 9 13 1 6 2 9
+B 19 9 13 1 6 2 9
+
+-- blood stains
+B 14 8 13 4 2 2 1
+B 12 14 13 2 3 2 1

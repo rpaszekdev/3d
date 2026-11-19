@@ -1,0 +1,22 @@
+V 32 32 32
+
+-- key bow (circular head)
+S 16 22 16 6 6
+S 16 22 16 4 8
+
+-- key bow inner hole
+S 16 22 16 3 7
+
+-- key shaft
+B 14 8 15 8 2 2 6
+
+-- key tip shoulder
+B 21 8 15 2 3 2 6
+
+-- key teeth
+B 18 6 15 2 2 2 6
+B 20 5 15 2 3 2 6
+B 22 7 15 2 2 2 6
+
+-- key head ring detail
+C 16 22 16 5 1 9

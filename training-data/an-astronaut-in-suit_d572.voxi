@@ -1,0 +1,43 @@
+V 24 24 24
+
+-- boots
+B 8 0 9 3 2 4 9
+B 13 0 9 3 2 4 9
+
+-- legs
+B 8 2 10 3 6 3 8
+B 13 2 10 3 6 3 8
+
+-- hips
+B 8 8 10 8 2 3 8
+
+-- torso
+B 7 10 10 10 5 3 8
+
+-- chest panel
+B 8 11 9 8 3 1 9
+
+-- backpack PLSS
+B 8 10 13 8 5 2 9
+
+-- left arm
+B 4 10 10 3 5 3 8
+-- right arm
+B 17 10 10 3 5 3 8
+
+-- left glove
+B 4 8 10 3 2 3 9
+-- right glove
+B 17 8 10 3 2 3 9
+
+-- neck
+B 10 15 10 4 2 3 8
+
+-- helmet
+S 12 19 12 4 8
+
+-- visor
+B 10 18 9 4 3 2 4
+
+-- flag patch
+B 7 12 9 2 2 1 1

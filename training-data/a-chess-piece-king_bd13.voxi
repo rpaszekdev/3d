@@ -1,0 +1,34 @@
+V 16 24 16
+
+-- base
+C 8 0 8 5 2 8
+C 8 2 8 5 1 9
+
+-- lower stem
+C 8 3 8 2 4 8
+
+-- middle bulge
+S 8 8 8 3 8
+
+-- upper stem
+C 8 9 8 2 3 8
+
+-- crown disc
+C 8 12 8 4 1 8
+C 8 13 8 4 1 9
+
+-- crown crenellations
+B 5 14 5 2 3 2 8
+B 9 14 5 2 3 2 8
+B 5 14 9 2 3 2 8
+B 9 14 9 2 3 2 8
+B 7 14 5 2 3 2 8
+B 7 14 9 2 3 2 8
+B 5 14 7 2 3 2 8
+B 9 14 7 2 3 2 8
+
+-- cross vertical
+B 7 17 7 2 6 2 6
+
+-- cross horizontal
+B 5 20 7 6 2 2 6

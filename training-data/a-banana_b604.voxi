@@ -1,0 +1,18 @@
+V 32 16 16
+
+-- left tip (brown)
+S 4 4 8 1 a
+-- left body (yellow)
+E 8 6 8 3 2 2 6
+-- left-center
+E 12 8 8 3 2 2 6
+-- peak center (yellow)
+E 16 10 8 4 2 2 6
+-- right-center
+E 20 8 8 3 2 2 6
+-- right body (yellow)
+E 24 6 8 3 2 2 6
+-- right tip (brown)
+S 28 4 8 1 a
+-- top ridge highlight (orange)
+E 16 10 8 4 1 1 7

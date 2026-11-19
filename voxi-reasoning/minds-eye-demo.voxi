@@ -1,0 +1,156 @@
+V 48 32 48
+-- ═══════════════════════════════════════════════
+-- MIND'S EYE — How It Works (architectural demo)
+-- ═══════════════════════════════════════════════
+-- Left:   THE BRAIN (LLM) — sphere with neural connections
+-- Center: THE SKETCH (VOXI code) — floating voxel grid
+-- Right:  THE EYE (camera/renderer) — eye shape with rays
+
+-- ═══ STAGE / GROUND ═══
+B 0 0 0 48 1 48 9
+
+-- ═══════════════════════════════════════════════
+-- SECTION 1: THE BRAIN (LLM Reasoner) — left side
+-- ═══════════════════════════════════════════════
+-- Brain sphere
+S 10 16 24 6 5
+-- Brain wrinkles / folds (magenta ridges)
+B 6 19 21 3 1 6 b
+B 11 20 20 3 1 5 b
+B 7 17 27 5 1 3 b
+B 13 18 22 2 1 4 b
+
+-- Neural sparks inside brain (yellow = active thought)
+P 8 15 23 6
+P 10 17 25 6
+P 12 14 24 6
+P 9 16 22 6
+P 11 18 26 6
+P 10 15 20 6
+
+-- Brain stem going down
+C 10 6 24 2 5 9
+
+-- Label pedestal
+B 5 1 19 10 2 10 9
+
+-- ═══════════════════════════════════════════════
+-- SECTION 2: THE VOXI SKETCH — center (the code)
+-- ═══════════════════════════════════════════════
+-- Floating voxel grid frame (wireframe effect)
+-- Bottom edges
+B 19 8 19 10 1 1 4
+B 19 8 29 10 1 1 4
+B 19 8 19 1 1 10 4
+B 28 8 19 1 1 10 4
+-- Top edges
+B 19 18 19 10 1 1 4
+B 19 18 29 10 1 1 4
+B 19 18 19 1 1 10 4
+B 28 18 19 1 1 10 4
+-- Vertical edges
+B 19 8 19 1 10 1 4
+B 28 8 19 1 10 1 4
+B 19 8 29 1 10 1 4
+B 28 8 29 1 10 1 4
+
+-- Mini scene INSIDE the grid (a tiny house — what the LLM imagined)
+-- House walls
+B 21 9 22 6 5 6 7
+-- Roof
+B 20 14 21 8 1 8 1
+B 21 15 22 6 1 6 1
+B 22 16 23 4 1 4 1
+B 23 17 24 2 1 2 1
+-- Door
+B 23 9 22 2 3 1 a
+-- Window
+B 25 11 22 1 1 1 4
+-- Ground patch
+B 20 8 21 8 1 8 2
+
+-- ═══════════════════════════════════════════════
+-- SECTION 3: THE EYE (Camera/Renderer) — right side
+-- ═══════════════════════════════════════════════
+-- Eyeball (white sphere)
+S 38 16 24 5 8
+-- Iris (blue ring — front face)
+S 38 16 19 3 3
+-- Pupil (black center)
+S 38 16 18 1 0
+
+-- Vision rays shooting LEFT from eye toward the sketch
+-- These show how the mind's eye "sees" the voxel scene
+P 33 16 22 6
+P 32 16 21 6
+P 31 16 21 6
+P 30 16 21 6
+P 33 14 23 6
+P 32 14 22 6
+P 31 14 22 6
+P 33 18 23 6
+P 32 18 22 6
+P 31 18 22 6
+-- Lower ray
+P 33 12 24 6
+P 32 12 23 6
+P 31 12 23 6
+-- Upper ray
+P 33 20 24 6
+P 32 20 23 6
+P 31 20 23 6
+
+-- Eye pedestal
+C 38 3 24 3 5 9
+
+-- ═══════════════════════════════════════════════
+-- FLOW ARROWS: Brain → Sketch → Eye → Brain
+-- ═══════════════════════════════════════════════
+-- Arrow 1: Brain → Sketch (green = "writes code")
+P 16 14 24 2
+P 17 14 24 2
+P 18 14 24 2
+P 18 15 24 2
+P 18 13 24 2
+
+-- Arrow 2: Sketch → Eye (cyan = "renders view")
+P 29 14 24 4
+P 30 14 24 4
+P 31 14 24 4
+P 31 15 24 4
+P 31 13 24 4
+
+-- Arrow 3: Eye → Brain (red = "verification feedback")
+-- Goes underneath, returning
+P 38 5 18 1
+P 37 5 17 1
+P 36 5 16 1
+P 35 5 15 1
+P 34 5 14 1
+P 33 5 13 1
+P 32 5 12 1
+P 31 5 11 1
+P 30 5 11 1
+P 29 5 11 1
+P 28 5 11 1
+P 27 5 11 1
+P 26 5 11 1
+P 25 5 11 1
+P 24 5 11 1
+P 23 5 11 1
+P 22 5 12 1
+P 21 5 13 1
+P 20 5 14 1
+P 19 5 15 1
+P 18 5 16 1
+P 17 5 17 1
+P 16 5 18 1
+P 15 5 19 1
+P 14 5 20 1
+P 13 5 21 1
+P 12 5 22 1
+P 11 5 23 1
+-- Arrowhead
+P 11 6 23 1
+P 11 4 23 1
+P 10 5 24 1

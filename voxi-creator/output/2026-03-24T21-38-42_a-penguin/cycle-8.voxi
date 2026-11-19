@@ -1,0 +1,53 @@
+V 32 32 32
+-- orange feet flat and forward
+B 8 0 9 6 2 9 7
+B 18 0 9 6 2 9 7
+-- navy legs
+B 10 2 13 4 5 5 f
+B 18 2 13 4 5 5 f
+-- main body navy
+B 8 7 12 16 13 8 f
+-- body top rounding
+B 9 19 12 14 3 8 f
+-- body bottom rounding
+B 9 6 12 14 2 8 f
+-- white belly on front face
+B 12 8 11 8 12 2 8
+-- belly center highlight
+B 13 9 10 6 9 2 8
+-- left wing navy
+B 3 8 13 5 12 6 f
+-- right wing navy
+B 24 8 13 5 12 6 f
+-- wing orange lower tips
+B 3 8 18 5 3 1 7
+B 24 8 18 5 3 1 7
+-- tail wedge back
+B 9 5 20 14 7 4 f
+B 10 4 22 12 4 3 f
+-- neck navy
+B 11 20 12 10 5 8 f
+-- head sphere navy
+S 16 26 14 5 f
+-- white face patch front
+B 13 22 10 6 8 3 8
+-- upper beak yellow
+B 14 26 8 4 3 5 6
+-- lower beak orange
+B 14 23 8 4 2 5 7
+-- beak ridge accent
+B 15 26 8 2 1 4 7
+-- left eye white base
+B 11 27 11 3 3 2 8
+-- left pupil dark
+B 12 27 11 2 2 1 9
+-- right eye white base
+B 18 27 11 3 3 2 8
+-- right pupil dark
+B 19 27 11 2 2 1 9
+-- eye shine glints
+P 12 29 11 8
+P 19 29 11 8
+-- head top tuft
+B 14 31 14 4 1 3 f
+B 15 30 14 2 2 3 9

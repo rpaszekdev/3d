@@ -1,0 +1,50 @@
+V 32 32 32
+
+-- haunches / sitting base
+E 16 6 16 7 6 6 6
+
+-- upper body / chest
+E 16 14 15 5 6 5 6
+
+-- belly
+E 16 8 14 3 4 3 d
+
+-- front left leg
+B 12 2 13 3 8 3 6
+-- front right leg
+B 18 2 13 3 8 3 6
+
+-- left paw
+B 12 1 10 3 2 4 d
+-- right paw
+B 18 1 10 3 2 4 d
+
+-- neck
+E 16 19 15 3 4 3 6
+
+-- mane (large orange)
+S 16 23 14 7 7
+
+-- head (yellow over mane)
+S 16 23 12 4 6
+
+-- left ear
+B 13 28 12 2 3 1 6
+-- right ear
+B 19 28 12 2 3 1 6
+
+-- left eye
+S 14 24 9 1 0
+-- right eye
+S 18 24 9 1 0
+
+-- nose
+S 16 22 9 1 a
+
+-- mouth line
+B 15 21 9 3 1 1 1
+
+-- tail base
+B 22 3 17 2 9 2 6
+-- tail tuft
+S 23 2 17 2 0

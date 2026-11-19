@@ -1,0 +1,40 @@
+V 32 24 12
+
+-- water surface
+B 0 2 2 32 1 8 3
+-- water splashes
+B 2 3 4 3 3 4 4
+B 27 3 4 3 3 4 4
+
+-- tail fluke
+B 2 4 5 3 5 2 9
+B 1 8 5 2 3 2 9
+
+-- tail segment
+E 7 10 6 3 4 2 9
+
+-- mid body arc
+E 14 15 6 5 4 2 9
+-- belly mid
+E 14 13 6 4 2 2 8
+
+-- dorsal fin
+B 13 19 5 3 5 2 9
+
+-- upper body
+E 21 15 6 4 4 2 9
+-- belly upper
+B 20 13 5 5 2 2 8
+
+-- pectoral flipper
+B 19 11 4 4 2 2 9
+
+-- head
+S 27 13 6 4 9
+-- snout / rostrum
+B 27 10 5 5 2 2 9
+-- lower jaw
+B 27 10 6 5 1 1 8
+
+-- eye
+S 27 15 5 1 0

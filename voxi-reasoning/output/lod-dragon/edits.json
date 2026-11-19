@@ -1,0 +1,13 @@
+[
+  {
+    "action": "STAMP",
+    "name": "dragon_fire_breath",
+    "origin": [
+      160,
+      70,
+      46
+    ],
+    "colorHint": "dragon fire breath — red base, orange middle, yellow core shooting in +X",
+    "voxi": "V 40 20 20\n-- Red outer layer (widest, drawn first)\nB 0 9 9 4 2 2 1\nB 4 7 7 8 6 6 1\nB 12 5 5 14 10 10 1\nB 26 4 4 12 12 12 1\n-- Orange middle (overwrites red center)\nB 0 9 9 4 2 2 7\nB 4 8 8 8 4 4 7\nB 12 6 6 14 8 8 7\nB 26 5 5 12 10 10 7\n-- Yellow core (drawn last, overwrites orange center)\nB 1 9 9 3 2 2 6\nB 4 9 9 7 2 2 6\nB 11 8 8 12 4 4 6\nB 23 7 7 10 6 6 6\n-- Scattered sparks at edges\nP 10 6 7 1\nP 16 13 9 7\nP 20 6 13 6\nP 26 4 8 1\nP 31 14 6 7\nP 36 5 14 1\nP 24 15 13 6\nP 18 14 5 7\nP 33 4 15 6\nP 15 4 5 1"
+  }
+]

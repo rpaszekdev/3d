@@ -1,0 +1,28 @@
+V 32 48 32
+
+-- balloon envelope
+E 16 32 16 11 15 11 6
+
+-- vertical color panels
+B 15 17 5 2 30 2 1
+B 15 17 25 2 30 2 2
+B 5 17 15 2 30 2 3
+B 25 17 15 2 30 2 5
+
+-- top crown
+S 16 47 16 4 7
+
+-- suspension ropes
+B 12 9 12 1 10 1 9
+B 20 9 12 1 10 1 9
+B 12 9 20 1 10 1 9
+B 20 9 20 1 10 1 9
+
+-- wicker basket outer
+B 11 1 11 10 8 10 a
+
+-- basket inner
+B 12 2 12 8 5 8 7
+
+-- burner flame
+C 16 9 16 1 4 7

@@ -1,0 +1,22 @@
+V 32 32 32
+-- Mug outer body (white ceramic)
+C 16 9 16 6 18 8
+-- Coffee inside (brown) - shorter/narrower to reveal ceramic rim and base
+C 16 8 16 4 14 a
+-- Ceramic base reinforcement
+B 10 0 10 12 1 12 8
+-- Handle top bar - connects into mug side, extends outward
+B 21 14 14 5 3 4 8
+-- Handle bottom bar
+B 21 3 14 5 3 4 8
+-- Handle outer vertical bar - closes the loop
+B 25 6 14 2 9 4 8
+-- Hole in handle is the empty space at X=22-24, Y=6-13, Z=14-17
+-- Inner wall hint (slightly darker interior rim)
+B 11 17 11 10 1 10 9
+-- Steam wisps above mug
+P 14 21 16 9
+P 16 22 16 9
+P 18 21 16 9
+P 15 23 16 9
+P 17 24 16 9

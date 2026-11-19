@@ -1,0 +1,55 @@
+V 32 16 32
+
+-- lily pad
+E 16 1 16 10 1 10 c
+
+-- lily pad vein
+B 15 2 11 2 1 5 2
+
+-- frog body
+E 16 5 16 5 3 4 2
+
+-- belly
+E 16 5 15 3 2 2 6
+
+-- frog head
+S 16 9 14 3 2
+
+-- left eye bulge
+S 14 11 13 2 2
+
+-- right eye bulge
+S 18 11 13 2 2
+
+-- left pupil
+S 14 11 12 1 0
+
+-- right pupil
+S 18 11 12 1 0
+
+-- mouth
+B 13 7 12 6 1 1 0
+
+-- front left leg
+C 11 3 14 1 4 2
+
+-- front right leg
+C 21 3 14 1 4 2
+
+-- front left foot
+B 8 2 13 4 1 2 2
+
+-- front right foot
+B 20 2 13 4 1 2 2
+
+-- back left leg
+B 8 2 17 4 3 3 2
+
+-- back right leg
+B 20 2 17 4 3 3 2
+
+-- back left foot
+B 6 2 20 5 1 2 2
+
+-- back right foot
+B 21 2 20 5 1 2 2

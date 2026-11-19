@@ -1,0 +1,39 @@
+V 32 32 32
+
+-- snowboard
+B 4 0 13 24 1 6 d
+
+-- left boot
+B 7 1 14 5 3 4 0
+-- right boot
+B 19 1 14 5 3 4 0
+
+-- left leg
+B 8 4 15 4 7 3 3
+-- right leg
+B 20 4 15 4 7 3 3
+
+-- torso
+B 9 11 14 13 7 4 1
+
+-- left arm extended
+B 3 12 15 6 2 3 1
+-- right arm extended
+B 22 12 15 6 2 3 1
+
+-- left glove
+B 3 12 15 2 2 2 9
+-- right glove
+B 27 12 15 2 2 2 9
+
+-- neck
+B 14 18 15 4 2 3 8
+
+-- helmet
+B 12 21 14 9 3 4 9
+
+-- goggles
+B 12 21 13 9 2 1 3
+
+-- head
+S 16 22 16 4 8

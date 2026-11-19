@@ -1,0 +1,33 @@
+V 24 24 24
+
+-- body (white)
+E 12 8 12 5 7 5 8
+
+-- head (white)
+S 12 17 12 4 8
+
+-- ears (black)
+S 9 21 12 2 0
+S 15 21 12 2 0
+
+-- eye patches (black)
+E 10 17 9 2 2 1 0
+E 14 17 9 2 2 1 0
+
+-- eyes (white dots)
+S 10 17 8 1 8
+S 14 17 8 1 8
+
+-- nose (black)
+S 12 15 8 1 0
+
+-- arms (black)
+E 6 9 12 2 5 2 0
+E 18 9 12 2 5 2 0
+
+-- legs (black, front)
+B 7 1 8 4 5 5 0
+B 13 1 8 4 5 5 0
+
+-- belly (white highlight)
+E 12 7 9 3 4 2 8

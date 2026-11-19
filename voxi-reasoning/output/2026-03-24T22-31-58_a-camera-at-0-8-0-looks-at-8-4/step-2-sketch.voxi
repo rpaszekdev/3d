@@ -1,0 +1,7 @@
+V 16 16 16
+
+-- FLOOR: gray base
+B 0 0 0 16 1 16 9
+
+-- ORANGE CUBE 4x4x4 at (6,1,6), spans X:[6,10] Y:[1,5] Z:[6,10]
+B 6 1 6 4 4 4 7

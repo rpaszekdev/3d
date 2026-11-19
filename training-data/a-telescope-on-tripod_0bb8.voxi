@@ -1,0 +1,26 @@
+V 24 24 24
+
+-- tripod front-left leg
+B 8 0 8 2 7 2 a
+-- tripod front-right leg
+B 14 0 8 2 7 2 a
+-- tripod back leg
+B 11 0 16 2 7 2 a
+-- tripod hub platform
+B 8 6 8 8 2 8 9
+-- mount post
+B 11 8 10 2 3 4 9
+-- telescope tube body
+B 10 10 6 4 3 10 3
+-- objective lens front
+B 9 9 5 6 5 2 8
+-- eyepiece barrel
+B 10 13 15 4 2 3 9
+-- lens band ring 1
+B 10 9 8 4 5 1 6
+-- lens band ring 2
+B 10 9 13 4 5 1 6
+-- focuser knob
+B 14 9 11 2 2 2 7
+-- finderscope
+B 12 13 7 2 2 7 6

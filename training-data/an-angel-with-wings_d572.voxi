@@ -1,0 +1,30 @@
+V 36 40 20
+
+-- robe bottom (white)
+B 12 0 8 12 4 4 8
+-- robe middle (white)
+B 13 4 8 10 5 4 8
+-- torso (white)
+B 14 9 8 8 5 4 8
+-- left wing (white)
+E 8 15 10 8 6 2 8
+-- right wing (white)
+E 28 15 10 8 6 2 8
+-- left arm (skin)
+B 12 11 8 2 4 3 b
+-- right arm (skin)
+B 22 11 8 2 4 3 b
+-- head (skin)
+S 18 19 10 3 b
+-- hair (golden)
+B 15 21 8 6 3 2 6
+-- halo (golden disc)
+E 18 24 10 5 1 5 6
+-- left eye (black)
+B 16 19 7 1 1 1 0
+-- right eye (black)
+B 19 19 7 1 1 1 0
+-- left wing feather detail (gray)
+E 8 13 10 6 4 2 9
+-- right wing feather detail (gray)
+E 28 13 10 6 4 2 9

@@ -1,0 +1,123 @@
+CANVAS 595 842 #ffffff
+
+-- ── Name + Photo ─────────────────────────────────
+TEXT 40 40 "ROBERT" 42 1 #1a3a5c bold
+TEXT 40 90 "PASZEK" 42 1 #1a3a5c bold
+
+TEXT 42 140 "Bartender  ·  Hospitality" 9 1 #4a9ad4 bold
+
+PHOTO 460 30 110 1 #4a9ad4 3
+
+-- ── Contact ──────────────────────────────────────
+DIVIDER 40 170 555 170 1 #4a9ad4
+CONTACT 100 180 1 #3a6a8a phone "+48 725 850 750"
+CONTACT 245 180 1 #3a6a8a email "r.f.paszek@gmail.com"
+CONTACT 420 180 1 #3a6a8a location "Tilburg, Netherlands"
+DIVIDER 40 202 555 202 1 #4a9ad4
+
+-- ── Profile ──────────────────────────────────────
+TEXT 40 218 "Energetic and social student looking for a bartending position." 9 1 #3a4a5a italic
+TEXT 40 234 "Fluent in three languages, experienced in fast-paced B2B sales," 9 1 #3a4a5a italic
+TEXT 40 250 "and comfortable performing on stage. Quick learner who thrives under pressure." 9 1 #3a4a5a italic
+
+-- ═══════════════════════════════════════════════════
+-- LEFT COLUMN
+-- ═══════════════════════════════════════════════════
+
+RECT 40 278 340 2 1 #4a9ad4
+TEXT 40 286 "WORK EXPERIENCE" 8 1 #4a9ad4 bold
+
+-- Sales Rep — most relevant work experience
+TEXT 40 308 "Sales Rep — Genergy Poland" 11 1 #1a3a5c bold
+TEXT 290 308 "Jan — Jun 2024" 8 1 #8aaabe
+TEXT 40 324 "Gdansk  ·  B2B sales  ·  Client-facing" 8.5 1 #5a7a8e
+TEXT 40 340 "Managed direct client relationships in a high-volume B2B" 8.5 1 #3a4a5a
+TEXT 40 354 "environment. Conducted product presentations, handled objections," 8.5 1 #3a4a5a
+TEXT 40 368 "and closed deals under targets. Developed strong customer service" 8.5 1 #3a4a5a
+TEXT 40 382 "and communication skills in a fast-paced setting." 8.5 1 #3a4a5a
+
+DIVIDER 40 400 380 400 1 #d8e4ee
+
+-- Vice-Chair
+TEXT 40 412 "Vice-Chair — CSAI Programme Committee" 11 1 #1a3a5c bold
+TEXT 290 412 "Sept 2025 — Current" 8 1 #8aaabe
+TEXT 40 428 "Tilburg University" 8.5 1 #5a7a8e
+TEXT 40 444 "Organising student events, managing teams, coordinating with" 8.5 1 #3a4a5a
+TEXT 40 458 "external vendors and venues. Budget management and logistics." 8.5 1 #3a4a5a
+
+-- ── Achievements ─────────────────────────────────
+RECT 40 488 340 2 1 #4a9ad4
+TEXT 40 496 "ACHIEVEMENTS" 8 1 #4a9ad4 bold
+
+TEXT 40 518 "Hackathon Winner — 1st of 93 Teams" 11 1 #1a3a5c bold
+TEXT 330 518 "Spring 2025" 8 1 #8aaabe
+TEXT 40 534 "G-tec Medical Engineering, Tilburg" 8.5 1 #5a7a8e
+TEXT 40 550 "Won an international competition under extreme time pressure —" 8.5 1 #3a4a5a
+TEXT 40 564 "48 hours, no sleep, high-stakes teamwork and delivery." 8.5 1 #3a4a5a
+
+-- ── Education ────────────────────────────────────
+RECT 40 594 340 2 1 #4a9ad4
+TEXT 40 602 "EDUCATION" 8 1 #4a9ad4 bold
+
+TEXT 40 622 "BSc Cognitive Science & AI — 2nd year" 11 1 #1a3a5c bold
+TEXT 290 622 "Sept 2024 — Current" 8 1 #8aaabe
+TEXT 40 638 "Tilburg University, Tilburg, Netherlands" 8.5 1 #5a7a8e
+
+-- ── Availability ─────────────────────────────────
+RECT 40 668 340 2 1 #4a9ad4
+TEXT 40 676 "AVAILABILITY" 8 1 #4a9ad4 bold
+
+TEXT 40 696 "Evenings and weekends" 11 1 #1a3a5c bold
+TEXT 40 712 "Flexible schedule around university classes. Available for" 8.5 1 #3a4a5a
+TEXT 40 726 "Friday and Saturday night shifts, events, and private parties." 8.5 1 #3a4a5a
+
+
+-- ═══════════════════════════════════════════════════
+-- RIGHT COLUMN
+-- ═══════════════════════════════════════════════════
+
+RECT 400 278 155 2 1 #4a9ad4
+TEXT 400 286 "STRENGTHS" 8 1 #4a9ad4 bold
+
+TEXT 400 306 "People Skills" 8.5 1 #1a3a5c bold
+TEXT 400 320 "B2B sales experience" 8 1 #3a4a5a
+TEXT 400 334 "Multilingual (3 languages)" 8 1 #3a4a5a
+TEXT 400 348 "Stage performance confidence" 8 1 #3a4a5a
+
+TEXT 400 370 "Under Pressure" 8.5 1 #1a3a5c bold
+TEXT 400 384 "Won 48hr hackathon (1st/93)" 8 1 #3a4a5a
+TEXT 400 398 "Deadline-driven work style" 8 1 #3a4a5a
+TEXT 400 412 "High-energy environments" 8 1 #3a4a5a
+
+TEXT 400 434 "Event Organisation" 8.5 1 #1a3a5c bold
+TEXT 400 448 "Committee event planning" 8 1 #3a4a5a
+TEXT 400 462 "Vendor & venue coordination" 8 1 #3a4a5a
+TEXT 400 476 "Budget management" 8 1 #3a4a5a
+
+TEXT 400 498 "Communication" 8.5 1 #1a3a5c bold
+TEXT 400 512 "Art of Presenting course" 8 1 #3a4a5a
+TEXT 400 526 "University Theatre (active)" 8 1 #3a4a5a
+TEXT 400 540 "Client presentations (sales)" 8 1 #3a4a5a
+
+-- Languages
+RECT 400 570 155 2 1 #4a9ad4
+TEXT 400 578 "LANGUAGES" 8 1 #4a9ad4 bold
+TEXT 400 598 "Polish" 9 1 #3a4a5a
+TEXT 520 598 "native" 7.5 1 #8aaabe
+TEXT 400 614 "English" 9 1 #3a4a5a
+TEXT 520 614 "fluent" 7.5 1 #8aaabe
+TEXT 400 630 "Spanish" 9 1 #3a4a5a
+TEXT 520 630 "communicative" 7.5 1 #8aaabe
+
+-- Interests
+RECT 400 660 155 2 1 #4a9ad4
+TEXT 400 668 "INTERESTS" 8 1 #4a9ad4 bold
+TEXT 400 688 "Sailing, Chess, Skiing" 8.5 1 #3a4a5a
+TEXT 400 704 "Traveling (4 continents)" 8.5 1 #3a4a5a
+TEXT 400 720 "Brain-Computer Interfaces" 8.5 1 #3a4a5a
+
+-- Certificates
+RECT 400 750 155 2 1 #4a9ad4
+TEXT 400 758 "CERTIFICATES" 8 1 #4a9ad4 bold
+TEXT 400 778 "Motorboat Operator" 8.5 1 #3a4a5a
+TEXT 400 794 "Sailing Permit" 8.5 1 #3a4a5a

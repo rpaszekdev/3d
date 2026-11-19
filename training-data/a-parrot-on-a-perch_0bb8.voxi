@@ -1,0 +1,43 @@
+V 24 32 20
+
+-- stand post
+B 11 0 9 2 13 2 a
+
+-- perch bar
+B 2 12 8 20 2 3 a
+
+-- feet left
+B 9 11 9 3 1 2 0
+
+-- feet right
+B 12 11 9 3 1 2 0
+
+-- tail feathers
+E 12 15 15 3 4 3 3
+
+-- body
+E 12 18 10 4 5 3 2
+
+-- red breast
+E 12 16 8 3 3 2 1
+
+-- left wing accent
+B 7 17 9 2 6 2 6
+
+-- right wing accent
+B 15 17 9 2 6 2 6
+
+-- head
+S 12 23 10 3 2
+
+-- head crest
+B 11 26 9 3 3 1 6
+
+-- beak
+B 10 22 7 3 2 3 6
+
+-- eye left
+B 10 24 8 1 1 1 0
+
+-- eye right
+B 13 24 8 1 1 1 0

@@ -1,0 +1,30 @@
+V 32 32 16
+
+-- shield border (navy frame)
+B 9 3 6 14 22 3 f
+
+-- shield body (blue)
+B 10 4 7 12 20 2 3
+
+-- shield top arc
+E 16 24 7 7 5 2 3
+
+-- shield lower tapered point
+B 13 2 7 6 3 2 3
+B 15 1 7 2 2 2 3
+
+-- emblem cross horizontal arm (gold)
+B 11 13 9 10 2 1 6
+
+-- emblem cross vertical arm (gold)
+B 15 9 9 2 10 1 6
+
+-- center jewel (red)
+S 16 14 9 1 1
+
+-- emblem top fleur tip (magenta)
+S 16 20 9 1 5
+
+-- emblem wing flanks (cyan)
+S 12 14 9 1 4
+S 20 14 9 1 4

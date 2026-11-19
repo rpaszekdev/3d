@@ -1,0 +1,31 @@
+V 20 20 20
+
+-- seat top
+C 10 17 10 5 2 d
+
+-- seat rim
+C 10 16 10 5 1 a
+
+-- leg front-left
+B 6 0 6 2 17 2 a
+
+-- leg front-right
+B 12 0 6 2 17 2 a
+
+-- leg back-left
+B 6 0 12 2 17 2 a
+
+-- leg back-right
+B 12 0 12 2 17 2 a
+
+-- footrest front
+B 6 8 6 8 1 1 6
+
+-- footrest back
+B 6 8 12 8 1 1 6
+
+-- footrest left
+B 6 8 6 1 1 8 6
+
+-- footrest right
+B 12 8 6 1 1 8 6
